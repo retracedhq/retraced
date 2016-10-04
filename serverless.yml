@@ -1,0 +1,185 @@
+service: retracedApi
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+  memorySize: 128
+  stage: staging
+  region: us-east-1
+
+plugins:
+  - serverless-offline
+
+functions:
+  signup:
+    handler: userCreate.default
+    events:
+      - http:
+          path: v1/user/signup
+          method: post
+          cors: true
+  login:
+    handler: userLogin.default
+    events:
+      - http:
+          path: v1/user/login
+          method: post
+          cors: true
+  listProjects:
+    handler: listProjects.default
+    events:
+      - http:
+          path: v1/projects
+          method: get
+          cors: true
+  createProject:
+    handler: createProject.default
+    events:
+      - http:
+          path: v1/project
+          method: post
+          cors: true
+  getProject:
+    handler: getProject.default
+    events:
+      - http:
+          path: v1/project/{projectId}
+          method: get
+          cors: true
+  searchEvents:
+    handler: searchEvents.default
+    events:
+      - http:
+          path: v1/project/{projectId}/events/search
+          method: post
+          cors: true
+  deepSearch:
+    handler: deepSearch.default
+    events:
+      - http:
+          path: v1/project/{projectId}/events/search/deep
+          method: post
+          cors: true
+  listTeam:
+    handler: listTeam.default
+    events:
+      - http:
+          path: v1/project/{projectId}/team
+          method: get
+          cors: true
+  createEvent:
+    handler: createEvent.default
+    events:
+      - http:
+          path: v1/project/{projectId}/event
+          method: post
+          cors: true
+  createEnvironment:
+    handler: createEnvironment.default
+    events:
+      - http:
+          path: v1/project/{projectId}/environment
+          method: post
+          cors: true
+  createToken:
+    handler: createToken.default
+    events:
+      - http:
+          path: v1/project/{projectId}/token
+          method: post
+          cors: true
+  viewerToken:
+    handler: viewerToken.default
+    events:
+      - http:
+          path: v1/project/{projectId}/viewertoken
+          method: get
+          cors: true
+  processEvent:
+    handler: processEvent.default
+    events:
+      - sns: '${env:RETRACED_PREFIX}-eventprocessor-${env:RETRACED_SUFFIX}'
+  viewerSession:
+    handler: viewerSession.default
+    events:
+      - http:
+          path: v1/viewersession
+          method: post
+          cors: true
+  viewerEvents:
+    handler: viewerEvents.default
+    events:
+      - http:
+          path: v1/viewer/{projectId}/events/search
+          method: get
+          cors: true
+  listObjects:
+    handler: listObjects.default
+    events: 
+      - http:
+          path: v1/project/{projectId}/objects
+          method: get
+          cors: true
+  listActors:
+    handler: listActors.default
+    events:
+      - http:
+          path: v1/project/{projectId}/actors
+          method: get
+          cors: true
+  createInvite:
+    handler: createInvite.default
+    events:
+      - http:
+          path: v1/project/{projectId}/invite
+          method: post
+          cors: true
+  getInvite:
+    handler: getInvite.default
+    events:
+      - http:
+          path: v1/invite
+          method: get
+          cors: true
+  acceptInvite:
+    handler: acceptInvite.default
+    events:
+      - http:
+          path: v1/invite/accept
+          method: post
+          cors: true
+  getEvent:
+    handler: getEvent.default
+    events:
+      - http:
+          path: v1/project/{projectId}/event/{eventId}
+          method: get
+          cors: true
+  listActions:
+    handler: listActions.default
+    events:
+      - http:
+          path: v1/project/{projectId}/actions
+          method: get
+          cors: true
+  getActor:
+    handler: getActor.default
+    events:
+      - http:
+          path: v1/project/{projectId}/actor/{actorId}
+          method: get
+          cors: true
+  getAction:
+    handler: getAction.default
+    events:
+      - http:
+          path: v1/project/{projectId}/action/{actionId}
+          method: get
+          cors: true
+  updateAction:
+    handler: updateAction.default
+    events:
+      - http:
+          path: v1/project/{projectId}/action/{actionId}
+          method: put
+          cors: true

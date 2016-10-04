@@ -1,0 +1,24 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "ecmaFeatures": {
+            "impliedStrict": true,
+            "modules": true
+        }
+    },
+    "extends": "airbnb",
+    "installedESLint": true,
+    "plugins": [
+        "import"
+    ],
+    "rules": {
+        "no-unused-vars": "off",
+        "class-methods-use-this": "off",
+        "no-console": "off",
+        "no-use-before-define": "off",
+        "global-require": "off",
+        "no-bitwise": "off",
+        "arrow-body-style": "off",
+        "strict": "off"
+    }
+}

@@ -1,0 +1,53 @@
+'use strict';
+
+const _ = require('lodash');
+
+const validateSession = require('./lib/security/validateSession');
+const checkAccess = require('./lib/security/checkAccess');
+const getProject = require('./lib/models/project/get');
+const listTokens = require('./lib/models/token/list');
+const listEnvironments = require('./lib/models/environment/list');
+
+module.exports.default = (event, context, cb) => {
+  const result = {
+    tokens: [],
+    environments: [],
+  };
+
+  validateSession({
+    jwt_source: 'admin',
+    event,
+  })
+  .then((claims) => {
+    return checkAccess({
+      user_id: claims.user_id,
+      project_id: event.path.projectId,
+    });
+  })
+  .then((hasAccess) => {
+    if (!hasAccess) {
+      cb(new Error('[401] Unauthorized'));
+      return;
+    }
+    return getProject(event.path.projectId);
+  })
+  .then((project) => {
+    return listEnvironments({ project_id: event.path.projectId });
+  })
+  .then((environments) => {
+    _.forEach(environments, (env) => {
+      result.environments.push(_.omit(env, ['project_id']));
+    });
+    return listTokens({
+      project_id: event.path.projectId,
+    });
+  })
+  .then((tokens) => {
+    result.tokens = tokens;
+    cb(null, result);
+  })
+  .catch((err) => {
+    cb(err);
+  });
+};
+
