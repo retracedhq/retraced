@@ -5,7 +5,7 @@ const _ = require('lodash');
 const validateSession = require('./lib/security/validateSession');
 const checkAccess = require('./lib/security/checkAccess');
 const getProject = require('./lib/models/project/get');
-const listTokens = require('./lib/models/token/list');
+const listApiTokens = require('./lib/models/apitoken/list');
 const listEnvironments = require('./lib/models/environment/list');
 
 module.exports.default = (event, context, cb) => {
@@ -38,12 +38,12 @@ module.exports.default = (event, context, cb) => {
     _.forEach(environments, (env) => {
       result.environments.push(_.omit(env, ['project_id']));
     });
-    return listTokens({
+    return listApiTokens({
       project_id: event.path.projectId,
     });
   })
-  .then((tokens) => {
-    result.tokens = tokens;
+  .then((apiTokens) => {
+    result.tokens = apiTokens;
     cb(null, result);
   })
   .catch((err) => {

@@ -6,7 +6,6 @@
 # RETRACED_SUFFIX (e.g. "joe")
 
 deploy:
-	rm -f config.json
 	cp config/${RETRACED_ENV}.json ./config.json
 	serverless deploy -s ${RETRACED_ENV}
 
