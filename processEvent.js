@@ -5,6 +5,7 @@ var processEvent = require('./lib/models/event/process');
 module.exports.default = (event, context, cb) => {
   var record = event.Records[0];
   if (record.EventSource !== 'aws:sns') {
+    console.log('Unexpected event source: ', record.EventSource);
     cb(new Error('Unexpected event source: ', record.EventSource));
     return;
   }
