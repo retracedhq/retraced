@@ -1,14 +1,14 @@
 'use strict';
 
-let _ = require('lodash');
+const _ = require('lodash');
 
-let validateSession = require('./lib/security/validateSession');
-let checkAccess = require('./lib/security/checkAccess');
-let getEvent = require('./lib/models/event/get');
-let getActor = require('./lib/models/actor/get');
+const validateSession = require('./lib/security/validateSession');
+const checkAccess = require('./lib/security/checkAccess');
+const getEvent = require('./lib/models/event/get');
+const getActor = require('./lib/models/actor/get');
 
 module.exports.default = (event, context, cb) => {
-  var result = {};
+  const result = {};
 
   validateSession({
     jwt_source: 'admin',
@@ -28,15 +28,15 @@ module.exports.default = (event, context, cb) => {
     return getEvent({
       project_id: event.path.projectId,
       environment_id: event.query.environment_id,
-      event_id: event.path.eventId
+      event_id: event.path.eventId,
     });
   })
   .then((ev) => {
     result.event = ev;
 
-    return getActor({ 
+    return getActor({
       actor_id: ev.actor_id,
-    })
+    });
   })
   .then((actor) => {
     result.event.actor = actor;
