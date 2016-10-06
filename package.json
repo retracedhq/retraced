@@ -25,7 +25,7 @@
     "serverless-offline": "https://github.com/dherault/serverless-offline.git/#serverless_v1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "exit 0"
   },
   "author": "",
   "license": "ISC"
