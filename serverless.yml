@@ -53,13 +53,6 @@ functions:
           path: v1/project/{projectId}/events/search
           method: post
           cors: true
-  deepSearch:
-    handler: deepSearch.default
-    events:
-      - http:
-          path: v1/project/{projectId}/events/search/deep
-          method: post
-          cors: true
   listTeam:
     handler: listTeam.default
     events:
@@ -81,8 +74,8 @@ functions:
           path: v1/project/{projectId}/environment
           method: post
           cors: true
-  createToken:
-    handler: createToken.default
+  createApiToken:
+    handler: createApiToken.default
     events:
       - http:
           path: v1/project/{projectId}/token
@@ -112,6 +105,27 @@ functions:
       - http:
           path: v1/viewer/{projectId}/events/search
           method: get
+          cors: true
+  viewerEventsBulkGet:
+    handler: viewerEventsBulkGet.default
+    events:
+      - http:
+          path: v1/viewer/{projectId}/events/bulk
+          method: get
+          cors: true
+  viewerDeepSearch:
+    handler: viewerDeepSearch.default
+    events:
+      - http:
+          path: v1/viewer/{projectId}/events/search/deep
+          method: post
+          cors: true
+  viewerDeepSearchClear:
+    handler: viewerDeepSearchClear.default
+    events:
+      - http:
+          path: v1/viewer/{projectId}/events/search/deep
+          method: delete
           cors: true
   listObjects:
     handler: listObjects.default

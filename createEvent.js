@@ -6,16 +6,16 @@ const AWS = require('aws-sdk');
 const config = require('./lib/config/getConfig')();
 const validateEvent = require('./lib/models/event/validate');
 const checkAccess = require('./lib/security/checkAccess');
-const validateToken = require('./lib/security/validateToken');
+const validateApiToken = require('./lib/security/validateApiToken');
 const processEvent = require('./lib/models/event/process');
 
 module.exports.default = (event, context, cb) => {
-  let token;
-  validateToken(event)
+  let apiToken;
+  validateApiToken(event)
     .then((t) => {
-      token = t;
+      apiToken = t;
       return checkAccess({
-        token: t.token,
+        api_token: apiToken,
         project_id: event.path.projectId,
       });
     })
