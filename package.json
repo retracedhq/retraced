@@ -21,9 +21,7 @@
     "redis": "^2.6.2",
     "uuid": "^2.0.2"
   },
-  "devDependencies": {
-    "serverless-offline": "https://github.com/dherault/serverless-offline.git/#serverless_v1"
-  },
+  "devDependencies": { },
   "scripts": {
     "test": "exit 0"
   },
