@@ -6,8 +6,11 @@ const checkAccess = require('./lib/security/checkAccess');
 
 module.exports.default = (event, context, cb) => {
   let apiToken;
+  console.log('1');
   validateApiToken(event)
   .then((t) => {
+    console.log('2');
+    console.log(t);
     apiToken = t;
     return checkAccess({
       api_token: apiToken.token,
@@ -15,6 +18,8 @@ module.exports.default = (event, context, cb) => {
     });
   })
   .then((valid) => {
+    console.log('3');
+    console.log(valid);
     if (!valid) {
       cb(new Error('[401] Unauthorized'));
       return;
