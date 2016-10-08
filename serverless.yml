@@ -111,7 +111,7 @@ functions:
     events:
       - http:
           path: v1/viewer/{projectId}/events/bulk
-          method: get
+          method: post
           cors: true
   viewerDeepSearch:
     handler: viewerDeepSearch.default

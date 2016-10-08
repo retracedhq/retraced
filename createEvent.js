@@ -15,7 +15,7 @@ module.exports.default = (event, context, cb) => {
     .then((t) => {
       apiToken = t;
       return checkAccess({
-        api_token: apiToken,
+        api_token: apiToken.token,
         project_id: event.path.projectId,
       });
     })
@@ -39,7 +39,7 @@ module.exports.default = (event, context, cb) => {
       const message = {
         id: uuid.v4().replace(/-/g, ''),
         request: event.body,
-        token: apiToken
+        api_token: apiToken,
       };
 
       if (event.isOffline) {

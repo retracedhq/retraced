@@ -5,7 +5,7 @@ const _ = require('lodash');
 const validateSession = require('./lib/security/validateSession');
 const checkAccess = require('./lib/security/checkAccess');
 const getEventsBulk = require('./lib/models/event/getBulk');
-const getActor = require('./lib/models/actor/get');
+const getActors = require('./lib/models/actor/gets');
 
 module.exports.default = (event, context, cb) => {
   let events;
@@ -23,20 +23,18 @@ module.exports.default = (event, context, cb) => {
   })
   .then((ev) => {
     events = ev;
-
-    return Promise.all(_.map(events, (e) => {
-      return getActor({
-        actor_id: e.actor_id,
-      });
-    }));
+    return getActors({
+      actor_ids: _.map(events, (e) => {
+        return e.actor_id;
+      }),
+    });
   })
   .then((actors) => {
-    const fused = _.map(actors, (a, i) => {
-      const e = events[i];
-      e.actor = a;
-      return e;
+    // TODO(zhaytee): This is pretty inefficient.
+    _.forEach(events, (e) => {
+      e.actor = _.find(actors, { id: e.actor_id });
     });
-    cb(null, { events: fused });
+    cb(null, { events });
   })
   .catch((err) => {
     cb(err);
