@@ -15,7 +15,7 @@ module.exports.default = (event, context, cb) => {
     .then((t) => {
       apiToken = t;
       return checkAccess({
-        api_token: apiToken.token,
+        api_token: apiToken,
         project_id: event.path.projectId,
       });
     })
