@@ -39,7 +39,7 @@ module.exports.default = (event, context, cb) => {
       const message = {
         id: uuid.v4().replace(/-/g, ''),
         request: event.body,
-        token: apiToken
+        api_token: apiToken,
       };
 
       if (event.isOffline) {

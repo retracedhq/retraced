@@ -1,23 +1,22 @@
 'use strict';
 
-var processEvent = require('./lib/models/event/process');
+const processEvent = require('./lib/models/event/process');
 
 module.exports.default = (event, context, cb) => {
-  var record = event.Records[0];
+  const record = event.Records[0];
   if (record.EventSource !== 'aws:sns') {
     console.log('Unexpected event source: ', record.EventSource);
     cb(new Error('Unexpected event source: ', record.EventSource));
     return;
   }
 
-  var message = JSON.parse(record.Sns.Message);
+  const message = JSON.parse(record.Sns.Message);
 
   processEvent(message)
-    .then(() => {
-      cb(null);
-    })
-    .catch((err) => {
-      cb(err);
-    })
-}
-
+  .then(() => {
+    cb(null);
+  })
+  .catch((err) => {
+    cb(err);
+  });
+};

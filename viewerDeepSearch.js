@@ -14,7 +14,7 @@ module.exports.default = (event, context, cb) => {
     event,
   })
   .then((claims) => {
-    const index = `${event.path.projectId}.${claims.environment_id}`;
+    const index = `retraced.${event.path.projectId}.${claims.environment_id}`;
     return deepSearchEvents({ index, query: event.body.query });
   })
   .then((searchResults) => {
