@@ -67,7 +67,8 @@ module.exports.default = (event, context, cb) => {
       project_id: event.path.projectId,
       environment_id: event.query.environment_id
     });
-  }).then((events) => {
+  })
+  .then((events) => {
     result.events = events;
 
     cb(null, { result });
