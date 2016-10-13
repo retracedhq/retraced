@@ -6,15 +6,17 @@ const validateSession = require('./lib/security/validateSession');
 const checkAccess = require('./lib/security/checkAccess');
 const getEventsBulk = require('./lib/models/event/getBulk');
 const getActors = require('./lib/models/actor/gets');
+const addDisplayTitles = require('./lib/models/event/addDisplayTitles');
 
 module.exports.default = (event, context, cb) => {
-  let events;
+  let events, claims;
 
   validateSession({
     jwt_source: 'viewer',
     event,
   })
-  .then((claims) => {
+  .then((c) => {
+    claims = c;
     return getEventsBulk({
       project_id: event.path.projectId,
       environment_id: claims.environment_id,
@@ -34,6 +36,14 @@ module.exports.default = (event, context, cb) => {
     _.forEach(events, (e) => {
       e.actor = _.find(actors, { id: e.actor_id });
     });
+    
+    return addDisplayTitles({
+      events: events,
+      project_id: event.path.projectId,
+      environment_id: claims.environment_id
+    })
+  })
+  .then((event) => {
     cb(null, { events });
   })
   .catch((err) => {
