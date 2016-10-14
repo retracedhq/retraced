@@ -6,8 +6,10 @@ const checkAccess = require('./lib/security/checkAccess');
 
 module.exports.default = (event, context, cb) => {
   let apiToken;
+  console.log('1');
   validateApiToken(event)
   .then((t) => {
+    console.log('2');
     apiToken = t;
     return checkAccess({
       api_token: apiToken,
