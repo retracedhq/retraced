@@ -81,13 +81,6 @@ functions:
           path: v1/project/{projectId}/token
           method: post
           cors: true
-  viewerToken:
-    handler: listTeam.default
-    events:
-      - http:
-          path: v1/project/{projectId}/viewertoken
-          method: get
-          cors: true
   processEvent:
     handler: processEvent.default
     events:
@@ -196,4 +189,11 @@ functions:
       - http:
           path: v1/project/{projectId}/action/{actionId}
           method: put
+          cors: true
+  viewerToken:
+    handler: viewerToken.default
+    events:
+      - http:
+          path: v1/project/{projectId}/viewertoken
+          method: get
           cors: true
