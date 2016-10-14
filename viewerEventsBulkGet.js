@@ -6,6 +6,7 @@ const validateSession = require('./lib/security/validateSession');
 const checkAccess = require('./lib/security/checkAccess');
 const getEventsBulk = require('./lib/models/event/getBulk');
 const getActors = require('./lib/models/actor/gets');
+const getObjects = require('./lib/models/object/gets');
 const addDisplayTitles = require('./lib/models/event/addDisplayTitles');
 
 module.exports.default = (event, context, cb) => {
@@ -37,6 +38,18 @@ module.exports.default = (event, context, cb) => {
       e.actor = _.find(actors, { id: e.actor_id });
     });
     
+    return getObjects({
+      object_ids: _.map(events, (e) => {
+        return e.object_id;
+      }),
+    });
+  })
+  .then((objects) => {
+    // TODO this is pretty inefficient
+    _.forEach(events, (e) => {
+      e.object = _.find(objects, { id: e.object_id });
+    });
+
     return addDisplayTitles({
       events: events,
       project_id: event.path.projectId,
