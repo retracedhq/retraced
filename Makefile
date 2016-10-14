@@ -7,6 +7,7 @@
 
 deploy:
 	cp config/${RETRACED_ENV}.json ./config.json
+	echo "running 'serverless deploy -s ${RETRACED_ENV}'"
 	serverless deploy -s ${RETRACED_ENV}
 
 run:
