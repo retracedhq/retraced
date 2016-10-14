@@ -20,6 +20,7 @@ module.exports.default = (event, context, cb) => {
       return;
     }
 
+    console.log('a');
     return createViewerToken({
       project_id: event.path.projectId,
       environment_id: apiToken.environment_id,
@@ -28,6 +29,7 @@ module.exports.default = (event, context, cb) => {
     });
   })
   .then((viewerToken) => {
+    console.log('b');
     const result = {
       token: viewerToken,
     };
