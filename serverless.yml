@@ -82,7 +82,7 @@ functions:
           method: post
           cors: true
   viewerToken:
-    handler: viewerToken.default
+    handler: listTeam.default
     events:
       - http:
           path: v1/project/{projectId}/viewertoken
