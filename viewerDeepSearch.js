@@ -15,7 +15,11 @@ module.exports.default = (event, context, cb) => {
   })
   .then((claims) => {
     const index = `retraced.${event.path.projectId}.${claims.environment_id}`;
-    return deepSearchEvents({ index, query: event.body.query });
+    return deepSearchEvents({
+      index,
+      team_id: claims.team_id,
+      query: event.body.query,
+    });
   })
   .then((searchResults) => {
     cb(null, searchResults);
