@@ -83,7 +83,8 @@ module.exports.default = (event, context, cb) => {
       cb(null, { id });
     })
     .catch((err) => {
-      cb(err);
+      console.log(err);
+      cb(new Error('[500] Internal Server Error'));
     });
 };
 
