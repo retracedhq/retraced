@@ -47,6 +47,7 @@ functions:
           cors: true
   searchEvents:
     handler: searchEvents.default
+    timeout: 12
     events:
       - http:
           path: v1/project/{projectId}/events/search
