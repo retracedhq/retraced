@@ -4,7 +4,6 @@ provider:
   name: aws
   runtime: nodejs4.3
   memorySize: 128
-  stage: staging
   region: us-east-1
 
 plugins:
