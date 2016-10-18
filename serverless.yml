@@ -67,6 +67,11 @@ functions:
           path: v1/project/{projectId}/event
           method: post
           cors: true
+  processEvent:
+    handler: processEvent.default
+    timeout: 12
+    events:
+      - sns: '${env:RETRACED_PREFIX}-eventprocessor-${env:RETRACED_SUFFIX}'
   createEnvironment:
     handler: createEnvironment.default
     events:
@@ -81,10 +86,6 @@ functions:
           path: v1/project/{projectId}/token
           method: post
           cors: true
-  processEvent:
-    handler: processEvent.default
-    events:
-      - sns: '${env:RETRACED_PREFIX}-eventprocessor-${env:RETRACED_SUFFIX}'
   viewerSession:
     handler: viewerSession.default
     events:
