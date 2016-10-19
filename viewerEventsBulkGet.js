@@ -28,7 +28,7 @@ module.exports.default = (event, context, cb) => {
   })
   .then((ev) => {
     events = ev;
-    console.log('calling getactors');
+    console.log('events: ' + JSON.stringify(events));
     return getActors({
       actor_ids: _.map(events, (e) => {
         return e.actor_id;
