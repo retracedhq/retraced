@@ -19,6 +19,7 @@ module.exports.default = (event, context, cb) => {
   })
   .then((c) => {
     claims = c;
+    console.log('getting events');
     return getEventsBulk({
       project_id: event.path.projectId,
       environment_id: claims.environment_id,
@@ -27,6 +28,7 @@ module.exports.default = (event, context, cb) => {
   })
   .then((ev) => {
     events = ev;
+    console.log('calling getactors');
     return getActors({
       actor_ids: _.map(events, (e) => {
         return e.actor_id;
