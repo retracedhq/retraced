@@ -12,6 +12,7 @@ const addDisplayTitles = require('./lib/models/event/addDisplayTitles');
 module.exports.default = (event, context, cb) => {
   let events, claims;
 
+  console.log('starting');
   validateSession({
     jwt_source: 'viewer',
     event,
