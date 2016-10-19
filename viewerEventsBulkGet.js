@@ -12,14 +12,12 @@ const addDisplayTitles = require('./lib/models/event/addDisplayTitles');
 module.exports.default = (event, context, cb) => {
   let events, claims;
 
-  console.log('starting');
   validateSession({
     jwt_source: 'viewer',
     event,
   })
   .then((c) => {
     claims = c;
-    console.log('getting events');
     return getEventsBulk({
       project_id: event.path.projectId,
       environment_id: claims.environment_id,
@@ -28,7 +26,6 @@ module.exports.default = (event, context, cb) => {
   })
   .then((ev) => {
     events = ev;
-    console.log('events: ' + JSON.stringify(events));
     return getActors({
       actor_ids: _.map(events, (e) => {
         return e.actor_id;
