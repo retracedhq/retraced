@@ -22,6 +22,10 @@ module.exports.default = (event, context, cb) => {
     cb(null, response);
   })
   .catch((err) => {
+    if (err === 'DUPLICATE_EMAIL') {
+      cb('[409] Email Already Exists');
+      return;
+    }
     console.log(err);
     cb(err);
   });
