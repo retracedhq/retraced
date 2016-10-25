@@ -3,33 +3,27 @@
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-require('datejs')
+require('datejs');
 
 const config = require('./lib/config/getConfig')();
 const acceptInvite = require('./lib/models/team/invite/accept');
 
-const iopipe = require('iopipe')({
-  clientId: require('./lib/config/getConfig')().IOPipe.ClientID,
-});
-
-module.exports.default = iopipe(
-  (event, context, cb) => {
-    hashPassword(event.body.password)
-      .then((hashedPassword) => {
-        return acceptInvite(event.body.invitation_id, hashedPassword);
-      })
-      .then((user) => {
-        return createSession(user);
-      })
-      .then((response) => {
-        cb(null, response);
-      })
-      .catch((err) => {
-        console.log(err);
-        cb(err);
-      });
-  }
-);
+const handler = (event, context, cb) => {
+  hashPassword(event.body.password)
+    .then((hashedPassword) => {
+      return acceptInvite(event.body.invitation_id, hashedPassword);
+    })
+    .then((user) => {
+      return createSession(user);
+    })
+    .then((response) => {
+      cb(null, response);
+    })
+    .catch((err) => {
+      console.log(err);
+      cb(err);
+    });
+};
 
 function hashPassword(password) {
   return new Promise((resolve, reject) => {
@@ -71,5 +65,15 @@ function createSession(user) {
     response.token = jwt.sign(claims, config.Session.HMACSecret);
     resolve(response);
   });
+}
+
+if (require('./lib/config/getConfig')().IOPipe.ClientID) {
+  const iopipe = require('iopipe')({
+    clientId: require('./lib/config/getConfig')().IOPipe.ClientID,
+  });
+
+  module.exports.default = iopipe(handler);
+} else {
+  module.exports.default = handler;
 }
 
