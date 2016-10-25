@@ -41,5 +41,8 @@
                 "Password": "AAAAAAAAAAAAAAAA",
                 "Port": 9200,
                 "Endpoints": ["localhost"]
+        },
+        "IOPipe": {
+                "ClientID": false
         }
 }

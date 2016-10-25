@@ -7,29 +7,35 @@ require('datejs');
 const createUser = require('./lib/models/user/create');
 const config = require('./lib/config/getConfig')();
 
-module.exports.default = (event, context, cb) => {
-  hashPassword(event.body.password)
-  .then((hashed) => {
-    return createUser({
-      email: event.body.email,
-      hashedPassword: hashed,
-    });
-  })
-  .then((user) => {
-    return createSession(user);
-  })
-  .then((response) => {
-    cb(null, response);
-  })
-  .catch((err) => {
-    if (err === 'DUPLICATE_EMAIL') {
-      cb('[409] Email Already Exists');
-      return;
-    }
-    console.log(err);
-    cb(err);
-  });
-};
+const iopipe = require('iopipe')({
+  clientId: require('./lib/config/getConfig')().IOPipe.ClientID,
+});
+
+module.exports.default = iopipe(
+  (event, context, cb) => {
+    hashPassword(event.body.password)
+      .then((hashed) => {
+        return createUser({
+          email: event.body.email,
+          hashedPassword: hashed,
+        });
+      })
+      .then((user) => {
+        return createSession(user);
+      })
+      .then((response) => {
+        cb(null, response);
+      })
+      .catch((err) => {
+        if (err === 'DUPLICATE_EMAIL') {
+          cb('[409] Email Already Exists');
+          return;
+        }
+        console.log(err);
+        cb(err);
+      });
+  }
+);
 
 function hashPassword(password) {
   return new Promise((resolve, reject) => {
