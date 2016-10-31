@@ -12,8 +12,7 @@ const handler = (event, context, cb) => {
   })
   .then((u) => {
     if (!u) {
-      cb(new Error('[401] Unauthorized'));
-      return;
+      throw new Error('[401] Unauthorized');
     }
 
     user = u;
@@ -21,15 +20,14 @@ const handler = (event, context, cb) => {
   })
   .then((valid) => {
     if (!valid) {
-      cb(new Error('[401] Unauthorized'));
-      return;
+      throw new Error('[401] Unauthorized');
     }
     return createAdminsession({
       user,
     });
   })
   .then((token) => {
-    let response = {
+    const response = {
       user: {
         email: user.email,
         id: user.id,
