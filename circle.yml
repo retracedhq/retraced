@@ -1,0 +1,12 @@
+machine:
+  services:
+    - docker
+
+deployment:
+  docker:
+    branch: master
+    owner: retracedhq
+    commands:
+      - sudo docker build -f deploy/Dockerfile -t quay.io/retracedhq/api:${CIRCLE_SHA1:0:7} .
+      - sudo docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
+      - sudo docker push quay.io/retracedhq/api:${CIRCLE_SHA1:0:7}
