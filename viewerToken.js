@@ -16,8 +16,7 @@ const handler = (event, context, cb) => {
   })
   .then((valid) => {
     if (!valid) {
-      cb(new Error('[401] Unauthorized'));
-      return;
+      throw new Error('[401] Unauthorized');
     }
 
     return createViewerToken({

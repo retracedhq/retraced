@@ -19,8 +19,7 @@ const handler = (event, context, cb) => {
   })
   .then((hasAccess) => {
     if (!hasAccess) {
-      cb(new Error('[401] Unauthorized'));
-      return;
+      throw new Error('[401] Unauthorized');
     }
     return getActor({
       project_id: event.path.projectId,
