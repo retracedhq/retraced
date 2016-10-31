@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Retraced API",
   "dependencies": {
-    "aws-sdk": "^2.5.4",
+    "aws-sdk": "^2.6.12",
     "bcryptjs": "^2.3.0",
     "datejs": "^1.0.0-rc3",
     "elasticsearch": "^11.0.1",

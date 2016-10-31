@@ -22,7 +22,7 @@ const handler = (event, context, cb) => {
     .then((valid) => {
       if (!valid) {
         cb(new Error('[401] Unauthorized'));
-        return;
+        return null;
       }
 
       return validateEvent({
@@ -46,44 +46,40 @@ const handler = (event, context, cb) => {
         // Write the event now.  We don't have offline queuing.
         return new Promise((resolve, reject) => {
           processEvent(message)
-            .then(() => {
-              resolve(message.id);
-            })
-            .catch((err) => {
-              reject(err);
-            });
-        });
-      } else {
-        AWS.config.update({
-          region: config.SNS.Region,
-          endpoint: config.SNS.Endpoint,
-          credentials: new AWS.Credentials(config.SNS.AccessKey, config.SNS.SecretKey),
-        });
-        const sns = new AWS.SNS({ region: config.SNS.Region });
-
-        const params = {
-          Message: JSON.stringify(message),
-          TopicArn: 'arn:aws:sns:' + config.SNS.Region + ':' + config.SNS.AccountID + ':' + config.SNS.EventProcessorTopic,
-        };
-
-        return new Promise((resolve, reject) => {
-          sns.publish(params, (err, data) => {
-            if (err) {
-              console.log(err);
-              reject(err);
-              return;
-            }
-
-            resolve(message.id);
-          });
+          .then(() => resolve(message.id))
+          .catch(reject);
         });
       }
+
+      AWS.config.update({
+        region: config.SNS.Region,
+        endpoint: config.SNS.Endpoint,
+        credentials: new AWS.Credentials(config.SNS.AccessKey, config.SNS.SecretKey),
+      });
+      const sns = new AWS.SNS({ region: config.SNS.Region });
+
+      const params = {
+        Message: JSON.stringify(message),
+        TopicArn: `arn:aws:sns:${config.SNS.Region}:${config.SNS.AccountID}:${config.SNS.EventProcessorTopic}`,
+      };
+
+      return new Promise((resolve, reject) => {
+        sns.publish(params, (err, data) => {
+          if (err) {
+            console.log(err);
+            reject(err);
+            return;
+          }
+
+          resolve(message.id);
+        });
+      });
     })
     .then((id) => {
       cb(null, { id });
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err.stack);
       cb(new Error('[500] Internal Server Error'));
     });
 };

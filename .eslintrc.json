@@ -19,6 +19,7 @@
         "global-require": "off",
         "no-bitwise": "off",
         "arrow-body-style": "off",
-        "strict": "off"
+        "strict": "off",
+        "no-param-reassign": "off"
     }
 }
