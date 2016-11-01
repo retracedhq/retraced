@@ -11,5 +11,5 @@ deploy:
 	serverless deploy -s ${RETRACED_ENV}
 
 run:
-	cp config/dev.json ./config.json
+	cp config/dev.json config/config.json
 	serverless offline --corsAllowHeaders='accept,content-type,authorization' --host=0.0.0.0
