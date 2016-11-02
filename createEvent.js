@@ -81,7 +81,7 @@ const handler = (event, context, cb) => {
     })
     .catch((err) => {
       console.log(err.stack);
-      cb(new Error('[500] Internal Server Error'));
+      cb(err);
     });
 };
 
