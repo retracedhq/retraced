@@ -2,6 +2,7 @@
 
 const uuid = require('uuid');
 const AWS = require('aws-sdk');
+const util = require('util');
 
 const config = require('./lib/config/getConfig')();
 const validateEvent = require('./lib/models/event/validate');
