@@ -42,6 +42,14 @@
                 "Port": 9200,
                 "Endpoints": ["localhost"]
         },
+        "ScyllaDB": {
+                "Hosts": [
+                        "http://localhost:9042/"
+                ],
+                "User": "retraced",
+                "Password": "AAAAAAAAAAAAAAAA",
+                "Keyspace": "retraced"                
+        },
         "IOPipe": {
                 "ClientID": false
         }

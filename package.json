@@ -9,6 +9,7 @@
     "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.2",
     "bugsnag": "^1.8.0",
+    "cassandra-driver": "^3.1.5",
     "cors": "^2.8.1",
     "datejs": "^1.0.0-rc3",
     "elasticsearch": "^11.0.1",
