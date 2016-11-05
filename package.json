@@ -7,6 +7,7 @@
     "aws-sdk": "^2.6.12",
     "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.2",
+    "bugsnag": "^1.8.0",
     "cors": "^2.8.1",
     "datejs": "^1.0.0-rc3",
     "elasticsearch": "^11.0.1",
