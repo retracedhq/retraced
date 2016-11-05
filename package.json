@@ -4,6 +4,7 @@
   "description": "Retraced API",
   "main": "./lib/index.js",
   "dependencies": {
+    "analytics-node": "^2.1.0",
     "aws-sdk": "^2.6.12",
     "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.2",
