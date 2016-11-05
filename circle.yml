@@ -1,6 +1,22 @@
 machine:
   services:
     - docker
+  pre:
+    - mkdir ~/.yarn-cache
+  node:
+    version: stable
+
+dependencies:
+  pre:
+    - curl -o- -L https://yarnpkg.com/install.sh | bash
+  cache_directories:
+    - ~/.yarn-cache
+  override:
+    - yarn install
+
+test:
+  override:
+    - yarn test
 
 deployment:
   docker:
