@@ -19,10 +19,16 @@ module.exports.default = (event, context, cb) => {
   })
   .then((claims) => {
     const index = `retraced.${event.path.projectId}.${event.query.environment_id}`;
+    const query = event.body.query;
+    query.create = true;
+    query.read = true;
+    query.update = true;
+    query.delete = true;
+
     return deepSearchEvents({
       index,
       team_omitted: true,
-      query: event.body.query,
+      query: query,
     });
   })
   .then((searchResults) => {
