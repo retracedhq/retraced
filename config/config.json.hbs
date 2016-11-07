@@ -1,48 +1,71 @@
 {
-        "SNS": {
-                "Region": "{{ AWS_SNS_REGION }}",
-                "AccountID": "{{ AWS_ACCOUNT_ID }}",
-                "Endpoint": "{{ AWS_SNS_ENDPOINT }}",
-                "EventProcessorTopic": "{{ AWS_SNS_EVENTPROCESSOR_TOPIC }}",
-                "AccessKey": "{{ AWS_SNS_ACCESSKEY }}",
-                "SecretKey": "{{ AWS_SNS_SECRETKEY }}"
-        },
-        "DynamoDB": {
-                "Region": "{{ AWS_DYNAMO_REGION }}",
-                "Endpoint": "{{ AWS_DYNAMO_ENDPOINT }}",
-                "TableSuffix": "{{ AWS_DYNAMO_SUFFIX }}",
-                "TablePrefix": "{{ AWS_DYNAMO_PREFIX }}",
-                "AccessKey": "{{ AWS_DYNAMO_ACCESSKEY }}",
-                "SecretKey": "{{ AWS_DYNAMO_SECRETKEY }}"
-        },
-        "Redis": {
-                "URI": "{{ REDIS_URI }}"
-        },
-        "Session": {
-                "HMACSecret": "{{ ADMIN_HMAC_SECRET }}",
-                "HMACSecretViewer": "{{ VIEWER_HMAC_SECRET }}"
-        },
-        "Mandrill": {
-                "APIKey": "{{ MANDRILL_API_KEY }}"
-        },
-        "URLs": {
-                "RetracedAppBase": "{{ RETRACED_APP_BASEURL }}"
-        },
-        "Postgres": {
-                "User": "{{ POSTGRES_USER }}",
-                "Database": "{{ POSTGRES_DATABASE }}",
-                "Password": "{{ POSTGRES_PASSWORD }}",
-                "Endpoint": "{{ POSTGRES_ENDPOINT }}",
-                "Port": {{ POSTGRES_PORT }}
-        },
-        "Elasticsearch": {
-                "Protocol": "{{ ELASTICSEARCH_PROTOCOL }}",
-                "User": "{{ ELASTICSEARCH_USER }}",
-                "Password": "{{ ELASTICSEARCH_PASSWORD }}",
-                "Port": {{ ELASTICSEARCH_PORT }},
-                "Endpoints": ["{{ ELASTICSEARCH_ENDPOINT }}"]
-        },
-        "IOPipe": {
-                "ClientID": "{{ IOPIPE_CLIENT_ID }}"       
-        }
+  "SNS": {
+    "Region": "{{AWS_SNS_REGION}}",
+    "AccountID": "{{AWS_ACCOUNT_ID}}",
+    "Endpoint": "{{AWS_SNS_ENDPOINT}}",
+    "EventProcessorTopic": "{{AWS_SNS_EVENTPROCESSOR_TOPIC}}",
+    "AccessKey": "{{AWS_SNS_ACCESSKEY}}",
+    "SecretKey": "{{AWS_SNS_SECRETKEY}}"
+  },
+  "DynamoDB": {
+    "Region": "{{AWS_DYNAMO_REGION}}",
+    "Endpoint": "{{AWS_DYNAMO_ENDPOINT}}",
+    "TableSuffix": "{{AWS_DYNAMO_SUFFIX}}",
+    "TablePrefix": "{{AWS_DYNAMO_PREFIX}}",
+    "AccessKey": "{{AWS_DYNAMO_ACCESSKEY}}",
+    "SecretKey": "{{AWS_DYNAMO_SECRETKEY}}"
+  },
+  "Redis": {
+    "URI": "{{REDIS_URI}}"
+  },
+  "Session": {
+    "HMACSecret": "{{ADMIN_HMAC_SECRET}}",
+    "HMACSecretViewer": "{{VIEWER_HMAC_SECRET}}"
+  },
+  "Mandrill": {
+    "APIKey": "{{MANDRILL_API_KEY}}"
+  },
+  "URLs": {
+    "RetracedAppBase": "{{RETRACED_APP_BASEURL}}"
+  },
+  "Postgres": {
+    "User": "{{POSTGRES_USER}}",
+    "Database": "{{POSTGRES_DATABASE}}",
+    "Password": "{{POSTGRES_PASSWORD}}",
+    "Endpoint": "{{POSTGRES_ENDPOINT}}",
+    "Port": {{POSTGRES_PORT}}
+  },
+  "Elasticsearch": {
+    "Protocol": "{{ELASTICSEARCH_PROTOCOL}}",
+    "User": "{{ELASTICSEARCH_USER}}",
+    "Password": "{{ELASTICSEARCH_PASSWORD}}",
+    "Port": {{ELASTICSEARCH_PORT}},
+    "Endpoints": [
+{{#each ELASTICSEARCH_ENDPOINTS}}
+  {{if @last}}
+      "{{this}}"
+  {{else}}
+      "{{this}}",
+  {{/if}}
+{{/each}}
+    ]
+  },
+  "IOPipe": {
+    "ClientID": "{{IOPIPE_CLIENT_ID}}"       
+  },
+  "ScyllaDB": {
+    "User": "{{ SCYLLADB_USER }}",
+    "Password": "{{ SCYLLADB_PASSWORD }}",
+    "Keyspace": "{{ SCYLLADB_KEYSPACE }}",
+    "Port": {{ SCYLLADB_PORT }},
+    "Hosts": [
+{{#each SCYLLADB_HOSTS}}
+  {{if @last}}
+      "{{this}}"
+  {{else}}
+      "{{this}}",
+  {{/if}}
+{{/each}}
+    ]
+  }
 }
