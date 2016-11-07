@@ -44,8 +44,9 @@
         },
         "ScyllaDB": {
                 "Hosts": [
-                        "http://localhost:9042/"
+                        "localhost"
                 ],
+                "Port": 9042,
                 "User": "retraced",
                 "Password": "AAAAAAAAAAAAAAAA",
                 "Keyspace": "retraced"                

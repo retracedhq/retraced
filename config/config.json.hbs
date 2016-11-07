@@ -57,6 +57,7 @@
     "User": "{{ SCYLLADB_USER }}",
     "Password": "{{ SCYLLADB_PASSWORD }}",
     "Keyspace": "{{ SCYLLADB_KEYSPACE }}",
+    "Port": {{ SCYLLADB_PORT }},
     "Hosts": [
 {{#each SCYLLADB_HOSTS}}
   {{if @last}}
