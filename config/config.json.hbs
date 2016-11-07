@@ -42,7 +42,7 @@
     "Port": {{ELASTICSEARCH_PORT}},
     "Endpoints": [
 {{#each ELASTICSEARCH_ENDPOINTS}}
-  {{if @last}}
+  {{#if @last}}
       "{{this}}"
   {{else}}
       "{{this}}",
@@ -60,7 +60,7 @@
     "Port": {{ SCYLLADB_PORT }},
     "Hosts": [
 {{#each SCYLLADB_HOSTS}}
-  {{if @last}}
+  {{#if @last}}
       "{{this}}"
   {{else}}
       "{{this}}",
