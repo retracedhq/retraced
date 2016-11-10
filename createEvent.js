@@ -38,9 +38,14 @@ const handler = (event, context, cb) => {
       }
     })
     .then(() => {
+      const job = {
+        projectId: apiToken.project_id,
+        environmentId: apiToken.environment_id,
+        events: event.body,
+      };
       disque.addJob({
-        queue: 'save_event',
-        job: JSON.stringify(event.body),
+        queue: 'create_ingestion_task',
+        job: JSON.stringify(job),
         retry: 60, // seconds
         async: true,
       }, (err, resp) => {
