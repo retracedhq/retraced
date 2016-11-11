@@ -4,4 +4,4 @@ config/*.json
 config.json
 .serverless
 .vscode
-
+.nyc_output
