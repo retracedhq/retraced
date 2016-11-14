@@ -19,37 +19,37 @@ const routes = {
   },
   getProject: {
     handler: "getProject",
-    path: "/v1/project/{projectId}",
+    path: "/v1/project/:projectId",
     method: "get",
   },
   searchEvents: {
     handler: "searchEvents",
-    path: "/v1/project/{projectId}/events/search",
+    path: "/v1/project/:projectId/events/search",
     method: "post",
   },
   deepSearch: {
     handler: "deepSearch",
-    path: "/v1/project/{projectId}/events/search/deep",
+    path: "/v1/project/:projectId/events/search/deep",
     method: "post",
   },
   getEventsBulk: {
-    path: "/v1/project/{projectId}/events/bulk",
+    path: "/v1/project/:projectId/events/bulk",
     method: "post",
   },
   listTeam: {
-    path: "/v1/project/{projectId}/team",
+    path: "/v1/project/:projectId/team",
     method: "get",
   },
   createEvent: {
-    path: "/v1/project/{projectId}/event",
+    path: "/v1/project/:projectId/event",
     method: "post",
   },
   createEnvironment: {
-    path: "/v1/project/{projectId}/environment",
+    path: "/v1/project/:projectId/environment",
     method: "post",
   },
   createApiToken: {
-    path: "/v1/project/{projectId}/token",
+    path: "/v1/project/:projectId/token",
     method: "post",
   },
   viewerSession: {
@@ -57,27 +57,27 @@ const routes = {
     method: "post",
   },
   viewerEvents: {
-    path: "/v1/viewer/{projectId}/events/search",
+    path: "/v1/viewer/:projectId/events/search",
     method: "get",
   },
   viewerGetEventsBulk: {
-    path: "/v1/viewer/{projectId}/events/bulk",
+    path: "/v1/viewer/:projectId/events/bulk",
     method: "post",
   },
   viewerDeepSearch: {
-    path: "/v1/viewer/{projectId}/events/search/deep",
+    path: "/v1/viewer/:projectId/events/search/deep",
     method: "post",
   },
   listObjects: {
-    path: "/v1/project/{projectId}/objects",
+    path: "/v1/project/:projectId/objects",
     method: "get",
   },
   listActors: {
-    path: "/v1/project/{projectId}/actors",
+    path: "/v1/project/:projectId/actors",
     method: "get",
   },
   createInvite: {
-    path: "/v1/project/{projectId}/invite",
+    path: "/v1/project/:projectId/invite",
     method: "post",
   },
   getInvite: {
@@ -89,27 +89,27 @@ const routes = {
     method: "post",
   },
   getEvent: {
-    path: "/v1/project/{projectId}/event/{eventId}",
+    path: "/v1/project/:projectId/event/:eventId",
     method: "get",
   },
   listAction: {
-    path: "/v1/project/{projectId}/actions",
+    path: "/v1/project/:projectId/actions",
     method: "get",
   },
   getActor: {
-    path: "/v1/project/{projectId}/actor/{actorId}",
+    path: "/v1/project/:projectId/actor/:actorId",
     method: "get",
   },
   getAction: {
-    path: "/v1/project/{projectId}/action/{actionId}",
+    path: "/v1/project/:projectId}/action/:actionId}",
     method: "get",
   },
   updateAction: {
-    path: "/v1/project/{projectId}/action/{actionId}",
+    path: "/v1/project/:projectId/action/:actionId",
     method: "put",
   },
   viewerToken: {
-    path: "/v1/project/{projectId}/viewertoken",
+    path: "/v1/project/:projectId/viewertoken",
     method: "get",
   },
 };
