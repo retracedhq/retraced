@@ -1,10 +1,12 @@
-FROM node:4.6.1
+FROM node:7.1
 
 EXPOSE 3000
 
 ADD . /retraced-api
 
 WORKDIR /retraced-api
-RUN npm i
+RUN npm i -g yarn
+RUN yarn
+RUN make build
 
-CMD ["node", "/retraced-api/lib/index.js"]
+CMD ["node", "--no-deprecation" "/retraced-api/lib/index.js"]

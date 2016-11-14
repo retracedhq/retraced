@@ -50,8 +50,5 @@
                 "User": "retraced",
                 "Password": "AAAAAAAAAAAAAAAA",
                 "Keyspace": "retraced"                
-        },
-        "IOPipe": {
-                "ClientID": false
         }
 }
