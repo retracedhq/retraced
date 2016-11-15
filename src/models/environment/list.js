@@ -17,7 +17,7 @@ function listEnvironments(opts) {
 
       const q = 'select * from environment where project_id = $1';
       pg.query(q, [opts.project_id], (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {

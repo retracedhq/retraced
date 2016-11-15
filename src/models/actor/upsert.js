@@ -51,7 +51,7 @@ function upsertActor(opts) {
       ];
 
       pg.query(q, v, (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {

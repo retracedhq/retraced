@@ -19,7 +19,7 @@ function getLocationByIP(ipAddress) {
 
       const q = 'select * from geoip where network >> $1';
       pg.query(q, [ipAddress], (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {

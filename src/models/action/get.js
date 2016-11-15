@@ -20,7 +20,7 @@ function getAction(opts) {
       const v = [opts.action_id];
 
       pg.query(q, v, (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {

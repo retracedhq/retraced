@@ -35,7 +35,7 @@ function createEnvironment(opts) {
       ];
 
       pg.query(q, v, (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else {

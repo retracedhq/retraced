@@ -41,7 +41,7 @@ function createInvite(opts) {
       ];
 
       pg.query(q, v, (qerr, qresult) => {
-        done(true);
+        done();
         if (qerr) {
           console.log(qerr);
           reject(qerr);

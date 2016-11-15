@@ -18,7 +18,7 @@ function deleteInvite(inviteId) {
       const q = 'delete from invite where id = $1';
       const v = [inviteId];
       pg.query(q, v, (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else {
