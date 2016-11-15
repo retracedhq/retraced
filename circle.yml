@@ -16,6 +16,7 @@ dependencies:
 
 test:
   override:
+    - cp config/dev.json config/config.json
     - yarn test
 
 deployment:
