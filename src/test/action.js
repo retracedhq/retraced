@@ -65,8 +65,6 @@ describe('actions', () => {
     }
     let action = await upsertAction(action1);
 
-    console.log(action);
-
     it("sets the template on an non-existant action", () => {
       const opts = {
         display_template: 'display-template',
