@@ -1,7 +1,8 @@
-
+const uuid = require('uuid');
 
 const config = require('../../config/getConfig')();
 const pgPool = require('../../persistence/pg')();
+const es = require('../../persistence/elasticsearch')();
 
 /**
  * Asynchronously create a new environment with the given options
@@ -9,20 +10,33 @@ const pgPool = require('../../persistence/pg')();
  * @param {Object} [opts] The request options.
  */
 function createEnvironment(opts) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    const environment = {
+      // TODO(zhaytee): Probably should generate the id here instead of getting it passed in...
+      id: opts.id,
+      name: opts.name,
+      project_id: opts.project_id,
+    };
+
+    // Create the ES index
+    const alias = `retraced.${environment.project_id}.${environment.id}`;
+    const newIndex = `retraced.api.${uuid.v4().replace(/-/g, '')}`;
+    const aliases = {};
+    aliases[alias] = {};
+    const params = {
+      index: newIndex,
+      body: {
+        aliases,
+      },
+    };
+
+    await es.indices.create(params);
+
     pgPool.connect((err, pg, done) => {
       if (err) {
         reject(err);
         return;
       }
-
-      const environment = {
-        // TODO(zhaytee): Probably should generate the id here instead of getting it passed in...
-        id: opts.id,
-        name: opts.name,
-        project_id: opts.project_id,
-      };
-
       const q = `insert into environment (
         id, name, project_id
       ) values (

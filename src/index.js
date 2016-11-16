@@ -10,17 +10,9 @@ import * as util from "util";
 import routes from "./routes";
 
 const app = express();
-if (process.env.BUGSNAG_PROJECT_ID) {
-  bugsnag.register(process.env.BUGSNAG_PROJECT_ID);
-  app.use(bugsnag.requestHandler);
-}
 
 app.use(bodyParser.json());
 app.use(cors());
-
-if (process.env.BUGSNAG_PROJECT_ID) {
-  app.use(bugsnag.errorHandler);
-}
 
 buildRoutes();
 serve();
