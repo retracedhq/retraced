@@ -10,6 +10,11 @@ const _ = require('lodash');
  */
 function getActors(opts) {
   return new Promise((resolve, reject) => {
+    if (opts.actor_ids.length === 0) {
+      resolve([]);
+      return;
+    }
+
     pgPool.connect((err, pg, done) => {
       if (err) {
         reject(err);
