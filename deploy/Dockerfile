@@ -9,4 +9,4 @@ RUN npm i -g yarn
 RUN yarn
 RUN make build
 
-CMD ["node", "--no-deprecation" "/retraced-api/lib/index.js"]
+CMD ["node", "--no-deprecation" "./build/index.js"]
