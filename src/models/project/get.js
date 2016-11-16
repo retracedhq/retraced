@@ -18,7 +18,7 @@ function getProject(projectId) {
       const q = 'select * from project where id = $1';
       const v = [projectId];
       pg.query(q, v, (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {

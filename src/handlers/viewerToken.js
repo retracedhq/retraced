@@ -5,7 +5,7 @@ const checkAccess = require('../security/checkAccess');
 const handler = (req) => {
   return new Promise((resolve, reject) => {
     let apiToken;
-    validateApiToken(event)
+    validateApiToken(req.get('Authorization'))
       .then((t) => {
         apiToken = t;
         return checkAccess({

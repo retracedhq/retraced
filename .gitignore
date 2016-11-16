@@ -1,5 +1,5 @@
 config/config.json
-lib/
+build/
 
 *.DS_Store
 .AppleDouble

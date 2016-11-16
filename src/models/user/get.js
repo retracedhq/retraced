@@ -19,7 +19,7 @@ function getUser(opts) {
       const q = 'select * from retraceduser where email = $1';
       const v = [opts.email];
       pg.query(q, v, (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {

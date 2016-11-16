@@ -21,7 +21,7 @@ function listApiTokens(opts) {
       const v = [opts.project_id];
 
       pg.query(q, v, (qerr, queryResult) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else if (queryResult.rowCount > 0) {

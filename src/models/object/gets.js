@@ -20,7 +20,7 @@ function getObjects(opts) {
       const q = `select * from object where id in (${tokenList})`;
       const v = opts.object_ids;
       pg.query(q, v, (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {

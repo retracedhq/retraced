@@ -30,7 +30,7 @@ function addUserToProject(projectId, userId) {
       ];
 
       pg.query(q, v, (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else {

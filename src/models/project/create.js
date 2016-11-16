@@ -40,7 +40,7 @@ function createProject(opts) {
         project.name,
       ];
       pg.query(q, v, (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
           return;

@@ -20,7 +20,7 @@ function getActors(opts) {
       const q = `select * from actor where id in (${tokenList})`;
       const v = opts.actor_ids;
       pg.query(q, v, (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {

@@ -18,7 +18,7 @@ function getActor(opts) {
       const q = 'select * from actor where id = $1';
       const v = [opts.actor_id];
       pg.query(q, v, (qerr, result) => {
-        done(true);
+        done();
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {
