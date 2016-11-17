@@ -1,4 +1,4 @@
-FROM node:7.1
+FROM node:7.1-wheezy
 
 EXPOSE 3000
 
