@@ -1,4 +1,2 @@
 config
 deploy
-node_modules
-build
