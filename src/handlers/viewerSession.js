@@ -18,4 +18,4 @@ const handler = (req) => {
   });
 };
 
-module.exports.default = handler;
+module.exports = handler;
