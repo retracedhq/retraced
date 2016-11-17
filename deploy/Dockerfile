@@ -1,4 +1,4 @@
-FROM node:7.1-wheezy
+FROM node:7.1-alpine
 
 EXPOSE 3000
 
