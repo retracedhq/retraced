@@ -1,4 +1,4 @@
-# Retraced API service
+# Retraced API
 
 ## Install deps
 > `yarn`
