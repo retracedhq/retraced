@@ -92,7 +92,7 @@ const routes = {
     path: "/v1/project/:projectId/event/:eventId",
     method: "get",
   },
-  listAction: {
+  listActions: {
     path: "/v1/project/:projectId/actions",
     method: "get",
   },
@@ -101,7 +101,7 @@ const routes = {
     method: "get",
   },
   getAction: {
-    path: "/v1/project/:projectId}/action/:actionId}",
+    path: "/v1/project/:projectId/action/:actionId",
     method: "get",
   },
   updateAction: {
