@@ -36,8 +36,9 @@
     "Port": 5432
   },
   "Disque": {
-    "Host": "localhost",
-    "Port": 7711
+    "Nodes": [
+      "localhost:7711"
+    ]
   },
   "Elasticsearch": {
     "Protocol": "http",
@@ -50,9 +51,8 @@
   },
   "ScyllaDB": {
     "Hosts": [
-      "localhost"
+      "localhost:9042"
     ],
-    "Port": 9042,
     "User": "retraced",
     "Password": "AAAAAAAAAAAAAAAA",
     "Keyspace": "retraced"

@@ -14,7 +14,7 @@
     "chai-as-promised": "^6.0.0",
     "cors": "^2.8.1",
     "datejs": "^1.0.0-rc3",
-    "disqueue-node": "^1.2.4",
+    "disq": "^1.0.0",
     "elasticsearch": "^11.0.1",
     "express": "^4.14.0",
     "handlebars": "4.0.5",
@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.0.33",
-    "@types/lodash": "^4.14.38",    
+    "@types/lodash": "^4.14.38",
     "chance": "^1.0.4",
     "tslint": "^4.0.0-dev",
     "typescript": "^2.0.9"
