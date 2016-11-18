@@ -28,7 +28,7 @@ const handler = (req) => {
         events = ev;
         return getActors({
           actor_ids: _.map(events, (e) => {
-            return e.actor ? e.actor.id : undefined;
+            return e.actor ? e.actor.id : e.actor_id;
           }),
         });
       })
