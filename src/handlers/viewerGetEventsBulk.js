@@ -23,16 +23,20 @@ const handler = (req) => {
       })
       .then((ev) => {
         events = ev;
+        let actor_ids = _.map(events, (e) => {
+          return e.actor ? e.actor.id : undefined;
+        });
+        _.remove(actor_ids, (a) => { _.isUndefined(a) });
+        actor_ids = _.uniq(actor_ids);
+        
         return getActors({
-          actor_ids: _.map(events, (e) => {
-            return e.actor_id;
-          }),
+          actor_ids: actor_ids
         });
       })
       .then((actors) => {
         // TODO(zhaytee): This is pretty inefficient.
         _.forEach(events, (e) => {
-          e.actor = _.find(actors, { id: e.actor_id });
+          e.actor = _.find(actors, { id: e.actor ? e.actor.id : '' });
         });
 
         return getObjects({

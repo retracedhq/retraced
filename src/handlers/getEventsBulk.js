@@ -28,14 +28,14 @@ const handler = (req) => {
         events = ev;
         return getActors({
           actor_ids: _.map(events, (e) => {
-            return e.actor_id;
+            return e.actor ? e.actor.id : undefined;
           }),
         });
       })
       .then((actors) => {
         // TODO(zhaytee): This is pretty inefficient.
         _.forEach(events, (e) => {
-          e.actor = _.find(actors, { id: e.actor_id });
+          e.actor = _.find(actors, { id: e.actor ? e.actor.id : '' });
         });
 
         return getObjects({
