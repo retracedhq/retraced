@@ -24,7 +24,7 @@ const handler = (req) => {
       .then((ev) => {
         events = ev;
         let actor_ids = _.map(events, (e) => {
-          return e.actor ? e.actor.id : undefined;
+          return e.actor ? e.actor.id : e.actor_id;
         });
         _.remove(actor_ids, (a) => { _.isUndefined(a) });
         actor_ids = _.uniq(actor_ids);
