@@ -1,5 +1,5 @@
-const getViewerToken = require('../models/viewertoken/get');
-const createViewersession = require('../models/viewersession/create');
+const getViewerToken = require("../models/viewertoken/get");
+const createViewersession = require("../models/viewersession/create");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {

@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Asynchronously fetch a project from the database.
@@ -15,7 +13,7 @@ function getProject(projectId) {
         return;
       }
 
-      const q = 'select * from project where id = $1';
+      const q = "select * from project where id = $1";
       const v = [projectId];
       pg.query(q, v, (qerr, result) => {
         done();

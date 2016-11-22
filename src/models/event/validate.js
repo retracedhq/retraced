@@ -1,6 +1,4 @@
-
-
-let _ = require('lodash');
+let _ = require("lodash");
 
 // TODO this should return some details about what is missing
 
@@ -19,11 +17,11 @@ function validateEvent(opts) {
 
     _.forEach(events, (e) => {
       const requiredEventFields = [
-        'action',
+        "action",
       ];
       const simpleEvent = _.pick(e, requiredEventFields);
       if (!_.isEqual(simpleEvent, removeEmptyFields(simpleEvent))) {
-        reject(new Error('invalid event'));
+        reject(new Error("invalid event"));
         return false; // break
       }
 
@@ -31,20 +29,20 @@ function validateEvent(opts) {
       if (e.created) {
         let createdDate = new Date(e.created).getTime();
         if (_.isNaN(createdDate)) {
-          reject(new Error('Invalid created date'));
+          reject(new Error("Invalid created date"));
           return false;
         }
       }
-      
+
       // An actor needs a name and id, but only if an actor is present.
       // Actors are optional also.
       if (!e.is_anonymous) {
         const requiredActorFields = [
-          'name', 'id',
+          "name", "id",
         ];
         const simpleActor = _.pick(e.actor, requiredActorFields);
         if (!_.isEqual(simpleActor, removeEmptyFields(simpleActor))) {
-          reject(new Error('invalid actor'));
+          reject(new Error("invalid actor"));
           return false; // break
         }
       }
@@ -58,7 +56,7 @@ function removeEmptyFields(o) {
   // Remove empty and undefined objects
   o = _.omitBy(o, _.isNil);
   o = _.omitBy(o, (val, key) => {
-    return _.isEqual(val, '');
+    return _.isEqual(val, "");
   });
 
   return o;

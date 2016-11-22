@@ -1,7 +1,7 @@
-const validateSession = require('../security/validateSession');
-const checkAccess = require('../security/checkAccess');
-const createToken = require('../models/token/create');
-const listTokens = require('../models/token/list');
+const validateSession = require("../security/validateSession");
+const checkAccess = require("../security/checkAccess");
+const createToken = require("../models/token/create");
+const listTokens = require("../models/token/list");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -14,10 +14,10 @@ const handler = (req) => {
       })
       .then((valid) => {
         if (!valid) {
-          reject({ status: 401, err: new Error('Unauthorized') });
+          reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
-        
+
         return createToken({
           project_id: req.params.projectId,
           name: req.body.name,

@@ -1,4 +1,4 @@
-const getApiToken = require('../models/apitoken/get');
+const getApiToken = require("../models/apitoken/get");
 
 /**
  * Asynchronously validates an api token from the event, and returns the result.
@@ -9,16 +9,16 @@ function validateApiToken(authHeader) {
   return new Promise((resolve, reject) => {
     // Authorization: Token token=abcdef
     let token;
-    const authHeaderParts = authHeader.split(' ');
-    if ((authHeaderParts.length === 2) && (authHeaderParts[0] === 'Token')) {
-      const tokenParts = authHeaderParts[1].split('=');
-      if ((tokenParts.length === 2) && (tokenParts[0] === 'token')) {
+    const authHeaderParts = authHeader.split(" ");
+    if ((authHeaderParts.length === 2) && (authHeaderParts[0] === "Token")) {
+      const tokenParts = authHeaderParts[1].split("=");
+      if ((tokenParts.length === 2) && (tokenParts[0] === "token")) {
         token = tokenParts[1];
       }
     }
 
     if (!token) {
-      reject(new Error('No token'));
+      reject(new Error("No token"));
       return;
     }
 
@@ -29,4 +29,3 @@ function validateApiToken(authHeader) {
 }
 
 module.exports = validateApiToken;
-

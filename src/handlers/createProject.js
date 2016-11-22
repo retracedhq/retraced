@@ -1,6 +1,6 @@
-const validateSession = require('../security/validateSession');
-const checkAccess = require('../security/checkAccess');
-const createProject = require('../models/project/create');
+const validateSession = require("../security/validateSession");
+const checkAccess = require("../security/checkAccess");
+const createProject = require("../models/project/create");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {

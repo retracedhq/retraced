@@ -1,9 +1,9 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-require('datejs');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+require("datejs");
 
-const createUser = require('../models/user/create');
-const config = require('../config/getConfig')();
+const createUser = require("../models/user/create");
+const config = require("../config/getConfig")();
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -21,8 +21,8 @@ const handler = (req) => {
         resolve(response);
       })
       .catch((err) => {
-        if (err === 'DUPLICATE_EMAIL') {
-          reject({ status: 409, err: new Error('Email Already Exists')});
+        if (err === "DUPLICATE_EMAIL") {
+          reject({ status: 409, err: new Error("Email Already Exists")});
           return;
         }
         reject(err);
@@ -39,10 +39,10 @@ function hashPassword(password) {
         return;
       }
 
-      bcrypt.hash(password, salt, (err, hash) => {
-        if (err) {
-          console.log(err);
-          reject(err);
+      bcrypt.hash(password, salt, (bcryptErr, hash) => {
+        if (bcryptErr) {
+          console.log(bcryptErr);
+          reject(bcryptErr);
           return;
         }
 

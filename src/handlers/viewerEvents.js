@@ -1,10 +1,10 @@
-const _ = require('lodash');
+const _ = require("lodash");
 
-const validateSession = require('../security/validateSession');
-const searchEvents = require('../models/event/search');
-const listActors = require('../models/actor/list');
-const listObjects = require('../models/object/list');
-const addDisplayTitles = require('../models/event/addDisplayTitles');
+const validateSession = require("../security/validateSession");
+const searchEvents = require("../models/event/search");
+const listActors = require("../models/actor/list");
+const listObjects = require("../models/object/list");
+const addDisplayTitles = require("../models/event/addDisplayTitles");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -27,7 +27,7 @@ const handler = (req) => {
         result.events = events;
         result.total_hits = events.length;
 
-        const actorIds = _.keys(_.countBy(result.events, 'actor_id'));
+        const actorIds = _.keys(_.countBy(result.events, "actor_id"));
 
         return listActors({
           project_id: req.params.projectId,
@@ -42,7 +42,7 @@ const handler = (req) => {
         });
         result.events = cleaned;
 
-        const objectIds = _.keys(_.countBy(result.events, 'object_id'));
+        const objectIds = _.keys(_.countBy(result.events, "object_id"));
 
         return listObjects({
           project_id: req.params.projectId,
@@ -71,6 +71,6 @@ const handler = (req) => {
       })
       .catch(reject);
   });
-}
+};
 
 module.exports = handler;

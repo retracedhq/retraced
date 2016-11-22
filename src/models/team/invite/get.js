@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../../persistence/pg')();
+const pgPool = require("../../../persistence/pg")();
 
 /**
  * Asynchronously fetch an invite from the database.
@@ -15,7 +13,7 @@ function getInvite(inviteId) {
         return;
       }
 
-      const q = 'select * from invite where id = $1';
+      const q = "select * from invite where id = $1";
       const v = [inviteId];
 
       pg.query(q, v, (qerr, result) => {

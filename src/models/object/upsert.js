@@ -1,8 +1,6 @@
+const uuid = require("uuid");
 
-
-const uuid = require('uuid');
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Create or
@@ -18,7 +16,7 @@ function upsertActor(opts) {
       }
 
       const object = {
-        id: uuid.v4().replace(/-/g, ''),
+        id: uuid.v4().replace(/-/g, ""),
         foreign_id: opts.object.id,
         project_id: opts.token.project_id,
         environment_id: opts.token.environment_id,
@@ -29,7 +27,7 @@ function upsertActor(opts) {
         first_active: new Date().getTime(),
         last_active: new Date().getTime(),
         type: opts.object.type,
-        retraced_object_type: 'object',
+        retraced_object_type: "object",
       };
 
       const q = `insert into object (

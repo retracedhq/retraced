@@ -1,8 +1,6 @@
+const uuid = require("uuid");
 
-
-const uuid = require('uuid');
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Asynchronously create a new API token with the given options
@@ -18,7 +16,7 @@ function createApiToken(opts) {
       }
 
       const apiToken = {
-        token: uuid.v4().replace(/-/g, ''),
+        token: uuid.v4().replace(/-/g, ""),
         name: opts.name,
         created: new Date().getTime(),
         project_id: opts.project_id,

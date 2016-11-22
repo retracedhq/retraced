@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../../persistence/pg')();
+const pgPool = require("../../../persistence/pg")();
 
 /**
  * Asynchronously delete an invite from the database.
@@ -15,7 +13,7 @@ function deleteInvite(inviteId) {
         return;
       }
 
-      const q = 'delete from invite where id = $1';
+      const q = "delete from invite where id = $1";
       const v = [inviteId];
       pg.query(q, v, (qerr, result) => {
         done();

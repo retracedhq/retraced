@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Asynchronously returns an object from the database, if it exists
@@ -35,7 +33,7 @@ function findObject(opts) {
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {
-          result.rows[0].retraced_object_type = 'object';
+          result.rows[0].retraced_object_type = "object";
           resolve(result.rows[0]);
         } else {
           resolve(null);

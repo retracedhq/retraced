@@ -1,12 +1,10 @@
+const uuid = require("uuid");
+const Analytics = require("analytics-node");
 
-
-const uuid = require('uuid');
-const Analytics = require('analytics-node');
-
-const pgPool = require('../../persistence/pg')();
-const createApiToken = require('../apitoken/create');
-const createEnvironment = require('../environment/create');
-const addUserToProject = require('./access').addUserToProject;
+const pgPool = require("../../persistence/pg")();
+const createApiToken = require("../apitoken/create");
+const createEnvironment = require("../environment/create");
+const addUserToProject = require("./access").addUserToProject;
 
 /**
  * Asynchronously create a new project with the given options
@@ -22,7 +20,7 @@ function createProject(opts) {
       }
 
       const project = {
-        id: uuid.v4().replace(/-/g, ''),
+        id: uuid.v4().replace(/-/g, ""),
         name: opts.name,
         created: new Date().getTime(),
         environments: getDefaultEnvironments(),
@@ -53,8 +51,8 @@ function createProject(opts) {
             userId: project.id,
             traits: {
               name: project.name,
-              createdAt: project.created
-            }
+              createdAt: project.create,
+            },
           });
         }
 
@@ -94,12 +92,12 @@ function createProject(opts) {
 function getDefaultEnvironments() {
   return [
     {
-      id: uuid.v4().replace(/-/g, ''),
-      name: 'Production',
+      id: uuid.v4().replace(/-/g, ""),
+      name: "Production",
     },
     {
-      id: uuid.v4().replace(/-/g, ''),
-      name: 'Staging',
+      id: uuid.v4().replace(/-/g, ""),
+      name: "Staging",
     },
   ];
 }

@@ -1,9 +1,7 @@
+const uuid = require("uuid");
+const redis = require("redis");
 
-
-const uuid = require('uuid');
-const redis = require('redis');
-
-const config = require('../../config/getConfig')();
+const config = require("../../config/getConfig")();
 
 /**
  * {
@@ -16,14 +14,14 @@ const config = require('../../config/getConfig')();
 function createViewerToken(opts) {
   return new Promise((resolve, reject) => {
     const redisClient = redis.createClient({ url: config.Redis.URI });
-    const viewerToken = uuid.v4().replace(/-/g, '');
+    const viewerToken = uuid.v4().replace(/-/g, "");
 
     const hash = {
       project_id: opts.project_id,
       environment_id: opts.environment_id,
       team_id: opts.team_id,
       created: new Date().getTime(),
-      expires: new Date(new Date().getTime() + 5*60000).getTime(), // 5 minutes
+      expires: new Date(new Date().getTime() + 5 * 60000).getTime(), // 5 minutes
       format: opts.format,
     };
     redisClient.HMSET(`viewertoken:${viewerToken}`, hash, (err, res) => {
@@ -33,10 +31,10 @@ function createViewerToken(opts) {
         return;
       }
 
-      redisClient.expire(`viewertoken:${viewerToken}`, 5*60, (err, res) => {
-        if (err) {
-          console.log(err);
-          reject(err);
+      redisClient.expire(`viewertoken:${viewerToken}`, 5 * 60, (expireErr, expireRes) => {
+        if (expireErr) {
+          console.log(expireErr);
+          reject(expireErr);
           return;
         }
 

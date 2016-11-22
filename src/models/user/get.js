@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * getUser Async fetch of user by email address
@@ -16,7 +14,7 @@ function getUser(opts) {
         return;
       }
 
-      const q = 'select * from retraceduser where email = $1';
+      const q = "select * from retraceduser where email = $1";
       const v = [opts.email];
       pg.query(q, v, (qerr, result) => {
         done();

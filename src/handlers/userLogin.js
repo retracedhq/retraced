@@ -1,7 +1,7 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 
-const getUser = require('../models/user/get');
-const createAdminsession = require('../models/adminsession/create');
+const getUser = require("../models/user/get");
+const createAdminsession = require("../models/adminsession/create");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -11,7 +11,7 @@ const handler = (req) => {
     })
       .then((u) => {
         if (!u) {
-          reject({ status: 401, err: new Error('Unauthorized') });
+          reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
 
@@ -20,7 +20,7 @@ const handler = (req) => {
       })
       .then((valid) => {
         if (!valid) {
-          reject({ status: 401, err: new Error('Unauthorized') });
+          reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
         return createAdminsession({

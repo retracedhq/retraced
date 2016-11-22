@@ -1,11 +1,11 @@
-const _ = require('lodash');
+const _ = require("lodash");
 
-const validateSession = require('../security/validateSession');
-const checkAccess = require('../security/checkAccess');
-const getEventsBulk = require('../models/event/getBulk');
-const getActors = require('../models/actor/gets');
-const getObjects = require('../models/object/gets');
-const addDisplayTitles = require('../models/event/addDisplayTitles');
+const validateSession = require("../security/validateSession");
+const checkAccess = require("../security/checkAccess");
+const getEventsBulk = require("../models/event/getBulk");
+const getActors = require("../models/actor/gets");
+const getObjects = require("../models/object/gets");
+const addDisplayTitles = require("../models/event/addDisplayTitles");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -23,20 +23,20 @@ const handler = (req) => {
       })
       .then((ev) => {
         events = ev;
-        let actor_ids = _.map(events, (e) => {
+        let actorIds = _.map(events, (e) => {
           return e.actor ? e.actor.id : e.actor_id;
         });
-        _.remove(actor_ids, (a) => { _.isUndefined(a) });
-        actor_ids = _.uniq(actor_ids);
-        
+        _.remove(actorIds, (a) => { _.isUndefined(a); });
+        actorIds = _.uniq(actorIds);
+
         return getActors({
-          actor_ids: actor_ids
+          actor_ids: actorIds,
         });
       })
       .then((actors) => {
         // TODO(zhaytee): This is pretty inefficient.
         _.forEach(events, (e) => {
-          e.actor = _.find(actors, { id: e.actor ? e.actor.id : '' });
+          e.actor = _.find(actors, { id: e.actor ? e.actor.id : "" });
         });
 
         return getObjects({
@@ -55,7 +55,7 @@ const handler = (req) => {
           events: events,
           project_id: req.params.projectId,
           environment_id: claims.environment_id,
-        })
+        });
       })
       .then((event) => {
         resolve({ events });

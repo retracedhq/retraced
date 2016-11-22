@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Asynchronously fetch 1 actor from the database.
@@ -15,14 +13,14 @@ function getActor(opts) {
         return;
       }
 
-      const q = 'select * from actor where id = $1';
+      const q = "select * from actor where id = $1";
       const v = [opts.actor_id];
       pg.query(q, v, (qerr, result) => {
         done();
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {
-          result.rows[0].retraced_object_type = 'actor';
+          result.rows[0].retraced_object_type = "actor";
           resolve(result.rows[0]);
         } else {
           resolve(null);

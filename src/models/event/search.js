@@ -1,7 +1,5 @@
-
-
-let docClient = require('../../persistence/dynamo')();
-let config = require('../../config/getConfig')();
+let docClient = require("../../persistence/dynamo")();
+let config = require("../../config/getConfig")();
 
 function searchEvents(opts) {
   return new Promise((resolve, reject) => {
@@ -12,26 +10,26 @@ function searchEvents(opts) {
 
     var table;
     if (config.DynamoDB.TablePrefix) {
-      table = config.DynamoDB.TablePrefix + '-';
+      table = config.DynamoDB.TablePrefix + "-";
     }
-    table = table + 'event';
+    table = table + "event";
     if (config.DynamoDB.TableSuffix) {
-      table = table + '-' + config.DynamoDB.TableSuffix;
+      table = table + "-" + config.DynamoDB.TableSuffix;
     }
 
     let params = {
       TableName: table,
-      IndexName: 'environment_id-received-index',
-      KeyConditionExpression: 'environment_id = :environmentId',
+      IndexName: "environment_id-received-index",
+      KeyConditionExpression: "environment_id = :environmentId",
       ExpressionAttributeValues: {
-        ':environmentId': environmentId,
+        ":environmentId": environmentId,
       },
       ScanIndexForward: false,
     };
 
     if (opts.team_id) {
-      params.FilterExpression = '(team_id=:teamId)';
-      params.ExpressionAttributeValues[':teamId'] = opts.team_id;
+      params.FilterExpression = "(team_id=:teamId)";
+      params.ExpressionAttributeValues[":teamId"] = opts.team_id;
     }
 
     docClient.query(params, (err, events) => {
@@ -50,6 +48,5 @@ function searchEvents(opts) {
     });
   });
 }
-
 
 module.exports = searchEvents;

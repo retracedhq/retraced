@@ -1,8 +1,6 @@
+const uuid = require("uuid");
 
-
-const uuid = require('uuid');
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Create or
@@ -18,7 +16,7 @@ function upsertAction(opts) {
       }
 
       const action = {
-        id: uuid.v4().replace(/-/g, ''),
+        id: uuid.v4().replace(/-/g, ""),
         project_id: opts.token.project_id,
         environment_id: opts.token.environment_id,
         created: new Date().getTime(),

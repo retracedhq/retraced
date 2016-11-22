@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Asynchronously returns an actor from the database, if it exists
@@ -30,7 +28,7 @@ function findActor(opts) {
         if (qerr) {
           reject(qerr);
         } else if (result.rowCount > 0) {
-          result.rows[0].retraced_object_type = 'actor';
+          result.rows[0].retraced_object_type = "actor";
           resolve(result.rows[0]);
         } else {
           resolve(null);

@@ -1,4 +1,4 @@
-const getInvite = require('../models/team/invite/get');
+const getInvite = require("../models/team/invite/get");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {

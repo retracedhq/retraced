@@ -1,5 +1,5 @@
-const validateSession = require('../security/validateSession');
-const listProjects = require('../models/project/list');
+const validateSession = require("../security/validateSession");
+const listProjects = require("../models/project/list");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {

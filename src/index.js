@@ -19,14 +19,14 @@ serve();
 
 function buildRoutes() {
   // Needed for Kubernetes health checks
-  app.get('/', (req, res) => {
-    res.send('');
+  app.get("/", (req, res) => {
+    res.send("");
   });
 
   // Define the handling callback for each route.
   _.forOwn(routes, (route, handlerName) => {
     const routeCallback = (req, res) => {
-      const reqId = `${handlerName}:${uuid.v4().replace('-', '').substring(0, 8)}`;
+      const reqId = `${handlerName}:${uuid.v4().replace("-", "").substring(0, 8)}`;
       console.log(chalk.yellow(`[${reqId}] <- ${req.method} ${req.originalUrl}`));
       if (!_.isEmpty(req.body)) {
         let bodyString = JSON.stringify(req.body);
@@ -44,7 +44,7 @@ function buildRoutes() {
       handlerFunc(req)
         .then((result) => {
           if (result) {
-            if (result.status && result.body) { 
+            if (result.status && result.body) {
               // Structured result, specific status code and response object.
               let responseString = JSON.stringify(result.body);
               if (responseString.length > 512) {
@@ -64,7 +64,7 @@ function buildRoutes() {
           } else {
             // No response body, I guess.
             console.log(chalk.cyan(`[${reqId}] => 200`));
-            res.status(200).json(result);            
+            res.status(200).json(result);
           }
         })
         .catch((err) => {
@@ -78,15 +78,15 @@ function buildRoutes() {
             res.status(500).json(err);
           }
         });
-    }
+    };
 
     // Register this route and callback with express.
     console.log(`[${route.method}] '${route.path}'`);
-    if (route.method === 'get') {
+    if (route.method === "get") {
       app.get(route.path, routeCallback);
-    } else if (route.method === 'post') {
+    } else if (route.method === "post") {
       app.post(route.path, routeCallback);
-    } else if (route.method === 'put') {
+    } else if (route.method === "put") {
       app.put(route.path, routeCallback);
     } else {
       console.log(`Unhandled HTTP method: '${route.method}'`);
@@ -102,6 +102,6 @@ function buildRoutes() {
 
 function serve() {
   app.listen(3000, () => {
-    console.log('Retraced API listening on port 3000...');
+    console.log("Retraced API listening on port 3000...");
   });
 }

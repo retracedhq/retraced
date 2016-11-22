@@ -1,8 +1,6 @@
+const uuid = require("uuid");
 
-
-const uuid = require('uuid');
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Updates an action in the database
@@ -19,11 +17,11 @@ function updateAction(opts) {
         return;
       }
 
-      const q = `update action set display_template = $1 where id = $2 returning *`
+      const q = `update action set display_template = $1 where id = $2 returning *`;
 
       const v = [
         opts.display_template,
-        opts.action_id
+        opts.action_i,
       ];
 
       pg.query(q, v, (qerr, result) => {

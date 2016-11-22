@@ -1,9 +1,7 @@
+const elasticsearch = require("elasticsearch");
+const _ = require("lodash");
 
-
-const elasticsearch = require('elasticsearch');
-const _ = require('lodash');
-
-const config = require('../config/getConfig')();
+const config = require("../config/getConfig")();
 
 let es;
 

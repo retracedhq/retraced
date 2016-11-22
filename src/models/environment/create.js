@@ -1,8 +1,8 @@
-const uuid = require('uuid');
+const uuid = require("uuid");
 
-const config = require('../../config/getConfig')();
-const pgPool = require('../../persistence/pg')();
-const es = require('../../persistence/elasticsearch')();
+const config = require("../../config/getConfig")();
+const pgPool = require("../../persistence/pg")();
+const es = require("../../persistence/elasticsearch")();
 
 /**
  * Asynchronously create a new environment with the given options
@@ -20,7 +20,7 @@ function createEnvironment(opts) {
 
     // Create the ES index
     const alias = `retraced.${environment.project_id}.${environment.id}`;
-    const newIndex = `retraced.api.${uuid.v4().replace(/-/g, '')}`;
+    const newIndex = `retraced.api.${uuid.v4().replace(/-/g, "")}`;
     const aliases = {};
     aliases[alias] = {};
     const params = {

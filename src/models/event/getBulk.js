@@ -1,13 +1,11 @@
+const _ = require("lodash");
+const uuid = require("uuid");
+require("datejs");
+const AWS = require("aws-sdk");
 
-
-const _ = require('lodash');
-const uuid = require('uuid');
-require('datejs');
-const AWS = require('aws-sdk');
-
-const config = require('../../config/getConfig')();
+const config = require("../../config/getConfig")();
 // const scylladb = require('../../persistence/scylla')();
-const docClient = require('../../persistence/dynamo')();
+const docClient = require("../../persistence/dynamo")();
 
 function getEventsBulk(opts) {
   return new Promise((resolve, reject) => {

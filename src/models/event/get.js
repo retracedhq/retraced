@@ -1,8 +1,6 @@
-
-
-const docClient = require('../../persistence/dynamo')();
+const docClient = require("../../persistence/dynamo")();
 // const scylladb = require('../../persistence/scylla')();
-const config = require('../../config/getConfig')();
+const config = require("../../config/getConfig")();
 
 function getEvent(opts) {
   return new Promise((resolve, reject) => {

@@ -1,8 +1,6 @@
-
-
 var AWS = require("aws-sdk");
 
-var config = require('../config/getConfig')();
+var config = require("../config/getConfig")();
 
 var docClient;  // the reusable object
 
@@ -11,7 +9,7 @@ function getDocClient() {
     AWS.config.update({
       region: config.DynamoDB.Region,
       endpoint: config.DynamoDB.Endpoint,
-      credentials: new AWS.Credentials(config.DynamoDB.AccessKey, config.DynamoDB.SecretKey)
+      credentials: new AWS.Credentials(config.DynamoDB.AccessKey, config.DynamoDB.SecretKey),
     });
 
     docClient = new AWS.DynamoDB.DocumentClient();
@@ -19,6 +17,5 @@ function getDocClient() {
 
   return docClient;
 }
-
 
 module.exports = getDocClient;

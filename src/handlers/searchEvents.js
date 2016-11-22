@@ -1,11 +1,11 @@
-let _ = require('lodash');
+let _ = require("lodash");
 
-const validateSession = require('../security/validateSession');
-const checkAccess = require('../security/checkAccess');
-const searchEvents = require('../models/event/search');
-const addDisplayTitles = require('../models/event/addDisplayTitles');
-const listActors = require('../models/actor/list');
-const listObjects = require('../models/object/list');
+const validateSession = require("../security/validateSession");
+const checkAccess = require("../security/checkAccess");
+const searchEvents = require("../models/event/search");
+const addDisplayTitles = require("../models/event/addDisplayTitles");
+const listActors = require("../models/actor/list");
+const listObjects = require("../models/object/list");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -23,7 +23,7 @@ const handler = (req) => {
       })
       .then((valid) => {
         if (!valid) {
-          reject({ status: 401, err: new Error('Unauthorized') });
+          reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
         return searchEvents({
@@ -36,7 +36,7 @@ const handler = (req) => {
         result.events = events;
         result.total_hits = events.length;
 
-        const actorIds = _.keys(_.countBy(result.events, 'actor_id'));
+        const actorIds = _.keys(_.countBy(result.events, "actor_id"));
 
         return listActors({
           project_id: req.params.projectId,
@@ -51,7 +51,7 @@ const handler = (req) => {
         });
         result.events = cleaned;
 
-        const objectIds = _.keys(_.countBy(result.events, 'object_id'));
+        const objectIds = _.keys(_.countBy(result.events, "object_id"));
 
         return listObjects({
           project_id: req.params.projectId,

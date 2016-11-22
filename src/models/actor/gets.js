@@ -1,7 +1,5 @@
-
-
-const pgPool = require('../../persistence/pg')();
-const _ = require('lodash');
+const pgPool = require("../../persistence/pg")();
+const _ = require("lodash");
 
 /**
  * Asynchronously fetch >=1 actor(s) from the database.
@@ -30,7 +28,7 @@ function getActors(opts) {
           reject(qerr);
         } else if (result.rowCount > 0) {
           _.forEach(result.rows, (row) => {
-            row.retraced_object_type = 'actor';
+            row.retraced_object_type = "actor";
           });
           resolve(result.rows);
         } else {
