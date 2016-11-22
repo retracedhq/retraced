@@ -15,9 +15,6 @@ function getScylla() {
       contactPoints: config.ScyllaDB.Hosts,
       keyspace: config.ScyllaDB.Keyspace,
       authProvider,
-      protocolOptions: {
-        port: config.ScyllaDB.Port,
-      },
     });
   }
 

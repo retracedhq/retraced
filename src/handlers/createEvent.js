@@ -36,26 +36,19 @@ const handler = (req) => {
         }
       })
       .then(() => {
-        const jobBody = {
+        const job = JSON.stringify({
           ingestTaskId: uuid.v4().replace(/-/g, ''),
           projectId: apiToken.project_id,
           environmentId: apiToken.environment_id,
           events: req.body,
-        };
-        const job = {
-          queue: 'create_ingestion_task',
-          job: JSON.stringify(jobBody),
-          retry: 600, // seconds
-          async: true,          
-        };
-        disque.addJob(job, (err, resp) => {
-          if (err) {
-            reject({ status: 500, err });
-            return;
-          }
-          resolve();
         });
+
+        const opts = {
+          retry: 600, // seconds
+        };
+        return disque.addjob('create_ingestion_task', job, opts);
       })
+      .then(resolve)
       .catch(reject);
   });
 }
