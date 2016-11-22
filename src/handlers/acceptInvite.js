@@ -1,10 +1,10 @@
-const _ = require('lodash');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-require('datejs');
+const _ = require("lodash");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+require("datejs");
 
-const config = require('../config/getConfig')();
-const acceptInvite = require('../models/team/invite/accept');
+const config = require("../config/getConfig")();
+const acceptInvite = require("../models/team/invite/accept");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -30,9 +30,9 @@ function hashPassword(password) {
         return;
       }
 
-      bcrypt.hash(password, salt, (err, hash) => {
-        if (err) {
-          reject(err);
+      bcrypt.hash(password, salt, (bcryptErr, hash) => {
+        if (bcryptErr) {
+          reject(bcryptErr);
           return;
         }
 

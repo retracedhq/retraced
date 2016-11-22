@@ -1,8 +1,6 @@
+const pg = require("pg");
 
-
-const pg = require('pg');
-
-const config = require('../config/getConfig')();
+const config = require("../config/getConfig")();
 
 let pgPool;
 

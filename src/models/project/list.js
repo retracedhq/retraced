@@ -1,8 +1,6 @@
+const _ = require("lodash");
 
-
-const _ = require('lodash');
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Asynchronously returns all projects for a user from the database

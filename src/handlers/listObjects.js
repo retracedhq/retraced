@@ -1,6 +1,6 @@
-const validateSession = require('../security/validateSession');
-const listObjects = require('../models/object/list');
-const checkAccess = require('../security/checkAccess');
+const validateSession = require("../security/validateSession");
+const listObjects = require("../models/object/list");
+const checkAccess = require("../security/checkAccess");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -13,7 +13,7 @@ const handler = (req) => {
       })
       .then((valid) => {
         if (!valid) {
-          reject({ status: 401, err: new Error('Unauthorized') });
+          reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
         return listObjects({

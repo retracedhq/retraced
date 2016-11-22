@@ -1,8 +1,8 @@
-const _ = require('lodash');
+const _ = require("lodash");
 
-const validateSession = require('../security/validateSession');
-const checkAccess = require('../security/checkAccess');
-const getAction = require('../models/action/get');
+const validateSession = require("../security/validateSession");
+const checkAccess = require("../security/checkAccess");
+const getAction = require("../models/action/get");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -15,7 +15,7 @@ const handler = (req) => {
       })
       .then((valid) => {
         if (!valid) {
-          reject({ status: 401, err: new Error('Unauthorized') });
+          reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
         return getAction({

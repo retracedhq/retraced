@@ -1,9 +1,7 @@
+const _ = require("lodash");
+const util = require("util");
 
-
-const _ = require('lodash');
-const util = require('util');
-
-const es = require('../../persistence/elasticsearch')();
+const es = require("../../persistence/elasticsearch")();
 
 function deepSearchEvents(opts) {
   return new Promise((resolve, reject) => {
@@ -18,14 +16,14 @@ function deepSearchEvents(opts) {
       filters.push({ multi_match: {
         query: paramsIn.search_text,
         fields: [
-          'title',
-          'description',
-          'action',
-          'fields.*',
-          'actor.name',
-          'actor.fields.*',
-          'object.name',
-          'object.fields.*',
+          "title",
+          "description",
+          "action",
+          "fields.*",
+          "actor.name",
+          "actor.fields.*",
+          "object.name",
+          "object.fields.*",
         ],
       } });
     }
@@ -35,7 +33,7 @@ function deepSearchEvents(opts) {
         bool: {
           should: [
             { bool: {
-              must_not: { exists: { field: 'created' } },
+              must_not: { exists: { field: "created" } },
               must: { range: { received: { gte: paramsIn.start_time } } },
             } },
             { range: { created: { gte: paramsIn.start_time } } },
@@ -48,7 +46,7 @@ function deepSearchEvents(opts) {
         bool: {
           should: [
             { bool: {
-              must_not: { exists: { field: 'created' } },
+              must_not: { exists: { field: "created" } },
               must: { range: { received: { lte: paramsIn.end_time } } },
             } },
             { range: { created: { lte: paramsIn.end_time } } },
@@ -68,16 +66,16 @@ function deepSearchEvents(opts) {
 
     const mustNots = [];
     if (!paramsIn.create) {
-      mustNots.push({ term: { crud: 'c' } });
+      mustNots.push({ term: { crud: "c" } });
     }
     if (!paramsIn.read) {
-      mustNots.push({ term: { crud: 'r' } });
+      mustNots.push({ term: { crud: "r" } });
     }
     if (!paramsIn.update) {
-      mustNots.push({ term: { crud: 'u' } });
+      mustNots.push({ term: { crud: "u" } });
     }
     if (!paramsIn.delete) {
-      mustNots.push({ term: { crud: 'd' } });
+      mustNots.push({ term: { crud: "d" } });
     }
 
     const query = {
@@ -89,14 +87,14 @@ function deepSearchEvents(opts) {
 
     const params = {
       index: opts.index,
-      type: 'event',
-      fields: ['id'],
+      type: "event",
+      fields: ["id"],
       _source: false,
       from: paramsIn.offset || 0,
       size: paramsIn.length,
       sort: [
-        'created:desc',
-        'received:desc',
+        "created:desc",
+        "received:desc",
       ],
       body: {
         query,

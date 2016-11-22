@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Asynchronously list environments belonging to given project
@@ -15,7 +13,7 @@ function listEnvironments(opts) {
         return;
       }
 
-      const q = 'select * from environment where project_id = $1';
+      const q = "select * from environment where project_id = $1";
       pg.query(q, [opts.project_id], (qerr, result) => {
         done();
         if (qerr) {

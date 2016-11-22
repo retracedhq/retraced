@@ -1,7 +1,7 @@
-const _ = require('lodash');
+const _ = require("lodash");
 
-const getApiToken = require('../models/apitoken/get');
-const pgPool = require('../persistence/pg')();
+const getApiToken = require("../models/apitoken/get");
+const pgPool = require("../persistence/pg")();
 
 // This currently only supports "user_id" | "token" and "project_id" in opts.
 // but should be extended to support any resource.
@@ -12,14 +12,14 @@ const pgPool = require('../persistence/pg')();
  * @param {Object} [opts] The request options
  */
 function checkAccess(opts) {
-  if (_.has(opts, 'user_id')) {
+  if (_.has(opts, "user_id")) {
     return checkAccessForUser(opts);
-  } else if (_.has(opts, 'api_token')) {
+  } else if (_.has(opts, "api_token")) {
     return checkAccessForApiToken(opts);
   }
 
   return new Promise((resolve, reject) => {
-    reject(new Error('must supply either user_id or api_token'));
+    reject(new Error("must supply either user_id or api_token"));
   });
 }
 

@@ -1,12 +1,13 @@
+import "source-map-support/register";
+import * as fs from "fs";
 
+let config;
 
-const fs = require('fs');
-
-/**
- * Synchronously returns the config for the current environment.
- */
 function getConfig() {
-  return JSON.parse(fs.readFileSync('./config/config.json', 'utf8'));
+  if (!config) {
+    config = JSON.parse(fs.readFileSync("./config/config.json", "utf8"));
+  }
+  return config;
 }
 
 module.exports = getConfig;

@@ -1,8 +1,6 @@
+const redis = require("redis");
 
-
-const redis = require('redis');
-
-const config = require('../../config/getConfig')();
+const config = require("../../config/getConfig")();
 
 /**
  * {

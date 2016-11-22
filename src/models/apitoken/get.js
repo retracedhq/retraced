@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Asynchronously fetch a token from the database.
@@ -15,7 +13,7 @@ function getApiToken(token) {
         return;
       }
 
-      const q = 'select * from token where token = $1';
+      const q = "select * from token where token = $1";
       const v = [token];
 
       pg.query(q, v, (qerr, result) => {

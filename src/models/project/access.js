@@ -1,8 +1,6 @@
+const uuid = require("uuid");
 
-
-const uuid = require('uuid');
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 function addUserToProject(projectId, userId) {
   return new Promise((resolve, reject) => {
@@ -13,7 +11,7 @@ function addUserToProject(projectId, userId) {
       }
 
       const projectuser = {
-        id: uuid.v4().replace(/-/g, ''),
+        id: uuid.v4().replace(/-/g, ""),
         project_id: projectId,
         user_id: userId,
       };
@@ -42,5 +40,5 @@ function addUserToProject(projectId, userId) {
 }
 
 module.exports = {
-  'addUserToProject': addUserToProject,
+  "addUserToProject": addUserToProject,
 };

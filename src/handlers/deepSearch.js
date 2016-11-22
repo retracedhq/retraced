@@ -1,14 +1,14 @@
-const _ = require('lodash');
-const util = require('util');
+const _ = require("lodash");
+const util = require("util");
 
-const validateSession = require('../security/validateSession');
-const checkAccess = require('../security/checkAccess');
-const deepSearchEvents = require('../models/event/deepSearch');
+const validateSession = require("../security/validateSession");
+const checkAccess = require("../security/checkAccess");
+const deepSearchEvents = require("../models/event/deepSearch");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
   if (!req.query.environment_id) {
-    reject({ status: 400, err: new Error('Missing environment_id') });
+    reject({ status: 400, err: new Error("Missing environment_id") });
     return;
   }
 

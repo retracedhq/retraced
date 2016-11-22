@@ -1,10 +1,8 @@
+const uuid = require("uuid");
+const mandrill = require("mandrill-api/mandrill");
 
-
-const uuid = require('uuid');
-const mandrill = require('mandrill-api/mandrill');
-
-const pgPool = require('../../persistence/pg')();
-const config = require('../../config/getConfig')();
+const pgPool = require("../../persistence/pg")();
+const config = require("../../config/getConfig")();
 
 /**
  * Invite a new member to the team.
@@ -22,7 +20,7 @@ function createInvite(opts) {
       }
 
       const invite = {
-        id: uuid.v4().replace(/-/g, ''),
+        id: uuid.v4().replace(/-/g, ""),
         project_id: opts.project_id,
         created: new Date().getTime(),
         email: opts.email,
@@ -51,10 +49,10 @@ function createInvite(opts) {
         // Send the email
         // TODO this should be async in a queue
         const mandrillClient = new mandrill.Mandrill(config.Mandrill.APIKey);
-        const templateName = 'retraced/invite-to-team';
+        const templateName = "retraced/invite-to-team";
         const templateContent = [];
         const mergeVars = [{
-          name: 'invite_url',
+          name: "invite_url",
           content: `${config.URLs.RetracedAppBase}/invite?id=${invite.id}`,
         }];
 
@@ -69,11 +67,11 @@ function createInvite(opts) {
               html: rendered.html,
               to: [{
                 email: invite.email,
-                type: 'to',
+                type: "to",
               }],
-              from_email: 'contact@auditable.io',
-              from_name: 'Retraced',
-              subject: 'You are invited to join a team on Retraced',
+              from_email: "contact@auditable.io",
+              from_name: "Retraced",
+              subject: "You are invited to join a team on Retraced",
               global_merge_vars: mergeVars,
             },
             async: false,
@@ -82,19 +80,18 @@ function createInvite(opts) {
             function(result) {
               resolve(invite);
             },
-            function(err) {
-              console.log('Error sending email: ', err);
-              reject(err);
-            }
+            function(mandrillErr) {
+              console.log("Error sending email: ", mandrillErr);
+              reject(mandrillErr);
+            },
           );
-          }, function(err) {
-          console.log('Error rendering email: ', err);
-          reject(err);
+          }, function(mandrillErr) {
+          console.log("Error rendering email: ", mandrillErr);
+          reject(mandrillErr);
         });
       });
     });
   });
 }
-
 
 module.exports = createInvite;

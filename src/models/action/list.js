@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * listActions returns a Promise that retrieves all of the actions for

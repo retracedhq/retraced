@@ -1,9 +1,7 @@
-
-
-const createUser = require('../../user/create');
-const addUserToProject = require('../../project/access').addUserToProject;
-const getInvite = require('./get');
-const deleteInvite = require('./delete');
+const createUser = require("../../user/create");
+const addUserToProject = require("../../project/access").addUserToProject;
+const getInvite = require("./get");
+const deleteInvite = require("./delete");
 
 function acceptInvite(inviteId, hashedPw) {
   return new Promise((resolve, reject) => {

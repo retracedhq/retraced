@@ -35,7 +35,7 @@
     "@types/express": "^4.0.33",
     "@types/lodash": "^4.14.38",
     "chance": "^1.0.4",
-    "tslint": "^4.0.0-dev",
+    "tslint": "^4.0.1",
     "typescript": "^2.0.9"
   },
   "scripts": {

@@ -1,8 +1,6 @@
-
-
-const _ = require('lodash');
-const pgPool = require('../persistence/pg')();
-const util = require('util');
+const _ = require("lodash");
+const pgPool = require("../persistence/pg")();
+const util = require("util");
 
 function getLocationByIP(ipAddress) {
   return new Promise((resolve, reject) => {
@@ -17,7 +15,7 @@ function getLocationByIP(ipAddress) {
         return;
       }
 
-      const q = 'select * from geoip where network >> $1';
+      const q = "select * from geoip where network >> $1";
       pg.query(q, [ipAddress], (qerr, result) => {
         done();
         if (qerr) {

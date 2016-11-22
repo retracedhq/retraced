@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Asynchronously fetch a action from the database.
@@ -16,7 +14,7 @@ function getAction(opts) {
         return;
       }
 
-      const q = 'select * from action where id = $1';
+      const q = "select * from action where id = $1";
       const v = [opts.action_id];
 
       pg.query(q, v, (qerr, result) => {

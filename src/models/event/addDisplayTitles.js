@@ -1,9 +1,7 @@
+const _ = require("lodash");
+const Handlebars = require("handlebars");
 
-
-const _ = require('lodash');
-const Handlebars = require('handlebars');
-
-const listActions = require('../action/list');
+const listActions = require("../action/list");
 
 /**
  * addDisplayTitles returns a Promise that does something fun to an array of events.
@@ -18,12 +16,12 @@ function addDisplayTitles(opts) {
     // Get all actions we need in a single database query
     listActions({
       project_id: opts.project_id,
-      environment_id: opts.environment_id
+      environment_id: opts.environment_i,
     })
     .then((actions) => {
       var updated = _.map(opts.events, (event) => {
         // If the action has an display template, use that
-        let action = _.find(actions, ['action', event.action]);
+        let action = _.find(actions, ["action", event.action]);
         if (action && action.display_template) {
           event.display_title = buildDisplay(action.display_template, event, opts.project_id, opts.environment_id);
         } else if (event.actor && event.actor.name) {
@@ -36,45 +34,45 @@ function addDisplayTitles(opts) {
           event.display_title = event.action;
         }
         return event;
-      })
+      });
 
       resolve(updated);
     })
     .catch((err) => {
       reject(err);
-    })
+    });
   });
 }
 
 function buildDisplay(template, event, projectId, environmentId) {
   let data = event;
 
-  Handlebars.registerHelper('actor', function(){
+  Handlebars.registerHelper("actor", function(){
     return `[**${this.actor.name}**](/project/${projectId}/actor/${this.actor.id})`;
   });
-  Handlebars.registerHelper('object', function(){
+  Handlebars.registerHelper("object", function(){
     if (!this.object) {
-      return '*unknown*';
+      return "*unknown*";
     }
     return `[**${this.object.name}**](/project/${projectId}/object/${this.object.id})`;
   });
 
-  Handlebars.registerHelper('retracedUrl', (o) => {
-    if (_.has(o, 'retraced_object_type')) {
+  Handlebars.registerHelper("retracedUrl", (o) => {
+    if (_.has(o, "retraced_object_type")) {
       switch (o.retraced_object_type) {
-        case 'actor':
+        case "actor":
           return `/project/${projectId}/actor/${o.id}`;
-        case 'object':
+        case "object":
           return `/project/${projectId}/object/${o.id}`;
         default:
-          return 
+          return;
       }
     }
-    
-    return 
+
+    return;
   });
 
-  Handlebars.registerHelper('sourceUrl', (o) => {
+  Handlebars.registerHelper("sourceUrl", (o) => {
     return o.url;
   });
 

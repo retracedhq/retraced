@@ -1,16 +1,16 @@
-const _ = require('lodash');
+const _ = require("lodash");
 
-const validateSession = require('../security/validateSession');
-const checkAccess = require('../security/checkAccess');
-const getEventsBulk = require('../models/event/getBulk');
-const getActors = require('../models/actor/gets');
-const getObjects = require('../models/object/gets');
-const addDisplayTitles = require('../models/event/addDisplayTitles');
+const validateSession = require("../security/validateSession");
+const checkAccess = require("../security/checkAccess");
+const getEventsBulk = require("../models/event/getBulk");
+const getActors = require("../models/actor/gets");
+const getObjects = require("../models/object/gets");
+const addDisplayTitles = require("../models/event/addDisplayTitles");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
     if (!req.query.environment_id) {
-      reject({ status: 400, err: new Error('Missing environment_id')});
+      reject({ status: 400, err: new Error("Missing environment_id")});
       return;
     }
 
@@ -35,7 +35,7 @@ const handler = (req) => {
       .then((actors) => {
         // TODO(zhaytee): This is pretty inefficient.
         _.forEach(events, (e) => {
-          e.actor = _.find(actors, { id: e.actor ? e.actor.id : '' });
+          e.actor = _.find(actors, { id: e.actor ? e.actor.id : "" });
         });
 
         return getObjects({

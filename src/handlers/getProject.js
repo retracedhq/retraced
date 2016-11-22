@@ -1,10 +1,10 @@
-const _ = require('lodash');
+const _ = require("lodash");
 
-const validateSession = require('../security/validateSession');
-const checkAccess = require('../security/checkAccess');
-const getProject = require('../models/project/get');
-const listApiTokens = require('../models/apitoken/list');
-const listEnvironments = require('../models/environment/list');
+const validateSession = require("../security/validateSession");
+const checkAccess = require("../security/checkAccess");
+const getProject = require("../models/project/get");
+const listApiTokens = require("../models/apitoken/list");
+const listEnvironments = require("../models/environment/list");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -22,7 +22,7 @@ const handler = (req) => {
       })
       .then((valid) => {
         if (!valid) {
-          reject({ status: 401, err: new Error('Unauthorized') });
+          reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
         return getProject(req.params.projectId);
@@ -32,7 +32,7 @@ const handler = (req) => {
       })
       .then((environments) => {
         _.forEach(environments, (env) => {
-          result.environments.push(_.omit(env, ['project_id']));
+          result.environments.push(_.omit(env, ["project_id"]));
         });
         return listApiTokens({
           project_id: req.params.projectId,

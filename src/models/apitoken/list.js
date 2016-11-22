@@ -1,8 +1,6 @@
+const _ = require("lodash");
 
-
-const _ = require('lodash');
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Asynchronously returns all tokens for a project from the database
@@ -17,7 +15,7 @@ function listApiTokens(opts) {
         return;
       }
 
-      const q = 'select * from token where project_id = $1';
+      const q = "select * from token where project_id = $1";
       const v = [opts.project_id];
 
       pg.query(q, v, (qerr, queryResult) => {

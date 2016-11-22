@@ -1,8 +1,6 @@
-
-
-const _ = require('lodash');
-const pgPool = require('../../persistence/pg')();
-const gets = require('./gets');
+const _ = require("lodash");
+const pgPool = require("../../persistence/pg")();
+const gets = require("./gets");
 
 /**
  * listObjects returns a Promise that retrieves all of the objects for
@@ -42,7 +40,7 @@ function listObjectsForProjectAndEnvironment(projectId, environmentId) {
           reject(qerr);
         } else if (result.rowCount > 0) {
           resolve(_.map(result.rows, (row) => {
-            row.retraced_object_type = 'object';
+            row.retraced_object_type = "object";
             return row;
           }));
         } else {

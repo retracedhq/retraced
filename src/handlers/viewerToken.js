@@ -1,11 +1,11 @@
-const validateApiToken = require('../security/validateApiToken');
-const createViewerToken = require('../models/viewertoken/create');
-const checkAccess = require('../security/checkAccess');
+const validateApiToken = require("../security/validateApiToken");
+const createViewerToken = require("../models/viewertoken/create");
+const checkAccess = require("../security/checkAccess");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
     let apiToken;
-    validateApiToken(req.get('Authorization'))
+    validateApiToken(req.get("Authorization"))
       .then((t) => {
         apiToken = t;
         return checkAccess({
@@ -15,7 +15,7 @@ const handler = (req) => {
       })
       .then((valid) => {
         if (!valid) {
-          reject({ status: 401, err: new Error('Unauthorized') });
+          reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
 
@@ -23,7 +23,7 @@ const handler = (req) => {
           project_id: req.params.projectId,
           environment_id: apiToken.environment_id,
           team_id: req.query.team_id,
-          format: req.query.output ? req.query.output : 'json',
+          format: req.query.output ? req.query.output : "json",
         });
       })
       .then((viewerToken) => {

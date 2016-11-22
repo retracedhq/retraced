@@ -1,9 +1,9 @@
-const _ = require('lodash');
-const util = require('util');
+const _ = require("lodash");
+const util = require("util");
 
-const validateSession = require('../security/validateSession');
-const checkAccess = require('../security/checkAccess');
-const deepSearchEvents = require('../models/event/deepSearch');
+const validateSession = require("../security/validateSession");
+const checkAccess = require("../security/checkAccess");
+const deepSearchEvents = require("../models/event/deepSearch");
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {

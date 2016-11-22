@@ -1,12 +1,11 @@
-'use strict';
-
-const Disq = require('disq');
-const config = require('../config/getConfig')();
+const Disq = require("disq");
+const config = require("../config/getConfig")();
+const dns = require("dns");
 
 let disqueClient;
 
 function getDisque() {
-  if (!disqueClient) { 
+  if (!disqueClient) {
     const opts = {
       nodes: config.Disque.Nodes,
     };

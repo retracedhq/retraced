@@ -1,6 +1,4 @@
-
-
-const pgPool = require('../../persistence/pg')();
+const pgPool = require("../../persistence/pg")();
 
 /**
  * Asynchronously returns the entire team for a project

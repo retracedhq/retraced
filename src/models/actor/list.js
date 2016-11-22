@@ -1,8 +1,6 @@
-
-
-const _ = require('lodash');
-const pgPool = require('../../persistence/pg')();
-const gets = require('./gets');
+const _ = require("lodash");
+const pgPool = require("../../persistence/pg")();
+const gets = require("./gets");
 
 /**
  * listActors returns a Promise that retrieves all of the actors for
@@ -42,7 +40,7 @@ function listActorsForProjectAndEnvironment(projectId, environmentId) {
           reject(qerr);
         } else if (result.rowCount > 0) {
           resolve(_.map(result.rows, (row) => {
-            row.retraced_object_type = 'actor';
+            row.retraced_object_type = "actor";
             return row;
           }));
         } else {
