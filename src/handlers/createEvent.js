@@ -37,7 +37,6 @@ const handler = (req) => {
       })
       .then(() => {
         const job = JSON.stringify({
-          ingestTaskId: uuid.v4().replace(/-/g, ""),
           projectId: apiToken.project_id,
           environmentId: apiToken.environment_id,
           events: req.body,

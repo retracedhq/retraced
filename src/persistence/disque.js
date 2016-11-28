@@ -13,6 +13,20 @@ function getDisque() {
       opts.auth = config.Disque.Password;
     }
     disqueClient = new Disq(opts);
+    disqueClient.connect()
+      .then(() => {
+        disqueClient.socket.setKeepAlive(true, 5000);
+        disqueClient.socket.on("close", (hadError) => {
+          if (hadError) {
+            console.log("Disque connection closed. Will reconnect...");
+            disqueClient = null;
+          }
+        });
+      })
+      .catch((err) => {
+        console.log(err.stack);
+        disqueClient = null;
+      });
   }
 
   return disqueClient;
