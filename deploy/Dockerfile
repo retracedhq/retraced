@@ -5,4 +5,6 @@ EXPOSE 3000
 ADD . /retraced-api
 WORKDIR /retraced-api
 
+RUN npm rebuild
+
 CMD ["node", "--no-deprecation", "./build/index.js"]
