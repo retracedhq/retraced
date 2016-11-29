@@ -1,12 +1,15 @@
-const uuid = require("uuid");
-const AWS = require("aws-sdk");
-const util = require("util");
+import * as uuid from "uuid";
+import * as AWS from "aws-sdk";
+import * as util from "util";
 
-const config = require("../config/getConfig")();
-const validateEvent = require("../models/event/validate");
-const checkAccess = require("../security/checkAccess");
-const validateApiToken = require("../security/validateApiToken");
-const disque = require("../persistence/disque")();
+import * as getConfig from "../config/getConfig";
+import * as validateEvent from "../models/event/validate";
+import * as checkAccess from "../security/checkAccess";
+import * as validateApiToken from "../security/validateApiToken";
+import getDisque from "../persistence/disque";
+
+const config = getConfig();
+const disque = getDisque();
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -37,7 +40,6 @@ const handler = (req) => {
       })
       .then(() => {
         const job = JSON.stringify({
-          ingestTaskId: uuid.v4().replace(/-/g, ""),
           projectId: apiToken.project_id,
           environmentId: apiToken.environment_id,
           events: req.body,
@@ -46,7 +48,7 @@ const handler = (req) => {
         const opts = {
           retry: 600, // seconds
         };
-        return disque.addjob("create_ingestion_task", job, opts);
+        return disque.addjob("create_ingestion_task", job, 0, opts);
       })
       .then(resolve)
       .catch(reject);
