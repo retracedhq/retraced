@@ -108,6 +108,10 @@ const routes = {
     path: "/v1/project/:projectId/action/:actionId",
     method: "put",
   },
+  getDashboard: {
+    path: "/v1/project/:projectId/dashboard",
+    method: "get",
+  },
   viewerToken: {
     path: "/v1/project/:projectId/viewertoken",
     method: "get",

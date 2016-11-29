@@ -23,7 +23,7 @@ function getApiToken(token) {
         } else if (result.rowCount > 0) {
           resolve(result.rows[0]);
         } else {
-          resolve(null);
+          reject(new Error("Token not found"));
         }
       });
     });

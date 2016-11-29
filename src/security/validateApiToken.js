@@ -23,8 +23,8 @@ function validateApiToken(authHeader) {
     }
 
     getApiToken(token)
-    .then(resolve)
-    .catch(reject);
+      .then(resolve)
+      .catch(reject);
   });
 }
 
