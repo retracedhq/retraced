@@ -7,9 +7,11 @@ import * as validateEvent from "../models/event/validate";
 import * as checkAccess from "../security/checkAccess";
 import * as validateApiToken from "../security/validateApiToken";
 import getDisque from "../persistence/disque";
+import * as getPgPool from "../persistence/pg";
 
 const config = getConfig();
 const disque = getDisque();
+const pgPool = getPgPool();
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -38,17 +40,44 @@ const handler = (req) => {
           return;
         }
       })
-      .then(() => {
-        const job = JSON.stringify({
-          projectId: apiToken.project_id,
-          environmentId: apiToken.environment_id,
-          events: req.body,
-        });
+      .then(async () => {
+        // Create a new ingestion task for each event passed in.
+        let eventsIn = req.body;
+        if (!Array.isArray(req.body)) {
+          eventsIn = [req.body];
+        }
 
-        const opts = {
-          retry: 600, // seconds
-        };
-        return disque.addjob("create_ingestion_task", job, 0, opts);
+        for (const event of eventsIn) {
+          const pg = await pgPool.connect();
+          const insertStmt = `insert into ingest_task (
+            id, original_event, project_id, environment_id
+          ) values (
+            $1, $2, $3, $4
+          )`;
+
+          const newTaskId = uuid.v4().replace(/-/g, "");
+          const insertVals = [
+            newTaskId,
+            JSON.stringify(event),
+            apiToken.project_id,
+            apiToken.environment_id,
+          ];
+
+          await pg.query(insertStmt, insertVals);
+          pg.release();
+          const job = JSON.stringify({
+            taskId: newTaskId,
+          });
+
+          const opts = {
+            retry: 600, // seconds
+            async: true,
+          };
+
+          // This task will normalize the event and save its important bits to postgres.
+          // It'll then enqueue tasks for saving to the other databases.
+          disque.addjob("normalize_event", job, 0, opts);
+        }
       })
       .then(resolve)
       .catch(reject);
