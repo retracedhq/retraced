@@ -742,12 +742,6 @@ diff@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.0.1.tgz#a52d90cc08956994be00877bff97110062582c35"
 
-disq@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/disq/-/disq-1.0.0.tgz#6354fbca9902874ee0c2bdb6275f8db6155e6e0d"
-  dependencies:
-    hiredis "^0.5.0"
-
 dot-prop@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-3.0.0.tgz#1b708af094a49c9a0e7dbcad790aba539dac1177"
