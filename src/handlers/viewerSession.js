@@ -1,8 +1,10 @@
-const uuid = require("uuid");
+import * as uuid from "uuid";
 
-const getViewerToken = require("../models/viewertoken/get");
-const createViewersession = require("../models/viewersession/create");
-const disque = require("../persistence/disque")();
+import * as getViewerToken from "../models/viewertoken/get";
+import * as createViewersession from "../models/viewersession/create";
+import getDisque from "../persistence/disque";
+
+const disque = getDisque();
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
@@ -29,8 +31,9 @@ const handler = (req) => {
 
         const opts = {
           retry: 600, // seconds
+          async: true,
         };
-        return disque.addjob("user_reporting_task", job, opts);
+        return disque.addjob("user_reporting_task", job, 0, opts);
       })
       .then(() => {
         resolve(session);
