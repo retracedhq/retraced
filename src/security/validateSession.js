@@ -1,13 +1,15 @@
-const jwt = require("jsonwebtoken");
+import * as jwt from "jsonwebtoken";
 
-const config = require("../config/getConfig")();
+import getConfig from "../config/getConfig";
+
+const config = getConfig();
 
 /**
  * Asynchronously validates a JWT token from the event, and returns the claims.
  *
  * @param {Object} The request options
  */
-function validateSession(jwtSource, authString) {
+export default function validateSession(jwtSource, authString) {
   return new Promise((resolve, reject) => {
     if (!jwtSource) {
       reject(new Error("missing jwt_source parmater"));
@@ -39,5 +41,3 @@ function validateSession(jwtSource, authString) {
     }
   });
 }
-
-module.exports = validateSession;

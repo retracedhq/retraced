@@ -1,12 +1,12 @@
-const _ = require("lodash");
+import * as _ from "lodash";
 
-const validateSession = require("../security/validateSession");
-const searchEvents = require("../models/event/search");
-const listActors = require("../models/actor/list");
-const listObjects = require("../models/object/list");
-const addDisplayTitles = require("../models/event/addDisplayTitles");
+import validateSession from "../security/validateSession";
+import searchEvents from "../models/event/search";
+import listActors from "../models/actor/list";
+import listObjects from "../models/object/list";
+import addDisplayTitles from "../models/event/addDisplayTitles";
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     let claims;
     const result = {
@@ -72,5 +72,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

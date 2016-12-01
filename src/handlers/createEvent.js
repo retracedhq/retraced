@@ -2,18 +2,18 @@ import * as uuid from "uuid";
 import * as AWS from "aws-sdk";
 import * as util from "util";
 
-import * as getConfig from "../config/getConfig";
-import * as validateEvent from "../models/event/validate";
-import * as checkAccess from "../security/checkAccess";
-import * as validateApiToken from "../security/validateApiToken";
+import validateEvent from "../models/event/validate";
+import checkAccess from "../security/checkAccess";
+import validateApiToken from "../security/validateApiToken";
+import getConfig from "../config/getConfig";
 import getDisque from "../persistence/disque";
-import * as getPgPool from "../persistence/pg";
+import getPgPool from "../persistence/pg";
 
 const config = getConfig();
 const disque = getDisque();
 const pgPool = getPgPool();
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     let apiToken;
     validateApiToken(req.get("Authorization"))
@@ -83,5 +83,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

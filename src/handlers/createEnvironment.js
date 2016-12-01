@@ -1,9 +1,9 @@
-const validateSession = require("../security/validateSession");
-const checkAccess = require("../security/checkAccess");
-const createEnvironment = require("../models/environment/create");
-const getProject = require("../models/project/get");
+import validateSession from "../security/validateSession";
+import checkAccess from "../security/checkAccess";
+import createEnvironment from "../models/environment/create";
+import getProject from "../models/project/get";
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     validateSession("admin", req.get("Authorization"))
       .then((claims) => {
@@ -32,5 +32,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

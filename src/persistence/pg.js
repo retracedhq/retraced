@@ -1,10 +1,12 @@
-const pg = require("pg");
+import * as pg from "pg";
 
-const config = require("../config/getConfig")();
+import getConfig from "../config/getConfig";
+
+const config = getConfig();
 
 let pgPool;
 
-function getPgPool() {
+export default function getPgPool() {
   if (!pgPool) {
     pgPool = new pg.Pool({
       user: config.Postgres.User,
@@ -19,5 +21,3 @@ function getPgPool() {
 
   return pgPool;
 }
-
-module.exports = getPgPool;

@@ -1,11 +1,11 @@
-const getApiToken = require("../models/apitoken/get");
+import getApiToken from "../models/apitoken/get";
 
 /**
  * Asynchronously validates an api token from the event, and returns the result.
  * 
  * @param {Object} [event] The lambda params.
  */
-function validateApiToken(authHeader) {
+export default function validateApiToken(authHeader) {
   return new Promise((resolve, reject) => {
     // Authorization: Token token=abcdef
     let token;
@@ -27,5 +27,3 @@ function validateApiToken(authHeader) {
       .catch(reject);
   });
 }
-
-module.exports = validateApiToken;

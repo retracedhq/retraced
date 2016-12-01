@@ -1,9 +1,11 @@
-const _ = require("lodash");
-const util = require("util");
+import * as _ from "lodash";
+import * as util from "util";
 
-const es = require("../../persistence/elasticsearch")();
+import getEs from "../../persistence/elasticsearch";
 
-function deepSearchEvents(opts) {
+const es = getEs();
+
+export default function deepSearchEvents(opts) {
   return new Promise((resolve, reject) => {
     const paramsIn = opts.query;
     const results = {
@@ -118,5 +120,3 @@ function deepSearchEvents(opts) {
     });
   });
 }
-
-module.exports = deepSearchEvents;

@@ -1,12 +1,15 @@
-const pgPool = require("../../persistence/pg")();
-const _ = require("lodash");
+import * as _ from "lodash";
+
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously fetch >=1 object(s) from the database.
  *
  * @param {string} [object_ids] The unique object id(s) to fetch
  */
-function getObjects(opts) {
+export default function getObjects(opts) {
   return new Promise((resolve, reject) => {
     if (opts.object_ids.length === 0) {
       resolve([]);
@@ -38,5 +41,3 @@ function getObjects(opts) {
     });
   });
 }
-
-module.exports = getObjects;

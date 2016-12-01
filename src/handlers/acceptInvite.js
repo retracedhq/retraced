@@ -1,12 +1,14 @@
-const _ = require("lodash");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-require("datejs");
+import "datejs";
+import * as _ from "lodash";
+import * as bcrypt from "bcryptjs";
+import * as jwt from "jsonwebtoken";
 
-const config = require("../config/getConfig")();
-const acceptInvite = require("../models/team/invite/accept");
+import getConfig from "../config/getConfig";
+import acceptInvite from "../models/team/invite/accept";
 
-const handler = (req) => {
+const config = getConfig();
+
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     hashPassword(req.body.password)
       .then((hashedPassword) => {
@@ -61,5 +63,3 @@ function createSession(user) {
     resolve(response);
   });
 }
-
-module.exports = handler;

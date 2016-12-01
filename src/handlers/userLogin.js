@@ -1,9 +1,9 @@
-const bcrypt = require("bcryptjs");
+import * as bcrypt from "bcryptjs";
 
-const getUser = require("../models/user/get");
-const createAdminsession = require("../models/adminsession/create");
+import getUser from "../models/user/get";
+import createAdminsession from "../models/adminsession/create";
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     let user;
     getUser({
@@ -59,5 +59,3 @@ function validatePassword(passwordCrypt, passwordPlain) {
     });
   });
 }
-
-module.exports = handler;

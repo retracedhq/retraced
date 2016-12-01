@@ -1,11 +1,13 @@
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously fetch a token from the database.
  *
  * @param {string} [token] The token
  */
-function getApiToken(token) {
+export default function getApiToken(token) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -29,5 +31,3 @@ function getApiToken(token) {
     });
   });
 }
-
-module.exports = getApiToken;

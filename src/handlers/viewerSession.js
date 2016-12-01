@@ -1,12 +1,12 @@
 import * as uuid from "uuid";
 
-import * as getViewerToken from "../models/viewertoken/get";
-import * as createViewersession from "../models/viewersession/create";
+import getViewerToken from "../models/viewertoken/get";
+import createViewersession from "../models/viewersession/create";
 import getDisque from "../persistence/disque";
 
 const disque = getDisque();
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     let session;
     let token;
@@ -41,5 +41,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

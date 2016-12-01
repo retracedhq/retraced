@@ -1,4 +1,6 @@
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * listActions returns a Promise that retrieves all of the actions for
@@ -8,7 +10,7 @@ const pgPool = require("../../persistence/pg")();
  * @param {string} [opts.project_id] The project id to query
  * @param {string} [opts.environment_id] The environment id to query
  */
-function listActions(opts) {
+export default function listActions(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -37,5 +39,3 @@ function listActions(opts) {
     });
   });
 }
-
-module.exports = listActions;

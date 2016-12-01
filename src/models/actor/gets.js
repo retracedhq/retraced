@@ -1,12 +1,15 @@
-const pgPool = require("../../persistence/pg")();
-const _ = require("lodash");
+import * as _ from "lodash";
+
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously fetch >=1 actor(s) from the database.
  *
  * @param {string} [actor_ids] The unique actor id(s) to fetch
  */
-function getActors(opts) {
+export default function getActors(opts) {
   return new Promise((resolve, reject) => {
     if (opts.actor_ids.length === 0) {
       resolve([]);
@@ -38,5 +41,3 @@ function getActors(opts) {
     });
   });
 }
-
-module.exports = getActors;

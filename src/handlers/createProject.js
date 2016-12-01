@@ -1,8 +1,8 @@
-const validateSession = require("../security/validateSession");
-const checkAccess = require("../security/checkAccess");
-const createProject = require("../models/project/create");
+import validateSession from "../security/validateSession";
+import checkAccess from "../security/checkAccess";
+import createProject from "../models/project/create";
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     validateSession("admin", req.get("Authorization"))
       .then((claims) => {
@@ -17,5 +17,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

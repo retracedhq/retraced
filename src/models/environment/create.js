@@ -1,15 +1,19 @@
-const uuid = require("uuid");
+import * as uuid from "uuid";
 
-const config = require("../../config/getConfig")();
-const pgPool = require("../../persistence/pg")();
-const es = require("../../persistence/elasticsearch")();
+import getConfig from "../../config/getConfig";
+import getPgPool from "../../persistence/pg";
+import getEs from "../../persistence/elasticsearch";
+
+const config = getConfig();
+const pgPool = getPgPool();
+const es = getEs();
 
 /**
  * Asynchronously create a new environment with the given options
  *
  * @param {Object} [opts] The request options.
  */
-function createEnvironment(opts) {
+export default function createEnvironment(opts) {
   return new Promise(async (resolve, reject) => {
     const environment = {
       // TODO(zhaytee): Probably should generate the id here instead of getting it passed in...
@@ -59,5 +63,3 @@ function createEnvironment(opts) {
     });
   });
 }
-
-module.exports = createEnvironment;

@@ -1,13 +1,15 @@
-const uuid = require("uuid");
+import * as uuid from "uuid";
 
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Create or
  *
  * @param {Object} [opts] The request options.
  */
-function upsertAction(opts) {
+export default function upsertAction(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -59,5 +61,3 @@ function upsertAction(opts) {
     });
   });
 }
-
-module.exports = upsertAction;

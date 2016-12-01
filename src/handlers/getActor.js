@@ -1,10 +1,10 @@
-const _ = require("lodash");
+import * as _ from "lodash";
 
-const validateSession = require("../security/validateSession");
-const checkAccess = require("../security/checkAccess");
-const getActor = require("../models/actor/get");
+import validateSession from "../security/validateSession";
+import checkAccess from "../security/checkAccess";
+import getActor from "../models/actor/get";
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     validateSession("admin", req.get("Authorization"))
       .then((claims) => {
@@ -30,5 +30,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

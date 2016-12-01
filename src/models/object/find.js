@@ -1,4 +1,6 @@
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously returns an object from the database, if it exists
@@ -10,7 +12,7 @@ const pgPool = require("../../persistence/pg")();
  * @param {Object} [opts.object] The object.
  * @param {String} [opts.object.id] The object _foreign_ id.
  */
-function findObject(opts) {
+export default function findObject(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -42,5 +44,3 @@ function findObject(opts) {
     });
   });
 }
-
-module.exports = findObject;

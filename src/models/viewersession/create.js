@@ -1,8 +1,10 @@
-const jwt = require("jsonwebtoken");
+import * as jwt from "jsonwebtoken";
 
-const config = require("../../config/getConfig")();
+import getConfig from "../../config/getConfig";
 
-function createViewersession(opts) {
+const config = getConfig();
+
+export default function createViewersession(opts) {
   return new Promise((resolve, reject) => {
     // The token is the claims
     const session = {
@@ -13,5 +15,3 @@ function createViewersession(opts) {
     resolve(session);
   });
 }
-
-module.exports = createViewersession;

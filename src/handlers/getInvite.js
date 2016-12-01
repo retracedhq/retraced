@@ -1,6 +1,6 @@
-const getInvite = require("../models/team/invite/get");
+import getInvite from "../models/team/invite/get";
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     getInvite(req.query.id)
       .then((invitation) => {
@@ -9,5 +9,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

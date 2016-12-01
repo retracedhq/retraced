@@ -1,8 +1,8 @@
-const _ = require("lodash");
-const pgPool = require("../persistence/pg")();
-const util = require("util");
+import getPgPool from "../../persistence/pg";
 
-function getLocationByIP(ipAddress) {
+const pgPool = getPgPool();
+
+export default function getLocationByIP(ipAddress) {
   return new Promise((resolve, reject) => {
     if (!ipAddress) {
       resolve(undefined);
@@ -29,7 +29,3 @@ function getLocationByIP(ipAddress) {
     });
   });
 }
-
-module.exports = {
-  getLocationByIP,
-};

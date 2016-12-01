@@ -1,11 +1,13 @@
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously list environments belonging to given project
  *
  * @param {Object} [opts] The request options.
  */
-function listEnvironments(opts) {
+export default function listEnvironments(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -27,5 +29,3 @@ function listEnvironments(opts) {
     });
   });
 }
-
-module.exports = listEnvironments;

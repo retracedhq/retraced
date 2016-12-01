@@ -1,5 +1,8 @@
-const _ = require("lodash");
-const pgPool = require("../../persistence/pg")();
+import * as _ from "lodash";
+
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * getDashboard returns a Promise that retrieves all of the dashboard metrics
@@ -8,7 +11,7 @@ const pgPool = require("../../persistence/pg")();
  * @param {string} [opts.project_id] The project id to query
  * @param {string} [opts.environment_id] The environment id to query
  */
-function listActions(opts) {
+export default function listActions(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -67,5 +70,3 @@ order by h.start_time`;
     });
   });
 }
-
-module.exports = listActions;

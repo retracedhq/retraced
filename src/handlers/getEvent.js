@@ -1,11 +1,11 @@
-const _ = require("lodash");
+import * as _ from "lodash";
 
-const validateSession = require("../security/validateSession");
-const checkAccess = require("../security/checkAccess");
-const getEvent = require("../models/event/get");
-const getActor = require("../models/actor/get");
+import validateSession from "../security/validateSession";
+import checkAccess from "../security/checkAccess";
+import getEvent from "../models/event/get";
+import getActor from "../models/actor/get";
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     const result = {};
 
@@ -41,5 +41,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

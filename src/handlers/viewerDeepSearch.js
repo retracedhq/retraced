@@ -2,15 +2,15 @@ import * as _ from "lodash";
 import * as util from "util";
 import * as uuid from "uuid";
 
-import * as validateSession from "../security/validateSession";
-import * as checkAccess from "../security/checkAccess";
-import * as deepSearchEvents from "../models/event/deepSearch";
+import validateSession from "../security/validateSession";
+import checkAccess from "../security/checkAccess";
+import deepSearchEvents from "../models/event/deepSearch";
 
 import getDisque from "../persistence/disque";
 
 const disque = getDisque();
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     let searchResults;
     let environmentId;
@@ -59,5 +59,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

@@ -1,4 +1,6 @@
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously fetch a action from the database.
@@ -6,7 +8,7 @@ const pgPool = require("../../persistence/pg")();
  * @param {Object} [opts] The query object
  * @param {String} [action_id] The ID of the action to get.
  */
-function getAction(opts) {
+export default function getAction(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -30,5 +32,3 @@ function getAction(opts) {
     });
   });
 }
-
-module.exports = getAction;

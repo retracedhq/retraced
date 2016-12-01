@@ -1,13 +1,13 @@
-let _ = require("lodash");
+import * as _ from "lodash";
 
-const validateSession = require("../security/validateSession");
-const checkAccess = require("../security/checkAccess");
-const searchEvents = require("../models/event/search");
-const addDisplayTitles = require("../models/event/addDisplayTitles");
-const listActors = require("../models/actor/list");
-const listObjects = require("../models/object/list");
+import validateSession from "../security/validateSession";
+import checkAccess from "../security/checkAccess";
+import searchEvents from "../models/event/search";
+import addDisplayTitles from "../models/event/addDisplayTitles";
+import listActors from "../models/actor/list";
+import listObjects from "../models/object/list";
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     let result = {
       events: [],
@@ -81,5 +81,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

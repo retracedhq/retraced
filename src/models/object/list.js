@@ -1,6 +1,9 @@
-const _ = require("lodash");
-const pgPool = require("../../persistence/pg")();
-const gets = require("./gets");
+import * as _ from "lodash";
+
+import getPgPool from "../../persistence/pg";
+import gets from "./gets";
+
+const pgPool = getPgPool();
 
 /**
  * listObjects returns a Promise that retrieves all of the objects for
@@ -11,7 +14,7 @@ const gets = require("./gets");
  * @param {string} [opts.project_id] The project id to query
  * @param {string} [opts.environment_id] The environment id to query
  */
-function listObjects(opts) {
+export default function listObjects(opts) {
   if (opts.object_ids && opts.object_ids.length > 0) {
     return gets(opts);
   }
@@ -50,5 +53,3 @@ function listObjectsForProjectAndEnvironment(projectId, environmentId) {
     });
   });
 }
-
-module.exports = listObjects;

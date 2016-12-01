@@ -1,7 +1,9 @@
-const _ = require("lodash");
+import * as _ from "lodash";
 
-const getApiToken = require("../models/apitoken/get");
-const pgPool = require("../persistence/pg")();
+import getApiToken from "../models/apitoken/get";
+import getPgPool from "../persistence/pg";
+
+const pgPool = getPgPool();
 
 // This currently only supports "user_id" | "token" and "project_id" in opts.
 // but should be extended to support any resource.
@@ -11,7 +13,7 @@ const pgPool = require("../persistence/pg")();
  *
  * @param {Object} [opts] The request options
  */
-function checkAccess(opts) {
+export default function checkAccess(opts) {
   if (_.has(opts, "user_id")) {
     return checkAccessForUser(opts);
   } else if (_.has(opts, "api_token")) {
@@ -59,5 +61,3 @@ function checkAccessForUser(opts) {
     });
   });
 }
-
-module.exports = checkAccess;

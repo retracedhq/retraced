@@ -1,11 +1,13 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-require("datejs");
+import "datejs";
+import * as bcrypt from "bcryptjs";
+import * as jwt from "jsonwebtoken";
 
-const createUser = require("../models/user/create");
-const config = require("../config/getConfig")();
+import createUser from "../models/user/create";
+import getConfig from "../config/getConfig";
 
-const handler = (req) => {
+const config = getConfig();
+
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     hashPassword(req.body.password)
       .then((hashed) => {
@@ -22,13 +24,13 @@ const handler = (req) => {
       })
       .catch((err) => {
         if (err === "DUPLICATE_EMAIL") {
-          reject({ status: 409, err: new Error("Email Already Exists")});
+          reject({ status: 409, err: new Error("Email Already Exists") });
           return;
         }
         reject(err);
       });
   });
-};
+}
 
 function hashPassword(password) {
   return new Promise((resolve, reject) => {
@@ -71,5 +73,3 @@ function createSession(user) {
     resolve(response);
   });
 }
-
-module.exports = handler;
