@@ -1,11 +1,11 @@
-const _ = require("lodash");
+import * as _ from "lodash";
 
-const validateSession = require("../security/validateSession");
-const checkAccess = require("../security/checkAccess");
-const getEventsBulk = require("../models/event/getBulk");
-const getActors = require("../models/actor/gets");
-const getObjects = require("../models/object/gets");
-const addDisplayTitles = require("../models/event/addDisplayTitles");
+import * as validateSession from "../security/validateSession";
+import * as  checkAccess from "../security/checkAccess";
+import * as  getEventsBulk from "../models/event/getBulk";
+import * as  getActors from "../models/actor/gets";
+import * as  getObjects from "../models/object/gets";
+import * as  addDisplayTitles from "../models/event/addDisplayTitles";
 
 const handler = (req) => {
   return new Promise((resolve, reject) => {
