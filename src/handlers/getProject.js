@@ -1,12 +1,12 @@
-const _ = require("lodash");
+import * as _ from "lodash";
 
-const validateSession = require("../security/validateSession");
-const checkAccess = require("../security/checkAccess");
-const getProject = require("../models/project/get");
-const listApiTokens = require("../models/apitoken/list");
-const listEnvironments = require("../models/environment/list");
+import validateSession from "../security/validateSession";
+import checkAccess from "../security/checkAccess";
+import getProject from "../models/project/get";
+import listApiTokens from "../models/apitoken/list";
+import listEnvironments from "../models/environment/list";
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     const result = {
       tokens: [],
@@ -45,5 +45,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

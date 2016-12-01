@@ -1,9 +1,9 @@
-const validateSession = require("../security/validateSession");
-const listTeam = require("../models/team/list");
-const checkAccess = require("../security/checkAccess");
-const listEnvironments = require("../models/environment/list");
+import validateSession from "../security/validateSession";
+import listTeam from "../models/team/list";
+import checkAccess from "../security/checkAccess";
+import listEnvironments from "../models/environment/list";
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     validateSession("admin", req.get("Authorization"))
       .then((claims) => {
@@ -31,5 +31,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

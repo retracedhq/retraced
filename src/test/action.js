@@ -1,11 +1,11 @@
-const _ = require("lodash");
-const chai = require("chai");
-const chaiPromised = require("chai-as-promised");
-const Chance = require("chance");
+import * as _ from "lodash";
+import * as chai from "chai";
+import * as chaiPromised from "chai-as-promised";
+import * as Chance from "chance";
 
-const listActions = require("../models/action/list");
-const upsertAction = require("../models/action/upsert");
-const updateAction = require("../models/action/update");
+import listActions from "../models/action/list";
+import upsertAction from "../models/action/upsert";
+import updateAction from "../models/action/update";
 
 const expect = chai.expect;
 const chance = new Chance();

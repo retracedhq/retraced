@@ -1,13 +1,15 @@
-const _ = require("lodash");
+import * as _ from "lodash";
 
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously returns all tokens for a project from the database
  *
  * @param {Object} [opts] The request options.
  */
-function listApiTokens(opts) {
+export default function listApiTokens(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -31,5 +33,3 @@ function listApiTokens(opts) {
     });
   });
 }
-
-module.exports = listApiTokens;

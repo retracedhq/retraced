@@ -1,11 +1,13 @@
-const elasticsearch = require("elasticsearch");
-const _ = require("lodash");
+import * as elasticsearch from "elasticsearch";
+import * as _ from "lodash";
 
-const config = require("../config/getConfig")();
+import getConfig from "../config/getConfig";
+
+const config = getConfig();
 
 let es;
 
-function getElasticsearch() {
+export default function getElasticsearch() {
   if (!es) {
     const c = config.Elasticsearch;
     const hosts = _.map(c.Endpoints, (e) => {
@@ -16,5 +18,3 @@ function getElasticsearch() {
 
   return es;
 }
-
-module.exports = getElasticsearch;

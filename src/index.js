@@ -36,8 +36,7 @@ function buildRoutes() {
         console.log(chalk.yellow(`[${reqId}] <- ${bodyString}`));
       }
 
-      // TODO(zhaytee): Do this without require()
-      const handlerFunc = require(`./handlers/${handlerName}`);
+      const handlerFunc = route.handler;
 
       // FIXME: I couldn't get this to work using async/await. Node kept complaining about
       // unhandled promise rejections. Something to do with the transpiler?

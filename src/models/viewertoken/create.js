@@ -1,7 +1,9 @@
-const uuid = require("uuid");
-const redis = require("redis");
+import * as uuid from "uuid";
+import * as redis from "redis";
 
-const config = require("../../config/getConfig")();
+import getConfig from "../../config/getConfig";
+
+const config = getConfig();
 
 /**
  * {
@@ -11,7 +13,7 @@ const config = require("../../config/getConfig")();
  *   format: {String}
  * }
  */
-function createViewerToken(opts) {
+export default function createViewerToken(opts) {
   return new Promise((resolve, reject) => {
     const redisClient = redis.createClient({ url: config.Redis.URI });
     const viewerToken = uuid.v4().replace(/-/g, "");
@@ -45,5 +47,3 @@ function createViewerToken(opts) {
     });
   });
 }
-
-module.exports = createViewerToken;

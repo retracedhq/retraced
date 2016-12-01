@@ -1,13 +1,15 @@
-const uuid = require("uuid");
+import * as uuid from "uuid";
 
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously create a new API token with the given options
  *
  * @param {Object} [opts] The request options.
  */
-function createApiToken(opts) {
+export default function createApiToken(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -48,5 +50,3 @@ function createApiToken(opts) {
     });
   });
 }
-
-module.exports = createApiToken;

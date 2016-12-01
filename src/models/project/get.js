@@ -1,11 +1,13 @@
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously fetch a project from the database.
  *
  * @param {string} [projectId] The project ID
  */
-function getProject(projectId) {
+export default function getProject(projectId) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -28,5 +30,3 @@ function getProject(projectId) {
     });
   });
 }
-
-module.exports = getProject;

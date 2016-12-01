@@ -1,32 +1,30 @@
-const createUser = require("../../user/create");
-const addUserToProject = require("../../project/access").addUserToProject;
-const getInvite = require("./get");
-const deleteInvite = require("./delete");
+import createUser from "../../user/create";
+import { addUserToProject } from "../../project/access";
+import getInvite from "./get";
+import deleteInvite from "./delete";
 
-function acceptInvite(inviteId, hashedPw) {
+export default function acceptInvite(inviteId, hashedPw) {
   return new Promise((resolve, reject) => {
     let user;
     let invite;
     getInvite(inviteId)
-    .then((i) => {
-      invite = i;
-      return createUser({
-        email: invite.email,
-        hashedPassword: hashedPw,
-      });
-    })
-    .then((u) => {
-      user = u;
-      return addUserToProject(invite.project_id, user.id);
-    })
-    .then(() => {
-      return deleteInvite(inviteId);
-    })
-    .then(() => {
-      resolve(user);
-    })
-    .catch(reject);
+      .then((i) => {
+        invite = i;
+        return createUser({
+          email: invite.email,
+          hashedPassword: hashedPw,
+        });
+      })
+      .then((u) => {
+        user = u;
+        return addUserToProject(invite.project_id, user.id);
+      })
+      .then(() => {
+        return deleteInvite(inviteId);
+      })
+      .then(() => {
+        resolve(user);
+      })
+      .catch(reject);
   });
 }
-
-module.exports = acceptInvite;

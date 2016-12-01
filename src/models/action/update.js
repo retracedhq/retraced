@@ -1,6 +1,8 @@
-const uuid = require("uuid");
+import * as uuid from "uuid";
 
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Updates an action in the database
@@ -9,7 +11,7 @@ const pgPool = require("../../persistence/pg")();
  * @param {String} [opts.action_id] The id of the action to update.
  * @param {String} [opts.display_template] The display_template to apply.
  */
-function updateAction(opts) {
+export default function updateAction(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -37,5 +39,3 @@ function updateAction(opts) {
     });
   });
 }
-
-module.exports = updateAction;

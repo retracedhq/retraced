@@ -1,6 +1,8 @@
-const uuid = require("uuid");
+import * as uuid from "uuid";
 
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * createUser will create a new user account
@@ -9,7 +11,7 @@ const pgPool = require("../../persistence/pg")();
  * @param {string} [opts.email] the email address to use
  * @param {string} [opts.hashedPassword] the bcrypted password
  */
-function createUser(opts) {
+export default function createUser(opts) {
   return new Promise((resolve, reject) => {
     const rollback = (client, done) => {
       client.query("ROLLBACK", (err) => {
@@ -79,5 +81,3 @@ function createUser(opts) {
     });
   });
 }
-
-module.exports = createUser;

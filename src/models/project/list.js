@@ -1,13 +1,15 @@
-const _ = require("lodash");
+import * as _ from "lodash";
 
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously returns all projects for a user from the database
  *
  * @param {Object} [opts] The request options.
  */
-function listProjects(opts) {
+export default function listProjects(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -36,5 +38,3 @@ function listProjects(opts) {
     });
   });
 }
-
-module.exports = listProjects;

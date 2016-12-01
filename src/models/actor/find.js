@@ -1,11 +1,13 @@
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously returns an actor from the database, if it exists
  *
  * @param {Object} [opts] The request options.
  */
-function findActor(opts) {
+export default function findActor(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -37,5 +39,3 @@ function findActor(opts) {
     });
   });
 }
-
-module.exports = findActor;

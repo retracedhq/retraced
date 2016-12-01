@@ -1,7 +1,7 @@
 import "source-map-support/register";
 import * as hiredis from "hiredis";
 
-import * as getConfig from "../config/getConfig";
+import getConfig from "../config/getConfig";
 
 let sharedClient;
 

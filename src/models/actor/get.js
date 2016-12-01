@@ -1,11 +1,13 @@
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously fetch 1 actor from the database.
  *
  * @param {string} [actor_id] The unique actor id to fetch
  */
-function getActor(opts) {
+export default function getActor(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -29,5 +31,3 @@ function getActor(opts) {
     });
   });
 }
-
-module.exports = getActor;

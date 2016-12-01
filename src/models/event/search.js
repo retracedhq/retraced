@@ -1,7 +1,10 @@
-let docClient = require("../../persistence/dynamo")();
-let config = require("../../config/getConfig")();
+import getDocClient from "../../persistence/dynamo";
+import getConfig from "../../config/getConfig";
 
-function searchEvents(opts) {
+const docClient = getDocClient();
+const config = getConfig();
+
+export default function searchEvents(opts) {
   return new Promise((resolve, reject) => {
     let projectId = opts.project_id;
     let environmentId = opts.environment_id;
@@ -48,5 +51,3 @@ function searchEvents(opts) {
     });
   });
 }
-
-module.exports = searchEvents;

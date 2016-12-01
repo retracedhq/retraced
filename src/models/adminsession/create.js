@@ -1,9 +1,11 @@
-require("datejs");
-const jwt = require("jsonwebtoken");
+import "datejs";
+import * as jwt from "jsonwebtoken";
 
-const config = require("../../config/getConfig")();
+import getConfig from "../../config/getConfig";
 
-function createAdminsession(opts) {
+const config = getConfig();
+
+export default function createAdminsession(opts) {
   return new Promise((resolve, reject) => {
     // The token is the claims
     const claims = {
@@ -14,5 +16,3 @@ function createAdminsession(opts) {
     resolve(jwt.sign(claims, config.Session.HMACSecret));
   });
 }
-
-module.exports = createAdminsession;

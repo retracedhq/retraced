@@ -1,8 +1,10 @@
-const uuid = require("uuid");
+import * as uuid from "uuid";
 
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
 
-function addUserToProject(projectId, userId) {
+const pgPool = getPgPool();
+
+export function addUserToProject(projectId, userId) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -38,7 +40,3 @@ function addUserToProject(projectId, userId) {
     });
   });
 }
-
-module.exports = {
-  "addUserToProject": addUserToProject,
-};

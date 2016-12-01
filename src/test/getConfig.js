@@ -1,7 +1,7 @@
-const _ = require("lodash");
+import * as _ from "lodash";
+import { expect } from "chai";
 
-const expect = require("chai").expect;
-const getConfig = require("../config/getConfig");
+import getConfig from "../config/getConfig";
 
 let config;
 describe("getConfig", () => {

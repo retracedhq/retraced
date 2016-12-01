@@ -1,7 +1,7 @@
-const _ = require("lodash");
-const Handlebars = require("handlebars");
+import * as _ from "lodash";
+import * as Handlebars from "handlebars";
 
-const listActions = require("../action/list");
+import listActions from "../action/list";
 
 /**
  * addDisplayTitles returns a Promise that does something fun to an array of events.
@@ -11,7 +11,7 @@ const listActions = require("../action/list");
  * @param {string} [opts.environment_id] The environment id to query
  * @param {Array} [opts.events] The events to add display titles
  */
-function addDisplayTitles(opts) {
+export default function addDisplayTitles(opts) {
   return new Promise((resolve, reject) => {
     // Get all actions we need in a single database query
     listActions({
@@ -78,5 +78,3 @@ function buildDisplay(template, event, projectId, environmentId) {
 
   return Handlebars.compile(template)(data);
 }
-
-module.exports = addDisplayTitles;

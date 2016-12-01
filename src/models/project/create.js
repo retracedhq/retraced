@@ -1,17 +1,19 @@
-const uuid = require("uuid");
-const Analytics = require("analytics-node");
+import * as uuid from "uuid";
+import Analytics from "analytics-node";
 
-const pgPool = require("../../persistence/pg")();
-const createApiToken = require("../apitoken/create");
-const createEnvironment = require("../environment/create");
-const addUserToProject = require("./access").addUserToProject;
+import getPgPool from "../../persistence/pg";
+import createApiToken from "../apitoken/create";
+import createEnvironment from "../environment/create";
+import { addUserToProject } from "./access";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously create a new project with the given options
  *
  * @param {Object} [opts] The request options.
  */
-function createProject(opts) {
+export default function createProject(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -101,5 +103,3 @@ function getDefaultEnvironments() {
     },
   ];
 }
-
-module.exports = createProject;

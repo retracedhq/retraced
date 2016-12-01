@@ -1,10 +1,11 @@
-var AWS = require("aws-sdk");
+import * as AWS from "aws-sdk";
 
-var config = require("../config/getConfig")();
+import getConfig from "../config/getConfig";
 
+const config = getConfig();
 var docClient;  // the reusable object
 
-function getDocClient() {
+export default function getDocClient() {
   if (!docClient) {
     AWS.config.update({
       region: config.DynamoDB.Region,
@@ -17,5 +18,3 @@ function getDocClient() {
 
   return docClient;
 }
-
-module.exports = getDocClient;

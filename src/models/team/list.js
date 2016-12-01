@@ -1,11 +1,13 @@
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously returns the entire team for a project
  *
  * @param {Object} [opts] The request options.
  */
-function listTeam(opts) {
+export default function listTeam(opts) {
   return new Promise((resolve, reject) => {
     const promises = [];
     promises.push(listTeamMembers(opts));
@@ -57,5 +59,3 @@ function listTeamMembers(opts) {
     });
   });
 }
-
-module.exports = listTeam;

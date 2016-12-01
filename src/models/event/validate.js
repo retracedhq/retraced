@@ -1,4 +1,4 @@
-let _ = require("lodash");
+import * as _ from "lodash";
 
 // TODO this should return some details about what is missing
 
@@ -8,7 +8,7 @@ let _ = require("lodash");
  * @param {Object} [opts] The request options.
  * @parma {Object} [opts.event] The event or array of events to validate.
  */
-function validateEvent(opts) {
+export default function validateEvent(opts) {
   return new Promise((resolve, reject) => {
     let events = opts.event;
     if (!Array.isArray(events)) {
@@ -61,5 +61,3 @@ function removeEmptyFields(o) {
 
   return o;
 }
-
-module.exports = validateEvent;

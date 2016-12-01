@@ -1,8 +1,11 @@
-const uuid = require("uuid");
-const mandrill = require("mandrill-api/mandrill");
+import * as uuid from "uuid";
+import * as mandrill from "mandrill-api/mandrill";
 
-const pgPool = require("../../persistence/pg")();
-const config = require("../../config/getConfig")();
+import getPgPool from "../../persistence/pg";
+import getConfig from "../../config/getConfig";
+
+const pgPool = getPgPool();
+const config = getConfig();
 
 /**
  * Invite a new member to the team.
@@ -11,7 +14,7 @@ const config = require("../../config/getConfig")();
  * @param {string} [opts.email] The email address to invite
  * @param {string} [opts.project_id] The project ID to invite the user to
  */
-function createInvite(opts) {
+export default function createInvite(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -61,7 +64,7 @@ function createInvite(opts) {
           template_content: templateContent,
         };
 
-        mandrillClient.templates.render(params, function(rendered) {
+        mandrillClient.templates.render(params, function (rendered) {
           const moreParams = {
             message: {
               html: rendered.html,
@@ -77,15 +80,15 @@ function createInvite(opts) {
             async: false,
           };
           mandrillClient.messages.send(moreParams,
-            function(result) {
+            function (result) {
               resolve(invite);
             },
-            function(mandrillErr) {
+            function (mandrillErr) {
               console.log("Error sending email: ", mandrillErr);
               reject(mandrillErr);
             },
           );
-          }, function(mandrillErr) {
+        }, function (mandrillErr) {
           console.log("Error rendering email: ", mandrillErr);
           reject(mandrillErr);
         });
@@ -93,5 +96,3 @@ function createInvite(opts) {
     });
   });
 }
-
-module.exports = createInvite;

@@ -1,8 +1,8 @@
-const validateApiToken = require("../security/validateApiToken");
-const createViewerToken = require("../models/viewertoken/create");
-const checkAccess = require("../security/checkAccess");
+import validateApiToken from "../security/validateApiToken";
+import createViewerToken from "../models/viewertoken/create";
+import checkAccess from "../security/checkAccess";
 
-const handler = (req) => {
+export default function handler(req) {
   return new Promise((resolve, reject) => {
     let apiToken;
     validateApiToken(req.get("Authorization"))
@@ -37,5 +37,3 @@ const handler = (req) => {
       .catch(reject);
   });
 };
-
-module.exports = handler;

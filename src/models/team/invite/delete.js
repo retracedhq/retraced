@@ -1,11 +1,13 @@
-const pgPool = require("../../../persistence/pg")();
+import getPgPool from "../../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * Asynchronously delete an invite from the database.
  *
  * @param {string} [id] The invite id
  */
-function deleteInvite(inviteId) {
+export default function deleteInvite(inviteId) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -26,5 +28,3 @@ function deleteInvite(inviteId) {
     });
   });
 }
-
-module.exports = deleteInvite;

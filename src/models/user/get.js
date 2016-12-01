@@ -1,4 +1,6 @@
-const pgPool = require("../../persistence/pg")();
+import getPgPool from "../../persistence/pg";
+
+const pgPool = getPgPool();
 
 /**
  * getUser Async fetch of user by email address
@@ -6,7 +8,7 @@ const pgPool = require("../../persistence/pg")();
  * @param {Object} [opts] the request options
  * @param {string} [opts.email] the email address to use
  */
-function getUser(opts) {
+export default function getUser(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -29,5 +31,3 @@ function getUser(opts) {
     });
   });
 }
-
-module.exports = getUser;
