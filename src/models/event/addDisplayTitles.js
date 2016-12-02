@@ -10,50 +10,83 @@ import listActions from "../action/list";
  * @param {string} [opts.project_id] The project id to query
  * @param {string} [opts.environment_id] The environment id to query
  * @param {Array} [opts.events] The events to add display titles
+ * @param {string} [opts.source] The source (viewer or admin)
  */
-export default function addDisplayTitles(opts) {
-  return new Promise((resolve, reject) => {
-    // Get all actions we need in a single database query
-    listActions({
-      project_id: opts.project_id,
-      environment_id: opts.environment_i,
-    })
-    .then((actions) => {
-      var updated = _.map(opts.events, (event) => {
-        // If the action has an display template, use that
-        let action = _.find(actions, ["action", event.action]);
-        if (action && action.display_template) {
-          event.display_title = buildDisplay(action.display_template, event, opts.project_id, opts.environment_id);
-        } else if (event.actor && event.actor.name) {
-          if (event.object) {
-            event.display_title = `[**${event.actor.name}**](/project/${opts.project_id}/actor/${event.actor.id}) performed the action **${event.action}** on [**${event.object.name}**](/project/${opts.project_id}/object/${event.object.id})`;
+export default async function addDisplayTitles(opts) {
+  // Get all actions we need in a single database query
+  const actions = await listActions({
+    project_id: opts.project_id,
+    environment_id: opts.environment_i,
+  });
+
+  const updated = _.map(opts.events, (event) => {
+    // If the action has an display template, use that
+    let action = _.find(actions, ["action", event.action]);
+    if (action && action.display_template) {
+      event.display_title = buildDisplay(action.display_template, event, opts.project_id, opts.environment_id, opt.source);
+    } else if (event.actor && event.actor.name) {
+      let actorTemplate;
+      if (opts.source === "viewer") {
+        console.log(event.actor);
+        if (event.actor.url) {
+          actorTemplate = `[**${event.actor.name}**](${event.actor.url})`;
+        } else {
+          actorTemplate = `**${event.actor.name}**`;
+        }
+      } else {
+        actorTemplate = `[**${event.actor.name}**](/project/${opts.project_id}/actor/${event.actor.id})`;
+      }
+
+      if (event.object) {
+        let objectTemplate;
+        if (opts.source === "viewer") {
+          if (event.object.url) {
+            objectTemplate = `[**${event.object.name}**](${event.object.url})`;
           } else {
-            event.display_title = `[**${event.actor.name}**](/project/${opts.project_id}/actor/${event.actor.id}) performed the action **${event.action}**`;
+            objectTemplate = `**${event.object.name}**`;
           }
         } else {
-          event.display_title = event.action;
+          objectTemplate = `[**${event.object.name}**](/project/${opts.project_id}/object/${event.object.id})`;
         }
-        return event;
-      });
-
-      resolve(updated);
-    })
-    .catch((err) => {
-      reject(err);
-    });
+        event.display_title = `${actorTemplate} performed the action **${event.action}** on ${objectTemplate}`;
+      } else {
+        event.display_title = `${actorTemplate} performed the action **${event.action}**`;
+      }
+    } else {
+      event.display_title = event.action;
+    }
+    return event;
   });
+
+  return updated;
 }
 
-function buildDisplay(template, event, projectId, environmentId) {
+function buildDisplay(template, event, projectId, environmentId, source) {
   let data = event;
 
-  Handlebars.registerHelper("actor", function(){
+  Handlebars.registerHelper("actor", () => {
+    if (source === "viewer") {
+      if (this.actor.url) {
+        return `[**${this.actor.name}**](${this.actor.url})`;
+      } else {
+        return `**${this.actor.name}**`;
+      }
+    }
+
     return `[**${this.actor.name}**](/project/${projectId}/actor/${this.actor.id})`;
   });
-  Handlebars.registerHelper("object", function(){
+  Handlebars.registerHelper("object", () => {
     if (!this.object) {
       return "*unknown*";
     }
+    if (soruce === "viewer") {
+      if (this.object.url) {
+        return `[**${this.object.name}**](${this.object.url})`;
+      } else {
+        return `**${this.object.name}**`;
+      }
+    }
+
     return `[**${this.object.name}**](/project/${projectId}/object/${this.object.id})`;
   });
 

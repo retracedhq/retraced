@@ -47,6 +47,7 @@ export default async function handler(req) {
     events: events,
     project_id: req.params.projectId,
     environment_id: claims.environment_id,
+    source: "admin",
   });
 
   return { events: events };
