@@ -13,7 +13,7 @@ export default function getEventsBulk(opts) {
     const scylladb = await getScylla();
 
     const selectStmt = `select
-      id, actor_id, object_id, description, action, crud, is_failure, is_anonymous, created, received, team_id, source_ip, country, loc_subdiv1, loc_subdiv2
+      id, actor_id, object_id, description, action, crud, is_failure, is_anonymous, created, received, team_id, source_ip, country, loc_subdiv1, loc_subdiv2, raw
       from retraced.event
       where id in ?;
     `;
