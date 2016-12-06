@@ -1,7 +1,4 @@
 import getScylla from "../../persistence/scylla";
-import getConfig from "../../config/getConfig";
-
-const config = getConfig();
 
 export default function getEvent(opts) {
   return new Promise(async (resolve, reject) => {

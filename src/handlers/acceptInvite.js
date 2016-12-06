@@ -3,10 +3,7 @@ import * as _ from "lodash";
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 
-import getConfig from "../config/getConfig";
 import acceptInvite from "../models/team/invite/accept";
-
-const config = getConfig();
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {
@@ -59,7 +56,7 @@ function createSession(user) {
       expiry: Date.today().add(21).days(),
     };
 
-    response.token = jwt.sign(claims, config.Session.HMACSecret);
+    response.token = jwt.sign(claims, process.env.HMAC_SECRET_ADMIN);
     resolve(response);
   });
 }

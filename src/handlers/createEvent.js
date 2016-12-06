@@ -5,11 +5,9 @@ import * as util from "util";
 import validateEvent from "../models/event/validate";
 import checkAccess from "../security/checkAccess";
 import validateApiToken from "../security/validateApiToken";
-import getConfig from "../config/getConfig";
 import getDisque from "../persistence/disque";
 import getPgPool from "../persistence/pg";
 
-const config = getConfig();
 const disque = getDisque();
 const pgPool = getPgPool();
 

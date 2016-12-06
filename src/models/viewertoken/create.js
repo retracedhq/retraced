@@ -1,10 +1,6 @@
 import * as uuid from "uuid";
 import * as redis from "redis";
 
-import getConfig from "../../config/getConfig";
-
-const config = getConfig();
-
 /**
  * {
  *   project_id: {String}
@@ -15,7 +11,7 @@ const config = getConfig();
  */
 export default function createViewerToken(opts) {
   return new Promise((resolve, reject) => {
-    const redisClient = redis.createClient({ url: config.Redis.URI });
+    const redisClient = redis.createClient({ url: process.env.REDIS_URI });
     const viewerToken = uuid.v4().replace(/-/g, "");
 
     const hash = {

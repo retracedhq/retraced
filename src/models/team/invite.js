@@ -2,10 +2,8 @@ import * as uuid from "uuid";
 import * as mandrill from "mandrill-api/mandrill";
 
 import getPgPool from "../../persistence/pg";
-import getConfig from "../../config/getConfig";
 
 const pgPool = getPgPool();
-const config = getConfig();
 
 /**
  * Invite a new member to the team.
@@ -51,12 +49,12 @@ export default function createInvite(opts) {
 
         // Send the email
         // TODO this should be async in a queue
-        const mandrillClient = new mandrill.Mandrill(config.Mandrill.APIKey);
+        const mandrillClient = new mandrill.Mandrill(process.env.MANDRILL_KEY);
         const templateName = "retraced/invite-to-team";
         const templateContent = [];
         const mergeVars = [{
           name: "invite_url",
-          content: `${config.URLs.RetracedAppBase}/invite?id=${invite.id}`,
+          content: `${process.env.RETRACED_APP_BASE}/invite?id=${invite.id}`,
         }];
 
         const params = {
