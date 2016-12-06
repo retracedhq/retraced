@@ -27,7 +27,6 @@ export default async function addDisplayTitles(opts) {
     } else if (event.actor && event.actor.name) {
       let actorTemplate;
       if (opts.source === "viewer") {
-        console.log(event.actor);
         if (event.actor.url) {
           actorTemplate = `[**${event.actor.name}**](${event.actor.url})`;
         } else {
