@@ -18,12 +18,10 @@ import listActors from "./handlers/listActors";
 import listObjects from "./handlers/listObjects";
 import listProjects from "./handlers/listProjects";
 import listTeam from "./handlers/listTeam";
-import searchEvents from "./handlers/searchEvents";
 import updateAction from "./handlers/updateAction";
 import userCreate from "./handlers/userCreate";
 import userLogin from "./handlers/userLogin";
 import viewerDeepSearch from "./handlers/viewerDeepSearch";
-import viewerEvents from "./handlers/viewerEvents";
 import viewerGetEventsBulk from "./handlers/viewerGetEventsBulk";
 import viewerSession from "./handlers/viewerSession";
 import viewerToken from "./handlers/viewerToken";
@@ -53,11 +51,6 @@ const routes = {
     path: "/v1/project/:projectId",
     method: "get",
     handler: getProject,
-  },
-  searchEvents: {
-    path: "/v1/project/:projectId/events/search",
-    method: "post",
-    handler: searchEvents,
   },
   deepSearch: {
     path: "/v1/project/:projectId/events/search/deep",
@@ -93,11 +86,6 @@ const routes = {
     path: "/v1/viewersession",
     method: "post",
     handler: viewerSession,
-  },
-  viewerEvents: {
-    path: "/v1/viewer/:projectId/events/search",
-    method: "get",
-    handler: viewerEvents,
   },
   viewerGetEventsBulk: {
     path: "/v1/viewer/:projectId/events/bulk",

@@ -1,21 +1,19 @@
 import "source-map-support/register";
 import * as cassandra from "cassandra-driver";
 import * as dns from "dns";
+import * as _ from "lodash";
 
-import getConfig from "../config/getConfig";
-
-const config = getConfig();
 let scylla;
 
 export default async function getScylla() {
   if (!scylla) {
-    const user = config.ScyllaDB.User;
-    const pw = config.ScyllaDB.Password;
+    const user = process.env.SCYLLA_USER;
+    const pw = process.env.SCYLLA_PASSWORD;
 
     // Manually resolve hostnames of contact points, because cassandra-driver is
     // bizarre and can't handle hostnames being paired with port numbers.
     const contactPoints = [];
-    for (const hostAddress of config.ScyllaDB.Hosts) {
+    for (const hostAddress of _.split(process.env.SCYLLA_HOSTS, ",")) {
       const toks = hostAddress.split(":");
       const hostname = toks[0];
       const port = toks[1];
@@ -35,7 +33,7 @@ export default async function getScylla() {
     const authProvider = new cassandra.auth.PlainTextAuthProvider(user, pw);
     scylla = new cassandra.Client({
       contactPoints,
-      keyspace: config.ScyllaDB.Keyspace,
+      keyspace: process.env.SCYLLA_KEYSPACE,
       authProvider,
     });
   }

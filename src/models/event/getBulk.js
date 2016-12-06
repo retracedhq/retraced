@@ -3,10 +3,7 @@ import * as _ from "lodash";
 import * as uuid from "uuid";
 import * as util from "util";
 
-import getConfig from "../../config/getConfig";
 import getScylla from "../../persistence/scylla";
-
-const config = getConfig();
 
 export default function getEventsBulk(opts) {
   return new Promise(async (resolve, reject) => {

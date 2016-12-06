@@ -1,22 +1,21 @@
 import "source-map-support/register";
 import * as hiredis from "hiredis";
-
-import getConfig from "../config/getConfig";
+import * as _ from "lodash";
 
 let sharedClient;
 
 export default function getDisque() {
   if (!sharedClient) {
-    sharedClient = new DisqueClient(getConfig());
+    sharedClient = new DisqueClient();
   }
 
   return sharedClient;
 }
 
 class DisqueClient {
-  constructor(config) {
+  constructor() {
     this.nodes = [];
-    config.Disque.Nodes.forEach((n) => {
+    _.split(process.env.DISQUE_NODES, ",").forEach((n) => {
       const parts = n.split(":");
       this.nodes.push({
         host: parts[0],
@@ -24,7 +23,7 @@ class DisqueClient {
       });
     });
 
-    this.password = config.Disque.Password;
+    this.password = process.env.DISQUE_PASSWORD;
   }
 
   connect() {

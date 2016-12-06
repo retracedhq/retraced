@@ -1,10 +1,8 @@
 import * as uuid from "uuid";
 
-import getConfig from "../../config/getConfig";
 import getPgPool from "../../persistence/pg";
 import getEs from "../../persistence/elasticsearch";
 
-const config = getConfig();
 const pgPool = getPgPool();
 const es = getEs();
 

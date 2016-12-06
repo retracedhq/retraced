@@ -1,18 +1,12 @@
+import "source-map-support/register";
 import * as elasticsearch from "elasticsearch";
 import * as _ from "lodash";
-
-import getConfig from "../config/getConfig";
-
-const config = getConfig();
 
 let es;
 
 export default function getElasticsearch() {
   if (!es) {
-    const c = config.Elasticsearch;
-    const hosts = _.map(c.Endpoints, (e) => {
-      return `${c.Protocol}://${c.User}:${c.Password}@${e}:${c.Port}/`;
-    });
+    const hosts = _.split(process.env.ELASTICSEARCH_NODES, ",");
     es = new elasticsearch.Client({ hosts });
   }
 

@@ -1,9 +1,5 @@
 import * as jwt from "jsonwebtoken";
 
-import getConfig from "../config/getConfig";
-
-const config = getConfig();
-
 /**
  * Asynchronously validates a JWT token from the event, and returns the claims.
  *
@@ -18,7 +14,7 @@ export default function validateSession(jwtSource, authString) {
 
     const authHeader = authString;
     if (jwtSource === "viewer") {
-      jwt.verify(authString, config.Session.HMACSecretViewer, (err, claims) => {
+      jwt.verify(authString, process.env.HMAC_SECRET_VIEWER, (err, claims) => {
         if (err) {
           reject(err);
           return;
@@ -27,7 +23,7 @@ export default function validateSession(jwtSource, authString) {
         resolve(claims);
       });
     } else if (jwtSource === "admin") {
-      jwt.verify(authString, config.Session.HMACSecret, (err, claims) => {
+      jwt.verify(authString, process.env.HMAC_SECRET_ADMIN, (err, claims) => {
         if (err) {
           reject(err);
           return;
