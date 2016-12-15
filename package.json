@@ -40,7 +40,7 @@
   },
   "scripts": {
     "pretest": "tsc",
-    "test": "nyc mocha lib/test/*.js"
+    "test": "nyc mocha build/test/*.js"
   },
   "author": "",
   "license": "ISC",
