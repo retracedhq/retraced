@@ -7,5 +7,4 @@ build: prebuild
 	./node_modules/.bin/tsc
 
 run:
-	cp config/${RETRACED_ENV}.json config/config.json	
 	node --no-deprecation ./build/index.js
