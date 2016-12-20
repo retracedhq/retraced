@@ -8,3 +8,6 @@ build: prebuild
 
 run:
 	node --no-deprecation ./build/index.js
+
+test: build
+	yarn test
