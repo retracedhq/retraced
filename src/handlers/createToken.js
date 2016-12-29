@@ -30,7 +30,10 @@ export default function handler(req) {
         });
       })
       .then((tokens) => {
-        resolve({ tokens: tokens });
+        resolve({
+          status: 201,
+          body: JSON.stringify({ tokens: tokens }),
+        });
       })
       .catch(reject);
   });

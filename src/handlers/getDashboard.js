@@ -22,7 +22,10 @@ export default function handler(req) {
         });
       })
       .then((dashboard) => {
-        resolve({ dashboard: dashboard });
+        resolve({
+          status: 200,
+          body: JSON.stringify({ dashboard: dashboard }),
+        });
       })
       .catch(reject);
   });

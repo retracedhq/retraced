@@ -17,7 +17,10 @@ export default function handler(req) {
         return createSession(user);
       })
       .then((response) => {
-        resolve(response);
+        resolve({
+          status: 201,
+          body: JSON.stringify(response),
+        });
       })
       .catch((err) => {
         if (err === "DUPLICATE_EMAIL") {

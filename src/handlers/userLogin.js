@@ -35,7 +35,10 @@ export default function handler(req) {
           },
           token,
         };
-        resolve(response);
+        resolve({
+          status: 200,
+          body: JSON.stringify(response),
+        });
       })
       .catch(reject);
   });

@@ -43,25 +43,23 @@ function buildRoutes() {
       handlerFunc(req)
         .then((result) => {
           if (result) {
-            if (result.status && result.body) {
-              // Structured result, specific status code and response object.
-              let responseString = JSON.stringify(result.body);
-              if (responseString.length > 512) {
-                responseString = `${responseString.substring(0, 512)} (... truncated, total ${responseString.length} bytes)`;
-              }
-              console.log(chalk.cyan(`[${reqId}] => ${result.code} ${responseString}`));
-              res.status(result.status).json(result.body);
-            } else {
-              // Generic result, default code.
-              let responseString = JSON.stringify(result);
-              if (responseString.length > 512) {
-                responseString = `${responseString.substring(0, 512)} (... truncated, total ${responseString.length} bytes)`;
-              }
-              console.log(chalk.cyan(`[${reqId}] => 200 ${responseString}`));
-              res.status(200).json(result);
+            let statusToSend = result.status || 200;
+            let contentType = result.contentType || "application/json";
+
+            let bodyToLog = result.body;
+            if (!bodyToLog) {
+              bodyToLog = "";
+            } else if (bodyToLog.length > 512) {
+              bodyToLog = `${bodyToLog.substring(0, 512)} (... truncated, total ${bodyToLog.length} bytes)`;
             }
+            console.log(chalk.cyan(`[${reqId}] => ${result.status} ${bodyToLog}`));
+            let respObj = res.status(statusToSend).type(contentType);
+            if (result.filename) {
+              respObj.attachment(result.filename);
+            }
+            respObj.send(result.body);
           } else {
-            // No response body, I guess.
+            // Generic response. Shouldn't happen, but...
             console.log(chalk.cyan(`[${reqId}] => 200`));
             res.status(200).json(result);
           }

@@ -23,7 +23,10 @@ export default function handler(req) {
         });
       })
       .then((action) => {
-        resolve({ action: action });
+        resolve({
+          status: 200,
+          body: JSON.stringify({ action: action }),
+        });
       })
       .catch(reject);
   });

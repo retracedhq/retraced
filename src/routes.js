@@ -21,12 +21,16 @@ import listTeam from "./handlers/listTeam";
 import updateAction from "./handlers/updateAction";
 import userCreate from "./handlers/userCreate";
 import userLogin from "./handlers/userLogin";
+import viewerCreateExport from "./handlers/viewerCreateExport";
+import viewerListExports from "./handlers/viewerListExports";
+import viewerRenderSavedExport from "./handlers/viewerRenderSavedExport";
+import viewerUpdateExport from "./handlers/viewerUpdateExport";
 import viewerDeepSearch from "./handlers/viewerDeepSearch";
 import viewerGetEventsBulk from "./handlers/viewerGetEventsBulk";
 import viewerSession from "./handlers/viewerSession";
 import viewerToken from "./handlers/viewerToken";
 
-const routes = {
+export default {
   userCreate: {
     path: "/v1/user/signup",
     method: "post",
@@ -157,6 +161,24 @@ const routes = {
     method: "get",
     handler: viewerToken,
   },
+  viewerCreateExport: {
+    path: "/v1/project/:projectId/export",
+    method: "post",
+    handler: viewerCreateExport,
+  },
+  viewerListExports: {
+    path: "/v1/project/:projectId/exports",
+    method: "get",
+    handler: viewerListExports,
+  },
+  viewerUpdateExport: {
+    path: "/v1/project/:projectId/export/:exportId",
+    method: "put",
+    handler: viewerUpdateExport,
+  },
+  viewerRenderSavedExport: {
+    path: "/v1/project/:projectId/export/:exportId/rendered",
+    method: "get",
+    handler: viewerRenderSavedExport,
+  },
 };
-
-export default routes;

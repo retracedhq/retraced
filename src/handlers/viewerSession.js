@@ -36,7 +36,10 @@ export default function handler(req) {
         return disque.addjob("user_reporting_task", job, 0, opts);
       })
       .then(() => {
-        resolve(session);
+        resolve({
+          status: 200,
+          body: JSON.stringify(session),
+        });
       })
       .catch(reject);
   });

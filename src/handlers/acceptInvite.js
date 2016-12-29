@@ -15,7 +15,9 @@ export default function handler(req) {
         return createSession(user);
       })
       .then((response) => {
-        resolve(response);
+        resolve({
+          body: JSON.stringify(response),
+        });
       })
       .catch(reject);
   });

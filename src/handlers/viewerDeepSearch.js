@@ -54,7 +54,10 @@ export default function handler(req) {
         return true;
       })
       .then(() => {
-        resolve(searchResults);
+        resolve({
+          status: 200,
+          body: JSON.stringify(searchResults),
+        });
       })
       .catch(reject);
   });

@@ -4,7 +4,10 @@ export default function handler(req) {
   return new Promise((resolve, reject) => {
     getInvite(req.query.id)
       .then((invitation) => {
-        resolve({ invitation: invitation });
+        resolve({
+          status: 200,
+          body: JSON.stringify({ invitation: invitation }),
+        });
       })
       .catch(reject);
   });

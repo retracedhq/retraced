@@ -5,6 +5,13 @@ import getEs from "../../persistence/elasticsearch";
 
 const es = getEs();
 
+// input query structure: {
+//   search_text: string
+//   start_time: number (unix timestamp)
+//   end_time: number (unix timestamp)
+//   create, read, update, delete: boolean
+//   offset, length: number
+// }
 export default function deepSearchEvents(opts) {
   return new Promise((resolve, reject) => {
     const paramsIn = opts.query;

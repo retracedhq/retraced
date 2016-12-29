@@ -25,7 +25,10 @@ export default function handler(req) {
         });
       })
       .then((actor) => {
-        resolve({ actor: actor });
+        resolve({
+          status: 200,
+          body: JSON.stringify({ actor: actor }),
+        });
       })
       .catch(reject);
   });

@@ -1,6 +1,6 @@
 import validateSession from "../security/validateSession";
 import checkAccess from "../security/checkAccess";
-import createApiToken from"../models/apitoken/create";
+import createApiToken from "../models/apitoken/create";
 import listApiTokens from "../models/apitoken/list";
 
 export default function handler(req) {
@@ -30,7 +30,9 @@ export default function handler(req) {
         });
       })
       .then((apiTokens) => {
-        resolve({ apiTokens });
+        resolve({
+          body: JSON.stringify({ apiTokens }),
+        });
       })
       .catch(reject);
   });

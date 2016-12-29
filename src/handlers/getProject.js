@@ -40,7 +40,10 @@ export default function handler(req) {
       })
       .then((apiTokens) => {
         result.tokens = apiTokens;
-        resolve(result);
+        resolve({
+          status: 200,
+          body: JSON.stringify(result),
+        });
       })
       .catch(reject);
   });

@@ -10,7 +10,10 @@ export default function handler(req) {
         });
       })
       .then((projects) => {
-        resolve({ projects });
+        resolve({
+          status: 200,
+          body: JSON.stringify({ projects }),
+        });
       })
       .catch(reject);
   });

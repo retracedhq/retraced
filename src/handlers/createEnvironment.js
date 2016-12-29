@@ -27,7 +27,10 @@ export default function handler(req) {
         return getProject(req.params.projectId);
       })
       .then((project) => {
-        resolve({ environments: project.environments });
+        resolve({
+          status: 201,
+          body: JSON.stringify({ environments: project.environments }),
+        });
       })
       .catch(reject);
   });
