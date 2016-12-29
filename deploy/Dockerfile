@@ -2,9 +2,13 @@ FROM node:7.1
 
 EXPOSE 3000
 
-ADD . /retraced-api
-WORKDIR /retraced-api
+RUN npm install -g yarn
 
-RUN npm rebuild
+ADD . /src
+WORKDIR /src
+
+RUN yarn global add tslint typescript
+RUN yarn
+RUN make build
 
 CMD ["node", "--no-deprecation", "./build/index.js"]
