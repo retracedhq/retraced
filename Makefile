@@ -1,10 +1,13 @@
 prebuild:
 	rm -rf build
 
+deps:
+	yarn
+
 build: prebuild
 	mkdir -p build
-	./node_modules/.bin/tslint --project ./tsconfig.json
-	./node_modules/.bin/tsc
+	tslint --project ./tsconfig.json
+	tsc
 
 run:
 	node --no-deprecation ./build/index.js
