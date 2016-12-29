@@ -9,13 +9,12 @@ machine:
 dependencies:
   pre:
     - npm i -g yarn
-  cache_directories:
-    - ~/.yarn-cache
   override:
     - yarn install
 
 test:
   pre:
+    - yarn global add tslint typescript
     - make build
   override:
     # - yarn test
