@@ -12,7 +12,6 @@ export default function validateSession(jwtSource, authString) {
       return;
     }
 
-    const authHeader = authString;
     if (jwtSource === "viewer") {
       jwt.verify(authString, process.env.HMAC_SECRET_VIEWER, (err, claims) => {
         if (err) {

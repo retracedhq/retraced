@@ -23,7 +23,10 @@ export default function handler(req) {
         });
       })
       .then((invitation) => {
-        resolve({ invitation: invitation });
+        resolve({
+          status: 201,
+          body: JSON.stringify({ invitation: invitation }),
+        });
       })
       .catch(reject);
   });

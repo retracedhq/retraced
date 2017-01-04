@@ -36,7 +36,10 @@ export default function handler(req) {
       })
       .then((actor) => {
         result.event.actor = actor;
-        resolve({ event: result.event });
+        resolve({
+          status: 200,
+          body: JSON.stringify({ event: result.event }),
+        });
       })
       .catch(reject);
   });

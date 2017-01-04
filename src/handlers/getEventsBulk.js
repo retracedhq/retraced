@@ -1,11 +1,7 @@
-import * as _ from "lodash";
-
 import validateSession from "../security/validateSession";
 import checkAccess from "../security/checkAccess";
 import getEventsBulk from "../models/event/getBulk";
-import getActors from "../models/actor/gets";
-import getObjects from "../models/object/gets";
-import addDisplayTitles from "../models/event/addDisplayTitles";
+import renderEvents from "../models/event/render";
 
 export default async function handler(req) {
   if (!req.query.environment_id) {
@@ -21,34 +17,15 @@ export default async function handler(req) {
     event_ids: req.body.event_ids,
   });
 
-  let actorIds = _.map(events, (e) => {
-    return e.actor ? e.actor.id : e.actor_id;
-  });
-  _.remove(actorIds, (a) => { _.isUndefined(a); });
-  actorIds = _.uniq(actorIds);
-
-  const actors = await getActors({
-    actor_ids: actorIds,
-  });
-  for (const e of events) {
-    e.actor = _.find(actors, { id: e.actor ? e.actor.id : e.actor_id });
-  }
-
-  const objects = await getObjects({
-    object_ids: _.map(events, (e) => {
-      return e.object_id;
-    }),
-  });
-  for (const e of events) {
-    e.object = _.find(objects, { id: e.object_id });
-  }
-
-  await addDisplayTitles({
-    events: events,
-    project_id: req.params.projectId,
-    environment_id: claims.environment_id,
+  let renderedEvents = renderEvents({
     source: "admin",
+    eventsIn: events,
+    projectId: req.params.projectId,
+    environmentId: req.query.environment_id,
   });
 
-  return { events: events };
+  return {
+    status: 200,
+    body: JSON.stringify({ events: renderedEvents }),
+  };
 };

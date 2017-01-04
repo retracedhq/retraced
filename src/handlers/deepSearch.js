@@ -25,7 +25,10 @@ export default function handler(req) {
         });
       })
       .then((searchResults) => {
-        resolve(searchResults);
+        resolve({
+          status: 200,
+          body: JSON.stringify(searchResults),
+        });
       })
       .catch(reject);
   });

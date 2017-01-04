@@ -12,7 +12,10 @@ export default function handler(req) {
         });
       })
       .then((project) => {
-        resolve({ project });
+        resolve({
+          status: 201,
+          body: JSON.stringify({ project }),
+        });
       })
       .catch(reject);
   });

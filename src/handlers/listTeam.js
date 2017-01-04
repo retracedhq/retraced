@@ -26,7 +26,10 @@ export default function handler(req) {
         });
       })
       .then((team) => {
-        resolve({ team });
+        resolve({
+          status: 200,
+          body: JSON.stringify({ team }),
+        });
       })
       .catch(reject);
   });

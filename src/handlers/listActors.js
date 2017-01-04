@@ -22,7 +22,10 @@ export default function handler(req) {
         });
       })
       .then((actors) => {
-        resolve({ actors: actors });
+        resolve({
+          status: 200,
+          body: JSON.stringify({ actors: actors }),
+        });
       })
       .catch(reject);
   });

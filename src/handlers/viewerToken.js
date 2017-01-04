@@ -31,8 +31,10 @@ export default function handler(req) {
           token: viewerToken,
         };
 
-        resolve(result);
-        return;
+        resolve({
+          status: 200,
+          body: JSON.stringify(result),
+        });
       })
       .catch(reject);
   });
