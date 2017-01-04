@@ -27,6 +27,7 @@
     "nyc": "^9.0.1",
     "pg": "^6.1.0",
     "redis": "^2.6.2",
+    "sanitize-filename": "^1.6.1",
     "source-map-support": "^0.4.6",
     "threads": "^0.7.2",
     "ts-node": "^1.7.0",

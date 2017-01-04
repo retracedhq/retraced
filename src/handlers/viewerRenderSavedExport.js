@@ -16,7 +16,7 @@ export default async function handler(req) {
       contentType = "text/plain";
   }
 
-  const body = await renderSavedExport({
+  const result = await renderSavedExport({
     environmentId: claims.environment_id,
     projectId: req.params.projectId,
     savedExportId: req.params.exportId,
@@ -24,7 +24,7 @@ export default async function handler(req) {
     format,
   });
 
-  if (!body) {
+  if (!result) {
     return {
       status: 404,
       body: JSON.stringify({ error: "No results found" }),
@@ -34,7 +34,7 @@ export default async function handler(req) {
   return {
     status: 200,
     contentType,
-    body,
-    filename: `${req.params.savedExportId}.${format}`,
+    body: result.rendered,
+    filename: result.filename,
   };
 };
