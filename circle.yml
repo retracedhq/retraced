@@ -14,7 +14,7 @@ dependencies:
 
 test:
   pre:
-    - yarn global add tslint typescript
+    - yarn global add tslint@4.0.2 typescript@2.1.1
     - make build
   override:
     # - yarn test
