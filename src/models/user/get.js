@@ -16,8 +16,16 @@ export default function getUser(opts) {
         return;
       }
 
-      const q = "select * from retraceduser where email = $1";
-      const v = [opts.email];
+      let q;
+      let v;
+      if (opts.email) {
+        q = "select * from retraceduser where email = $1";
+        v = [opts.email];
+      } else if (opts.externalAuthId) {
+        q = "select * from retraceduser where external_auth_id = $1";
+        v = [opts.externalAuthId];
+      }
+
       pg.query(q, v, (qerr, result) => {
         done();
         if (qerr) {
