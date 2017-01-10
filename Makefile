@@ -6,8 +6,8 @@ deps:
 
 build: prebuild
 	mkdir -p build
-	tslint --project ./tsconfig.json
-	tsc
+	`yarn bin`/tslint --project ./tsconfig.json
+	`yarn bin`/tsc
 
 run:
 	node --no-deprecation ./build/index.js
