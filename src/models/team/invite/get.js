@@ -2,32 +2,29 @@ import getPgPool from "../../../persistence/pg";
 
 const pgPool = getPgPool();
 
-/**
- * Asynchronously fetch an invite from the database.
- *
- * @param {string} [id] The invite id
- */
-export default function getInvite(inviteId) {
-  return new Promise((resolve, reject) => {
-    pgPool.connect((err, pg, done) => {
-      if (err) {
-        reject(err);
-        return;
-      }
+export default async function getInvite(opts) {
+  let pg;
+  try {
+    pg = await pgPool.connect();
 
-      const q = "select * from invite where id = $1";
-      const v = [inviteId];
+    let q;
+    let v;
+    if (opts.inviteId) {
+      q = "select * from invite where id = $1";
+      v = [opts.inviteId];
+    } else if (opts.email) {
+      q = "select * from invite where email = $1";
+      v = [opts.email];
+    }
 
-      pg.query(q, v, (qerr, result) => {
-        done();
-        if (qerr) {
-          reject(qerr);
-        } else if (result.rowCount > 0) {
-          resolve(result.rows[0]);
-        } else {
-          resolve(null);
-        }
-      });
-    });
-  });
+    const result = await pg.query(q, v);
+    if (result.rowCount > 0) {
+      return result.rows[0];
+    }
+
+    return null;
+
+  } finally {
+    pg.release();
+  }
 }

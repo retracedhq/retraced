@@ -54,7 +54,7 @@ export default function createInvite(opts) {
         const templateContent = [];
         const mergeVars = [{
           name: "invite_url",
-          content: `${process.env.RETRACED_APP_BASE}/invite?id=${invite.id}`,
+          content: `${process.env.RETRACED_PUBLIC_SITE}/invitation.html#${invite.id}`,
         }];
 
         const params = {

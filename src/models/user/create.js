@@ -1,83 +1,51 @@
 import * as uuid from "uuid";
+import * as util from "util";
 
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
+
+export const DUPLICATE_EMAIL = new Error("DUPLICATE_EMAIL");
 
 /**
  * createUser will create a new user account
  *
  * @param {Object} [opts] the request options
  * @param {string} [opts.email] the email address to use
- * @param {string} [opts.hashedPassword] the bcrypted password
  */
-export default function createUser(opts) {
-  return new Promise((resolve, reject) => {
-    const rollback = (client, done) => {
-      client.query("ROLLBACK", (err) => {
-        done(err);
-        reject("DUPLICATE_EMAIL");
-      });
+export default async function createUser(opts) {
+  let pg;
+  try {
+    pg = await pgPool.connect();
+
+    // Check for dupe e-mail
+    let q = "select count(1) from retraceduser where email = $1";
+    let v = [opts.email];
+    const dupeCheckResult = await pg.query(q, v);
+    if (dupeCheckResult.rows[0].count > 0) {
+      throw DUPLICATE_EMAIL;
+    }
+
+    q = `insert into retraceduser (
+      id, email, created, last_login, external_auth_id
+    ) values (
+      $1, $2, to_timestamp($3), to_timestamp($4), $5
+    )`;
+    v = [
+      uuid.v4().replace(/-/g, ""),
+      opts.email,
+      new Date().getTime() / 1000,
+      new Date().getTime() / 1000,
+      opts.authId,
+    ];
+    pg.query(q, v);
+
+    return {
+      id: v[0],
+      email: v[1],
     };
 
-    pgPool.connect((err, pg, done) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      pgPool.query("BEGIN", (transactionErr) => {
-        if (transactionErr) {
-          return rollback(pgPool, done);
-        }
-
-        process.nextTick(() => {
-          const q = "select count(1) from retraceduser where email = $1";
-          const v = [opts.email];
-          pgPool.query(q, v, (qerr, result) => {
-            if (qerr) {
-              reject(qerr);
-              return;
-            }
-
-            if (result.rows[0].count > 0) {
-              rollback(pgPool, done);
-              return;
-            }
-
-            const user = {
-              id: uuid.v4().replace(/-/g, ""),
-              email: opts.email,
-              created: new Date().getTime(),
-              last_login: new Date().getTime(),
-              password_crypt: opts.hashedPassword,
-            };
-
-            const qq = `insert into retraceduser (
-              id, email, created, last_login, password_crypt
-            ) values (
-              $1, $2, to_timestamp($3), to_timestamp($4), $5
-            )`;
-            const vv = [
-              user.id,
-              user.email,
-              user.created / 1000,
-              user.last_login / 1000,
-              user.password_crypt,
-            ];
-            pgPool.query(qq, vv, (insertErr, insertResult) => {
-              if (insertErr) {
-                reject(insertErr);
-              } else {
-                pgPool.query("COMMIT", done);
-                resolve(user);
-              }
-            });
-          });
-        });
-
-        return null;
-      });
-    });
-  });
+  } finally {
+    pg.release();
+  }
 }

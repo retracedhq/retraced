@@ -123,10 +123,10 @@ export default async function deepSearchEvents(opts) {
         if (resp.hits.hits.length === 0) {
           break;
         }
-        const newIds = resp.hits.hits.map((h) => {
+        const moreNewIds = resp.hits.hits.map((h) => {
           return h.fields.id[0];
         });
-        results.ids.push(...newIds);
+        results.ids.push(...moreNewIds);
         scrollParams.scroll_id = resp._scroll_id;
       }
     }

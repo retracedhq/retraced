@@ -2,40 +2,20 @@ import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
-/**
- * getUser Async fetch of user by email address
- *
- * @param {Object} [opts] the request options
- * @param {string} [opts.email] the email address to use
- */
-export default function getUser(opts) {
-  return new Promise((resolve, reject) => {
-    pgPool.connect((err, pg, done) => {
-      if (err) {
-        reject(err);
-        return;
-      }
+// opts: email, authId
+export default async function getUser(opts) {
+  let pg;
+  try {
+    pg = await pgPool.connect();
+    const q = "select * from retraceduser where email = $1 and external_auth_id = $2";
+    const v = [opts.email, opts.authId];
+    const result = await pg.query(q, v);
+    if (result.rowCount > 0) {
+      return result.rows[0];
+    }
 
-      let q;
-      let v;
-      if (opts.email) {
-        q = "select * from retraceduser where email = $1";
-        v = [opts.email];
-      } else if (opts.externalAuthId) {
-        q = "select * from retraceduser where external_auth_id = $1";
-        v = [opts.externalAuthId];
-      }
-
-      pg.query(q, v, (qerr, result) => {
-        done();
-        if (qerr) {
-          reject(qerr);
-        } else if (result.rowCount > 0) {
-          resolve(result.rows[0]);
-        } else {
-          resolve(null);
-        }
-      });
-    });
-  });
+    return null;
+  } finally {
+    pg.release();
+  }
 }
