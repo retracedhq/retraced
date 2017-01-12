@@ -7,7 +7,6 @@
     "analytics-node": "^2.1.0",
     "auth0-js": "^8.0.4",
     "aws-sdk": "^2.6.12",
-    "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.2",
     "bugsnag": "^1.8.0",
     "cassandra-driver": "^3.1.5",
@@ -38,8 +37,8 @@
     "@types/express": "^4.0.33",
     "@types/lodash": "^4.14.41",
     "chance": "^1.0.4",
-    "tslint": "^4.0.2",
-    "typescript": "^2.0.9"
+    "tslint": "^4.3.1",
+    "typescript": "^2.1.5"
   },
   "scripts": {
     "pretest": "tsc",

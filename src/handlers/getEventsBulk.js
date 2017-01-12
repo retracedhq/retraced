@@ -17,7 +17,7 @@ export default async function handler(req) {
     event_ids: req.body.event_ids,
   });
 
-  let renderedEvents = renderEvents({
+  let renderedEvents = await renderEvents({
     source: "admin",
     eventsIn: events,
     projectId: req.params.projectId,

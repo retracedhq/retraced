@@ -4,7 +4,7 @@ import Analytics from "analytics-node";
 import getPgPool from "../../persistence/pg";
 import createApiToken from "../apitoken/create";
 import createEnvironment from "../environment/create";
-import { addUserToProject } from "./access";
+import addUserToProject from "./addUser";
 
 const pgPool = getPgPool();
 
@@ -81,7 +81,12 @@ export default function createProject(opts) {
           });
           return Promise.all(createTokenPromises);
         })
-        .then(addUserToProject(project.id, opts.user_id))
+        .then(() => {
+          return addUserToProject({
+            projectId: project.id,
+            userId: opts.user_id,
+          });
+        })
         .then(() => {
           resolve(project);
         })

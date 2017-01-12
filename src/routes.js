@@ -1,4 +1,3 @@
-import acceptInvite from "./handlers/acceptInvite";
 import createApiToken from "./handlers/createApiToken";
 import createEnvironment from "./handlers/createEnvironment";
 import createEvent from "./handlers/createEvent";
@@ -19,7 +18,6 @@ import listObjects from "./handlers/listObjects";
 import listProjects from "./handlers/listProjects";
 import listTeam from "./handlers/listTeam";
 import updateAction from "./handlers/updateAction";
-import userCreate from "./handlers/userCreate";
 import userLogin from "./handlers/userLogin";
 import viewerCreateExport from "./handlers/viewerCreateExport";
 import viewerListExports from "./handlers/viewerListExports";
@@ -31,11 +29,6 @@ import viewerSession from "./handlers/viewerSession";
 import viewerToken from "./handlers/viewerToken";
 
 export default {
-  userCreate: {
-    path: "/v1/user/signup",
-    method: "post",
-    handler: userCreate,
-  },
   userLogin: {
     path: "/v1/user/login",
     method: "post",
@@ -120,11 +113,6 @@ export default {
     path: "/v1/invite",
     method: "get",
     handler: getInvite,
-  },
-  acceptInvite: {
-    path: "/v1/invite/accept",
-    method: "post",
-    handler: acceptInvite,
   },
   getEvent: {
     path: "/v1/project/:projectId/event/:eventId",
