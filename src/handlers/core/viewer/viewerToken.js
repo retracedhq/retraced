@@ -24,6 +24,7 @@ export default function handler(req) {
           environment_id: apiToken.environment_id,
           team_id: req.query.team_id,
           format: req.query.output ? req.query.output : "json",
+          is_admin: !!req.query.is_admin,
         });
       })
       .then((viewerToken) => {

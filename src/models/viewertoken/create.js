@@ -7,6 +7,7 @@ import * as redis from "redis";
  *   environment_id: {String}
  *   team_id: {String}
  *   format: {String}
+ *   is_admin: {boolean}
  * }
  */
 export default function createViewerToken(opts) {
@@ -21,6 +22,7 @@ export default function createViewerToken(opts) {
       created: new Date().getTime(),
       expires: new Date(new Date().getTime() + 5 * 60000).getTime(), // 5 minutes
       format: opts.format,
+      is_admin: opts.is_admin,
     };
     redisClient.HMSET(`viewertoken:${viewerToken}`, hash, (err, res) => {
       if (err) {
