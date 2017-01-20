@@ -2,11 +2,11 @@ import * as uuid from "uuid";
 import * as AWS from "aws-sdk";
 import * as util from "util";
 
-import validateEvent from "../models/event/validate";
-import checkAccess from "../security/checkAccess";
-import validateApiToken from "../security/validateApiToken";
-import getDisque from "../persistence/disque";
-import getPgPool from "../persistence/pg";
+import validateEvent from "../../models/event/validate";
+import checkAccess from "../../security/checkAccess";
+import validateApiToken from "../../security/validateApiToken";
+import getDisque from "../../persistence/disque";
+import getPgPool from "../../persistence/pg";
 
 const disque = getDisque();
 const pgPool = getPgPool();

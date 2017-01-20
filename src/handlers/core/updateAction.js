@@ -1,6 +1,6 @@
-import validateSession from "../security/validateSession";
-import checkAccess from "../security/checkAccess";
-import updateAction from "../models/action/update";
+import validateSession from "../../security/validateSession";
+import checkAccess from "../../security/checkAccess";
+import updateAction from "../../models/action/update";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {

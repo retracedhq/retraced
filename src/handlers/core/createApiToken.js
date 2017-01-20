@@ -1,7 +1,7 @@
-import validateSession from "../security/validateSession";
-import listTeam from "../models/team/list";
-import checkAccess from "../security/checkAccess";
-import listEnvironments from "../models/environment/list";
+import validateSession from "../../security/validateSession";
+import checkAccess from "../../security/checkAccess";
+import createApiToken from "../../models/apitoken/create";
+import listApiTokens from "../../models/apitoken/list";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {
@@ -17,18 +17,21 @@ export default function handler(req) {
           reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
-        return listEnvironments({ project_id: req.params.projectId });
+
+        return createApiToken({
+          project_id: req.params.projectId,
+          name: req.body.name,
+          environment_id: req.body.environment_id,
+        });
       })
-      .then((envs) => {
-        return listTeam({
-          environments: envs,
+      .then(() => {
+        return listApiTokens({
           project_id: req.params.projectId,
         });
       })
-      .then((team) => {
+      .then((apiTokens) => {
         resolve({
-          status: 200,
-          body: JSON.stringify({ team }),
+          body: JSON.stringify({ apiTokens }),
         });
       })
       .catch(reject);

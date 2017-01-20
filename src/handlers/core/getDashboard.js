@@ -1,6 +1,6 @@
-import validateSession from "../security/validateSession";
-import getDashboard from "../models/dashboard/get";
-import checkAccess from "../security/checkAccess";
+import validateSession from "../../security/validateSession";
+import getDashboard from "../../models/dashboard/get";
+import checkAccess from "../../security/checkAccess";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {

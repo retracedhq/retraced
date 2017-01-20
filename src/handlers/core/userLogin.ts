@@ -2,12 +2,12 @@ import * as Auth0 from "auth0-js";
 import { LocalStorage } from "node-localstorage";
 import * as util from "util";
 
-import getUser from "../models/user/get";
-import createUser, { DUPLICATE_EMAIL } from "../models/user/create";
-import createAdminsession from "../models/adminsession/create";
-import getInvite from "../models/team/invite/get";
-import deleteInvite from "../models/team/invite/delete";
-import addUserToProject from "../models/project/addUser";
+import getUser from "../../models/user/get";
+import createUser, { DUPLICATE_EMAIL } from "../../models/user/create";
+import createAdminsession from "../../models/adminsession/create";
+import getInvite from "../../models/team/invite/get";
+import deleteInvite from "../../models/team/invite/delete";
+import addUserToProject from "../../models/project/addUser";
 
 const auth0 = new Auth0.WebAuth({
   domain: process.env.AUTH0_CLIENT_DOMAIN,

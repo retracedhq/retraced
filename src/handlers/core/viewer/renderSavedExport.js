@@ -1,5 +1,5 @@
-import validateSession from "../security/validateSession";
-import renderSavedExport from "../models/saved_export/render";
+import validateSession from "../../../security/validateSession";
+import renderSavedExport from "../../../models/saved_export/render";
 
 export default async function handler(req) {
   // Note that this call needs the JWT passed in as a query string param.

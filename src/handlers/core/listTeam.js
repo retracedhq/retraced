@@ -1,6 +1,7 @@
-import validateSession from "../security/validateSession";
-import listActors from "../models/actor/list";
-import checkAccess from "../security/checkAccess";
+import validateSession from "../../security/validateSession";
+import listTeam from "../../models/team/list";
+import checkAccess from "../../security/checkAccess";
+import listEnvironments from "../../models/environment/list";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {
@@ -16,15 +17,18 @@ export default function handler(req) {
           reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
-        return listActors({
+        return listEnvironments({ project_id: req.params.projectId });
+      })
+      .then((envs) => {
+        return listTeam({
+          environments: envs,
           project_id: req.params.projectId,
-          environment_id: req.query.environment_id,
         });
       })
-      .then((actors) => {
+      .then((team) => {
         resolve({
           status: 200,
-          body: JSON.stringify({ actors: actors }),
+          body: JSON.stringify({ team }),
         });
       })
       .catch(reject);

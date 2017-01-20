@@ -1,7 +1,7 @@
-import validateSession from "../security/validateSession";
-import checkAccess from "../security/checkAccess";
-import createEnvironment from "../models/environment/create";
-import getProject from "../models/project/get";
+import validateSession from "../../security/validateSession";
+import checkAccess from "../../security/checkAccess";
+import createEnvironment from "../../models/environment/create";
+import getProject from "../../models/project/get";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {

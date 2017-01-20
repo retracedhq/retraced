@@ -1,6 +1,6 @@
-import validateSession from "../security/validateSession";
-import checkAccess from "../security/checkAccess";
-import deepSearchEvents from "../models/event/deepSearch";
+import validateSession from "../../security/validateSession";
+import checkAccess from "../../security/checkAccess";
+import deepSearchEvents from "../../models/event/deepSearch";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {

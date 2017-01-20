@@ -1,6 +1,6 @@
-import checkAccess from "../security/checkAccess";
-import validateSession from "../security/validateSession";
-import createInvite from "../models/team/invite";
+import checkAccess from "../../security/checkAccess";
+import validateSession from "../../security/validateSession";
+import createInvite from "../../models/team/invite";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {

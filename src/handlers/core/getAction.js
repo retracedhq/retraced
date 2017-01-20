@@ -1,14 +1,11 @@
 import * as _ from "lodash";
 
-import validateSession from "../security/validateSession";
-import checkAccess from "../security/checkAccess";
-import getEvent from "../models/event/get";
-import getActor from "../models/actor/get";
+import validateSession from "../../security/validateSession";
+import checkAccess from "../../security/checkAccess";
+import getAction from "../../models/action/get";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {
-    const result = {};
-
     validateSession("admin", req.get("Authorization"))
       .then((claims) => {
         return checkAccess({
@@ -21,24 +18,16 @@ export default function handler(req) {
           reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
-        return getEvent({
+        return getAction({
           project_id: req.params.projectId,
           environment_id: req.query.environment_id,
-          event_id: req.params.eventId,
+          action_id: req.params.actionId,
         });
       })
-      .then((ev) => {
-        result.event = ev;
-
-        return getActor({
-          actor_id: ev.actor_id,
-        });
-      })
-      .then((actor) => {
-        result.event.actor = actor;
+      .then((action) => {
         resolve({
           status: 200,
-          body: JSON.stringify({ event: result.event }),
+          body: JSON.stringify({ action: action }),
         });
       })
       .catch(reject);

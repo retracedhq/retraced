@@ -1,5 +1,5 @@
-import validateSession from "../security/validateSession";
-import listProjects from "../models/project/list";
+import validateSession from "../../security/validateSession";
+import listProjects from "../../models/project/list";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {

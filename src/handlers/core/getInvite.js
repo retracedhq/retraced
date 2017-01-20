@@ -1,4 +1,4 @@
-import getInvite from "../models/team/invite/get";
+import getInvite from "../../models/team/invite/get";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {

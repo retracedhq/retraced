@@ -1,6 +1,6 @@
-import validateSession from "../security/validateSession";
-import checkAccess from "../security/checkAccess";
-import createProject from "../models/project/create";
+import validateSession from "../../security/validateSession";
+import checkAccess from "../../security/checkAccess";
+import createProject from "../../models/project/create";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {

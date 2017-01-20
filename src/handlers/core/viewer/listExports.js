@@ -1,5 +1,5 @@
-import validateSession from "../security/validateSession";
-import listSavedExports from "../models/saved_export/list";
+import validateSession from "../../../security/validateSession";
+import listSavedExports from "../../../models/saved_export/list";
 
 export default async function handler(req) {
   const authHeader = req.get("Authorization");

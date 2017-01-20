@@ -1,6 +1,6 @@
-import validateApiToken from "../security/validateApiToken";
-import createViewerToken from "../models/viewertoken/create";
-import checkAccess from "../security/checkAccess";
+import validateApiToken from "../../../security/validateApiToken";
+import createViewerToken from "../../../models/viewertoken/create";
+import checkAccess from "../../../security/checkAccess";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {

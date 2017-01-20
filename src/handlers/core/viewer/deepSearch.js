@@ -2,9 +2,9 @@ import * as _ from "lodash";
 import * as util from "util";
 import * as uuid from "uuid";
 
-import validateSession from "../security/validateSession";
-import checkAccess from "../security/checkAccess";
-import deepSearchEvents from "../models/event/deepSearch";
+import validateSession from "../../../security/validateSession";
+import checkAccess from "../../../security/checkAccess";
+import deepSearchEvents from "../../../models/event/deepSearch";
 
 import getDisque from "../persistence/disque";
 

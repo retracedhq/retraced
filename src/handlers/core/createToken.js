@@ -1,7 +1,7 @@
-import validateSession from "../security/validateSession";
-import checkAccess from "../security/checkAccess";
-import createApiToken from "../models/apitoken/create";
-import listApiTokens from "../models/apitoken/list";
+import validateSession from "../../security/validateSession";
+import checkAccess from "../../security/checkAccess";
+import createToken from "../../models/token/create";
+import listTokens from "../../models/token/list";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {
@@ -18,20 +18,21 @@ export default function handler(req) {
           return;
         }
 
-        return createApiToken({
+        return createToken({
           project_id: req.params.projectId,
           name: req.body.name,
           environment_id: req.body.environment_id,
         });
       })
       .then(() => {
-        return listApiTokens({
+        return listTokens({
           project_id: req.params.projectId,
         });
       })
-      .then((apiTokens) => {
+      .then((tokens) => {
         resolve({
-          body: JSON.stringify({ apiTokens }),
+          status: 201,
+          body: JSON.stringify({ tokens: tokens }),
         });
       })
       .catch(reject);

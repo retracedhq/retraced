@@ -1,10 +1,10 @@
 import * as _ from "lodash";
 
-import validateSession from "../security/validateSession";
-import checkAccess from "../security/checkAccess";
-import getProject from "../models/project/get";
-import listApiTokens from "../models/apitoken/list";
-import listEnvironments from "../models/environment/list";
+import validateSession from "../../security/validateSession";
+import checkAccess from "../../security/checkAccess";
+import getProject from "../../models/project/get";
+import listApiTokens from "../../models/apitoken/list";
+import listEnvironments from "../../models/environment/list";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {

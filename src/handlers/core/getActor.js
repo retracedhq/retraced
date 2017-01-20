@@ -1,8 +1,8 @@
 import * as _ from "lodash";
 
-import validateSession from "../security/validateSession";
-import checkAccess from "../security/checkAccess";
-import getAction from "../models/action/get";
+import validateSession from "../../security/validateSession";
+import checkAccess from "../../security/checkAccess";
+import getActor from "../../models/actor/get";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {
@@ -18,16 +18,16 @@ export default function handler(req) {
           reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
-        return getAction({
+        return getActor({
           project_id: req.params.projectId,
           environment_id: req.query.environment_id,
-          action_id: req.params.actionId,
+          actor_id: req.params.actorId,
         });
       })
-      .then((action) => {
+      .then((actor) => {
         resolve({
           status: 200,
-          body: JSON.stringify({ action: action }),
+          body: JSON.stringify({ actor: actor }),
         });
       })
       .catch(reject);

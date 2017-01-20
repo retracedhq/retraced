@@ -1,8 +1,8 @@
 import * as uuid from "uuid";
 
-import getViewerToken from "../models/viewertoken/get";
-import createViewersession from "../models/viewersession/create";
-import getDisque from "../persistence/disque";
+import getViewerToken from "../../../models/viewertoken/get";
+import createViewersession from "../../../models/viewersession/create";
+import getDisque from "../../../persistence/disque";
 
 const disque = getDisque();
 

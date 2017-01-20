@@ -1,5 +1,5 @@
-import validateSession from "../security/validateSession";
-import updateSavedExport from "../models/saved_export/update";
+import validateSession from "../../../security/validateSession";
+import updateSavedExport from "../../../models/saved_export/update";
 
 export default async function handler(req) {
   const claims = await validateSession("viewer", req.get("Authorization"));

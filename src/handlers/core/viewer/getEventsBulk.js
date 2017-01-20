@@ -1,7 +1,7 @@
-import validateSession from "../security/validateSession";
-import checkAccess from "../security/checkAccess";
-import getEventsBulk from "../models/event/getBulk";
-import renderEvents from "../models/event/render";
+import validateSession from "../../../security/validateSession";
+import checkAccess from "../../../security/checkAccess";
+import getEventsBulk from "../../../models/event/getBulk";
+import renderEvents from "../../../models/event/render";
 
 export default async function handler(req) {
   const claims = await validateSession("viewer", req.get("Authorization"));

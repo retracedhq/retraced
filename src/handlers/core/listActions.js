@@ -1,7 +1,6 @@
-import validateSession from "../security/validateSession";
-import checkAccess from "../security/checkAccess";
-import createToken from "../models/token/create";
-import listTokens from "../models/token/list";
+import validateSession from "../../security/validateSession";
+import listActions from "../../models/action/list";
+import checkAccess from "../../security/checkAccess";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {
@@ -17,22 +16,15 @@ export default function handler(req) {
           reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
-
-        return createToken({
+        return listActions({
           project_id: req.params.projectId,
-          name: req.body.name,
-          environment_id: req.body.environment_id,
+          environment_id: req.query.environment_id,
         });
       })
-      .then(() => {
-        return listTokens({
-          project_id: req.params.projectId,
-        });
-      })
-      .then((tokens) => {
+      .then((actions) => {
         resolve({
-          status: 201,
-          body: JSON.stringify({ tokens: tokens }),
+          status: 200,
+          body: JSON.stringify({ actions: actions }),
         });
       })
       .catch(reject);
