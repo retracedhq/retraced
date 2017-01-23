@@ -14,7 +14,7 @@ import getInvite from "./handlers/getInvite";
 import getProject from "./handlers/getProject";
 import listActions from "./handlers/listActions";
 import listActors from "./handlers/listActors";
-import listObjects from "./handlers/listObjects";
+import listTargets from "./handlers/listTargets";
 import listProjects from "./handlers/listProjects";
 import listTeam from "./handlers/listTeam";
 import updateAction from "./handlers/updateAction";
@@ -94,10 +94,10 @@ export default {
     method: "post",
     handler: viewerDeepSearch,
   },
-  listObjects: {
-    path: "/v1/project/:projectId/objects",
+  listTargets: {
+    path: "/v1/project/:projectId/targets",
     method: "get",
-    handler: listObjects,
+    handler: listTargets,
   },
   listActors: {
     path: "/v1/project/:projectId/actors",

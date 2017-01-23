@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 
 import getActors from "../actor/gets";
-import getObjects from "../object/gets";
+import getTargets from "../target/gets";
 import addDisplayTitles from "./addDisplayTitles";
 
 export default async function renderEvents(opts) {
@@ -22,13 +22,13 @@ export default async function renderEvents(opts) {
     e.actor = _.find(actors, { id: e.actor ? e.actor.id : e.actor_id });
   }
 
-  const objects = await getObjects({
-    object_ids: _.map(events, (e) => {
-      return e.object_id;
+  const targets = await getTargets({
+    target_ids: _.map(events, (e) => {
+      return e.target_ids;
     }),
   });
   for (const e of events) {
-    e.object = _.find(objects, { id: e.object_id });
+    e.target = _.find(targets, { id: e.target_id });
   }
 
   await addDisplayTitles({
