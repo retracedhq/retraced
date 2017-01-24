@@ -1,5 +1,5 @@
 import validateSession from "../security/validateSession";
-import listObjects from "../models/object/list";
+import listTargets from "../models/target/list";
 import checkAccess from "../security/checkAccess";
 
 export default function handler(req) {
@@ -16,15 +16,15 @@ export default function handler(req) {
           reject({ status: 401, err: new Error("Unauthorized") });
           return;
         }
-        return listObjects({
+        return listTargets({
           project_id: req.params.projectId,
           environment_id: req.query.environment_id,
         });
       })
-      .then((objects) => {
+      .then((targets) => {
         resolve({
           status: 200,
-          body: JSON.stringify({ objects: objects }),
+          body: JSON.stringify({ targets: targets }),
         });
       })
       .catch(reject);
