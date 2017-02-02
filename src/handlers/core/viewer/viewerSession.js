@@ -15,6 +15,9 @@ export default function handler(req) {
     })
       .then((t) => {
         token = t;
+        // Note that, because these "viewer token" values are being read from redis,
+        // all of the values are JSON strings, not their normal expected types, and
+        // this is the form in which they'll be passed down in the JWT.
         return createViewersession({
           token,
         });

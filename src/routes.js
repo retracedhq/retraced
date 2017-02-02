@@ -1,3 +1,4 @@
+// core
 import createApiToken from "./handlers/core/createApiToken";
 import createEnvironment from "./handlers/core/createEnvironment";
 import createEvent from "./handlers/core/createEvent";
@@ -19,14 +20,22 @@ import listProjects from "./handlers/core/listProjects";
 import listTeam from "./handlers/core/listTeam";
 import updateAction from "./handlers/core/updateAction";
 import userLogin from "./handlers/core/userLogin";
+
+// core/viewer
 import viewerCreateExport from "./handlers/core/viewer/createExport";
+import viewerDeepSearch from "./handlers/core/viewer/deepSearch";
+import viewerGetEventsBulk from "./handlers/core/viewer/getEventsBulk";
+import viewerListEatapiTokens from "./handlers/core/viewer/listEatapiTokens";
+import viewerCreateEatapiToken from "./handlers/core/viewer/createEatapiToken";
+import viewerDeleteEatapiToken from "./handlers/core/viewer/deleteEatapiToken";
+import viewerUpdateEatapiToken from "./handlers/core/viewer/updateEatapiToken";
 import viewerListExports from "./handlers/core/viewer/listExports";
 import viewerRenderSavedExport from "./handlers/core/viewer/renderSavedExport";
 import viewerUpdateExport from "./handlers/core/viewer/updateExport";
-import viewerDeepSearch from "./handlers/core/viewer/deepSearch";
-import viewerGetEventsBulk from "./handlers/core/viewer/getEventsBulk";
 import viewerSession from "./handlers/core/viewer/viewerSession";
 import viewerToken from "./handlers/core/viewer/viewerToken";
+
+// enterprise
 
 export default {
   userLogin: {
@@ -168,5 +177,25 @@ export default {
     path: "/v1/project/:projectId/export/:exportId/rendered",
     method: "get",
     handler: viewerRenderSavedExport,
+  },
+  viewerListEatapiTokens: {
+    path: "/v1/project/:projectId/eatapi_tokens",
+    method: "get",
+    handler: viewerListEatapiTokens,
+  },
+  viewerCreateEatapiToken: {
+    path: "/v1/project/:projectId/eatapi_token",
+    method: "post",
+    handler: viewerCreateEatapiToken,
+  },
+  viewerDeleteEatapiToken: {
+    path: "/v1/project/:projectId/eatapi_token/:tokenId",
+    method: "delete",
+    handler: viewerDeleteEatapiToken,
+  },
+  viewerUpdateEatapiToken: {
+    path: "/v1/project/:projectId/eatapi_token/:tokenId",
+    method: "put",
+    handler: viewerUpdateEatapiToken,
   },
 };

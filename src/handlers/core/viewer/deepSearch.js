@@ -6,7 +6,7 @@ import validateSession from "../../../security/validateSession";
 import checkAccess from "../../../security/checkAccess";
 import deepSearchEvents from "../../../models/event/deepSearch";
 
-import getDisque from "../persistence/disque";
+import getDisque from "../../../persistence/disque";
 
 const disque = getDisque();
 
@@ -20,7 +20,7 @@ export default function handler(req) {
         const index = `retraced.${req.params.projectId}.${claims.environment_id}`;
         return deepSearchEvents({
           index,
-          team_id: claims.team_id,
+          group_id: claims.group_id,
           query: req.body.query,
         });
       })

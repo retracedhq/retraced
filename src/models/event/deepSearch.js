@@ -59,11 +59,12 @@ export default async function deepSearchEvents(opts) {
     });
   }
 
-  // Restrict query to specific teamid.
-  if (!opts.team_omitted) {
+  // Restrict query to specific group.
+  if (!opts.group_omitted) {
     filters.push({
       term: {
-        team_id: opts.team_id,
+        // N.B.! This field is still named "team_id" in old events, so...
+        team_id: opts.group_id,
       },
     });
   }

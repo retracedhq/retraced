@@ -22,9 +22,9 @@ export default function handler(req) {
         return createViewerToken({
           project_id: req.params.projectId,
           environment_id: apiToken.environment_id,
-          team_id: req.query.team_id,
+          group_id: req.query.group_id || req.query.team_id,
           format: req.query.output ? req.query.output : "json",
-          is_admin: !!req.query.is_admin,
+          is_admin: req.query.is_admin === "true",
         });
       })
       .then((viewerToken) => {

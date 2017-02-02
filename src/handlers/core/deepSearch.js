@@ -20,7 +20,7 @@ export default function handler(req) {
 
         return deepSearchEvents({
           index,
-          team_omitted: true,
+          group_omitted: true,
           query: query,
         });
       })

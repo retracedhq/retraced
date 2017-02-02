@@ -84,6 +84,8 @@ function buildRoutes() {
       app.post(route.path, routeCallback);
     } else if (route.method === "put") {
       app.put(route.path, routeCallback);
+    } else if (route.method === "delete") {
+      app.delete(route.path, routeCallback);
     } else {
       console.log(`Unhandled HTTP method: '${route.method}'`);
     }
