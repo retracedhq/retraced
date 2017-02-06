@@ -8,10 +8,10 @@ const pgPool = getPgPool();
     environmentId
     groupId
 */
-export default async function listEatapiTokens(opts) {
+export default async function listEitapiTokens(opts) {
   const pg = await pgPool.connect();
   try {
-    let q = `select id, display_name from eatapi_token
+    let q = `select id, display_name from eitapi_token
       where project_id = $1 and environment_id = $2 and group_id = $3`;
     const v = [
       opts.projectId,

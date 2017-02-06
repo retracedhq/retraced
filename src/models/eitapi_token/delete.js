@@ -4,21 +4,21 @@ const pgPool = getPgPool();
 
 /*
 opts:
-  eatapiTokenId
+  eitapiTokenId
   projectId
   environmentId
   groupId  
 */
-export default async function deleteEatapiToken(opts) {
+export default async function deleteEitapiToken(opts) {
   const pg = await pgPool.connect();
   try {
-    const deleteStmt = `delete from eatapi_token where
+    const deleteStmt = `delete from eitapi_token where
       id = $1 and
       project_id = $2 and
       environment_id = $3 and
       group_id = $4`;
     const deleteVals = [
-      opts.eatapiTokenId,
+      opts.eitapiTokenId,
       opts.projectId,
       opts.environmentId,
       opts.groupId,

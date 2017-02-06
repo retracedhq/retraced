@@ -11,31 +11,31 @@ opts:
   environmentId
   groupId
 */
-export default async function createEatapiToken(opts) {
+export default async function createEitapiToken(opts) {
   const pg = await pgPool.connect();
   try {
-    const newEatapiToken = {
+    const newEitapiToken = {
       id: uuid.v4().replace(/-/g, ""),
       display_name: opts.displayName,
       project_id: opts.projectId,
       environment_id: opts.environmentId,
       group_id: opts.groupId,
     };
-    const insertStmt = `insert into eatapi_token (
+    const insertStmt = `insert into eitapi_token (
       id, display_name, project_id, environment_id, group_id
     ) values (
       $1, $2, $3, $4, $5
     )`;
     const insertVals = [
-      newEatapiToken.id,
-      newEatapiToken.display_name,
-      newEatapiToken.project_id,
-      newEatapiToken.environment_id,
-      newEatapiToken.group_id,
+      newEitapiToken.id,
+      newEitapiToken.display_name,
+      newEitapiToken.project_id,
+      newEitapiToken.environment_id,
+      newEitapiToken.group_id,
     ];
     await pg.query(insertStmt, insertVals);
 
-    return newEatapiToken;
+    return newEitapiToken;
 
   } finally {
     pg.release();

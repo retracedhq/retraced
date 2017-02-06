@@ -1,10 +1,10 @@
 import validateSession from "../../../security/validateSession";
-import createEatapiToken from "../../../models/eatapi_token/create";
+import createEitapiToken from "../../../models/eitapi_token/create";
 
 export default async function handler(req) {
   const authHeader = req.get("Authorization");
   const claims = await validateSession("viewer", authHeader);
-  const result = await createEatapiToken({
+  const result = await createEitapiToken({
     displayName: req.body.displayName,
     projectId: req.params.projectId,
     environmentId: claims.environment_id,
