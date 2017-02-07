@@ -38,6 +38,8 @@ import viewerUpdateExport from "./handlers/core/viewer/updateExport";
 import enterpriseSearchAdHoc from "./handlers/enterprise/searchAdHoc";
 import enterpriseCreateSavedSearch from "./handlers/enterprise/createSavedSearch";
 import enterpriseCreateActiveSearch from "./handlers/enterprise/createActiveSearch";
+import enterprisePumpActiveSearch from "./handlers/enterprise/pumpActiveSearch";
+import enterpriseDeleteActiveSearch from "./handlers/enterprise/deleteActiveSearch";
 
 export default {
   //

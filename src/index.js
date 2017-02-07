@@ -10,6 +10,7 @@ import routes from "./routes";
 
 const app = express();
 
+app.set("etag", false); // we're doing our own etag thing I guess
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -52,26 +53,37 @@ function buildRoutes() {
               bodyToLog = `${bodyToLog.substring(0, 512)} (... truncated, total ${bodyToLog.length} bytes)`;
             }
             console.log(chalk.cyan(`[${reqId}] => ${result.status} ${bodyToLog}`));
-            let respObj = res.status(statusToSend).type(contentType);
+            let respObj = res.status(statusToSend).type(contentType).set("X-Retraced-RequestId", reqId);
             if (result.filename) {
               respObj.attachment(result.filename);
+            }
+            if (result.headers) {
+              _.forOwn(result.headers, (value, key) => {
+                respObj.set(key, value);
+              });
             }
             respObj.send(result.body);
           } else {
             // Generic response. Shouldn't happen, but...
             console.log(chalk.cyan(`[${reqId}] => 200`));
-            res.status(200).json(result);
+            res.status(200).set("X-Retraced-RequestId", reqId).json(result);
           }
         })
         .catch((err) => {
           if (err.status && err.err) {
             // Structured error, specific status code and error object.
             console.log(chalk.red(`[${reqId}] !! ${err.status} ${err.err.stack}`));
-            res.status(err.status).json(err.err);
+            res.status(err.status).set("X-Retraced-RequestId", reqId).send();
           } else {
             // Generic error, default code.
-            console.log(chalk.red(`[${reqId}] !! 500 ${err.stack}`));
-            res.status(500).json(err);
+            let toReport;
+            if (err.stack) {
+              toReport = err.stack;
+            } else {
+              toReport = util.inspect(err);
+            }
+            console.log(chalk.red(`[${reqId}] !! 500 ${toReport}`));
+            res.status(500).set("X-Retraced-RequestId", reqId).send();
           }
         });
     };

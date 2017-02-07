@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import * as sanitizefn from "sanitize-filename";
 
 import getPgPool from "../../persistence/pg";
-import deepSearchEvents from "../event/deepSearch";
+import deepSearchEvents, { DeepSearchOptions } from "../event/deepSearch";
 import getEventsBulk from "../event/getBulk";
 import renderEvents from "../event/render";
 
@@ -26,23 +26,30 @@ export default async function renderSavedExport(opts) {
     let queryDesc = JSON.parse(result.rows[0].body);
     let queryVersion = result.rows[0].version;
     let queryName = result.rows[0].name;
-    let query;
+
+    const deepOpts: DeepSearchOptions = {
+      index: `retraced.${projectId}.${environmentId}`,
+      sort: "desc",
+      groupId: teamId,
+      fetchAll: true,
+    };
+
     switch (queryVersion) {
       case 1:
-        query = {
+        deepOpts.crud = {
           create: queryDesc.showCreate || false,
           read: queryDesc.showRead || false,
           update: queryDesc.showUpdate || false,
           delete: queryDesc.showDelete || false,
         };
         if (queryDesc.searchQuery) {
-          query.search_text = queryDesc.searchQuery;
+          deepOpts.searchText = queryDesc.searchQuery;
         }
         if (queryDesc.startTime) {
-          query.start_time = queryDesc.startTime;
+          deepOpts.startTime = queryDesc.startTime;
         }
         if (queryDesc.endTime) {
-          query.end_time = queryDesc.endTime;
+          deepOpts.endTime = queryDesc.endTime;
         }
         break;
 
@@ -50,29 +57,23 @@ export default async function renderSavedExport(opts) {
         throw new Error(`Unknown query descriptor version: ${queryVersion}`);
     }
 
-    const index = `retraced.${projectId}.${environmentId}`;
-    const results = await deepSearchEvents({
-      index,
-      team_id: teamId,
-      query,
-      fetchAll: true,
-    });
+    const results = await deepSearchEvents(deepOpts);
 
-    if (!results.total_hits) {
+    if (!results.totalHits) {
       return undefined;
     }
 
     const events = await getEventsBulk({
       project_id: projectId,
       environment_id: environmentId,
-      event_ids: results.ids,
+      event_ids: results.eventIds,
     });
 
     const fullEvents = await renderEvents({
-      source: source,
+      source,
+      projectId,
+      environmentId,
       eventsIn: events,
-      projectId: projectId,
-      environmentId: environmentId,
     });
 
     // TODO(zhaytee): This might be a huge amount of data. Use the filesystem?
@@ -110,7 +111,7 @@ async function renderAsCSV(events) {
         row = stringifier.read();
       }
     });
-    stringifier.on("error", err => reject);
+    stringifier.on("error", (err) => reject);
     stringifier.on("finish", () => resolve(accum));
 
     for (const ev of events) {
