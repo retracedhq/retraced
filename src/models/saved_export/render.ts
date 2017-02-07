@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as stringify from "csv-stringify";
 import * as _ from "lodash";
 import * as sanitizefn from "sanitize-filename";
@@ -14,7 +15,7 @@ export default async function renderSavedExport(opts) {
 
   const pg = await pgPool.connect();
   try {
-    let q = `select name, body, version
+    let q = `select name, body
       from saved_export
       where id = $1 and environment_id = $2 and project_id = $3`;
     const v = [savedExportId, environmentId, projectId];

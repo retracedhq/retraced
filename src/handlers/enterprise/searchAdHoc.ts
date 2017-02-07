@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as _ from "lodash";
 
 import validateEitapiToken from "../../security/validateEitapiToken";
@@ -20,8 +21,8 @@ export default async function handler(req) {
     index: `retraced.${eitapiToken.project_id}.${eitapiToken.environment_id}`,
     sort: "desc",
     groupId: eitapiToken.group_id,
-    actorId: req.query.actor_id,
-    action: req.query.action,
+    actorIds: [req.query.actor_id],
+    actions: [req.query.action],
     length: req.query.page_size ? _.min([req.query.page_size, 200]) : undefined,
     scrollLifetime: "5m",
     scrollId: req.get("ETag"),

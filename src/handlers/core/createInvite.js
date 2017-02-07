@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import checkAccess from "../../security/checkAccess";
 import validateSession from "../../security/validateSession";
 import createInvite from "../../models/team/invite";

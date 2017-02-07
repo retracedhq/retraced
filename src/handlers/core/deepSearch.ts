@@ -1,8 +1,11 @@
+import "source-map-support/register";
 import validateSession from "../../security/validateSession";
 import checkAccess from "../../security/checkAccess";
 import deepSearchEvents, { Options } from "../../models/event/deepSearch";
 
 /*
+What we're expecting from clients:
+----------------------------------
 query: {
   search_text: string;
   length: number;

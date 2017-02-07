@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as uuid from "uuid";
 
 import getPgPool from "../../persistence/pg";

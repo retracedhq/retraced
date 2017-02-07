@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as elasticsearch from "elasticsearch";
 import * as _ from "lodash";
 

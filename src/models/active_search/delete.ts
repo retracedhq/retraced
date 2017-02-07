@@ -3,23 +3,23 @@ import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
-/*
-opts:
-  eitapiTokenId
-  projectId
-  environmentId
-  groupId  
-*/
-export default async function deleteEitapiToken(opts) {
+export interface Options {
+  activeSearchId: string;
+  projectId: string;
+  environmentId: string;
+  groupId: string;
+}
+
+export default async function (opts: Options) {
   const pg = await pgPool.connect();
   try {
-    const deleteStmt = `delete from eitapi_token where
+    const deleteStmt = `delete from active_search where
       id = $1 and
       project_id = $2 and
       environment_id = $3 and
       group_id = $4`;
     const deleteVals = [
-      opts.eitapiTokenId,
+      opts.activeSearchId,
       opts.projectId,
       opts.environmentId,
       opts.groupId,

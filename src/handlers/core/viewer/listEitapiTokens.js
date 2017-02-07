@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import validateSession from "../../../security/validateSession";
 import listEitapiTokens from "../../../models/eitapi_token/list";
 

@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as uuid from "uuid";
 import * as redis from "redis";
 import * as util from "util";

@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import validateSession from "../../../security/validateSession";
 import listSavedExports from "../../../models/saved_export/list";
 

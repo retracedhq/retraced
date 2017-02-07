@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import validateSession from "../../security/validateSession";
 import checkAccess from "../../security/checkAccess";
 import updateAction from "../../models/action/update";

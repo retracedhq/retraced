@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import getEs from "../../persistence/elasticsearch";
 
 const es = getEs();
@@ -17,8 +18,8 @@ export interface Options {
   startTime?: number;
   endTime?: number;
   groupId?: string;
-  actorId?: string;
-  action?: string;
+  actorIds?: string[];
+  actions?: string[];
   crud?: {
     create: boolean;
     read: boolean;
@@ -127,20 +128,36 @@ export default async function (opts: Options): Promise<Result> {
     });
   }
 
-  if (opts.actorId) {
-    filters.push({
-      term: {
-        "actor.id": opts.actorId,
+  if (opts.actorIds) {
+    const clause = {
+      bool: {
+        should: <any> [],
       },
-    });
+    };
+    for (const actorId of opts.actorIds) {
+      clause.bool.should.push({
+        term: {
+          "actor.id": actorId,
+        },
+      });
+    }
+    filters.push(clause);
   }
 
-  if (opts.action) {
-    filters.push({
-      term: {
-        action: opts.action,
+  if (opts.actions) {
+    const clause = {
+      bool: {
+        should: <any> [],
       },
-    });
+    };
+    for (const action of opts.actions) {
+      clause.bool.should.push({
+        term: {
+          action,
+        },
+      });
+    }
+    filters.push(clause);
   }
 
   const mustNots: any = [];

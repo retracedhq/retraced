@@ -4,12 +4,15 @@ import * as uuid from "uuid";
 
 import validateSession from "../../../security/validateSession";
 import checkAccess from "../../../security/checkAccess";
+import "source-map-support/register";
 import deepSearchEvents, { Options } from "../../../models/event/deepSearch";
 import getDisque from "../../../persistence/disque";
 
 const disque = getDisque();
 
 /*
+What we're expecting from clients:
+----------------------------------
 query: {
   search_text: string;
   length: number;

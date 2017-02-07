@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as uuid from "uuid";
 import * as AWS from "aws-sdk";
 import * as util from "util";
