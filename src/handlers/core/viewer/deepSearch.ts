@@ -4,7 +4,7 @@ import * as uuid from "uuid";
 
 import validateSession from "../../../security/validateSession";
 import checkAccess from "../../../security/checkAccess";
-import deepSearchEvents, { DeepSearchOptions } from "../../../models/event/deepSearch";
+import deepSearchEvents, { Options } from "../../../models/event/deepSearch";
 import getDisque from "../../../persistence/disque";
 
 const disque = getDisque();
@@ -26,7 +26,7 @@ export default async function handler(req) {
   const claims: any = await validateSession("viewer", req.get("Authorization"));
   const reqOpts = req.body.query;
 
-  const opts: DeepSearchOptions = {
+  const opts: Options = {
     index: `retraced.${req.params.projectId}.${claims.environment_id}`,
     sort: "desc",
     groupId: claims.group_id,

@@ -3,8 +3,8 @@ import * as _ from "lodash";
 import * as sanitizefn from "sanitize-filename";
 
 import getPgPool from "../../persistence/pg";
-import deepSearchEvents, { DeepSearchOptions } from "../event/deepSearch";
-import getEventsBulk from "../event/getBulk";
+import deepSearchEvents, { Options } from "../event/deepSearch";
+import QueryDescriptor from "../query_desc/def";
 import renderEvents from "../event/render";
 
 const pgPool = getPgPool();
@@ -23,18 +23,17 @@ export default async function renderSavedExport(opts) {
       throw new Error(`No such saved export: id=${savedExportId}, envid=${environmentId}, projid=${projectId}`);
     }
 
-    let queryDesc = JSON.parse(result.rows[0].body);
-    let queryVersion = result.rows[0].version;
+    let queryDesc: QueryDescriptor = JSON.parse(result.rows[0].body);
     let queryName = result.rows[0].name;
 
-    const deepOpts: DeepSearchOptions = {
+    const deepOpts: Options = {
       index: `retraced.${projectId}.${environmentId}`,
       sort: "desc",
       groupId: teamId,
       fetchAll: true,
     };
 
-    switch (queryVersion) {
+    switch (queryDesc.version) {
       case 1:
         deepOpts.crud = {
           create: queryDesc.showCreate || false,
@@ -54,7 +53,7 @@ export default async function renderSavedExport(opts) {
         break;
 
       default:
-        throw new Error(`Unknown query descriptor version: ${queryVersion}`);
+        throw new Error(`Unknown query descriptor version: ${queryDesc.version}`);
     }
 
     const results = await deepSearchEvents(deepOpts);
@@ -63,17 +62,11 @@ export default async function renderSavedExport(opts) {
       return undefined;
     }
 
-    const events = await getEventsBulk({
-      project_id: projectId,
-      environment_id: environmentId,
-      event_ids: results.eventIds,
-    });
-
     const fullEvents = await renderEvents({
       source,
       projectId,
       environmentId,
-      eventsIn: events,
+      eventsIn: results.events,
     });
 
     // TODO(zhaytee): This might be a huge amount of data. Use the filesystem?

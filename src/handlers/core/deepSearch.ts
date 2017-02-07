@@ -1,6 +1,6 @@
 import validateSession from "../../security/validateSession";
 import checkAccess from "../../security/checkAccess";
-import deepSearchEvents, { DeepSearchOptions } from "../../models/event/deepSearch";
+import deepSearchEvents, { Options } from "../../models/event/deepSearch";
 
 /*
 query: {
@@ -23,7 +23,7 @@ export default async function handler(req) {
   const claims = await validateSession("admin", req.get("Authorization"));
   const reqOpts = req.body.query;
 
-  const opts: DeepSearchOptions = {
+  const opts: Options = {
     index: `retraced.${req.params.projectId}.${req.query.environment_id}`,
     sort: "desc",
     groupOmitted: true,

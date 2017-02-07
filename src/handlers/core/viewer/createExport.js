@@ -7,7 +7,6 @@ export default async function handler(req) {
     projectId: req.params.projectId,
     environmentId: claims.environment_id,
     body: req.body.exportBody,
-    version: req.body.version,
     name: req.body.name,
   });
   return {

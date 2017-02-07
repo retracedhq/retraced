@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 
 import validateEitapiToken from "../../security/validateEitapiToken";
-import deepSearchEvents, { Options } from "../../models/event/deepSearch";
+import createSavedSearch, { Options } from "../../models/saved_search/create";
 
 export default async function handler(req) {
   const eitapiToken = await validateEitapiToken(req.get("Authorization"));
@@ -12,10 +12,10 @@ export default async function handler(req) {
     };
   }
 
-  // pageSize (max 200)
-  // actor_id
-  // action
-  // check etag header for scroll_id
+// name (req)
+// actor_ids
+// actions
+// start
   const opts: Options = {
     index: `retraced.${eitapiToken.project_id}.${eitapiToken.environment_id}`,
     sort: "desc",

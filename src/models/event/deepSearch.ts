@@ -2,7 +2,7 @@ import getEs from "../../persistence/elasticsearch";
 
 const es = getEs();
 
-export interface DeepSearchOptions {
+export interface Options {
   index: string;
   sort: "asc" | "desc";
 
@@ -30,7 +30,7 @@ export interface DeepSearchOptions {
   groupOmitted?: boolean;
 }
 
-export interface DeepSearchResults {
+export interface Result {
   totalHits: number;
   count: number;
   eventIds?: string[];
@@ -38,7 +38,7 @@ export interface DeepSearchResults {
   scrollId?: string;
 }
 
-export default async function (opts: DeepSearchOptions): Promise<DeepSearchResults> {
+export default async function (opts: Options): Promise<Result> {
   if (!opts.newScroll && opts.scrollId && opts.scrollLifetime) {
     // This isn't a normal query: it's a request for another page of results.
     const scrollParams = {
@@ -46,7 +46,7 @@ export default async function (opts: DeepSearchOptions): Promise<DeepSearchResul
       scroll: opts.scrollLifetime,
     };
     const resp = await es.scroll(scrollParams);
-    let results: DeepSearchResults = {
+    let results: Result = {
       totalHits: resp.hits.total,
       count: resp.hits.hits ? resp.hits.hits.length : 0,
       eventIds: [],
@@ -185,7 +185,7 @@ export default async function (opts: DeepSearchOptions): Promise<DeepSearchResul
   if (!opts.fetchAll) {
     // Normal search.
     const resp = await es.search(params);
-    let results: DeepSearchResults = {
+    let results: Result = {
       totalHits: resp.hits.total,
       count: resp.hits.hits ? resp.hits.hits.length : 0,
       eventIds: [],
@@ -205,7 +205,7 @@ export default async function (opts: DeepSearchOptions): Promise<DeepSearchResul
   } else {
     // Here we use the scrolling API to pull every single event from the index.
     // TODO: Stream this data to disk for later serving. Could be huge.
-    let results: DeepSearchResults = {
+    let results: Result = {
       totalHits: 0,
       count: 0,
       eventIds: [],
