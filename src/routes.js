@@ -14,7 +14,7 @@ import getInvite from "./handlers/core/getInvite";
 import getProject from "./handlers/core/getProject";
 import listActions from "./handlers/core/listActions";
 import listActors from "./handlers/core/listActors";
-import listObjects from "./handlers/core/listObjects";
+import listTargets from "./handlers/core/listTargets";
 import listProjects from "./handlers/core/listProjects";
 import listTeam from "./handlers/core/listTeam";
 import updateAction from "./handlers/core/updateAction";
