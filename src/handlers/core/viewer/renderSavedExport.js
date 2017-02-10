@@ -21,7 +21,7 @@ export default async function handler(req) {
     environmentId: claims.environment_id,
     projectId: req.params.projectId,
     savedExportId: req.params.exportId,
-    teamId: claims.team_id,
+    groupId: claims.group_id,
     format,
   });
 

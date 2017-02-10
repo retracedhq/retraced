@@ -6,12 +6,11 @@ import * as sanitizefn from "sanitize-filename";
 import getPgPool from "../../persistence/pg";
 import deepSearchEvents, { Options } from "../event/deepSearch";
 import QueryDescriptor from "../query_desc/def";
-import renderEvents from "../event/render";
 
 const pgPool = getPgPool();
 
 export default async function renderSavedExport(opts) {
-  const { environmentId, projectId, teamId, savedExportId, format, source } = opts;
+  const { environmentId, projectId, groupId, savedExportId, format, source } = opts;
 
   const pg = await pgPool.connect();
   try {
@@ -30,7 +29,7 @@ export default async function renderSavedExport(opts) {
     const deepOpts: Options = {
       index: `retraced.${projectId}.${environmentId}`,
       sort: "desc",
-      groupId: teamId,
+      groupId,
       fetchAll: true,
     };
 
@@ -63,18 +62,20 @@ export default async function renderSavedExport(opts) {
       return undefined;
     }
 
-    const fullEvents = await renderEvents({
-      source,
-      projectId,
-      environmentId,
-      eventsIn: results.events,
-    });
+    // These no longer need to be rendered, because they aren't coming in deflated
+    // form from Scylla anymore, they're coming as full normalized events from ES.
+    // const fullEvents = await renderEvents({
+    //   source,
+    //   projectId,
+    //   environmentId,
+    //   eventsIn: results.events,
+    // });
 
     // TODO(zhaytee): This might be a huge amount of data. Use the filesystem?
     let rendered;
     switch (format) {
       case "csv":
-        rendered = await renderAsCSV(fullEvents);
+        rendered = await renderAsCSV(results.events);
         break;
 
       default:

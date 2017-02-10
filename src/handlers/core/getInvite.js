@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import getInvite from "../../models/team/invite/get";
+import getInvite from "../../models/group/invite/get";
 
 export default function handler(req) {
   return new Promise((resolve, reject) => {

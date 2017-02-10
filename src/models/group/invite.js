@@ -1,13 +1,14 @@
 import "source-map-support/register";
 import * as uuid from "uuid";
 import * as mandrill from "mandrill-api/mandrill";
+import * as moment from "moment";
 
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
 /**
- * Invite a new member to the team.
+ * Invite a new member to the group.
  *
  * @param {Object} [opts] The request options
  * @param {string} [opts.email] The email address to invite
@@ -24,7 +25,7 @@ export default function createInvite(opts) {
       const invite = {
         id: uuid.v4().replace(/-/g, ""),
         project_id: opts.project_id,
-        created: new Date().getTime(),
+        created: moment().unix(),
         email: opts.email,
       };
 
@@ -36,7 +37,7 @@ export default function createInvite(opts) {
       const v = [
         invite.id,
         invite.project_id,
-        invite.created / 1000,
+        invite.created,
         invite.email,
       ];
 
@@ -73,7 +74,7 @@ export default function createInvite(opts) {
               }],
               from_email: "contact@auditable.io",
               from_name: "Retraced",
-              subject: "You are invited to join a team on Retraced",
+              subject: "You are invited to join a group on Retraced",
               global_merge_vars: mergeVars,
             },
             async: false,

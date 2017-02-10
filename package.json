@@ -14,7 +14,6 @@
     "chai-as-promised": "^6.0.0",
     "cors": "^2.8.1",
     "csv": "^1.1.0",
-    "datejs": "^1.0.0-rc3",
     "elasticsearch": "^11.0.1",
     "express": "^4.14.0",
     "handlebars": "4.0.5",

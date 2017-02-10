@@ -2,7 +2,7 @@ import "source-map-support/register";
 import validateSession from "../../security/validateSession";
 import checkAccess from "../../security/checkAccess";
 import getEventsBulk from "../../models/event/getBulk";
-import renderEvents from "../../models/event/render";
+import hydrateScyllaEvents from "../../models/event/hydrate_scylla";
 
 export default async function handler(req) {
   if (!req.query.environment_id) {
@@ -12,13 +12,13 @@ export default async function handler(req) {
 
   const claims = await validateSession("admin", req.get("Authorization"));
 
-  const events = await getEventsBulk({
+  let events = await getEventsBulk({
     project_id: req.params.projectId,
     environment_id: req.query.environment_id,
     event_ids: req.body.event_ids,
   });
 
-  let renderedEvents = await renderEvents({
+  let hydratedEvents = await hydrateScyllaEvents({
     source: "admin",
     eventsIn: events,
     projectId: req.params.projectId,
@@ -27,6 +27,6 @@ export default async function handler(req) {
 
   return {
     status: 200,
-    body: JSON.stringify({ events: renderedEvents }),
+    body: JSON.stringify({ events: hydratedEvents }),
   };
 };

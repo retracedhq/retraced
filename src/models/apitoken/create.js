@@ -1,5 +1,6 @@
 import "source-map-support/register";
 import * as uuid from "uuid";
+import * as moment from "moment";
 
 import getPgPool from "../../persistence/pg";
 
@@ -21,7 +22,7 @@ export default function createApiToken(opts) {
       const apiToken = {
         token: uuid.v4().replace(/-/g, ""),
         name: opts.name,
-        created: new Date().getTime(),
+        created: moment().unix(),
         project_id: opts.project_id,
         environment_id: opts.environment_id,
         disabled: 0,
@@ -35,7 +36,7 @@ export default function createApiToken(opts) {
       const v = [
         apiToken.token,
         apiToken.name,
-        apiToken.created / 1000,
+        apiToken.created,
         apiToken.project_id,
         apiToken.environment_id,
       ];

@@ -16,7 +16,7 @@ import listActions from "./handlers/core/listActions";
 import listActors from "./handlers/core/listActors";
 import listTargets from "./handlers/core/listTargets";
 import listProjects from "./handlers/core/listProjects";
-import listTeam from "./handlers/core/listTeam";
+import listGroup from "./handlers/core/listGroup";
 import updateAction from "./handlers/core/updateAction";
 import userLogin from "./handlers/core/userLogin";
 
@@ -56,7 +56,7 @@ export default {
     handler: createEnvironment,
   },
   createEvent: {
-    path: "/v1/project/:projectId/event",
+    path: "/v1/event",
     method: "post",
     handler: createEvent,
   },
@@ -130,10 +130,10 @@ export default {
     method: "get",
     handler: listProjects,
   },
-  listTeam: {
-    path: "/v1/project/:projectId/team",
+  listGroup: {
+    path: "/v1/project/:projectId/group",
     method: "get",
-    handler: listTeam,
+    handler: listGroup,
   },
   updateAction: {
     path: "/v1/project/:projectId/action/:actionId",

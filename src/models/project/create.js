@@ -1,6 +1,7 @@
 import "source-map-support/register";
 import * as uuid from "uuid";
 import Analytics from "analytics-node";
+import * as moment from "moment";
 
 import getPgPool from "../../persistence/pg";
 import createApiToken from "../apitoken/create";
@@ -25,7 +26,7 @@ export default function createProject(opts) {
       const project = {
         id: uuid.v4().replace(/-/g, ""),
         name: opts.name,
-        created: new Date().getTime(),
+        created: moment().unix(),
         environments: getDefaultEnvironments(),
         api_tokens: [],
       };
@@ -37,7 +38,7 @@ export default function createProject(opts) {
       )`;
       const v = [
         project.id,
-        project.created / 1000,
+        project.created,
         project.name,
       ];
       pg.query(q, v, (qerr, result) => {

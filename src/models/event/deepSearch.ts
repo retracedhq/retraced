@@ -71,16 +71,15 @@ export default async function (opts: Options): Promise<Result> {
       multi_match: {
         query: opts.searchText,
         fields: [
-          "title",
-          "description",
           "action",
-          "fields.*",
+          "group.name",
           "actor.name",
-          "actor.fields.*",
-          "object.name",
-          "object.fields.*",
           "target.name",
-          "target.fields.*",
+          "description",
+          "country",
+          "loc_subdiv1",
+          "loc_subdiv2",
+          "fields.*",
         ],
       },
     });
@@ -119,11 +118,14 @@ export default async function (opts: Options): Promise<Result> {
   }
 
   // Restrict query to specific group.
-  // Note: 'team_id' can also be the id of a group.
+  // We also check team_id here for backwards compat.
   if (!opts.groupOmitted) {
     filters.push({
-      term: {
-        team_id: opts.groupId,
+      bool: {
+        should: [
+          { term: { "group.id": opts.groupId } },
+          { term: { team_id: opts.groupId } },
+        ],
       },
     });
   }
