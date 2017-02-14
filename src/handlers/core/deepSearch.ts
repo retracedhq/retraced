@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import validateSession from "../../security/validateSession";
 import checkAccess from "../../security/checkAccess";
 import deepSearchEvents, { Options } from "../../models/event/deepSearch";

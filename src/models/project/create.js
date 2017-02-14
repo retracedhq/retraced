@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import * as uuid from "uuid";
 import Analytics from "analytics-node";
 import * as moment from "moment";

@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import getInvite from "../../models/group/invite/get";
 
 export default function handler(req) {

@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import * as uuid from "uuid";
 import * as mandrill from "mandrill-api/mandrill";
 import * as moment from "moment";

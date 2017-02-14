@@ -1,8 +1,7 @@
-import "source-map-support/register";
 import validateSession from "../../../security/validateSession";
 import checkAccess from "../../../security/checkAccess";
 import getEventsBulk from "../../../models/event/getBulk";
-import hydrateScyllaEvents from "../../models/event/hydrate_scylla";
+import hydrateScyllaEvents from "../../../models/event/hydrate";
 
 export default async function handler(req) {
   const claims = await validateSession("viewer", req.get("Authorization"));

@@ -56,7 +56,7 @@ export default {
     handler: createEnvironment,
   },
   createEvent: {
-    path: "/v1/event",
+    path: "/v1/project/:projectId/event",
     method: "post",
     handler: createEvent,
   },

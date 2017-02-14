@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import * as stringify from "csv-stringify";
 import * as _ from "lodash";
 import * as sanitizefn from "sanitize-filename";

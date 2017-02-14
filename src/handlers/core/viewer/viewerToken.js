@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import validateApiToken from "../../../security/validateApiToken";
 import createViewerToken from "../../../models/viewertoken/create";
 import checkAccess from "../../../security/checkAccess";

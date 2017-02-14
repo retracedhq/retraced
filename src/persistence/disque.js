@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import * as hiredis from "hiredis";
 import * as _ from "lodash";
 

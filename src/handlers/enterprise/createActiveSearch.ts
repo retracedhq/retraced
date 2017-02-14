@@ -1,7 +1,6 @@
 import * as _ from "lodash";
 
 import validateEitapiToken from "../../security/validateEitapiToken";
-import "source-map-support/register";
 import getSavedSearch from "../../models/saved_search/get";
 import createActiveSearch from "../../models/active_search/create";
 

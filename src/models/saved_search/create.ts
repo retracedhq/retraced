@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import * as uuid from "uuid";
 
 import QueryDescriptor from "../query_desc/def";

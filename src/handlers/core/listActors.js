@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import validateSession from "../../security/validateSession";
 import listActors from "../../models/actor/list";
 import checkAccess from "../../security/checkAccess";

@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import getEs from "../../persistence/elasticsearch";
 
 const es = getEs();

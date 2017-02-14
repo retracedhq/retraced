@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import * as _ from "lodash";
 
 import getEitapiToken from "../models/eitapi_token/get";

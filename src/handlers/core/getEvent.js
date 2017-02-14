@@ -1,11 +1,10 @@
-import "source-map-support/register";
 import * as _ from "lodash";
 
 import validateSession from "../../security/validateSession";
 import checkAccess from "../../security/checkAccess";
 import getEvent from "../../models/event/get";
 import getActor from "../../models/actor/get";
-import hydrateScyllaEvents from "../../models/event/hydrate_scylla";
+import hydrateScyllaEvents from "../../models/event/hydrate";
 
 export default async function handler(req) {
   const claims = await validateSession("admin", req.get("Authorization"));
@@ -38,4 +37,3 @@ export default async function handler(req) {
     body: JSON.stringify({ event: hydratedEvents[0] }),
   };
 }
-

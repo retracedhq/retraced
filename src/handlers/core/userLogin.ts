@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import * as Auth0 from "auth0-js";
 import { LocalStorage } from "node-localstorage";
 import * as util from "util";

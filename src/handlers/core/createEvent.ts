@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import * as uuid from "uuid";
 import * as _ from "lodash";
 import * as moment from "moment";

@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import * as _ from "lodash";
 
 import getPgPool from "../../persistence/pg";
@@ -11,20 +10,16 @@ const pgPool = getPgPool();
  * @param {string} [group_ids] The unique group id(s) to fetch
  */
 export default async function (opts) {
-  if (opts.group_ids.length === 0) {
-    return [];
-  }
-
-  const pg = pgPool.connect();
+  const pg = await pgPool.connect();
   try {
     const tokenList = _.map(opts.group_ids, (gid, i) => { return `$${i + 1}`; });
-    const q = `select * from group_detail where id in (${tokenList})`;
+    const q = `select * from group_detail where group_id in (${tokenList})`;
     const v = opts.group_ids;
     const result = await pg.query(q, v);
     if (result.rowCount > 0) {
       return result.rows;
     }
-    return null;
+    return [];
 
   } finally {
     pg.release();
