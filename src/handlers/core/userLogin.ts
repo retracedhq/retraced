@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import * as Auth0 from "auth0-js";
 import { LocalStorage } from "node-localstorage";
 import * as util from "util";
@@ -6,8 +5,8 @@ import * as util from "util";
 import getUser from "../../models/user/get";
 import createUser, { DUPLICATE_EMAIL } from "../../models/user/create";
 import createAdminsession from "../../models/adminsession/create";
-import getInvite from "../../models/team/invite/get";
-import deleteInvite from "../../models/team/invite/delete";
+import getInvite from "../../models/group/invite/get";
+import deleteInvite from "../../models/group/invite/delete";
 import addUserToProject from "../../models/project/addUser";
 
 const auth0 = new Auth0.WebAuth({
@@ -66,7 +65,7 @@ export default async function handler(req) {
     await deleteInvite(invite.id);
   }
 
-  const newJWT = await createAdminsession({ user });
+  const newJWT = createAdminsession({ user });
   const response = {
     user: {
       email: user.email,

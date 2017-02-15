@@ -1,6 +1,6 @@
-import "source-map-support/register";
 import * as uuid from "uuid";
 import * as util from "util";
+import * as moment from "moment";
 
 import getPgPool from "../../persistence/pg";
 
@@ -35,8 +35,8 @@ export default async function createUser(opts) {
     v = [
       uuid.v4().replace(/-/g, ""),
       opts.email,
-      new Date().getTime() / 1000,
-      new Date().getTime() / 1000,
+      moment().unix(),
+      moment().unix(),
       opts.authId,
     ];
     pg.query(q, v);

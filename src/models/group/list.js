@@ -1,18 +1,17 @@
-import "source-map-support/register";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
 /**
- * Asynchronously returns the entire team for a project
+ * Asynchronously returns the entire group for a project
  *
  * @param {Object} [opts] The request options.
  */
-export default function listTeam(opts) {
+export default function listGroup(opts) {
   return new Promise((resolve, reject) => {
     const promises = [];
-    promises.push(listTeamMembers(opts));
-    promises.push(listTeamInvites(opts));
+    promises.push(listGroupMembers(opts));
+    promises.push(listGroupInvites(opts));
 
     Promise.all(promises)
       .then((values) => {
@@ -27,13 +26,13 @@ export default function listTeam(opts) {
   });
 }
 
-function listTeamInvites(opts) {
+function listGroupInvites(opts) {
   return new Promise((resolve, reject) => {
     resolve({});
   });
 }
 
-function listTeamMembers(opts) {
+function listGroupMembers(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {

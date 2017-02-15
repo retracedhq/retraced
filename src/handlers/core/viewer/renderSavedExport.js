@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import validateSession from "../../../security/validateSession";
 import renderSavedExport from "../../../models/saved_export/render";
 
@@ -21,7 +20,7 @@ export default async function handler(req) {
     environmentId: claims.environment_id,
     projectId: req.params.projectId,
     savedExportId: req.params.exportId,
-    teamId: claims.team_id,
+    groupId: claims.group_id,
     format,
   });
 

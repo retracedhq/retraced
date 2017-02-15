@@ -1,8 +1,7 @@
-import "source-map-support/register";
 import validateSession from "../../../security/validateSession";
 import checkAccess from "../../../security/checkAccess";
 import getEventsBulk from "../../../models/event/getBulk";
-import renderEvents from "../../../models/event/render";
+import hydrateScyllaEvents from "../../../models/event/hydrate";
 
 export default async function handler(req) {
   const claims = await validateSession("viewer", req.get("Authorization"));
@@ -13,7 +12,7 @@ export default async function handler(req) {
     event_ids: req.body.event_ids,
   });
 
-  let renderedEvents = await renderEvents({
+  let hydratedEvents = await hydrateScyllaEvents({
     source: "viewer",
     eventsIn: events,
     projectId: req.params.projectId,
@@ -22,6 +21,6 @@ export default async function handler(req) {
 
   return {
     status: 200,
-    body: JSON.stringify(renderedEvents),
+    body: JSON.stringify(hydratedEvents),
   };
 }

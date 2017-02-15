@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import validateApiToken from "../../../security/validateApiToken";
 import createViewerToken from "../../../models/viewertoken/create";
 import checkAccess from "../../../security/checkAccess";
@@ -23,7 +22,7 @@ export default function handler(req) {
         return createViewerToken({
           project_id: req.params.projectId,
           environment_id: apiToken.environment_id,
-          group_id: req.query.group_id || req.query.team_id,
+          group_id: req.query.group_id,
           format: req.query.output ? req.query.output : "json",
           is_admin: req.query.is_admin === "true",
         });

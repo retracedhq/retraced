@@ -1,10 +1,10 @@
 import * as _ from "lodash";
 import * as util from "util";
 import * as uuid from "uuid";
+import * as moment from "moment";
 
 import validateSession from "../../../security/validateSession";
 import checkAccess from "../../../security/checkAccess";
-import "source-map-support/register";
 import deepSearchEvents, { Options } from "../../../models/event/deepSearch";
 import getDisque from "../../../persistence/disque";
 
@@ -62,7 +62,7 @@ export default async function handler(req) {
       projectId: req.params.projectId,
       environmentId: claims.environment_id,
       event: "viewer_search",
-      timestamp: new Date().getTime(),
+      timestamp: moment().unix(),
     });
     const disqOpts = {
       retry: 600, // seconds,

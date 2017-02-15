@@ -1,5 +1,5 @@
-import "source-map-support/register";
 import * as uuid from "uuid";
+import * as moment from "moment";
 
 import getViewerToken from "../../../models/viewertoken/get";
 import createViewersession from "../../../models/viewersession/create";
@@ -30,7 +30,7 @@ export default function handler(req) {
           projectId: token.project_id,
           environmentId: token.environment_id,
           event: "viewer_session",
-          timestamp: new Date().getTime(),
+          timestamp: moment().unix(),
         });
 
         const opts = {

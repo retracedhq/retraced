@@ -1,7 +1,7 @@
-import "source-map-support/register";
 import * as uuid from "uuid";
 import * as redis from "redis";
 import * as util from "util";
+import * as moment from "moment";
 
 /**
  * {
@@ -21,8 +21,8 @@ export default function createViewerToken(opts) {
       project_id: opts.project_id,
       environment_id: opts.environment_id,
       group_id: opts.group_id,
-      created: new Date().getTime(),
-      expires: new Date(new Date().getTime() + 5 * 60000).getTime(), // 5 minutes
+      created: moment().valueOf(),
+      expires: moment().add(5, "m").valueOf(),
       format: opts.format,
       is_admin: opts.is_admin,
     };

@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import validateSession from "../../security/validateSession";
 import getDashboard from "../../models/dashboard/get";
 import checkAccess from "../../security/checkAccess";

@@ -65,7 +65,7 @@ function buildRoutes() {
             }
             respObj.send(result.body);
           } else {
-            // Generic response. Shouldn't happen, but...
+            // Generic response. Shouldn't happen in most cases, but...
             console.log(chalk.cyan(`[${reqId}] => 200`));
             res.status(200).set("X-Retraced-RequestId", reqId).json(result);
           }
@@ -73,18 +73,18 @@ function buildRoutes() {
         .catch((err) => {
           if (err.status && err.err) {
             // Structured error, specific status code and error object.
-            console.log(chalk.red(`[${reqId}] !! ${err.status} ${err.err.stack}`));
-            res.status(err.status).set("X-Retraced-RequestId", reqId).send();
+            console.log(chalk.red(`[${reqId}] !! ${err.status} ${err.err.stack || ""}`));
+            const bodyToSend = {
+              error: err.err.message || "An unexpected error occurred",
+            };
+            res.status(err.status).set("X-Retraced-RequestId", reqId).json(bodyToSend);
           } else {
-            // Generic error, default code.
-            let toReport;
-            if (err.stack) {
-              toReport = err.stack;
-            } else {
-              toReport = util.inspect(err);
-            }
-            console.log(chalk.red(`[${reqId}] !! 500 ${toReport}`));
-            res.status(500).set("X-Retraced-RequestId", reqId).send();
+            // Generic error, default code (500).
+            const bodyToSend = {
+              error: err.message || "An unexpected error occurred",
+            };
+            console.log(chalk.red(`[${reqId}] !! 500 ${err.stack || err.message || util.inspect(err)}`));
+            res.status(500).set("X-Retraced-RequestId", reqId).json(bodyToSend);
           }
         });
     };

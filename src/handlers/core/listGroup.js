@@ -1,6 +1,5 @@
-import "source-map-support/register";
 import validateSession from "../../security/validateSession";
-import listTeam from "../../models/team/list";
+import listGroup from "../../models/group/list";
 import checkAccess from "../../security/checkAccess";
 import listEnvironments from "../../models/environment/list";
 
@@ -21,15 +20,15 @@ export default function handler(req) {
         return listEnvironments({ project_id: req.params.projectId });
       })
       .then((envs) => {
-        return listTeam({
+        return listGroup({
           environments: envs,
           project_id: req.params.projectId,
         });
       })
-      .then((team) => {
+      .then((group) => {
         resolve({
           status: 200,
-          body: JSON.stringify({ team }),
+          body: JSON.stringify({ group }),
         });
       })
       .catch(reject);
