@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as cassandra from "cassandra-driver";
 import * as dns from "dns";
 import * as _ from "lodash";

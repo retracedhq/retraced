@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import getScylla from "../../persistence/scylla";
 
 export default function getEvent(opts) {

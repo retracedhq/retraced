@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as jwt from "jsonwebtoken";
 
 export default function createViewersession(opts) {

@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import "datejs";
 import * as jwt from "jsonwebtoken";
 

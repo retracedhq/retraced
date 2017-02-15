@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import "datejs";
 import * as _ from "lodash";
 import * as uuid from "uuid";

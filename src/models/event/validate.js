@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as _ from "lodash";
 
 // TODO this should return some details about what is missing

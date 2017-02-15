@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as pg from "pg";
 
 let pgPool;

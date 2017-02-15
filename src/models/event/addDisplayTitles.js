@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as _ from "lodash";
 import * as Handlebars from "handlebars";
 
@@ -36,18 +37,18 @@ export default async function addDisplayTitles(opts) {
         actorTemplate = `[**${event.actor.name}**](/project/${opts.project_id}/actor/${event.actor.id})`;
       }
 
-      if (event.object) {
-        let objectTemplate;
+      if (event.target) {
+        let targetTemplate;
         if (opts.source === "viewer") {
-          if (event.object.url) {
-            objectTemplate = `[**${event.object.name}**](${event.object.url})`;
+          if (event.target.url) {
+            targetTemplate = `[**${event.target.name}**](${event.target.url})`;
           } else {
-            objectTemplate = `**${event.object.name}**`;
+            targetTemplate = `**${event.target.name}**`;
           }
         } else {
-          objectTemplate = `[**${event.object.name}**](/project/${opts.project_id}/object/${event.object.id})`;
+          targetTemplate = `[**${event.target.name}**](/project/${opts.project_id}/target/${event.target.id})`;
         }
-        event.display_title = `${actorTemplate} performed the action **${event.action}** on ${objectTemplate}`;
+        event.display_title = `${actorTemplate} performed the action **${event.action}** on ${targetTemplate}`;
       } else {
         event.display_title = `${actorTemplate} performed the action **${event.action}**`;
       }
@@ -74,19 +75,19 @@ function buildDisplay(template, event, projectId, environmentId, source) {
 
     return `[**${this.actor.name}**](/project/${projectId}/actor/${this.actor.id})`;
   });
-  Handlebars.registerHelper("object", () => {
-    if (!this.object) {
+  Handlebars.registerHelper("target", () => {
+    if (!this.target) {
       return "*unknown*";
     }
     if (soruce === "viewer") {
-      if (this.object.url) {
-        return `[**${this.object.name}**](${this.object.url})`;
+      if (this.target.url) {
+        return `[**${this.target.name}**](${this.target.url})`;
       } else {
-        return `**${this.object.name}**`;
+        return `**${this.target.name}**`;
       }
     }
 
-    return `[**${this.object.name}**](/project/${projectId}/object/${this.object.id})`;
+    return `[**${this.target.name}**](/project/${projectId}/target/${this.target.id})`;
   });
 
   Handlebars.registerHelper("retracedUrl", (o) => {
@@ -94,8 +95,8 @@ function buildDisplay(template, event, projectId, environmentId, source) {
       switch (o.retraced_object_type) {
         case "actor":
           return `/project/${projectId}/actor/${o.id}`;
-        case "object":
-          return `/project/${projectId}/object/${o.id}`;
+        case "target":
+          return `/project/${projectId}/target/${o.id}`;
         default:
           return;
       }

@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import * as _ from "lodash";
 
 import getActors from "../actor/gets";

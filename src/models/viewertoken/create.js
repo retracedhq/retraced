@@ -1,12 +1,15 @@
+import "source-map-support/register";
 import * as uuid from "uuid";
 import * as redis from "redis";
+import * as util from "util";
 
 /**
  * {
  *   project_id: {String}
  *   environment_id: {String}
- *   team_id: {String}
+ *   group_id: {String}
  *   format: {String}
+ *   is_admin: {boolean}
  * }
  */
 export default function createViewerToken(opts) {
@@ -17,10 +20,11 @@ export default function createViewerToken(opts) {
     const hash = {
       project_id: opts.project_id,
       environment_id: opts.environment_id,
-      team_id: opts.team_id,
+      group_id: opts.group_id,
       created: new Date().getTime(),
       expires: new Date(new Date().getTime() + 5 * 60000).getTime(), // 5 minutes
       format: opts.format,
+      is_admin: opts.is_admin,
     };
     redisClient.HMSET(`viewertoken:${viewerToken}`, hash, (err, res) => {
       if (err) {
