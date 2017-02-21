@@ -3,7 +3,7 @@ import Analytics from "analytics-node";
 import * as moment from "moment";
 
 import getPgPool from "../../persistence/pg";
-import createApiToken from "../apitoken/create";
+import createApiToken from "../api_token/create";
 import createEnvironment from "../environment/create";
 import addUserToProject from "./addUser";
 

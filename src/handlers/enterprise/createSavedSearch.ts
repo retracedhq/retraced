@@ -1,17 +1,11 @@
 import * as _ from "lodash";
 import * as moment from "moment";
 
-import validateEitapiToken from "../../security/validateEitapiToken";
+import { checkEitapiAccess } from "../../security/helpers";
 import createSavedSearch, { Options } from "../../models/saved_search/create";
 
 export default async function handler(req) {
-  const eitapiToken = await validateEitapiToken(req.get("Authorization"));
-  if (!eitapiToken) {
-    throw {
-      err: new Error("Access denied"),
-      status: 401,
-    };
-  }
+  const eitapiToken = await checkEitapiAccess(req);
 
   if (!req.body.name) {
     throw {

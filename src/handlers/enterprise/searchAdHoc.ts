@@ -1,21 +1,11 @@
 import * as _ from "lodash";
 
-import validateEitapiToken from "../../security/validateEitapiToken";
+import { checkEitapiAccess } from "../../security/helpers";
 import deepSearchEvents, { Options } from "../../models/event/deepSearch";
 
 export default async function handler(req) {
-  const eitapiToken = await validateEitapiToken(req.get("Authorization"));
-  if (!eitapiToken) {
-    throw {
-      err: new Error("Access denied"),
-      status: 401,
-    };
-  }
+  const eitapiToken = await checkEitapiAccess(req);
 
-  // pageSize (max 200)
-  // actor_id
-  // action
-  // check etag header for scroll_id
   const opts: Options = {
     index: `retraced.${eitapiToken.project_id}.${eitapiToken.environment_id}`,
     sort: "desc",
