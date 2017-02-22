@@ -17,7 +17,7 @@ export default async function handler(req) {
   const newDesc = await createViewerDescriptor({
     projectId: req.params.projectId,
     environmentId: apiToken.environment_id,
-    groupId: req.query.group_id,
+    groupId: req.query.group_id || req.query.team_id,
     isAdmin: req.query.is_admin === "true",
   });
 
