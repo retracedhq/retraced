@@ -1,7 +1,7 @@
 import * as uuid from "uuid";
 import * as _ from "lodash";
 
-import validateEitapiToken from "../../security/validateEitapiToken";
+import { checkEitapiAccess } from "../../security/helpers";
 import deepSearchEvents, { Options } from "../../models/event/deepSearch";
 import getSavedSearch from "../../models/saved_search/get";
 import getActiveSearch from "../../models/active_search/get";
@@ -9,13 +9,7 @@ import updateActiveSearch from "../../models/active_search/update";
 import QueryDescriptor from "../../models/query_desc/def";
 
 export default async function handler(req) {
-  const eitapiToken = await validateEitapiToken(req.get("Authorization"));
-  if (!eitapiToken) {
-    throw {
-      err: new Error("Access denied"),
-      status: 401,
-    };
-  }
+  const eitapiToken = await checkEitapiAccess(req);
 
   if (!req.params.activeSearchId) {
     throw {
