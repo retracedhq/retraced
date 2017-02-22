@@ -1,8 +1,9 @@
-import ViewerDescriptor from "./def";
-
 import * as uuid from "uuid";
 import * as redis from "redis";
 import * as moment from "moment";
+import * as util from "util";
+
+import ViewerDescriptor from "./def";
 
 export interface Options {
   projectId: string;
@@ -23,6 +24,7 @@ export default async function createViewerDescriptor(opts: Options): Promise<Vie
 
   const redisClient = redis.createClient({ url: process.env.REDIS_URI });
   await new Promise((resolve, reject) => {
+    console.log(util.inspect(newDesc, false, 100, true));
     redisClient.HMSET(`viewer_descriptor:${newDesc.id}`, newDesc, (err, res) => {
       if (err) {
         console.log(err);
