@@ -21,17 +21,9 @@ export default async function handler(req) {
     isAdmin: req.query.is_admin === "true",
   });
 
-  // Clients will be expecting the response keys in snake_case
-  const result = {
-    project_id: newDesc.projectId,
-    environment_id: newDesc.environmentId,
-    group_id: newDesc.groupId,
-    is_admin: newDesc.isAdmin,
-  };
-
   // This should probably be a 201, but current clients are expecting 200.
   return {
     status: 200,
-    body: JSON.stringify({ token: result }),
+    body: JSON.stringify({ token: newDesc.id }),
   };
 }
