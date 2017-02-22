@@ -29,8 +29,9 @@ export default async function handler(req) {
     is_admin: newDesc.isAdmin,
   };
 
+  // This should probably be a 201, but current clients are expecting 200.
   return {
-    status: 201,
+    status: 200,
     body: JSON.stringify({ token: result }),
   };
 }
