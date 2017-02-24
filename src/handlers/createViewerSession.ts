@@ -35,7 +35,7 @@ export default async function handler(req) {
   return {
     status: 200,
     body: JSON.stringify({
-      project_id: "",
+      project_id: desc.projectId,
       token: voucher,
     }),
   };
