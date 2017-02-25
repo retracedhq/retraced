@@ -18,7 +18,12 @@ export default function listActions(opts) {
         return;
       }
 
-      const q = `select * from action where
+      const values = `id, environment_id, event_count, action, project_id, display_template,
+        extract(epoch from created) * 1000 as created,
+        extract(epoch from first_active) * 1000 as first_active,
+        extract(epoch from last_active) * 1000 as last_active`;
+
+      const q = `select ${values} from action where
       project_id = $1 and
       environment_id = $2 order by action`;
       const v = [

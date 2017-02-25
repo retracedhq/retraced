@@ -29,7 +29,13 @@ function listActorsForProjectAndEnvironment(projectId, environmentId) {
         return;
       }
 
-      const q = `select * from actor where
+      const fields = `
+        id, environment_id, event_count, foreign_id, name, project_id, url,
+        extract(epoch from created) * 1000 as created,
+        extract(epoch from first_active) * 1000 as first_active,
+        extract(epoch from last_active) * 1000 as last_active`;
+
+      const q = `select ${fields} from actor where
       project_id = $1 and
       environment_id = $2`;
       const v = [

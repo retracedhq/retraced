@@ -33,7 +33,6 @@ export interface Options {
 export interface Result {
   totalHits: number;
   count: number;
-  eventIds?: string[];
   events?: any[];
   scrollId?: string;
 }
@@ -49,12 +48,10 @@ export default async function (opts: Options): Promise<Result> {
     let results: Result = {
       totalHits: resp.hits.total,
       count: resp.hits.hits ? resp.hits.hits.length : 0,
-      eventIds: [],
       events: [],
     };
     if (results.count > 0) {
       for (const hit of resp.hits.hits) {
-        results.eventIds!.push(hit.fields.id[0]);
         results.events!.push(hit["_source"]);
       }
       results.scrollId = resp._scroll_id;
@@ -186,15 +183,11 @@ export default async function (opts: Options): Promise<Result> {
   const params: any = {
     index: opts.index,
     type: "event",
-    fields: ["id"],
     _source: true,
     from: opts.offset || 0,
     size: opts.fetchAll ? 5000 : opts.length,
     scroll: opts.newScroll ? opts.scrollLifetime : undefined,
-    sort: [
-      `created:${opts.sort}`,
-      `received:${opts.sort}`,
-    ],
+    sort: [ `received:${opts.sort}` ],
     body: {
       query,
     },
@@ -206,12 +199,10 @@ export default async function (opts: Options): Promise<Result> {
     let results: Result = {
       totalHits: resp.hits.total,
       count: resp.hits.hits ? resp.hits.hits.length : 0,
-      eventIds: [],
       events: [],
     };
     if (results.count > 0) {
       for (const hit of resp.hits.hits) {
-        results.eventIds!.push(hit.fields.id[0]);
         results.events!.push(hit["_source"]);
       }
     }
@@ -226,7 +217,6 @@ export default async function (opts: Options): Promise<Result> {
     let results: Result = {
       totalHits: 0,
       count: 0,
-      eventIds: [],
       events: [],
     };
     params.scroll = "1m";
@@ -238,7 +228,6 @@ export default async function (opts: Options): Promise<Result> {
       };
       results.totalHits = results.count = initialResp.hits.total;
       for (const hit of initialResp.hits.hits) {
-        results.eventIds!.push(hit.fields.id[0]);
         results.events!.push(hit["_source"]);
       }
       while (true) {
@@ -247,7 +236,6 @@ export default async function (opts: Options): Promise<Result> {
           break;
         }
         for (const hit of resp.hits.hits) {
-          results.eventIds!.push(hit.fields.id[0]);
           results.events!.push(hit["_source"]);
         }
         scrollParams.scroll_id = resp._scroll_id;

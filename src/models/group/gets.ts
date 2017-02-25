@@ -13,7 +13,11 @@ export default async function (opts) {
   const pg = await pgPool.connect();
   try {
     const tokenList = _.map(opts.group_ids, (gid, i) => { return `$${i + 1}`; });
-    const q = `select * from group_detail where group_id in (${tokenList})`;
+    const fields = `project_id, environment_id, group_id, name, event_count,
+        extract(epoch from created_at) * 1000 as created_at,
+        extract(epoch from last_active) * 1000 as last_active`;
+
+    const q = `select ${fields} from group_detail where group_id in (${tokenList})`;
     const v = opts.group_ids;
     const result = await pg.query(q, v);
     if (result.rowCount > 0) {

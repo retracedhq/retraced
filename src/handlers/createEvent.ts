@@ -56,9 +56,10 @@ export default async function handler(req) {
     for (const eventInput of eventInputs) {
       const insertStmt = `
       insert into ingest_task (
-        id, original_event, project_id, environment_id, new_event_id
+        id, original_event, project_id, environment_id, new_event_id, received
       ) values (
-        $1, $2, $3, $4, $5
+        $1, $2, $3, $4, $5,
+        to_timestamp($6::double precision / 1000)
       )`;
 
       const newTaskId = uuid.v4().replace(/-/g, "");
@@ -69,6 +70,7 @@ export default async function handler(req) {
         apiToken.project_id,
         apiToken.environment_id,
         newEventId,
+        moment().valueOf(),
       ];
 
       await pg.query(insertStmt, insertVals);

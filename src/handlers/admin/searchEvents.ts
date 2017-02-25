@@ -1,5 +1,6 @@
 import { checkAdminAccess } from "../../security/helpers";
-import deepSearchEvents, { Options } from "../../models/event/deepSearch";
+import searchEvents, { Options } from "../../models/event/search";
+import addDisplayTitles from "../../models/event/addDisplayTitles";
 
 /*
 What we're expecting from clients:
@@ -42,12 +43,20 @@ export default async function handler(req) {
     },
   };
 
-  const results = await deepSearchEvents(opts);
+  const results = await searchEvents(opts);
+
+  const hydratedEvents = await addDisplayTitles({
+    project_id: req.params.projectId,
+    environment_id: req.query.environment_id,
+    events: results.events,
+    source: "admin",
+  });
+
   return {
     status: 200,
     body: JSON.stringify({
       total_hits: results.totalHits,
-      ids: results.eventIds || [],
+      events: hydratedEvents || [],
     }),
   };
 }

@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 
 import { checkEitapiAccess } from "../../security/helpers";
-import deepSearchEvents, { Options } from "../../models/event/deepSearch";
+import searchEvents, { Options } from "../../models/event/search";
 
 export default async function handler(req) {
   const eitapiToken = await checkEitapiAccess(req);
@@ -25,7 +25,7 @@ export default async function handler(req) {
 
   opts.newScroll = !opts.scrollId;
 
-  const results = await deepSearchEvents(opts);
+  const results = await searchEvents(opts);
 
   const response: any = {
     status: 200,

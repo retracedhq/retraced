@@ -10,12 +10,10 @@ import createApiToken from "./handlers/admin/createApiToken";
 import createEnvironment from "./handlers/admin/createEnvironment";
 import createInvite from "./handlers/admin/createInvite";
 import createProject from "./handlers/admin/createProject";
-import deepSearch from "./handlers/admin/deepSearch";
+import searchEvents from "./handlers/admin/searchEvents";
 import getAction from "./handlers/admin/getAction";
 import getActor from "./handlers/admin/getActor";
 import getDashboard from "./handlers/admin/getDashboard";
-import getEvent from "./handlers/admin/getEvent";
-import getEventsBulk from "./handlers/admin/getEventsBulk";
 import getProject from "./handlers/admin/getProject";
 import listActions from "./handlers/admin/listActions";
 import listActors from "./handlers/admin/listActors";
@@ -34,9 +32,8 @@ import enterpriseSearchAdHoc from "./handlers/enterprise/searchAdHoc";
 // viewer
 import viewerCreateEitapiToken from "./handlers/viewer/createEitapiToken";
 import viewerCreateExport from "./handlers/viewer/createExport";
-import viewerDeepSearch from "./handlers/viewer/deepSearch";
+import viewerSearchEvents from "./handlers/viewer/searchEvents";
 import viewerDeleteEitapiToken from "./handlers/viewer/deleteEitapiToken";
-import viewerGetEventsBulk from "./handlers/viewer/getEventsBulk";
 import viewerListEitapiTokens from "./handlers/viewer/listEitapiTokens";
 import viewerListExports from "./handlers/viewer/listExports";
 import viewerRenderSavedExport from "./handlers/viewer/renderSavedExport";
@@ -96,10 +93,10 @@ export default {
     method: "post",
     handler: createProject,
   },
-  deepSearch: {
-    path: "/v1/project/:projectId/events/search/deep",
+  searchEvents: {
+    path: "/v1/project/:projectId/events/search",
     method: "post",
-    handler: deepSearch,
+    handler: searchEvents,
   },
   getAction: {
     path: "/v1/project/:projectId/action/:actionId",
@@ -115,16 +112,6 @@ export default {
     path: "/v1/project/:projectId/dashboard",
     method: "get",
     handler: getDashboard,
-  },
-  getEvent: {
-    path: "/v1/project/:projectId/event/:eventId",
-    method: "get",
-    handler: getEvent,
-  },
-  getEventsBulk: {
-    path: "/v1/project/:projectId/events/bulk",
-    method: "post",
-    handler: getEventsBulk,
   },
   getProject: {
     path: "/v1/project/:projectId",
@@ -204,20 +191,15 @@ export default {
     method: "post",
     handler: viewerCreateExport,
   },
-  viewerDeepSearch: {
-    path: "/v1/viewer/:projectId/events/search/deep",
+  viewerSearchEvents: {
+    path: "/v1/viewer/:projectId/events/search",
     method: "post",
-    handler: viewerDeepSearch,
+    handler: viewerSearchEvents,
   },
   viewerDeleteEitapiToken: {
     path: "/v1/project/:projectId/eitapi_token/:tokenId",
     method: "delete",
     handler: viewerDeleteEitapiToken,
-  },
-  viewerGetEventsBulk: {
-    path: "/v1/viewer/:projectId/events/bulk",
-    method: "post",
-    handler: viewerGetEventsBulk,
   },
   viewerListEitapiTokens: {
     path: "/v1/project/:projectId/eitapi_tokens",
