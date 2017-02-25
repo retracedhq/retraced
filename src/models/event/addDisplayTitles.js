@@ -16,7 +16,7 @@ export default async function addDisplayTitles(opts) {
   // Get all actions we need in a single database query
   const actions = await listActions({
     project_id: opts.project_id,
-    environment_id: opts.environment_i,
+    environment_id: opts.environment_id,
   });
 
   const updated = _.map(opts.events, (event) => {

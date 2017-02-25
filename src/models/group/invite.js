@@ -24,14 +24,14 @@ export default function createInvite(opts) {
       const invite = {
         id: uuid.v4().replace(/-/g, ""),
         project_id: opts.project_id,
-        created: moment().unix(),
+        created: moment().valueOf(),
         email: opts.email,
       };
 
       const q = `insert into invite (
         id, project_id, created, email
       ) values (
-        $1, $2, to_timestamp($3), $4
+        $1, $2, to_timestamp($3::double precision / 1000), $4
       )`;
       const v = [
         invite.id,
@@ -71,9 +71,9 @@ export default function createInvite(opts) {
                 email: invite.email,
                 type: "to",
               }],
-              from_email: "contact@auditable.io",
+              from_email: "contact@retraced.io",
               from_name: "Retraced",
-              subject: "You are invited to join a group on Retraced",
+              subject: "You have been invited to join a group on Retraced.",
               global_merge_vars: mergeVars,
             },
             async: false,

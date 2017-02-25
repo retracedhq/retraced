@@ -22,8 +22,14 @@ export default function getActors(opts) {
         return;
       }
 
+      const fields = `
+        id, environment_id, event_count, foreign_id, name, project_id, url,
+        extract(epoch from created) * 1000 as created,
+        extract(epoch from first_active) * 1000 as first_active,
+        extract(epoch from last_active) * 1000 as last_active`;
+
       const tokenList = _.map(opts.actor_ids, (a, i) => { return `$${i + 1}`; });
-      const q = `select * from actor where id in (${tokenList})`;
+      const q = `select ${fields} from actor where id in (${tokenList})`;
       const v = opts.actor_ids;
       pg.query(q, v, (qerr, result) => {
         done();

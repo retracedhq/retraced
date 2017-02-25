@@ -22,8 +22,13 @@ export default function getTargets(opts) {
         return;
       }
 
+      const fields = `id, environment_id, event_count, foreign_id, name, project_id, url, type,
+        extract(epoch from created) * 1000 as created,
+        extract(epoch from first_active) * 1000 as first_active,
+        extract(epoch from last_active) * 1000 as last_active`;
+
       const tokenList = _.map(opts.target_ids, (a, i) => { return `$${i + 1}`; });
-      const q = `select * from target where id in (${tokenList})`;
+      const q = `select ${fields} from target where id in (${tokenList})`;
       const v = opts.target_ids;
       pg.query(q, v, (qerr, result) => {
         done();

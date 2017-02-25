@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import * as sanitizefn from "sanitize-filename";
 
 import getPgPool from "../../persistence/pg";
-import deepSearchEvents, { Options } from "../event/deepSearch";
+import searchEvents, { Options } from "../event/search";
 import QueryDescriptor from "../query_desc/def";
 
 const pgPool = getPgPool();
@@ -55,20 +55,11 @@ export default async function renderSavedExport(opts) {
         throw new Error(`Unknown query descriptor version: ${queryDesc.version}`);
     }
 
-    const results = await deepSearchEvents(deepOpts);
+    const results = await searchEvents(deepOpts);
 
     if (!results.totalHits) {
       return undefined;
     }
-
-    // These no longer need to be rendered, because they aren't coming in deflated
-    // form from Scylla anymore, they're coming as full normalized events from ES.
-    // const fullEvents = await renderEvents({
-    //   source,
-    //   projectId,
-    //   environmentId,
-    //   eventsIn: results.events,
-    // });
 
     // TODO(zhaytee): This might be a huge amount of data. Use the filesystem?
     let rendered;

@@ -16,7 +16,12 @@ export default function getAction(opts) {
         return;
       }
 
-      const q = "select * from action where id = $1";
+      const values = `id, environment_id, event_count, action, project_id, display_template,
+        extract(epoch from created) * 1000 as created,
+        extract(epoch from first_active) * 1000 as first_active,
+        extract(epoch from last_active) * 1000 as last_active`;
+
+      const q = `select ${values} from action where id = $1`;
       const v = [opts.action_id];
 
       pg.query(q, v, (qerr, result) => {

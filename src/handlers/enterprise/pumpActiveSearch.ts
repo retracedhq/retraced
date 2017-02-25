@@ -2,7 +2,7 @@ import * as uuid from "uuid";
 import * as _ from "lodash";
 
 import { checkEitapiAccess } from "../../security/helpers";
-import deepSearchEvents, { Options } from "../../models/event/deepSearch";
+import searchEvents, { Options } from "../../models/event/search";
 import getSavedSearch from "../../models/saved_search/get";
 import getActiveSearch from "../../models/active_search/get";
 import updateActiveSearch from "../../models/active_search/update";
@@ -86,7 +86,7 @@ export default async function handler(req) {
     searchOpts.startTime = activeSearch.next_start_time;
   }
 
-  const results = await deepSearchEvents(searchOpts);
+  const results = await searchEvents(searchOpts);
   let nextToken;
   if (results.events && results.events.length > 0) {
     nextToken = uuid.v4().replace(/-/g, "");

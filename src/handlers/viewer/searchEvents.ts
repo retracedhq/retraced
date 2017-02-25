@@ -4,8 +4,9 @@ import * as uuid from "uuid";
 import * as moment from "moment";
 
 import { checkViewerAccess } from "../../security/helpers";
-import deepSearchEvents, { Options } from "../../models/event/deepSearch";
+import searchEvents, { Options } from "../../models/event/search";
 import getDisque from "../../persistence/disque";
+import addDisplayTitles from "../../models/event/addDisplayTitles";
 
 const disque = getDisque();
 
@@ -46,7 +47,14 @@ export default async function (req) {
     },
   };
 
-  const results = await deepSearchEvents(opts);
+  const results = await searchEvents(opts);
+
+  const hydratedEvents = await addDisplayTitles({
+    project_id: req.params.projectId,
+    environment_id: claims.environmentId,
+    events: results.events,
+    source: "viewer",
+  });
 
   const defaultQuery = {
     search_text: "",
@@ -62,7 +70,7 @@ export default async function (req) {
       projectId: req.params.projectId,
       environmentId: claims.environmentId,
       event: "viewer_search",
-      timestamp: moment().unix(),
+      timestamp: moment().valueOf(),
     });
     const disqOpts = {
       retry: 600, // seconds,
@@ -75,7 +83,7 @@ export default async function (req) {
     status: 200,
     body: JSON.stringify({
       total_hits: results.totalHits,
-      ids: results.eventIds || [],
+      events: hydratedEvents || [],
     }),
   };
 }
