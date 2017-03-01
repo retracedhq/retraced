@@ -46,9 +46,9 @@ export default async function handler(req) {
   const results = await searchEvents(opts);
 
   const hydratedEvents = await addDisplayTitles({
-    project_id: req.params.projectId,
-    environment_id: req.query.environment_id,
-    events: results.events,
+    projectId: req.params.projectId,
+    environmentId: req.query.environment_id,
+    events: results.events!,
     source: "admin",
   });
 

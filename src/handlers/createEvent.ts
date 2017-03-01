@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import * as moment from "moment";
 
 import createCanonicalHash from "../models/event/canonicalize";
-import { fromCreateEventInput } from "../models/event/def";
+import { fromCreateEventInput } from "../models/event";
 import verifyProjectAccess from "../security/verifyProjectAccess";
 import getApiToken from "../models/api_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";

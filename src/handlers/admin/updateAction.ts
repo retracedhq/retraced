@@ -5,8 +5,8 @@ export default async function (req) {
   await checkAdminAccess(req);
 
   const action = await updateAction({
-    action_id: req.params.actionId,
-    display_template: req.body.display_template,
+    actionId: req.params.actionId,
+    displayTemplate: req.body.display_template,
   });
 
   return {

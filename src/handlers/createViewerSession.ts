@@ -12,7 +12,7 @@ const disque = getDisque();
 export default async function handler(req) {
   // Note that, because these "viewer descriptor" values are being read from redis,
   // all of the values are JSON strings, not their normal expected types.
-  // Clients must be prepared to deal with string values.  
+  // Clients must be prepared to deal with string values.
   const desc = await getViewerDescriptor({
     id: req.body.token,
   });

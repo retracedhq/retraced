@@ -7,7 +7,7 @@ opts:
   eitapiTokenId
   projectId
   environmentId
-  groupId  
+  groupId
 */
 export default async function deleteEitapiToken(opts) {
   const pg = await pgPool.connect();

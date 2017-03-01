@@ -9,8 +9,8 @@ opts:
   eitapiTokenId
   projectId
   environmentId
-  groupId  
-  
+  groupId
+
   displayName
 */
 export default async function updateEitapiToken(opts) {

@@ -35,11 +35,11 @@
     "uuid": "^2.0.2"
   },
   "devDependencies": {
-    "@types/express": "^4.0.33",
-    "@types/lodash": "^4.14.41",
-    "chance": "^1.0.4",
-    "tslint": "^4.3.1",
-    "typescript": "^2.1.5"
+    "@types/express": "^4.0.35",
+    "@types/lodash": "^4.14.53",
+    "chance": "^1.0.6",
+    "tslint": "^4.5.0",
+    "typescript": "^2.2.1"
   },
   "scripts": {
     "pretest": "tsc",

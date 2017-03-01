@@ -83,33 +83,12 @@ export default async function (opts: Options): Promise<Result> {
 
   if (opts.startTime) {
     filters.push({
-      bool: {
-        should: [
-          {
-            bool: {
-              must_not: { exists: { field: "created" } },
-              must: { range: { received: { gte: opts.startTime } } },
-            },
-          },
-          { range: { created: { gte: opts.startTime } } },
-        ],
-      },
+      range: { canonical_time: { gte: opts.startTime } },
     });
   }
-
   if (opts.endTime) {
     filters.push({
-      bool: {
-        should: [
-          {
-            bool: {
-              must_not: { exists: { field: "created" } },
-              must: { range: { received: { lte: opts.endTime } } },
-            },
-          },
-          { range: { created: { lte: opts.endTime } } },
-        ],
-      },
+      range: { canonical_time: { lte: opts.endTime } },
     });
   }
 
@@ -187,7 +166,7 @@ export default async function (opts: Options): Promise<Result> {
     from: opts.offset || 0,
     size: opts.fetchAll ? 5000 : opts.length,
     scroll: opts.newScroll ? opts.scrollLifetime : undefined,
-    sort: [ `received:${opts.sort}` ],
+    sort: [`canonical_time:${opts.sort}`],
     body: {
       query,
     },
