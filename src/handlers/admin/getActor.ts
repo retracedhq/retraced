@@ -5,9 +5,7 @@ export default async function (req) {
   await checkAdminAccess(req);
 
   const actor = await getActor({
-    project_id: req.params.projectId,
-    environment_id: req.query.environment_id,
-    actor_id: req.params.actorId,
+    actorId: req.params.actorId,
   });
 
   return {

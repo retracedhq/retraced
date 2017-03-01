@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import * as crypto from "crypto";
 import * as util from "util";
 
-import Event from "./def";
+import Event from "./";
 
 const requiredFields = [
   "id", "action", "group.id",
