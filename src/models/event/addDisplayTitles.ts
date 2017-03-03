@@ -41,7 +41,9 @@ export default async function addDisplayTitles(opts: Options): Promise<any[]> {
             targetTemplate = `**${event.target.name}**`;
           }
         } else {
-          targetTemplate = `[**${event.target.name}**](/project/${opts.projectId}/target/${event.target.id})`;
+          // This isn't implemented yet on the 'app' project side.
+          // targetTemplate = `[**${event.target.name}**](/project/${opts.projectId}/target/${event.target.id})`;
+          targetTemplate = `**${event.target.name}**`;
         }
         event.display_title = `${actorTemplate} performed the action **${event.action}** on ${targetTemplate}`;
       } else {

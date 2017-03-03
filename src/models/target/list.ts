@@ -32,6 +32,7 @@ export default async function (opts: Options) {
           retraced_object_type: "target",
         }));
       }
+      return targets;
     }
 
     return [];

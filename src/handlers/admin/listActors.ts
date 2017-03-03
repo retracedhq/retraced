@@ -4,7 +4,7 @@ import listActors from "../../models/actor/list";
 export default async function (req) {
   await checkAdminAccess(req);
 
-  const actors = listActors({
+  const actors = await listActors({
     projectId: req.params.projectId,
     environmentId: req.query.environment_id,
   });
