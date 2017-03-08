@@ -1,10 +1,8 @@
-FROM node:7.1
+FROM node:7.7.1
 
 EXPOSE 3000
-
-RUN npm install -g yarn
 
 ADD . /src
 WORKDIR /src
 
-RUN yarn global add tslint@4.0.2 typescript@2.1.1
+RUN yarn global add tslint@4.5.1 typescript@2.2.1
