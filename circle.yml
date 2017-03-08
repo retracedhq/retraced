@@ -4,17 +4,17 @@ machine:
   pre:
     - mkdir ~/.yarn-cache
   node:
-    version: 7.1.0
+    version: 7.7.1
 
 dependencies:
   pre:
     - npm i -g yarn
   override:
-    - yarn install
+    - yarn
 
 test:
   pre:
-    - yarn global add tslint@4.3.1 typescript@2.1.5
+    - yarn global add tslint@4.5.1 typescript@2.2.1
     - make build
   override:
     # - yarn test
