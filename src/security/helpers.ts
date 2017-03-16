@@ -2,7 +2,6 @@ import * as _ from "lodash";
 import * as util from "util";
 
 import { AdminClaims, validateAdminVoucher, validateViewerDescriptorVoucher } from "./vouchers";
-import verifyProjectAccess from "./verifyProjectAccess";
 import getEitapiToken from "../models/eitapi_token/get";
 import ViewerDescriptor from "../models/viewer_descriptor/def";
 
