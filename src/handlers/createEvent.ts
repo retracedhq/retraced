@@ -4,7 +4,6 @@ import * as moment from "moment";
 
 import createCanonicalHash from "../models/event/canonicalize";
 import { fromCreateEventInput } from "../models/event";
-import verifyProjectAccess from "../security/verifyProjectAccess";
 import getApiToken from "../models/api_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getDisque from "../persistence/disque";
@@ -23,10 +22,7 @@ export default async function handler(req) {
   try {
     const apiTokenId = apiTokenFromAuthHeader(req.get("Authorization"));
     const apiToken: any = await getApiToken(apiTokenId);
-    const validAccess = await verifyProjectAccess({
-      apiToken: apiToken.token,
-      projectId: req.params.projectId,
-    });
+    const validAccess = apiToken && apiToken.project_id === req.params.projectId;
     if (!validAccess) {
       throw { status: 401, err: new Error("Unauthorized") };
     }
