@@ -91,17 +91,12 @@ export default class StatsdReporter {
 
     private reportHistogram(histogram) {
 
-        const isHisto = Object.getPrototypeOf(histogram) === metrics.Histogram.prototype;
-        const countIsFunction = _.isFunction(histogram.count);
-        if (isHisto && !countIsFunction) {
-            // send count if a histogram, otherwise assume metric is being
-            this.client.gauge(`${this.prefix}.${histogram.name}.count`, histogram.count);
-        }
+        this.client.gauge(`${this.prefix}.${histogram.name}.count`, histogram.count);
 
         const percentiles = histogram.percentiles([.50, .75, .95, .98, .99, .999]);
-        this.client.gauge(`${this.prefix}.${histogram.name}.mean`, isHisto ? histogram.min : histogram.min());
+        this.client.gauge(`${this.prefix}.${histogram.name}.mean`, histogram.min);
         this.client.gauge(`${this.prefix}.${histogram.name}.mean`, histogram.mean());
-        this.client.gauge(`${this.prefix}.${histogram.name}.max`, isHisto ? histogram.max : histogram.max());
+        this.client.gauge(`${this.prefix}.${histogram.name}.max`, histogram.max);
         this.client.gauge(`${this.prefix}.${histogram.name}.stddev`, histogram.stdDev());
         this.client.gauge(`${this.prefix}.${histogram.name}.p50`, percentiles[.50]);
         this.client.gauge(`${this.prefix}.${histogram.name}.p75`, percentiles[.75]);

@@ -96,6 +96,31 @@ export async function instrument(
     }
 };
 
+/**
+ * This code is copypasta'd from one of the node `metrics` reporters
+ * its basically turning
+ * ```
+ * {
+ *   a: {
+ *     b: { count: 10 },
+ *     c: { count: 20 },
+ *   foo: {
+ *     bar: { count: 30 }
+ *   }
+ * }
+ * ```
+ *
+ * into
+ * ```
+ * {
+ *   counters: [
+ *     { name: a.b, count: 10 },
+ *     { name: a.c, count: 20},
+ *     { name: foo.bar, count: 30}
+ *   ]
+ * }
+ * ```
+ */
 export function getNamedMetrics(registry: metrics.Report) {
 
     let meters: any[] = [];

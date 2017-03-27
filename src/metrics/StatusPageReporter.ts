@@ -135,18 +135,11 @@ export default class StatusPageReporter {
     };
 
     private reportHistogram(histogram) {
-
-        const isHisto = Object.getPrototypeOf(histogram) === metrics.Histogram.prototype;
-        const countIsFunction = _.isFunction(histogram.count);
-        if (isHisto && !countIsFunction) {
-            // send count if a histogram, otherwise assume metric is being
-            this.reportMetric(`${histogram.name}.count`, histogram.count);
-        }
-
+        this.reportMetric(`${histogram.name}.count`, histogram.count);
         const percentiles = histogram.percentiles([.50, .75, .95, .98, .99, .999]);
-        this.reportMetric(`${histogram.name}.mean`, isHisto ? histogram.min : histogram.min());
+        this.reportMetric(`${histogram.name}.mean`, histogram.min);
         this.reportMetric(`${histogram.name}.mean`, histogram.mean());
-        this.reportMetric(`${histogram.name}.max`, isHisto ? histogram.max : histogram.max());
+        this.reportMetric(`${histogram.name}.max`, histogram.max );
         this.reportMetric(`${histogram.name}.stddev`, histogram.stdDev());
         this.reportMetric(`${histogram.name}.p50`, percentiles[.50]);
         this.reportMetric(`${histogram.name}.p75`, percentiles[.75]);
