@@ -14,10 +14,10 @@ dependencies:
 
 test:
   pre:
-    - yarn global add tslint@4.5.1 typescript@2.2.1
+    - yarn global add tslint@4.5.1 typescript@2.2.1 codeclimate-test-reporter
     - make build
-  override:
-    # - yarn test
+  post:
+    - codeclimate-test-reporter < ./coverage/lcov.info
 
 deployment:
   docker:
