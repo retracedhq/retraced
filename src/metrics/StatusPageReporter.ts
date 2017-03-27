@@ -47,7 +47,6 @@ export default class StatusPageReporter {
     }
 
     public report() {
-        console.log("sending metrics to statuspage");
         const metrics = getNamedMetrics(this.registry);
 
         if (metrics.counters.length !== 0) {
