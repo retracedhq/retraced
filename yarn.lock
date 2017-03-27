@@ -15,6 +15,12 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
+"@types/form-data@*":
+  version "0.0.33"
+  resolved "https://registry.yarnpkg.com/@types/form-data/-/form-data-0.0.33.tgz#c9ac85b2a5fd18435b8c85d9ecb50e6d6c893ff8"
+  dependencies:
+    "@types/node" "*"
+
 "@types/lodash@^4.14.54":
   version "4.14.54"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.54.tgz#287dbbcd97d5da69c25ca99fb5afa81c4839b7fa"
@@ -26,6 +32,13 @@
 "@types/node@*":
   version "6.0.48"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.48.tgz#86ccc15f66b73cbbc5eb3483398936c585122b3c"
+
+"@types/request@^0.0.42":
+  version "0.0.42"
+  resolved "https://registry.yarnpkg.com/@types/request/-/request-0.0.42.tgz#e47a53bf0b130464854fb693297746a0c0479c31"
+  dependencies:
+    "@types/form-data" "*"
+    "@types/node" "*"
 
 "@types/serve-static@*":
   version "1.7.31"
@@ -461,7 +474,7 @@ chai@^3.5.0:
     deep-eql "^0.1.3"
     type-detect "^1.0.0"
 
-chalk@^1.0.0, chalk@^1.1.0, chalk@^1.1.1:
+chalk@^1.0.0, chalk@^1.1.0, chalk@^1.1.1, chalk@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-1.1.3.tgz#a8115c55e4a702fe4d150abd3872822a7e09fc98"
   dependencies:
@@ -769,6 +782,12 @@ detective@^4.3.1:
     acorn "^3.1.0"
     defined "^1.0.0"
 
+dev@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/dev/-/dev-0.1.3.tgz#89fdc08705e0e7eaef92d012e26751e4d744322a"
+  dependencies:
+    inotify ">= 0.1.6"
+
 diff@1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-1.4.0.tgz#7f28d2eb9ee7b15a97efd89ce63dcfdaa3ccbabf"
@@ -1032,6 +1051,10 @@ form-data@^2.1.1, form-data@~2.1.1:
     combined-stream "^1.0.5"
     mime-types "^2.1.12"
 
+form-urlencoded@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/form-urlencoded/-/form-urlencoded-1.5.0.tgz#8942b9e0d0f4f2d6a1d4ef740d07b065a43482c3"
+
 formidable@^1.0.17, formidable@~1.0.14:
   version "1.0.17"
   resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.0.17.tgz#ef5491490f9433b705faa77249c99029ae348559"
@@ -1292,6 +1315,13 @@ inherits@2, inherits@2.0.1, inherits@~2.0.1:
 ini@~1.3.0:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.4.tgz#0537cb79daf59b59a1a517dff706c86ec039162e"
+
+"inotify@>= 0.1.6":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/inotify/-/inotify-1.4.1.tgz#8abdeb7ee9cbc291542a252df00d848b2a8f9287"
+  dependencies:
+    bindings "^1.2.1"
+    nan "^2.3.3"
 
 invariant@^2.2.0:
   version "2.2.2"
@@ -1770,6 +1800,10 @@ methods@^1.1.1, methods@~1.1.1, methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
 
+metrics@^0.1.11:
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/metrics/-/metrics-0.1.11.tgz#cf36478ff4d3583e9952d0f307f4e2c028219751"
+
 micromatch@^2.3.11:
   version "2.3.11"
   resolved "https://registry.yarnpkg.com/micromatch/-/micromatch-2.3.11.tgz#86677c97d1720b363431d04d0d15293bd38c1565"
@@ -1826,6 +1860,13 @@ mkdirp@0.5.1, mkdirp@^0.5.0, mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
+mocha-typescript@^1.0.23:
+  version "1.0.23"
+  resolved "https://registry.yarnpkg.com/mocha-typescript/-/mocha-typescript-1.0.23.tgz#4015787460760d3b318b582234d3baa15e6bf3a6"
+  dependencies:
+    chalk "^1.1.3"
+    yargs "^6.5.0"
+
 mocha@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/mocha/-/mocha-3.1.2.tgz#51f93b432bf7e1b175ffc22883ccd0be32dba6b5"
@@ -1854,7 +1895,7 @@ ms@0.7.2, ms@^0.7.1:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/ms/-/ms-0.7.2.tgz#ae25cf2512b3885a1d95d7f037868d8431124765"
 
-nan@^2.3.4:
+nan@^2.3.3, nan@^2.3.4:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.4.0.tgz#fb3c59d45fe4effe215f0b890f8adf6eb32d2232"
 
@@ -1875,6 +1916,10 @@ node-localstorage@^1.3.0:
   resolved "https://registry.yarnpkg.com/node-localstorage/-/node-localstorage-1.3.0.tgz#2e436aae8dcc9ace97b43c65c16c0d577be0a55c"
   dependencies:
     write-file-atomic "^1.1.4"
+
+node-statsd-client@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/node-statsd-client/-/node-statsd-client-1.0.3.tgz#ee054e151cee9dc1ed915c169b32de8984de4b73"
 
 node-uuid@~1.4.7:
   version "1.4.7"
@@ -3085,6 +3130,12 @@ yargs-parser@^4.0.2, yargs-parser@^4.1.0:
   dependencies:
     camelcase "^3.0.0"
 
+yargs-parser@^4.2.0:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-4.2.1.tgz#29cceac0dc4f03c6c87b4a9f217dd18c9f74871c"
+  dependencies:
+    camelcase "^3.0.0"
+
 yargs@^6.4.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-6.4.0.tgz#816e1a866d5598ccf34e5596ddce22d92da490d4"
@@ -3103,6 +3154,24 @@ yargs@^6.4.0:
     window-size "^0.2.0"
     y18n "^3.2.1"
     yargs-parser "^4.1.0"
+
+yargs@^6.5.0:
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-6.6.0.tgz#782ec21ef403345f830a808ca3d513af56065208"
+  dependencies:
+    camelcase "^3.0.0"
+    cliui "^3.2.0"
+    decamelize "^1.1.1"
+    get-caller-file "^1.0.1"
+    os-locale "^1.4.0"
+    read-pkg-up "^1.0.1"
+    require-directory "^2.1.1"
+    require-main-filename "^1.0.1"
+    set-blocking "^2.0.0"
+    string-width "^1.0.2"
+    which-module "^1.0.0"
+    y18n "^3.2.1"
+    yargs-parser "^4.2.0"
 
 yargs@~3.10.0:
   version "3.10.0"

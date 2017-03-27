@@ -5,4 +5,4 @@ EXPOSE 3000
 ADD . /src
 WORKDIR /src
 
-RUN yarn global add tslint@4.5.1 typescript@2.2.1
+RUN yarn global add tslint@4.5.1 typescript@2.2.1 node-gyp

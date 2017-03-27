@@ -11,7 +11,7 @@ export default function getDisque() {
   return sharedClient;
 }
 
-class DisqueClient {
+export class DisqueClient {
   constructor() {
     this.nodes = [];
     _.split(process.env.DISQUE_NODES, ",").forEach((n) => {

@@ -8,6 +8,7 @@ import * as chalk from "chalk";
 import * as util from "util";
 
 import routes from "./routes";
+import * as metrics from "./metrics";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(cors());
 
 buildRoutes();
 serve();
+metrics.bootstrapFromEnv();
 
 function buildRoutes() {
   // Needed for Kubernetes health checks
