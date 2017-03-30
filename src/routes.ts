@@ -6,6 +6,7 @@ import createViewerSession from "./handlers/createViewerSession";
 import getInvite from "./handlers/getInvite";
 
 // admin
+import cancelDailyReport from "./handlers/admin/cancelDailyReport";
 import createApiToken from "./handlers/admin/createApiToken";
 import createEnvironment from "./handlers/admin/createEnvironment";
 import createInvite from "./handlers/admin/createInvite";
@@ -21,6 +22,7 @@ import listGroup from "./handlers/admin/listGroup";
 import listProjects from "./handlers/admin/listProjects";
 import listTargets from "./handlers/admin/listTargets";
 import updateAction from "./handlers/admin/updateAction";
+import updateUser from "./handlers/admin/updateUser";
 
 // enterprise
 import enterpriseCreateActiveSearch from "./handlers/enterprise/createActiveSearch";
@@ -73,6 +75,11 @@ export default {
   //
   // admin
   //
+  cancelDailyReport: {
+    path: "/v1/environment/:environmentId/user/:userId/unsubscribe",
+    method: "get",
+    handler: cancelDailyReport,
+  },
   createApiToken: {
     path: "/v1/project/:projectId/token",
     method: "post",
@@ -147,6 +154,11 @@ export default {
     path: "/v1/project/:projectId/action/:actionId",
     method: "put",
     handler: updateAction,
+  },
+  updateUser: {
+    path: "/v1/user/:userId",
+    method: "put",
+    handler: updateUser,
   },
 
   //

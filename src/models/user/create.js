@@ -6,6 +6,8 @@ import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
+const defaultTimezone = "US/Pacific";
+
 export const DUPLICATE_EMAIL = new Error("DUPLICATE_EMAIL");
 
 /**
@@ -28,9 +30,9 @@ export default async function createUser(opts) {
     }
 
     q = `insert into retraceduser (
-      id, email, created, last_login, external_auth_id
+      id, email, created, last_login, external_auth_id, timezone
     ) values (
-      $1, $2, to_timestamp($3), to_timestamp($4), $5
+      $1, $2, to_timestamp($3), to_timestamp($4), $5, $6
     )`;
     v = [
       uuid.v4().replace(/-/g, ""),
@@ -38,12 +40,14 @@ export default async function createUser(opts) {
       moment().unix(),
       moment().unix(),
       opts.authId,
+      defaultTimezone,
     ];
     pg.query(q, v);
 
     return {
       id: v[0],
       email: v[1],
+      timezone: v[5],
     };
 
   } finally {
