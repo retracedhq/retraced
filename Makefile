@@ -6,7 +6,7 @@ deps:
 
 build: prebuild
 	mkdir -p build
-	`yarn bin`/tslint --project ./tsconfig.json
+	`yarn bin`/tslint --project ./tsconfig.json --fix
 	`yarn bin`/tsc
 
 run:
