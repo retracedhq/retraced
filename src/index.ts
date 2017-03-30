@@ -6,15 +6,28 @@ import * as _ from "lodash";
 import * as uuid from "uuid";
 import * as chalk from "chalk";
 import * as util from "util";
+import * as bugsnag from "bugsnag";
 
 import routes from "./routes";
 import * as metrics from "./metrics";
 
+if (!process.env["BUGSNAG_TOKEN"]) {
+  console.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
+} else {
+  bugsnag.register(process.env["BUGSNAG_TOKEN"], {
+    releaseStage: process.env["BUGSNAG_STAGE"],
+    notifyReleaseStages: ["production", "staging"],
+  });
+}
+
 const app = express();
 
 app.set("etag", false); // we're doing our own etag thing I guess
+
+app.use(bugsnag.requestHandler);
 app.use(bodyParser.json());
 app.use(cors());
+app.use(bugsnag.errorHandler);
 
 buildRoutes();
 serve();
@@ -73,6 +86,7 @@ function buildRoutes() {
           }
         })
         .catch((err) => {
+          bugsnag.notify(err);
           if (err.status) {
             // Structured error, specific status code.
             const errMsg = err.err ? err.err.message : "An unexpected error occurred";
