@@ -55,6 +55,7 @@ export default async function (opts: Options): Promise<Result> {
         results.events!.push(hit["_source"]);
       }
       results.scrollId = resp._scroll_id;
+
     }
     return results;
   }
