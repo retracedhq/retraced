@@ -15,11 +15,11 @@ export default async function handler(req) {
     environmentId: apiToken.environment_id,
     groupId: req.query.group_id || req.query.team_id,
     isAdmin: req.query.is_admin === "true",
+    targetId: req.query.target_id || null,
   });
 
-  // This should probably be a 201, but current clients are expecting 200.
   return {
-    status: 200,
+    status: 201,
     body: JSON.stringify({ token: newDesc.id }),
   };
 }

@@ -9,6 +9,7 @@ export interface Options {
   environmentId: string;
   groupId: string;
   isAdmin: boolean;
+  targetId: string;
 }
 
 export default async function createViewerDescriptor(opts: Options): Promise<ViewerDescriptor> {
@@ -19,7 +20,12 @@ export default async function createViewerDescriptor(opts: Options): Promise<Vie
     groupId: opts.groupId,
     isAdmin: opts.isAdmin,
     created: moment().valueOf(),
+    scope: "",
   };
+
+  if (opts.targetId) {
+    newDesc.scope = `target_id=${opts.targetId}`;
+  }
 
   const redisClient = redis.createClient({ url: process.env.REDIS_URI });
   await new Promise((resolve, reject) => {
