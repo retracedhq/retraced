@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import * as querystring from "querystring";
 import * as util from "util";
 import * as uuid from "uuid";
 import * as moment from "moment";
@@ -7,6 +8,7 @@ import { checkViewerAccess } from "../../security/helpers";
 import searchEvents, { Options } from "../../models/event/search";
 import getDisque from "../../persistence/disque";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
+import findTargets from "../../models/target/find";
 
 const disque = getDisque();
 
@@ -30,6 +32,20 @@ export default async function (req) {
 
   const reqOpts = req.body.query;
 
+  let targetIds;
+  if (claims.scope) {
+    const scope = querystring.parse(claims.scope);
+    const findTargetsOpts = {
+      foreignTargetIds: [scope.target_id],
+      environmentId: claims.environmentId, 
+    };
+    const targets = await findTargets(findTargetsOpts);
+    targetIds = [];
+    for (const target of targets) {
+      targetIds.push(target.id);
+    }
+  }
+
   const opts: Options = {
     index: `retraced.${req.params.projectId}.${claims.environmentId}`,
     sort: "desc",
@@ -45,6 +61,7 @@ export default async function (req) {
       update: reqOpts.update,
       delete: reqOpts.delete,
     },
+    targetIds: targetIds,
   };
 
   const results = await searchEvents(opts);

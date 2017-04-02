@@ -1,3 +1,4 @@
+
 import getEs from "../../persistence/elasticsearch";
 
 const es = getEs();
@@ -28,6 +29,8 @@ export interface Options {
 
   fetchAll?: boolean;
   groupOmitted?: boolean;
+
+  targetIds?: string[];
 }
 
 export interface Result {
@@ -80,6 +83,22 @@ export default async function (opts: Options): Promise<Result> {
         ],
       },
     });
+  }
+
+  if (opts.targetIds) {
+    const clause = {
+      bool: {
+        should: <any> [],
+      },
+    };
+    for (const targetId of opts.targetIds) {
+      clause.bool.should.push({
+        term: {
+          "target.id": targetId,
+        },
+      });
+      filters.push(clause);
+    }
   }
 
   if (opts.startTime) {

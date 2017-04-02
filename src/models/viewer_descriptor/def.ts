@@ -5,6 +5,7 @@ interface ViewerDescriptor {
   groupId: string;
   isAdmin: boolean;
   created: number;
+  scope: string;
 }
 
 export default ViewerDescriptor;
