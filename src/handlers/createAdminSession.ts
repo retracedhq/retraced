@@ -14,6 +14,7 @@ const auth0 = new Auth0.WebAuth({
   domain: process.env.AUTH0_CLIENT_DOMAIN,
   clientID: process.env.AUTH0_CLIENT_ID,
   callbackURL: "",
+  leeway: 30,
 });
 
 // This is to appease the Auth0 lib, which expects to be running in a browser. -_-

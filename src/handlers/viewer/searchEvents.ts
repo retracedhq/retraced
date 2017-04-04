@@ -37,7 +37,7 @@ export default async function (req) {
     const scope = querystring.parse(claims.scope);
     const findTargetsOpts = {
       foreignTargetIds: [scope.target_id],
-      environmentId: claims.environmentId, 
+      environmentId: claims.environmentId,
     };
     const targets = await findTargets(findTargetsOpts);
     targetIds = [];
@@ -61,7 +61,7 @@ export default async function (req) {
       update: reqOpts.update,
       delete: reqOpts.delete,
     },
-    targetIds: targetIds,
+    targetIds,
   };
 
   const results = await searchEvents(opts);
