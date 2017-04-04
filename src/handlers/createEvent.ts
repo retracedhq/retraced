@@ -111,7 +111,7 @@ class EventCreater {
         };
         // This task will normalize the event and save its important bits to postgres.
         // It'll then enqueue tasks for saving to the other databases.
-        this.disque.addjob("normalize_event", job, 0, opts)
+        this.disque.addjob("normalize_event", job, 2000, opts)
           .then((res) => {
             console.log(`sent task ${job} to normalize_event, received ${res}`);
           })
