@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.0.35",
+    "@types/hiredis": "^0.5.0",
     "@types/lodash": "^4.14.54",
     "@types/request": "^0.0.42",
     "chance": "^1.0.6",

@@ -28,6 +28,12 @@
   dependencies:
     "@types/node" "*"
 
+"@types/hiredis@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@types/hiredis/-/hiredis-0.5.0.tgz#335d54154181ae4654c59607612938cda2690d5a"
+  dependencies:
+    "@types/node" "*"
+
 "@types/lodash@^4.14.54":
   version "4.14.60"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.60.tgz#8ed9d4ef4d11c7e073f0040e5cd7a665d1d270b4"
