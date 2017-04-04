@@ -62,15 +62,15 @@ export default function createProject(opts) {
         const createEnvPromises = [];
         project.environments.forEach((environment) => {
           createEnvPromises.push(createEnvironment({
-            id: environment.id,
             name: environment.name,
             project_id: project.id,
           }));
         });
 
         Promise.all(createEnvPromises)
-        .then(() => {
+        .then((envs) => {
           const createTokenPromises = [];
+          project.environments = envs;
           project.environments.forEach((environment) => {
             const newApiToken = {
               name: `Default ${environment.name} Token`,
@@ -102,11 +102,9 @@ export default function createProject(opts) {
 function getDefaultEnvironments() {
   return [
     {
-      id: uuid.v4().replace(/-/g, ""),
       name: "Production",
     },
     {
-      id: uuid.v4().replace(/-/g, ""),
       name: "Staging",
     },
   ];

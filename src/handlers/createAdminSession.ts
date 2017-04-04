@@ -75,6 +75,7 @@ export default async function handler(req) {
     user: {
       email: user.email,
       id: user.id,
+      timezone: user.timezone,
     },
     token: voucher,
   };
