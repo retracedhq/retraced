@@ -1,5 +1,6 @@
 import { checkAdminAccess } from "../../security/helpers";
 import createProject from "../../models/project/create";
+import hydrateProject from "../../models/project/hydrate";
 
 export default async function (req) {
   const claims = await checkAdminAccess(req);
@@ -9,8 +10,10 @@ export default async function (req) {
     name: req.body.name,
   });
 
+  const hydrated = await hydrateProject(project);
+
   return {
     status: 201,
-    body: JSON.stringify({ project }),
+    body: JSON.stringify({ project: hydrated }),
   };
 }

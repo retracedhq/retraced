@@ -27,7 +27,7 @@ export default function createProject(opts) {
         name: opts.name,
         created: moment().unix(),
         environments: getDefaultEnvironments(),
-        api_tokens: [],
+        tokens: [],
       };
 
       const q = `insert into project (
@@ -78,11 +78,13 @@ export default function createProject(opts) {
               project_id: project.id,
             };
             createTokenPromises.push(createApiToken(newApiToken));
-            project.api_tokens.push(newApiToken);
           });
           return Promise.all(createTokenPromises);
         })
-        .then(() => {
+        .then((newApiTokens) => {
+          for (const t of newApiTokens) {
+            project.tokens.push(t);
+          }
           return addUserToProject({
             projectId: project.id,
             userId: opts.user_id,
