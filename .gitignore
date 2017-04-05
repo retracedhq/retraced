@@ -81,3 +81,7 @@ jspm_packages
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
+
+
+# mocha-junit-reporter
+test-results.xml
