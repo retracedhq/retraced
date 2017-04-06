@@ -1,7 +1,7 @@
 import * as hiredis from "hiredis";
 import * as _ from "lodash";
 import * as net from "net";
-import { instrumented } from "../metrics";
+import { instrumented } from "monkit";
 
 let sharedClient;
 
