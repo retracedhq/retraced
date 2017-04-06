@@ -12,13 +12,14 @@ interface Record {
   environment_id: string;
   user_id: string;
   daily_report: boolean;
+  anomaly_report: boolean;
   email_token: string;
 };
 
 export default async function getEnvironmentUser(opts: Opts): Promise<null | Record> {
   const q = `
     select
-      environment_id, user_id, daily_report, email_token
+      environment_id, user_id, daily_report, anomaly_report, email_token
     from
       environmentuser
     where
