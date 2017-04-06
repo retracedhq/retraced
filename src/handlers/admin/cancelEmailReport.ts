@@ -5,7 +5,8 @@
 import getEnvUser from "../../models/environmentuser/get";
 import updateEnvUser from "../../models/environmentuser/update";
 
-const unsubURL = "https://www.retraced.io/unsubscribed/daily-reports/";
+const unsubDailyURL = "https://www.retraced.io/unsubscribed/daily-reports/";
+const unsubAnomalyURL = "https://www.retraced.io/unsubscribed/anomaly-reports/";
 
 export default async function (req) {
   const envUser = await getEnvUser({
@@ -27,14 +28,14 @@ export default async function (req) {
   await updateEnvUser({
     user_id: req.params.userId,
     environment_id: req.params.environmentId,
-    daily_report: false,
+    daily_report: req.params.report === "daily" ? false : envUser.daily_report,
+    anomaly_report: req.params.report === "anomaly" ? false : envUser.anomaly_report,
   });
 
-  // redirect to app
   return {
     status: 301,
     headers: {
-      Location: unsubURL,
+      Location: req.params.report === "daily" ? unsubDailyURL : unsubAnomalyURL,
     },
   };
 }

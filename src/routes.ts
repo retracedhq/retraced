@@ -6,7 +6,7 @@ import createViewerSession from "./handlers/createViewerSession";
 import getInvite from "./handlers/getInvite";
 
 // admin
-import cancelDailyReport from "./handlers/admin/cancelDailyReport";
+import cancelEmailReport from "./handlers/admin/cancelEmailReport";
 import createApiToken from "./handlers/admin/createApiToken";
 import createEnvironment from "./handlers/admin/createEnvironment";
 import createInvite from "./handlers/admin/createInvite";
@@ -75,10 +75,10 @@ export default {
   //
   // admin
   //
-  cancelDailyReport: {
-    path: "/v1/environment/:environmentId/user/:userId/unsubscribe",
+  cancelEmailReport: {
+    path: "/v1/environment/:environmentId/user/:userId/unsubscribe/:report",
     method: "get",
-    handler: cancelDailyReport,
+    handler: cancelEmailReport,
   },
   createApiToken: {
     path: "/v1/project/:projectId/token",
