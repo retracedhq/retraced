@@ -5,8 +5,8 @@ import * as jwt from "jsonwebtoken";
 
 import getUser from "../models/user/get";
 import createUser, { DUPLICATE_EMAIL } from "../models/user/create";
-import getInvite from "../models/group/invite/get";
-import deleteInvite from "../models/group/invite/delete";
+import getInvite from "../models/invite/get";
+import deleteInvite from "../models/invite/delete";
 import addUserToProject from "../models/project/addUser";
 import { createAdminVoucher } from "../security/vouchers";
 
@@ -64,7 +64,10 @@ export default async function handler(req) {
       userId: user.id,
       projectId: invite.project_id,
     });
-    await deleteInvite(invite.id);
+    await deleteInvite({
+      inviteId: invite.id,
+      projectId: invite.project_id,
+    });
   }
 
   const voucher = createAdminVoucher({

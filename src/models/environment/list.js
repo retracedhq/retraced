@@ -16,7 +16,7 @@ export default function listEnvironments(opts) {
       }
 
       const q = "select * from environment where project_id = $1";
-      pg.query(q, [opts.project_id], (qerr, result) => {
+      pg.query(q, [opts.projectId], (qerr, result) => {
         done();
         if (qerr) {
           reject(qerr);

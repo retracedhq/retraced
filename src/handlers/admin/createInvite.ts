@@ -1,5 +1,5 @@
 import { checkAdminAccess } from "../../security/helpers";
-import createInvite from "../../models/group/invite";
+import createInvite from "../../models/invite/create";
 
 export default async function (req) {
   checkAdminAccess(req);

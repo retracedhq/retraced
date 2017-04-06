@@ -1,4 +1,4 @@
-import getPgPool from "../../../persistence/pg";
+import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
