@@ -12,7 +12,7 @@ export default async function (req) {
   });
 
   const apiTokens = listApiTokens({
-    project_id: req.params.projectId,
+    projectId: req.params.projectId,
   });
 
   return {

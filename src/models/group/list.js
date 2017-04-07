@@ -1,38 +1,11 @@
 import getPgPool from "../../persistence/pg";
 
+import listInvites from "../invite/list";
+
 const pgPool = getPgPool();
 
-/**
- * Asynchronously returns the entire group for a project
- *
- * @param {Object} [opts] The request options.
- */
-export default function listGroup(opts) {
-  return new Promise((resolve, reject) => {
-    const promises = [];
-    promises.push(listGroupMembers(opts));
-    promises.push(listGroupInvites(opts));
-
-    Promise.all(promises)
-      .then((values) => {
-        const result = {
-          members: values[0],
-          invites: values[1],
-        };
-
-        resolve(result);
-      })
-      .catch(reject);
-  });
-}
-
-function listGroupInvites(opts) {
-  return new Promise((resolve, reject) => {
-    resolve({});
-  });
-}
-
-function listGroupMembers(opts) {
+// projectId
+export default function listGroupMembers(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {
@@ -40,11 +13,18 @@ function listGroupMembers(opts) {
         return;
       }
 
-      const q = `select retraceduser.* from retraceduser
-        inner join projectuser
-        on retraceduser.id = projectuser.user_id
-        where projectuser.project_id = $1`;
-      const v = [opts.project_id];
+      const q = `
+      select
+        retraceduser.id, retraceduser.created, retraceduser.email, retraceduser.last_login,
+        retraceduser.timezone, retraceduser.tx_emails_recipient
+      from
+        retraceduser
+      inner join
+        projectuser on retraceduser.id = projectuser.user_id
+      where
+        projectuser.project_id = $1
+      `;
+      const v = [opts.projectId];
 
       pg.query(q, v, (qerr, result) => {
         done();

@@ -1,4 +1,4 @@
-import getInvite from "../models/group/invite/get";
+import getInvite from "../models/invite/get";
 
 export default async function (req) {
   const invitation = await getInvite({

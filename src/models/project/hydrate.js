@@ -5,7 +5,7 @@ import listEnvironments from "../environment/list";
 
 export default async function hydrateProject(project) {
   const environments = await listEnvironments({
-    project_id: project.id,
+    projectId: project.id,
   });
 
   const prunedEnvironments = [];
@@ -14,7 +14,7 @@ export default async function hydrateProject(project) {
   });
 
   const apiTokens = await listApiTokens({
-    project_id: project.id,
+    projectId: project.id,
   });
 
   return {

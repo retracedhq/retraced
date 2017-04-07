@@ -18,7 +18,7 @@ export default function listApiTokens(opts) {
       }
 
       const q = "select * from token where project_id = $1";
-      const v = [opts.project_id];
+      const v = [opts.projectId];
 
       pg.query(q, v, (qerr, queryResult) => {
         done();
