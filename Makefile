@@ -2,7 +2,9 @@ prebuild:
 	rm -rf build
 
 deps:
-	yarn
+	# https://github.com/yarnpkg/yarn/issues/2266
+	yarn global add node-gyp
+	yarn install --force
 
 build: prebuild
 	mkdir -p build
