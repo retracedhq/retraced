@@ -9,7 +9,7 @@ import createCanonicalHash from "../models/event/canonicalize";
 import { fromCreateEventInput } from "../models/event";
 import getApiToken from "../models/api_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";
-import { instrumented } from "../metrics";
+import { instrumented } from "monkit";
 import { default as getDisque, DisqueClient } from "../persistence/disque";
 import getPgPool from "../persistence/pg";
 
