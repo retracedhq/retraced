@@ -15,7 +15,7 @@ dependencies:
   pre:
     - npm i -g yarn
   override:
-    - yarn
+    - make deps
 
 test:
   override:
