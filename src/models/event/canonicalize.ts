@@ -5,7 +5,14 @@ import * as util from "util";
 import Event from "./";
 
 const requiredFields = [
-  "id", "action", "group.id",
+  "id",
+  "action",
+];
+
+const requiredSubfields = [
+  ["group", "group.id"],
+  ["actor", "actor.id"],
+  ["target", "target.id"],
 ];
 
 // Produces a canonical hash string representation of an event.
@@ -17,12 +24,20 @@ export default function (event: Event): string {
     }
   }
 
+  for (const [field, requiredSubfield] of  requiredSubfields) {
+    const hasField = !_.isEmpty(_.get(event, field));
+    const missingSubfield = hasField && _.isEmpty(_.get(event, requiredSubfield));
+    if (missingSubfield) {
+      throw new Error(`Canonicalization failed: missing attribute '${requiredSubfield}' which is required when '${field}' is present`);
+    }
+  }
+
   let canonicalString = "";
   canonicalString += `${encodePassOne(event.id)}:`;
   canonicalString += `${encodePassOne(event.action)}:`;
   canonicalString += _.isEmpty(event.target) ? ":" : `${encodePassOne(event.target!.id)}:`;
   canonicalString += _.isEmpty(event.actor) ? ":" : `${encodePassOne(event.actor!.id)}:`;
-  canonicalString += `${encodePassOne(event.group.id)}:`;
+  canonicalString += _.isEmpty(event.group) ? ":" : `${encodePassOne(event.group!.id)}:`;
   canonicalString += _.isEmpty(event.sourceIp) ? ":" : `${encodePassOne(event.sourceIp!)}:`;
   canonicalString += event.isFailure ? "1:" : "0:";
   canonicalString += event.isAnonymous ? "1:" : "0:";
