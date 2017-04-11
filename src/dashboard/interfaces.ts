@@ -1,5 +1,5 @@
 
-// DashboardOptions is a generic options parameter that 
+// DashboardOptions is a generic options parameter that
 // all dashboard tiles should use.
 export interface DashboardOptions {
   index: string;
