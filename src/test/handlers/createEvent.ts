@@ -47,7 +47,7 @@ import { EventCreater } from "../../handlers/createEvent";
             .returns((args) => Promise.resolve(tokenRows))
             .verifiable(TypeMoq.Times.once());
 
-        pool.setup((x) => x.query(EventCreater.insertIntoIngestTast, TypeMoq.It.isAny())) // Still need to validate args
+        pool.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())) // Still need to validate args
             .verifiable(TypeMoq.Times.once());
 
         // set up disque
@@ -64,6 +64,7 @@ import { EventCreater } from "../../handlers/createEvent";
         );
 
         const resp: any = await creater.createEvent(request.object);
+
         expect(resp.status).to.equal(201);
         const responseBody = JSON.parse(resp.body);
         expect(responseBody.id).to.equal("kfbr392");

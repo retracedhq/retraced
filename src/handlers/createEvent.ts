@@ -11,6 +11,7 @@ import createCanonicalHash from "../models/event/canonicalize";
 import Event from "../models/event/";
 import { fromCreateEventInput } from "../models/event";
 import getApiToken from "../models/api_token/get";
+import uniqueId from "../models/uniqueId";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import { default as getDisque, DisqueClient } from "../persistence/disque";
 import getPgPool from "../persistence/pg";
@@ -39,7 +40,7 @@ const requiredSubfields = [
 
 export class EventCreater {
 
-  public static readonly insertIntoIngestTast = `
+  public static readonly insertIntoIngestTask = `
       insert into ingest_task (
         id, original_event, project_id, environment_id, new_event_id, received
       ) values (
@@ -65,9 +66,9 @@ export class EventCreater {
   }
 
   @instrumented
-  public async createEvent(req: express.Request) {
+  public async createEvent(req: express.Request): Promise<any> {
     const apiTokenId = apiTokenFromAuthHeader(req.get("Authorization"));
-    const apiToken: any = await getApiToken(apiTokenId, this.pgPool);
+    const apiToken: any = await getApiToken(apiTokenId, this.pgPool.query.bind(this.pgPool));
     const validAccess = apiToken && apiToken.project_id === req.params.projectId;
     if (!validAccess) {
       throw { status: 401, err: new Error("Unauthorized") };
@@ -96,10 +97,10 @@ export class EventCreater {
 
     // Create a new ingestion task for each event passed in.
     for (const eventInput of eventInputs) {
-      const insertStmt =  EventCreater.insertIntoIngestTast;
+      const insertStmt = EventCreater.insertIntoIngestTask;
 
-      const newTaskId = this.idSource().replace(/-/g, "");
-      const newEventId = this.idSource().replace(/-/g, "");
+      const newTaskId = this.idSource();
+      const newEventId = this.idSource();
       const insertVals = [
         newTaskId,
         JSON.stringify(eventInput),
@@ -215,8 +216,13 @@ export class EventCreater {
   }
 }
 
-const creater = new EventCreater(getPgPool(), getDisque(), createCanonicalHash, uuid.v4);
+const creater = new EventCreater(
+  getPgPool(),
+  getDisque(),
+  createCanonicalHash,
+  uniqueId,
+);
 
-export default async function handle(req: express.Request) {
-  return await creater.createEvent(req);
+export default async function handle(req: express.Request): Promise<any> {
+  return creater.createEvent(req);
 }

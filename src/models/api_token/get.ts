@@ -8,11 +8,14 @@ const pgPool: pg.Pool = getPgPool();
  *
  * @param {string} [token] The token
  */
-export default async function getApiToken(token: string, pool?: pg.Pool): Promise<string|null> {
-    pool = pool || pgPool;
+export default async function getApiToken(
+    token: string,
+    query?: (q: string, v: any[]) => Promise<pg.QueryResult>,
+): Promise<string | null> {
+    query = query || pgPool.query.bind(pgPool);
     const q = "select * from token where token = $1";
     const v = [token];
-    const result = await pool.query(q, v);
+    const result = await query!(q, v); // shouldn't need ! here but tsc is being weird
     if (result.rowCount > 0) {
         return result.rows[0];
     }
