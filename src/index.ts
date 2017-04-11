@@ -7,6 +7,7 @@ import * as uuid from "uuid";
 import * as chalk from "chalk";
 import * as util from "util";
 import * as bugsnag from "bugsnag";
+import * as Sigsci from "sigsci-module-nodejs";
 
 import routes from "./routes";
 import * as metrics from "./metrics";
@@ -21,6 +22,15 @@ if (!process.env["BUGSNAG_TOKEN"]) {
 }
 
 const app = express();
+
+if (!process.env["SIGSCI_RPCADDRESS"]) {
+  console.error("SIGSCI_RPCADDRESS not set, Signal Sciences module will not be installed");
+} else {
+  const sigsci = new Sigsci({
+    path: process.env.SIGSCI_RPCADDRESS,
+  });
+  app.use(sigsci.express());
+}
 
 app.set("etag", false); // we're doing our own etag thing I guess
 

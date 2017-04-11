@@ -10,6 +10,10 @@ spec:
         app: retraced
         tier: api
     spec:
+      volumes:
+        - name: var-run
+          hostPath:
+            path: /var/run/
       imagePullSecrets:
         - name: quayio
       containers:
@@ -17,7 +21,13 @@ spec:
           image: quay.io/retracedhq/api:{{ tag }}
           ports:
             - containerPort: 3000
+          volumeMounts:
+            - mountPath: /var/run/
+              name: var-run
+              readOnly: true
           env:
+            - name: SIGSCI_RPCADDRESS
+              value: /var/run/sigsci.sock
             - name: REDIS_URI
               valueFrom:
                 secretKeyRef:
@@ -48,26 +58,6 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: POSTGRES_DATABASE
-            - name: SCYLLA_HOSTS
-              valueFrom:
-                secretKeyRef:
-                  name: scylla
-                  key: SCYLLA_HOSTS
-            - name: SCYLLA_KEYSPACE
-              valueFrom:
-                secretKeyRef:
-                  name: scylla
-                  key: SCYLLA_KEYSPACE
-            - name: SCYLLA_USER
-              valueFrom:
-                secretKeyRef:
-                  name: scylla
-                  key: SCYLLA_USER
-            - name: SCYLLA_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: scylla
-                  key: SCYLLA_PASSWORD
             - name: HMAC_SECRET_ADMIN
               valueFrom:
                 secretKeyRef:
