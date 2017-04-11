@@ -1,9 +1,9 @@
 interface Event {
   id: string;
   action: string;
-  group: {
+  group?: {
     id: string;
-    name: string;
+    name?: string;
   };
 
   displayTitle?: string;

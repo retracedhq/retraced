@@ -46,6 +46,19 @@
   version "7.0.12"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.12.tgz#ae5f67a19c15f752148004db07cbbb372e69efc9"
 
+"@types/pg-types@*":
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/@types/pg-types/-/pg-types-1.11.1.tgz#eab15cbe339dd8009112b2a6e225d78165e66f54"
+  dependencies:
+    moment ">=2.14.0"
+
+"@types/pg@^6.1.38":
+  version "6.1.38"
+  resolved "https://registry.yarnpkg.com/@types/pg/-/pg-6.1.38.tgz#74aa391f1bcc721537d9492a9b10947296ce909b"
+  dependencies:
+    "@types/node" "*"
+    "@types/pg-types" "*"
+
 "@types/request@^0.0.42":
   version "0.0.42"
   resolved "https://registry.yarnpkg.com/@types/request/-/request-0.0.42.tgz#e47a53bf0b130464854fb693297746a0c0479c31"
@@ -1931,7 +1944,7 @@ lodash@^3.10.0:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
-lodash@^4.14.0, lodash@^4.15.0, lodash@^4.17.4, lodash@^4.2.0, lodash@~4.17.2:
+lodash@^4.14.0, lodash@^4.15.0, lodash@^4.16.4, lodash@^4.17.4, lodash@^4.2.0, lodash@~4.17.2:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -2108,7 +2121,7 @@ mocha@^3.1.2:
     mkdirp "0.5.1"
     supports-color "3.1.2"
 
-moment@2.x.x, moment@^2.17.1:
+moment@2.x.x, moment@>=2.14.0, moment@^2.17.1:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
 
@@ -2489,6 +2502,10 @@ postgres-interval@~1.0.0:
   resolved "https://registry.yarnpkg.com/postgres-interval/-/postgres-interval-1.0.2.tgz#7261438d862b412921c6fdb7617668424b73a6ed"
   dependencies:
     xtend "^4.0.0"
+
+postinstall-build@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/postinstall-build/-/postinstall-build-2.1.3.tgz#9d1886ab2949619f4c206afbe1aea95debe45c94"
 
 prelude-ls@~1.1.2:
   version "1.1.2"
@@ -3294,6 +3311,13 @@ type-is@~1.6.14:
   dependencies:
     media-typer "0.3.0"
     mime-types "~2.1.13"
+
+typemoq@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/typemoq/-/typemoq-1.4.1.tgz#e63ca4899e6f60362f1865a5a2408b4363141c88"
+  dependencies:
+    lodash "^4.16.4"
+    postinstall-build "^2.1.3"
 
 typescript@^2.2.1:
   version "2.2.2"
