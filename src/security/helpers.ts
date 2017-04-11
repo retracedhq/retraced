@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import * as util from "util";
 
 import { AdminClaims, validateAdminVoucher, validateViewerDescriptorVoucher } from "./vouchers";
+import verifyProjectAccess from "./verifyProjectAccess";
 import getEitapiToken from "../models/eitapi_token/get";
 import ViewerDescriptor from "../models/viewer_descriptor/def";
 
@@ -24,7 +25,12 @@ export function apiTokenFromAuthHeader(authHeader?: string): string {
 }
 
 export async function checkAdminAccess(req): Promise<AdminClaims> {
-  return await validateAdminVoucher(req.get("Authorization"));
+  const claims = await validateAdminVoucher(req.get("Authorization"));
+  if (!await verifyProjectAccess({projectId: req.params.projectId, userId: claims.userId})) {
+    throw { status: 404, err: new Error("Not found") };
+  }
+
+  return claims;
 }
 
 export async function checkEitapiAccess(req) {
