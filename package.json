@@ -37,6 +37,7 @@
     "pg": "^6.1.0",
     "redis": "^2.6.2",
     "sanitize-filename": "^1.6.1",
+    "sigsci-module-nodejs": "https://dl.signalsciences.net/sigsci-module-nodejs/sigsci-module-nodejs_latest.tgz",
     "source-map-support": "^0.4.11",
     "threads": "^0.7.2",
     "ts-node": "^1.7.0",
@@ -59,7 +60,7 @@
   "scripts": {
     "pretest": "rm -rf build && mkdir build && tslint --project ./tsconfig.json && tsc -p .",
     "test": "mocha --recursive build/test/",
-    "cover":     "yarn run pretest && istanbul cover _mocha --include-all-sources true --report lcovonly -- --recursive build/test/",
+    "cover": "yarn run pretest && istanbul cover _mocha --include-all-sources true --report lcovonly -- --recursive build/test/",
     "cover-xml": "yarn run pretest && istanbul cover _mocha --include-all-sources true --report lcovonly -- --recursive --reporter mocha-junit-reporter build/test/",
     "report-coverage": "coveralls < ./coverage/lcov.info && codeclimate-test-reporter < ./coverage/lcov.info"
   },

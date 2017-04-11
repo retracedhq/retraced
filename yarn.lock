@@ -381,7 +381,7 @@ bindings@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.2.1.tgz#14ad6113812d2d37d72e67b4cacb4bb726505f11"
 
-bl@~1.1.2:
+bl@^1.0.0, bl@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/bl/-/bl-1.1.2.tgz#fdca871a99713aa00d19e3bbba41c44787a65398"
   dependencies:
@@ -1474,7 +1474,7 @@ inflight@^1.0.4:
     once "^1.3.0"
     wrappy "1"
 
-inherits@2, inherits@2.0.3, inherits@~2.0.0, inherits@~2.0.1:
+inherits@2, inherits@2.0.3, inherits@^2.0.1, inherits@~2.0.0, inherits@~2.0.1:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.3.tgz#633c2c83e3da42a502f52466022480f4208261de"
 
@@ -2147,6 +2147,20 @@ ms@^0.7.1:
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/ms/-/ms-0.7.3.tgz#708155a5e44e33f5fd0fc53e81d0d40a91be1fff"
 
+msgpack5@^3.3.0:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/msgpack5/-/msgpack5-3.4.1.tgz#350ef35899c6c8773710fd84d881ddd3340a8114"
+  dependencies:
+    bl "^1.0.0"
+    inherits "^2.0.1"
+    readable-stream "^2.0.1"
+
+"msgpack5rpc@https://registry.npmjs.org/msgpack5rpc/-/msgpack5rpc-1.1.0.tgz":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/msgpack5rpc/-/msgpack5rpc-1.1.0.tgz#f4b7aa7f8b20b317b3d8f6d8b8b2c2436f716e90"
+  dependencies:
+    msgpack5 "^3.3.0"
+
 nan@^2.3.3, nan@^2.3.4:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.5.1.tgz#d5b01691253326a97a2bbee9e61c55d8d60351e2"
@@ -2637,7 +2651,7 @@ readable-stream@1.1.x:
     isarray "0.0.1"
     string_decoder "~0.10.x"
 
-readable-stream@2, "readable-stream@^2.0.0 || ^1.1.13", readable-stream@^2.0.5:
+readable-stream@2, "readable-stream@^2.0.0 || ^1.1.13", readable-stream@^2.0.1, readable-stream@^2.0.5:
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.2.6.tgz#8b43aed76e71483938d12a8d46c6cf1a00b1f816"
   dependencies:
@@ -2937,6 +2951,12 @@ signal-exit@^2.0.0:
 signal-exit@^3.0.0, signal-exit@^3.0.1:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
+
+"sigsci-module-nodejs@https://dl.signalsciences.net/sigsci-module-nodejs/sigsci-module-nodejs_latest.tgz":
+  version "1.4.3"
+  resolved "https://dl.signalsciences.net/sigsci-module-nodejs/sigsci-module-nodejs_latest.tgz#675993f6c33ecd68eb7374130b80d025728b738a"
+  dependencies:
+    msgpack5rpc "https://registry.npmjs.org/msgpack5rpc/-/msgpack5rpc-1.1.0.tgz"
 
 simple-fmt@~0.1.0:
   version "0.1.0"
