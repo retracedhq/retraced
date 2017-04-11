@@ -10,6 +10,10 @@ const pgPool = getPgPool();
  * @param {string} [group_ids] The unique group id(s) to fetch
  */
 export default async function (opts) {
+  if (opts.group_ids.length === 0) {
+    return [];
+  }
+
   const pg = await pgPool.connect();
   try {
     const tokenList = _.map(opts.group_ids, (gid, i) => { return `$${i + 1}`; });
