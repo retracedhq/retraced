@@ -1,3 +1,4 @@
+import * as querystring from "querystring";
 import * as _ from "lodash";
 import * as util from "util";
 
@@ -5,6 +6,7 @@ import { AdminClaims, validateAdminVoucher, validateViewerDescriptorVoucher } fr
 import verifyProjectAccess from "./verifyProjectAccess";
 import getEitapiToken from "../models/eitapi_token/get";
 import ViewerDescriptor from "../models/viewer_descriptor/def";
+import findTargets from "../models/target/find";
 
 // Authorization: Token token=abcdef
 export function apiTokenFromAuthHeader(authHeader?: string): string {
@@ -52,4 +54,22 @@ export async function checkEitapiAccess(req) {
 
 export async function checkViewerAccess(req): Promise<ViewerDescriptor> {
   return await validateViewerDescriptorVoucher(req.get("Authorization"));
+}
+
+export async function scopeTargets(claims: ViewerDescriptor): Promise<string[]> {
+  const targetIds: string[] = [];
+
+  if (claims.scope) {
+    const scope = querystring.parse(claims.scope);
+    const findTargetsOpts = {
+      foreignTargetIds: [scope.target_id],
+      environmentId: claims.environmentId,
+    };
+    const targets = await findTargets(findTargetsOpts);
+    for (const target of targets) {
+      targetIds.push(target.id);
+    }
+  }
+
+  return targetIds;
 }

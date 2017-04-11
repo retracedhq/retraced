@@ -4,8 +4,10 @@ import createEvent from "./handlers/createEvent";
 import createViewerDescriptor from "./handlers/createViewerDescriptor";
 import createViewerSession from "./handlers/createViewerSession";
 import getInvite from "./handlers/getInvite";
+import graphQL from "./handlers/graphql";
 
 // admin
+import adminGraphQL from "./handlers/admin/graphql";
 import cancelEmailReport from "./handlers/admin/cancelEmailReport";
 import createApiToken from "./handlers/admin/createApiToken";
 import createEnvironment from "./handlers/admin/createEnvironment";
@@ -33,6 +35,7 @@ import searchGroups from "./handlers/admin/searchGroups";
 import enterpriseCreateActiveSearch from "./handlers/enterprise/createActiveSearch";
 import enterpriseCreateSavedSearch from "./handlers/enterprise/createSavedSearch";
 import enterpriseDeleteActiveSearch from "./handlers/enterprise/deleteActiveSearch";
+import enterpriseGraphQL from "./handlers/enterprise/graphql";
 import enterprisePumpActiveSearch from "./handlers/enterprise/pumpActiveSearch";
 import enterpriseSearchAdHoc from "./handlers/enterprise/searchAdHoc";
 
@@ -41,6 +44,7 @@ import viewerCreateEitapiToken from "./handlers/viewer/createEitapiToken";
 import viewerCreateExport from "./handlers/viewer/createExport";
 import viewerSearchEvents from "./handlers/viewer/searchEvents";
 import viewerDeleteEitapiToken from "./handlers/viewer/deleteEitapiToken";
+import viewerGraphQL from "./handlers/viewer/graphql";
 import viewerListEitapiTokens from "./handlers/viewer/listEitapiTokens";
 import viewerListExports from "./handlers/viewer/listExports";
 import viewerRenderSavedExport from "./handlers/viewer/renderSavedExport";
@@ -60,6 +64,16 @@ export default {
     path: "/publisher/v1/project/:projectId/viewertoken",
     method: "get",
     handler: createViewerDescriptor,
+  },
+  publisherGraphQLGet: {
+    path: "/publisher/v1/graphql",
+    method: "get",
+    handler: graphQL,
+  },
+  publisherGraphQLPost: {
+    path: "/publisher/v1/graphql",
+    method: "post",
+    handler: graphQL,
   },
 
   //
@@ -135,6 +149,16 @@ export default {
     method: "get",
     handler: getProject,
   },
+  adminGraphQLGet: {
+    path: "/admin/v1/project/:projectId/environment/:environmentId/graphql",
+    method: "get",
+    handler: adminGraphQL,
+  },
+  adminGraphQLPost: {
+    path: "/admin/v1/project/:projectId/environment/:environmentId/graphql",
+    method: "post",
+    handler: adminGraphQL,
+  },
   adminListActions: {
     path: "/admin/v1/project/:projectId/actions",
     method: "get",
@@ -204,6 +228,16 @@ export default {
     method: "post",
     handler: viewerCreateExport,
   },
+  viewerGraphQLGet: {
+    path: "/viewer/v1/graphql",
+    method: "get",
+    handler: viewerGraphQL,
+  },
+  viewerGraphQLPost: {
+    path: "/viewer/v1/graphql",
+    method: "post",
+    handler: viewerGraphQL,
+  },
   viewerSearchEvents: {
     path: "/viewer/v1/project/:projectId/events/search",
     method: "post",
@@ -258,6 +292,16 @@ export default {
     method: "delete",
     handler: enterpriseDeleteActiveSearch,
   },
+  enterpriseGraphQLGet: {
+    path: "/enterprise/v1/graphql",
+    method: "get",
+    handler: enterpriseGraphQL,
+  },
+  enterpriseGraphQLPost: {
+    path: "/enterprise/v1/graphql",
+    method: "post",
+    handler: enterpriseGraphQL,
+  },
   enterprisePumpActiveSearch: {
     path: "/enterprise/v1/search/active/:activeSearchId",
     method: "get",
@@ -301,10 +345,30 @@ export default {
     method: "get",
     handler: getInvite,
   },
+  graphQLGet: {
+    path: "/v1/graphql",
+    method: "get",
+    handler: graphQL,
+  },
+  graphQLPost: {
+    path: "/v1/graphql",
+    method: "post",
+    handler: graphQL,
+  },
 
   //
   // admin
   //
+  oldadminGraphQLGet: {
+    path: "/v1/project/:projectId/environment/:environmentId/graphql",
+    method: "get",
+    handler: adminGraphQL,
+  },
+  oldadminGraphQLPost: {
+    path: "/v1/project/:projectId/environment/:environmentId/graphql",
+    method: "post",
+    handler: adminGraphQL,
+  },
   cancelEmailReport: {
     path: "/v1/environment/:environmentId/user/:userId/unsubscribe/:report",
     method: "get",
@@ -415,6 +479,11 @@ export default {
     method: "put",
     handler: updateUser,
   },
+  adminGraphQL: {
+    path: "/v1/graphql",
+    method: "post",
+    handler: adminGraphQL,
+  },
 
   //
   // enterprise
@@ -433,6 +502,16 @@ export default {
     path: "/v1/eit/search/active/:activeSearchId",
     method: "delete",
     handler: enterpriseDeleteActiveSearch,
+  },
+  oldenterpriseGraphQLGet: {
+    path: "/v1/eit/graphql",
+    method: "get",
+    handler: enterpriseGraphQL,
+  },
+  oldenterpriseGraphQLPost: {
+    path: "/v1/eit/graphql",
+    method: "post",
+    handler: enterpriseGraphQL,
   },
   oldenterprisePumpActiveSearch: {
     path: "/v1/eit/search/active/:activeSearchId",
@@ -457,6 +536,16 @@ export default {
     path: "/v1/project/:projectId/export",
     method: "post",
     handler: viewerCreateExport,
+  },
+  oldviewerGraphQLGet: {
+    path: "/v1/viewer/graphql",
+    method: "get",
+    handler: viewerGraphQL,
+  },
+  oldviewerGraphQLPost: {
+    path: "/v1/viewer/graphql",
+    method: "post",
+    handler: viewerGraphQL,
   },
   oldviewerSearchEvents: {
     path: "/v1/viewer/:projectId/events/search",
