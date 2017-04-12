@@ -33,6 +33,10 @@ const requiredSubfields = [
   ["target", "target.id"],
 ];
 
+interface CreateEventResult {
+  id: string;
+  hash: string;
+}
 /**
  * @swagger
  * definitions:
@@ -43,10 +47,6 @@ const requiredSubfields = [
  *       hash:
  *         type: string
  */
-interface CreateEventResult {
-  id: string;
-  hash: string;
-}
 
 /**
  * @swagger
