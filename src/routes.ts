@@ -49,6 +49,231 @@ import viewerUpdateExport from "./handlers/viewer/updateExport";
 
 export default {
   //
+  // publisher
+  //
+  publisherCreateEvent: {
+    path: "/publisher/v1/project/:projectId/event",
+    method: "post",
+    handler: createEvent,
+  },
+  pulisherCreateViewerDescriptor: {
+    path: "/publisher/v1/project/:projectId/viewertoken",
+    method: "get",
+    handler: createViewerDescriptor,
+  },
+
+  //
+  // admin
+  //
+  adminCreateAdminSession: {
+    path: "/admin/v1/user/login",
+    method: "post",
+    handler: createAdminSession,
+  },
+  adminGetInvite: {
+    path: "/admin/v1/invite",
+    method: "get",
+    handler: getInvite,
+  },
+  adminCancelEmailReport: {
+    path: "/admin/v1/environment/:environmentId/user/:userId/unsubscribe/:report",
+    method: "get",
+    handler: cancelEmailReport,
+  },
+  adminCreateApiToken: {
+    path: "/admin/v1/project/:projectId/token",
+    method: "post",
+    handler: createApiToken,
+  },
+  adminCreateEnvironment: {
+    path: "/admin/v1/project/:projectId/environment",
+    method: "post",
+    handler: createEnvironment,
+  },
+  adminCreateInvite: {
+    path: "/admin/v1/project/:projectId/invite",
+    method: "post",
+    handler: createInvite,
+  },
+  adminCreateProject: {
+    path: "/admin/v1/project",
+    method: "post",
+    handler: createProject,
+  },
+  adminDeleteApiToken: {
+    path: "/admin/v1/project/:projectId/token/:tokenId",
+    method: "delete",
+    handler: deleteApiToken,
+  },
+  adminDeleteTeamMember: {
+    path: "/admin/v1/project/:projectId/team/member/:userId",
+    method: "delete",
+    handler: deleteTeamMember,
+  },
+  adminDeleteInvite: {
+    path: "/admin/v1/project/:projectId/invite/:inviteId",
+    method: "delete",
+    handler: deleteInvite,
+  },
+  adminGetAction: {
+    path: "/admin/v1/project/:projectId/action/:actionId",
+    method: "get",
+    handler: getAction,
+  },
+  adminGetActor: {
+    path: "/admin/v1/project/:projectId/actor/:actorId",
+    method: "get",
+    handler: getActor,
+  },
+  adminGetDashboard: {
+    path: "/admin/v1/project/:projectId/dashboard",
+    method: "get",
+    handler: getDashboard,
+  },
+  adminGetProject: {
+    path: "/admin/v1/project/:projectId",
+    method: "get",
+    handler: getProject,
+  },
+  adminListActions: {
+    path: "/admin/v1/project/:projectId/actions",
+    method: "get",
+    handler: listActions,
+  },
+  adminListActors: {
+    path: "/admin/v1/project/:projectId/actors",
+    method: "get",
+    handler: listActors,
+  },
+  adminListTeamMembers: {
+    path: "/admin/v1/project/:projectId/team",
+    method: "get",
+    handler: listTeamMembers,
+  },
+  adminListInvites: {
+    path: "/admin/v1/project/:projectId/invites",
+    method: "get",
+    handler: listInvites,
+  },
+  adminListProjects: {
+    path: "/admin/v1/projects",
+    method: "get",
+    handler: listProjects,
+  },
+  adminSearchGroups: {
+    path: "/admin/v1/project/:projectId/groups",
+    method: "get",
+    handler: searchGroups,
+  },
+  adminListTargets: {
+    path: "/admin/v1/project/:projectId/targets",
+    method: "get",
+    handler: listTargets,
+  },
+  adminSearchEvents: {
+    path: "/admin/v1/project/:projectId/events/search",
+    method: "post",
+    handler: searchEvents,
+  },
+  adminUpdateAction: {
+    path: "/admin/v1/project/:projectId/action/:actionId",
+    method: "put",
+    handler: updateAction,
+  },
+  adminUpdateUser: {
+    path: "/admin/v1/user/:userId",
+    method: "put",
+    handler: updateUser,
+  },
+
+  //
+  // viewer
+  //
+  viewerCreateViewerSession: {
+    path: "/viewer/v1/viewersession",
+    method: "post",
+    handler: createViewerSession,
+  },
+  viewerCreateEitapiToken: {
+    path: "/viewer/v1/project/:projectId/eitapi_token",
+    method: "post",
+    handler: viewerCreateEitapiToken,
+  },
+  viewerCreateExport: {
+    path: "/viewer/v1/project/:projectId/export",
+    method: "post",
+    handler: viewerCreateExport,
+  },
+  viewerSearchEvents: {
+    path: "/viewer/v1/project/:projectId/events/search",
+    method: "post",
+    handler: viewerSearchEvents,
+  },
+  viewerDeleteEitapiToken: {
+    path: "/viewer/v1/project/:projectId/eitapi_token/:tokenId",
+    method: "delete",
+    handler: viewerDeleteEitapiToken,
+  },
+  viewerListEitapiTokens: {
+    path: "/viewer/v1/project/:projectId/eitapi_tokens",
+    method: "get",
+    handler: viewerListEitapiTokens,
+  },
+  viewerListExports: {
+    path: "/viewer/v1/project/:projectId/exports",
+    method: "get",
+    handler: viewerListExports,
+  },
+  viewerRenderSavedExport: {
+    path: "/viewer/v1/project/:projectId/export/:exportId/rendered",
+    method: "get",
+    handler: viewerRenderSavedExport,
+  },
+  viewerUpdateEitapiToken: {
+    path: "/viewer/v1/project/:projectId/eitapi_token/:tokenId",
+    method: "put",
+    handler: viewerUpdateEitapiToken,
+  },
+  viewerUpdateExport: {
+    path: "/viewer/v1/project/:projectId/export/:exportId",
+    method: "put",
+    handler: viewerUpdateExport,
+  },
+
+  //
+  // enterprise
+  //
+  enterpriseCreateActiveSearch: {
+    path: "/enterprise/v1/search/active",
+    method: "post",
+    handler: enterpriseCreateActiveSearch,
+  },
+  enterpriseCreateSavedSearch: {
+    path: "/enterprise/v1/search/saved",
+    method: "post",
+    handler: enterpriseCreateSavedSearch,
+  },
+  enterpriseDeleteActiveSearch: {
+    path: "/enterprise/v1/search/active/:activeSearchId",
+    method: "delete",
+    handler: enterpriseDeleteActiveSearch,
+  },
+  enterprisePumpActiveSearch: {
+    path: "/enterprise/v1/search/active/:activeSearchId",
+    method: "get",
+    handler: enterprisePumpActiveSearch,
+  },
+  enterpriseSearchAdHoc: {
+    path: "/enterprise/v1/search/adhoc",
+    method: "get",
+    handler: enterpriseSearchAdHoc,
+  },
+
+  //
+  // OLD ROUTES -- DONT DOCUMENT, DEPRECATE SOON
+  //
+
+  //
   // core
   //
   createAdminSession: {
@@ -194,27 +419,27 @@ export default {
   //
   // enterprise
   //
-  enterpriseCreateActiveSearch: {
+  oldenterpriseCreateActiveSearch: {
     path: "/v1/eit/search/active",
     method: "post",
     handler: enterpriseCreateActiveSearch,
   },
-  enterpriseCreateSavedSearch: {
+  oldenterpriseCreateSavedSearch: {
     path: "/v1/eit/search/saved",
     method: "post",
     handler: enterpriseCreateSavedSearch,
   },
-  enterpriseDeleteActiveSearch: {
+  oldenterpriseDeleteActiveSearch: {
     path: "/v1/eit/search/active/:activeSearchId",
     method: "delete",
     handler: enterpriseDeleteActiveSearch,
   },
-  enterprisePumpActiveSearch: {
+  oldenterprisePumpActiveSearch: {
     path: "/v1/eit/search/active/:activeSearchId",
     method: "get",
     handler: enterprisePumpActiveSearch,
   },
-  enterpriseSearchAdHoc: {
+  oldenterpriseSearchAdHoc: {
     path: "/v1/eit/search/adhoc",
     method: "get",
     handler: enterpriseSearchAdHoc,
@@ -223,47 +448,47 @@ export default {
   //
   /// viewer
   //
-  viewerCreateEitapiToken: {
+  oldviewerCreateEitapiToken: {
     path: "/v1/project/:projectId/eitapi_token",
     method: "post",
     handler: viewerCreateEitapiToken,
   },
-  viewerCreateExport: {
+  oldviewerCreateExport: {
     path: "/v1/project/:projectId/export",
     method: "post",
     handler: viewerCreateExport,
   },
-  viewerSearchEvents: {
+  oldviewerSearchEvents: {
     path: "/v1/viewer/:projectId/events/search",
     method: "post",
     handler: viewerSearchEvents,
   },
-  viewerDeleteEitapiToken: {
+  oldviewerDeleteEitapiToken: {
     path: "/v1/project/:projectId/eitapi_token/:tokenId",
     method: "delete",
     handler: viewerDeleteEitapiToken,
   },
-  viewerListEitapiTokens: {
+  oldviewerListEitapiTokens: {
     path: "/v1/project/:projectId/eitapi_tokens",
     method: "get",
     handler: viewerListEitapiTokens,
   },
-  viewerListExports: {
+  oldviewerListExports: {
     path: "/v1/project/:projectId/exports",
     method: "get",
     handler: viewerListExports,
   },
-  viewerRenderSavedExport: {
+  oldviewerRenderSavedExport: {
     path: "/v1/project/:projectId/export/:exportId/rendered",
     method: "get",
     handler: viewerRenderSavedExport,
   },
-  viewerUpdateEitapiToken: {
+  oldviewerUpdateEitapiToken: {
     path: "/v1/project/:projectId/eitapi_token/:tokenId",
     method: "put",
     handler: viewerUpdateEitapiToken,
   },
-  viewerUpdateExport: {
+  oldviewerUpdateExport: {
     path: "/v1/project/:projectId/export/:exportId",
     method: "put",
     handler: viewerUpdateExport,

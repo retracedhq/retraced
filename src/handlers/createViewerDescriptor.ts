@@ -2,6 +2,31 @@ import getApiToken from "../models/api_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import createViewerDescriptor from "../models/viewer_descriptor/create";
 
+/**
+ * @swagger
+ * definitions:
+ *   ViewerToken:
+ *     properties:
+ *       token:
+ *         type: string
+ */
+
+/**
+ * @swagger
+ * /publisher/v1/project/:projectId/viewertoken:
+ *   get:
+ *     tags:
+ *       - token
+ *       - viewer
+ *     description: Create a token for use with the embedded logs viewer
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       201:
+ *         description:
+ *         schema:
+ *           $ref: '#/definitions/ViewerToken'
+ */
 export default async function handler(req) {
   const apiTokenId = apiTokenFromAuthHeader(req.get("Authorization"));
   const apiToken: any = await getApiToken(apiTokenId);

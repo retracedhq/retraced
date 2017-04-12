@@ -11,6 +11,7 @@ import * as Sigsci from "sigsci-module-nodejs";
 
 import routes from "./routes";
 import * as metrics from "./metrics";
+import * as swagger from "./swagger";
 
 if (!process.env["BUGSNAG_TOKEN"]) {
   console.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
@@ -47,6 +48,11 @@ function buildRoutes() {
   // Needed for Kubernetes health checks
   app.get("/", (req, res) => {
     res.send("");
+  });
+
+  app.get("/publisher/v1/swagger.json", (req, res) => {
+    res.setHeader("ContentType", "application/json");
+    res.send(swagger.publisherSpec);
   });
 
   // Define the handling callback for each route.
