@@ -5,12 +5,14 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+IMAGE_TAG=${CIRCLE_SHA1:0:7}
+
 echo Deploying to GKE:
 echo PROJECT_NAME=$PROJECT_NAME
 echo CLUSTER_NAME=$CLUSTER_NAME
 echo CLOUDSDK_COMPUTE_ZONE=$CLOUDSDK_COMPUTE_ZONE
 echo CIRCLE_SHA1=$CIRCLE_SHA1
-echo IMAGE_TAG=${CIRCLE_SHA1:0:7}
+echo IMAGE_TAG=${IMAGE_TAG}
 
 function gcloud_cli() {
     sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update --version 120.0.0
