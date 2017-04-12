@@ -2,7 +2,7 @@
 const swaggerJSDoc = require("swagger-jsdoc");
 import * as util from "util";
 
-const apiHost = process.env.RETRACED_API_BASE || "http://localhost:3000";
+const apiHost = process.env.RETRACED_API_BASE || "localhost:3000";
 
 const publisher = {
   info: {
