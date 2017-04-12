@@ -1,4 +1,5 @@
-import * as swaggerJSDoc from "swagger-jsdoc";
+// tslint:disable-next-line
+const swaggerJSDoc = require("swagger-jsdoc");
 import * as util from "util";
 
 const apiHost = process.env.RETRACED_API_BASE || "http://localhost:3000";
