@@ -26,6 +26,12 @@ export function apiTokenFromAuthHeader(authHeader?: string): string {
 
 export async function checkAdminAccess(req): Promise<AdminClaims> {
   const claims = await validateAdminVoucher(req.get("Authorization"));
+
+  // Some endpoints don't reference a project (such as list projects)
+  if (!req.params.projectId) {
+    return claims;
+  }
+
   if (!await verifyProjectAccess({projectId: req.params.projectId, userId: claims.userId})) {
     throw { status: 404, err: new Error("Not found") };
   }

@@ -5,7 +5,7 @@ import listInvites from "../invite/list";
 const pgPool = getPgPool();
 
 // projectId
-export default function listGroupMembers(opts) {
+export default function listTeamMembers(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
       if (err) {

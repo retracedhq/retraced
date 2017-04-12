@@ -12,7 +12,8 @@ import createEnvironment from "./handlers/admin/createEnvironment";
 import createInvite from "./handlers/admin/createInvite";
 import createProject from "./handlers/admin/createProject";
 import deleteApiToken from "./handlers/admin/deleteApiToken";
-import deleteGroupMember from "./handlers/admin/deleteGroupMember";
+import deleteTeamMember from "./handlers/admin/deleteTeamMember";
+import listTeamMembers from "./handlers/admin/listTeamMembers";
 import deleteInvite from "./handlers/admin/deleteInvite";
 import searchEvents from "./handlers/admin/searchEvents";
 import getAction from "./handlers/admin/getAction";
@@ -21,12 +22,12 @@ import getDashboard from "./handlers/admin/getDashboard";
 import getProject from "./handlers/admin/getProject";
 import listActions from "./handlers/admin/listActions";
 import listActors from "./handlers/admin/listActors";
-import listGroupMembers from "./handlers/admin/listGroupMembers";
 import listInvites from "./handlers/admin/listInvites";
 import listProjects from "./handlers/admin/listProjects";
 import listTargets from "./handlers/admin/listTargets";
 import updateAction from "./handlers/admin/updateAction";
 import updateUser from "./handlers/admin/updateUser";
+import searchGroups from "./handlers/admin/searchGroups";
 
 // enterprise
 import enterpriseCreateActiveSearch from "./handlers/enterprise/createActiveSearch";
@@ -109,10 +110,10 @@ export default {
     method: "delete",
     handler: deleteApiToken,
   },
-  deleteGroupMember: {
-    path: "/v1/project/:projectId/group/member/:userId",
+  deleteTeamMember: {
+    path: "/v1/project/:projectId/team/member/:userId",
     method: "delete",
-    handler: deleteGroupMember,
+    handler: deleteTeamMember,
   },
   deleteInvite: {
     path: "/v1/project/:projectId/invite/:inviteId",
@@ -149,10 +150,10 @@ export default {
     method: "get",
     handler: listActors,
   },
-  listGroupMembers: {
-    path: "/v1/project/:projectId/group",
+  listTeamMembers: {
+    path: "/v1/project/:projectId/team",
     method: "get",
-    handler: listGroupMembers,
+    handler: listTeamMembers,
   },
   listInvites: {
     path: "/v1/project/:projectId/invites",
@@ -163,6 +164,11 @@ export default {
     path: "/v1/projects",
     method: "get",
     handler: listProjects,
+  },
+  searchGroups: {
+    path: "/v1/project/:projectId/groups",
+    method: "get",
+    handler: searchGroups,
   },
   listTargets: {
     path: "/v1/project/:projectId/targets",
