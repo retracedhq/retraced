@@ -27,14 +27,7 @@ function gcloud_cli() {
 
 
 function template_yamls() {
-    rm -rf build/k8s
-    mkdir -p build/k8s
-    yarn global add handlebars-cmd
-    set -v
-    handlebars --tag ${CIRCLE_SHA1:0:7} < deploy/k8s/api-deployment.yml.hbs > build/k8s/api-deployment.yml
-    handlebars                          < deploy/k8s/api-service.yml.hbs    > build/k8s/api-service.yml
-    handlebars                          < deploy/k8s/api-ingress.yml.hbs    > build/k8s/api-ingress.yml
-    set +v
+    make k8s tag=${IMAGE_TAG}
 }
 
 function chown_home() {
@@ -42,6 +35,8 @@ function chown_home() {
 }
 
 function ship_it() {
+    echo "Applying yamls to $CLUSTER_NAME"
+    cat build/k8s/*
     kubectl apply -f build/k8s/
 }
 
