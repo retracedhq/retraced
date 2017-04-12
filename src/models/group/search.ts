@@ -10,6 +10,8 @@ export interface Options {
   environmentId: string;
   sort: "asc" | "desc";
   sortColumn: "name" | "created" | "last_seen";
+  length: number;
+  offset: number;
 }
 
 export interface Result {

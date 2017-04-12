@@ -6,7 +6,8 @@ import addDisplayTitles from "../../models/event/addDisplayTitles";
 What we're expecting from clients:
 ----------------------------------
 query: {
-  // really quiet in here right now
+  length: number;
+  offset: number;
 }
 */
 export default async function handler(req) {
@@ -24,6 +25,9 @@ export default async function handler(req) {
     environmentId: req.query.environment_id,
     sort: "desc",
     sortColumn: "name",
+
+    length: reqOpts.length,
+    offset: reqOpts.offset,
   };
 
   const results = await searchGroups(opts);
