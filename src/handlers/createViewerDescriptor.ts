@@ -23,7 +23,7 @@ import createViewerDescriptor from "../models/viewer_descriptor/create";
  *       - application/json
  *     responses:
  *       201:
- *         description:
+ *         description: A created viewer Token
  *         schema:
  *           $ref: '#/definitions/ViewerToken'
  */
