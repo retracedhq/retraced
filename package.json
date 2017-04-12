@@ -51,6 +51,7 @@
     "@types/request": "^0.0.42",
     "chance": "^1.0.6",
     "coveralls": "^2.13.0",
+    "handlebars-cmd": "^0.1.4",
     "istanbul": "1.1.0-alpha.1",
     "mocha-junit-reporter": "^1.13.0",
     "tslint": "^4.5.1",
