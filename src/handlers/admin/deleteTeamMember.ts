@@ -1,15 +1,15 @@
 import { checkAdminAccess } from "../../security/helpers";
-import listGroupMembers from "../../models/group/list";
+import deleteTeamMember from "../../models/team/deleteMember";
 
 export default async function (req) {
   await checkAdminAccess(req);
 
-  const groupMembers = await listGroupMembers({
+  await deleteTeamMember({
     projectId: req.params.projectId,
+    userId: req.params.userId,
   });
 
   return {
-    status: 200,
-    body: JSON.stringify({ groupMembers }),
+    status: 204,
   };
 }
