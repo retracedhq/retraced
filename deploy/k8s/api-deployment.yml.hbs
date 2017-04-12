@@ -13,7 +13,7 @@ spec:
       volumes:
         - name: var-run
           hostPath:
-            path: /var/run/
+            path: /var/run/retraced/
       imagePullSecrets:
         - name: quayio
       containers:
@@ -22,12 +22,12 @@ spec:
           ports:
             - containerPort: 3000
           volumeMounts:
-            - mountPath: /var/run/
+            - mountPath: /var/run/retraced/
               name: var-run
               readOnly: true
           env:
             - name: SIGSCI_RPCADDRESS
-              value: /var/run/sigsci.sock
+              value: /var/run/retraced/sigsci.sock
             - name: REDIS_URI
               valueFrom:
                 secretKeyRef:
