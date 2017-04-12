@@ -73,6 +73,11 @@ spec:
                 secretKeyRef:
                   name: retraced
                   key: RETRACED_APP_BASE
+            - name: RETRACED_API_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: retraced
+                  key: RETRACED_API_BASE
             - name: MANDRILL_KEY
               valueFrom:
                 secretKeyRef:

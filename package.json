@@ -4,6 +4,7 @@
   "description": "Retraced API",
   "main": "./build/index.js",
   "dependencies": {
+    "@types/swagger-jsdoc": "^0.0.1",
     "analytics-node": "^2.1.0",
     "auth0-js": "^8.0.4",
     "aws-sdk": "^2.6.12",
@@ -39,6 +40,7 @@
     "sanitize-filename": "^1.6.1",
     "sigsci-module-nodejs": "https://dl.signalsciences.net/sigsci-module-nodejs/sigsci-module-nodejs_latest.tgz",
     "source-map-support": "^0.4.11",
+    "swagger-jsdoc": "^1.9.2",
     "threads": "^0.7.2",
     "ts-node": "^1.7.0",
     "uuid": "^2.0.2"

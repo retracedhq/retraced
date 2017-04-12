@@ -16,11 +16,6 @@ import { apiTokenFromAuthHeader } from "../security/helpers";
 import { default as getDisque, DisqueClient } from "../persistence/disque";
 import getPgPool from "../persistence/pg";
 
-interface CreateResult {
-  id: string;
-  hash: string;
-}
-
 const requiredFields = [
   "action",
 ];
@@ -38,6 +33,38 @@ const requiredSubfields = [
   ["target", "target.id"],
 ];
 
+/**
+ * @swagger
+ * definitions:
+ *   CreateEventResult:
+ *     properties:
+ *       id:
+ *         type: string
+ *       hash:
+ *         type: string
+ */
+interface CreateEventResult {
+  id: string;
+  hash: string;
+}
+
+/**
+ * @swagger
+ * /publisher/v1/project/:projectId/event:
+ *   post:
+ *     tags:
+ *       - event
+ *       - create
+ *       - publisher
+ *     description: Create a new event
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       201:
+ *         description: The created event id and a canonical hash of event fields
+ *         schema:
+ *           $ref: '#/definitions/CreateEventResult'
+ */
 export class EventCreater {
 
   public static readonly insertIntoIngestTask = `
@@ -93,7 +120,7 @@ export class EventCreater {
     });
 
     // This is what will be returned to the caller.
-    let results: CreateResult[] = [];
+    let results: CreateEventResult[] = [];
 
     // Create a new ingestion task for each event passed in.
     for (const eventInput of eventInputs) {
