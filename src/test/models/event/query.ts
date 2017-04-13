@@ -89,6 +89,7 @@ import {
       _source: true,
       size: 10,
       sort: ["canonical_time:asc", "id:asc"],
+      search_after: [1492060162148, "abc123"],
       body: {
         query: {
           bool: {

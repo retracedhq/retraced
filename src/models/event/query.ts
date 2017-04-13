@@ -112,6 +112,7 @@ export function searchParams(opts: Options): any {
     _source: true,
     size: opts.size,
     sort: [`canonical_time:${opts.sort}`, `id:${opts.sort}`],
+    search_after: opts.cursor,
     body: { query },
   };
 };
@@ -120,12 +121,14 @@ export function searchParams(opts: Options): any {
 export function polyfillSearchAfter(params: any) {
   if (params.search_after) {
     const [timestamp, id] = params.search_after;
+    const isAsc = /asc/.test(params.sort[0]);
+
     params.body.query.bool.filter.push({
       bool: {
         must_not: {
           range: {
             canonical_time: {
-              [params.sort === "asc" ? "lt" : "gt"]: timestamp,
+              [isAsc ? "lt" : "gt"]: timestamp,
             },
           },
         },
@@ -137,14 +140,14 @@ export function polyfillSearchAfter(params: any) {
           // include non-identical timestamps in range
           range: {
             canonical_time: {
-              [params.sort === "asc" ? "gt" : "lt"]: timestamp,
+              [isAsc ? "gt" : "lt"]: timestamp,
             },
           },
         }, {
           // include identical timestamps with ids in range
           range: {
             id: {
-              [params.sort === "asc" ? "gt" : "lt"]: id,
+              [isAsc ? "gt" : "lt"]: id,
             },
           },
         }],
