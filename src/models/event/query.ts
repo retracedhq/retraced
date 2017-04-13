@@ -22,7 +22,7 @@ export interface Options {
   scope: Scope;
   sort: "asc" | "desc";
   size?: number;
-  searchAfter?: [number, string];
+  cursor?: [number, string];
 }
 
 export interface Result {
@@ -31,79 +31,16 @@ export interface Result {
 }
 
 export default async function (opts: Options): Promise<Result> {
-  const query = parse(opts.query);
+  const params = searchParams(opts);
 
-  // If the scope is limited by groupIds or targetIds add them as filters.
-  // The index enforces the projectId and environmentId of the scope.
-  if (opts.scope.groupIds.length) {
-    const should = opts.scope.groupIds.reduce((clauses, groupId) => ([
-      ...clauses,
-      { term: { "group.id": groupId } },
-      { term: { team_id: groupId } },
-    ]), <any[]> []);
-
-    query.bool.filter.push({ bool: { should } });
-  }
-  if (opts.scope.targetIds.length) {
-    const should = opts.scope.targetIds.map((targetId) => ({
-      term: { "target.id": targetId },
-    }));
-
-    query.bool.filter.push({ bool: { should } });
-  }
-
-  const params = {
-    index: `retraced.${opts.scope.projectId}.${opts.scope.environmentId}`,
-    type: "event",
-    _source: true,
-    size: opts.size,
-    sort: ["canonical_time:${opts.sort}", "id:${opts.sort}"],
-    body: { query },
-  };
-
-  // polyfill for ES 5's search_after
-  if (opts.searchAfter) {
-    // first exclude timestamps out of range
-    query.bool.filter.push({
-      bool: {
-        must_not: {
-          range: {
-            canonical_time: {
-              [opts.sort === "asc" ? "lt" : "gt"]: opts.searchAfter[0],
-            },
-          },
-        },
-      },
-    });
-    query.bool.filter.push({
-      bool: {
-        should: [{
-          // include non-identical timestamps in range
-          range: {
-            canonical_time: {
-              [opts.sort === "asc" ? "gt" : "lt"]: opts.searchAfter[0],
-            },
-          },
-        }, {
-          // include identical timestamps with ids in range
-          range: {
-            id: {
-              [opts.sort === "asc" ? "gt" : "lt"]: opts.searchAfter[1],
-            },
-          },
-        }],
-      },
-    });
-  }
+  polyfillSearchAfter(params);
 
   const resp = await es.search(params);
 
-  const result: Result = {
+  return {
     totalHits: resp.hits.total,
     events: _.map(resp.hits.hits, ({ _source }) => _source),
   };
-
-  return result;
 };
 
 function isPrefix(term: string) {
@@ -136,3 +73,82 @@ export function parse(query: string): any {
 
   return q;
 };
+
+// If the scope is limited by groupIds or targetIds add them as filters.
+// Restricts viewer and enterprise clients to authorized data.
+export function scopeFilters(scope: Scope): any[] {
+  const filters: any[] = [];
+
+  if (scope.groupIds.length) {
+    const should = scope.groupIds.reduce((clauses, groupId) => ([
+      ...clauses,
+      { term: { "group.id": groupId } },
+      { term: { team_id: groupId } },
+    ]), <any[]> []);
+
+    filters.push({ bool: { should } });
+  }
+
+  if (scope.targetIds.length) {
+    const should = scope.targetIds.map((targetId) => ({
+      term: { "target.id": targetId },
+    }));
+
+    filters.push({ bool: { should } });
+  }
+
+  return filters;
+}
+
+export function searchParams(opts: Options): any {
+  const query = parse(opts.query);
+  const securityFilters = scopeFilters(opts.scope);
+
+  query.bool.filter = query.bool.filter.concat(securityFilters);
+
+  return {
+    index: `retraced.${opts.scope.projectId}.${opts.scope.environmentId}`,
+    type: "event",
+    _source: true,
+    size: opts.size,
+    sort: [`canonical_time:${opts.sort}`, `id:${opts.sort}`],
+    body: { query },
+  };
+};
+
+// Converts params.search_after to query filters. Remove after upgrade to ES 5.
+export function polyfillSearchAfter(params: any) {
+  if (params.search_after) {
+    const [timestamp, id] = params.search_after;
+    params.body.query.bool.filter.push({
+      bool: {
+        must_not: {
+          range: {
+            canonical_time: {
+              [params.sort === "asc" ? "lt" : "gt"]: timestamp,
+            },
+          },
+        },
+      },
+    });
+    params.body.query.bool.filter.push({
+      bool: {
+        should: [{
+          // include non-identical timestamps in range
+          range: {
+            canonical_time: {
+              [params.sort === "asc" ? "gt" : "lt"]: timestamp,
+            },
+          },
+        }, {
+          // include identical timestamps with ids in range
+          range: {
+            id: {
+              [params.sort === "asc" ? "gt" : "lt"]: id,
+            },
+          },
+        }],
+      },
+    });
+  }
+}

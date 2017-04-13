@@ -207,11 +207,11 @@ const queryType = new GraphQLObjectType({
               fields: {
                 hasNextPage: {
                   type: GraphQLBoolean,
-                  description: "Indicates there are newer events matching the query when paginating in historical order",
+                  description: "Indicates there are newer events matching the query when paging from oldest to newest.",
                 },
                 hasPreviousPage: {
                   type: GraphQLBoolean,
-                  description: "Indicates there are older events matching the query when paginating in reverse historical order",
+                  description: "Indicates there are older events matching the query when paging from newest to oldest.",
                 },
               },
             }),

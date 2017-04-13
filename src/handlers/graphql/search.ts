@@ -44,10 +44,10 @@ export default async function search(
   };
 
   if (args.after) {
-    opts.searchAfter = decodeCursor(args.after);
+    opts.cursor = decodeCursor(args.after);
   }
   if (args.before) {
-    opts.searchAfter = decodeCursor(args.before);
+    opts.cursor = decodeCursor(args.before);
   }
 
   const results = await queryEvents(opts);
@@ -80,7 +80,7 @@ export default async function search(
   // If searching with a cursor run the search again without it to get the total.
   let totalCount = results.totalHits;
   if (args.after || args.before) {
-    delete opts.searchAfter;
+    delete opts.cursor;
     opts.size = 0;
     const { totalHits } = await queryEvents(opts);
     totalCount = totalHits;
