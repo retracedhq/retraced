@@ -94,7 +94,7 @@ export default async function search(
       hasPreviousPage: opts.sort === "desc" && results.totalHits > results.events.length,
     },
   };
-};
+}
 
 function encodeCursor(timestamp: number, id: string): string {
   return new Buffer(`${timestamp},${id}`).toString("base64");

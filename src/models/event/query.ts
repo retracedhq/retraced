@@ -30,7 +30,7 @@ export interface Result {
   events: any[];
 }
 
-export default async function (opts: Options): Promise<Result> {
+export default async function query(opts: Options): Promise<Result> {
   const params = searchParams(opts);
 
   polyfillSearchAfter(params);
@@ -41,7 +41,7 @@ export default async function (opts: Options): Promise<Result> {
     totalHits: resp.hits.total,
     events: _.map(resp.hits.hits, ({ _source }) => _source),
   };
-};
+}
 
 function isPrefix(term: string) {
   return /\*$/.test(term);
@@ -72,7 +72,7 @@ export function parse(query: string): any {
   }
 
   return q;
-};
+}
 
 // If the scope is limited by groupIds or targetIds add them as filters.
 // Restricts viewer and enterprise clients to authorized data.
@@ -84,7 +84,7 @@ export function scopeFilters(scope: Scope): any[] {
       ...clauses,
       { term: { "group.id": groupId } },
       { term: { team_id: groupId } },
-    ]), <any[]> []);
+    ]), [] as any[]);
 
     filters.push({ bool: { should } });
   }
@@ -115,7 +115,7 @@ export function searchParams(opts: Options): any {
     search_after: opts.cursor,
     body: { query },
   };
-};
+}
 
 // Converts params.search_after to query filters. Remove after upgrade to ES 5.
 export function polyfillSearchAfter(params: any) {
