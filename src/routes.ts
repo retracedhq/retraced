@@ -52,14 +52,7 @@ import viewerUpdateEitapiToken from "./handlers/viewer/updateEitapiToken";
 import viewerUpdateExport from "./handlers/viewer/updateExport";
 
 export default {
-  //
-  // publisher
-  //
-  publisherCreateEvent: {
-    path: "/publisher/v1/project/:projectId/event",
-    method: "post",
-    handler: createEvent,
-  },
+
   pulisherCreateViewerDescriptor: {
     path: "/publisher/v1/project/:projectId/viewertoken",
     method: "get",
@@ -313,9 +306,12 @@ export default {
     handler: enterpriseSearchAdHoc,
   },
 
+//
   //
-  // OLD ROUTES -- DONT DOCUMENT, DEPRECATE SOON
-  //
+    // OLD ROUTES -- DONT DOCUMENT, DEPRECATE SOON
+      //
+        //
+          //
 
   //
   // core
@@ -324,11 +320,6 @@ export default {
     path: "/v1/user/login",
     method: "post",
     handler: createAdminSession,
-  },
-  createEvent: {
-    path: "/v1/project/:projectId/event",
-    method: "post",
-    handler: createEvent,
   },
   createViewerDescriptor: {
     path: "/v1/project/:projectId/viewertoken",
@@ -583,3 +574,7 @@ export default {
     handler: viewerUpdateExport,
   },
 };
+
+export function LegacyRoutes() {
+  return exports.default;
+}

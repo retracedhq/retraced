@@ -6,6 +6,7 @@ import * as util from "util";
 import * as uuid from "uuid";
 import * as express from "express";
 import { instrumented } from "monkit";
+import {Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller } from "tsoa";
 
 import createCanonicalHash from "../models/event/canonicalize";
 import Event from "../models/event/";
@@ -33,38 +34,11 @@ const requiredSubfields = [
   ["target", "target.id"],
 ];
 
-interface CreateEventResult {
+export interface CreateEventResult {
   id: string;
   hash: string;
 }
-/**
- * @swagger
- * definitions:
- *   CreateEventResult:
- *     properties:
- *       id:
- *         type: string
- *       hash:
- *         type: string
- */
 
-/**
- * @swagger
- * /publisher/v1/project/:projectId/event:
- *   post:
- *     tags:
- *       - event
- *       - create
- *       - publisher
- *     description: Create a new event
- *     produces:
- *       - application/json
- *     responses:
- *       201:
- *         description: The created event id and a canonical hash of event fields
- *         schema:
- *           $ref: '#/definitions/CreateEventResult'
- */
 export class EventCreater {
 
   public static readonly insertIntoIngestTask = `
@@ -92,19 +66,19 @@ export class EventCreater {
     this.idSource = idSource;
   }
 
+  public async createEventRaw(req: express.Request): Promise<any> {
+    return this.createEvent(req.get("Authorization"), req.params.projectId, req.body);
+  }
   @instrumented
-  public async createEvent(req: express.Request): Promise<any> {
-    const apiTokenId = apiTokenFromAuthHeader(req.get("Authorization"));
+  public async createEvent(authorization: string, projectId: string, body: Event): Promise<any> {
+    const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, this.pgPool.query.bind(this.pgPool));
-    const validAccess = apiToken && apiToken.project_id === req.params.projectId;
+    const validAccess = apiToken && apiToken.project_id === projectId;
     if (!validAccess) {
       throw { status: 401, err: new Error("Unauthorized") };
     }
 
-    let eventInputs = req.body;
-    if (!Array.isArray(req.body)) {
-      eventInputs = [req.body];
-    }
+    const eventInputs = [body];
 
     // TODO(zhaytee): If an array of events is being submitted, allow valid ones to continue through?
     // Currently, this rejects the entire call if a single event fails validation.
@@ -166,13 +140,7 @@ export class EventCreater {
       });
     }
 
-    // If request body wasn't an array, response body won't be either.
-    let responseBody;
-    if (Array.isArray(req.body)) {
-      responseBody = JSON.stringify(results);
-    } else if (results.length > 0) {
-      responseBody = JSON.stringify(results[0]);
-    }
+    const responseBody = JSON.stringify(results[0]);
 
     return {
       status: 201,
@@ -243,7 +211,7 @@ export class EventCreater {
   }
 }
 
-const creater = new EventCreater(
+export const defaultEventCreater = new EventCreater(
   getPgPool(),
   getDisque(),
   createCanonicalHash,
@@ -251,5 +219,5 @@ const creater = new EventCreater(
 );
 
 export default async function handle(req: express.Request): Promise<any> {
-  return creater.createEvent(req);
+  return defaultEventCreater.createEventRaw(req);
 }

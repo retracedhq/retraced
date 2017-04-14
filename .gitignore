@@ -1,5 +1,6 @@
 build/
 lib/
+java/
 
 *.DS_Store
 .AppleDouble
@@ -85,3 +86,4 @@ jspm_packages
 
 # mocha-junit-reporter
 test-results.xml
+

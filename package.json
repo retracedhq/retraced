@@ -45,6 +45,7 @@
     "swagger-jsdoc": "^1.9.2",
     "threads": "^0.7.2",
     "ts-node": "^1.7.0",
+    "tsoa": "^1.1.7",
     "uuid": "^2.0.2"
   },
   "devDependencies": {
@@ -70,7 +71,6 @@
     "report-coverage": "coveralls < ./coverage/lcov.info && codeclimate-test-reporter < ./coverage/lcov.info"
   },
   "author": "",
-  "license": "ISC",
   "nyc": {
     "include": [
       "lib/**/*.js"

@@ -1,13 +1,13 @@
 prebuild:
 	rm -rf build
+	mkdir -p build
 
 deps:
 	# https://github.com/yarnpkg/yarn/issues/2266
 	yarn global add node-gyp
 	yarn install --force
 
-build: prebuild
-	mkdir -p build
+build: prebuild swagger
 	`yarn bin`/tslint --project ./tsconfig.json --fix
 	`yarn bin`/tsc
 
@@ -32,3 +32,21 @@ k8s-ingress:
 
 k8s: k8s-pre k8s-deployment k8s-service k8s-ingress
 	: "Templated k8s yamls"
+
+swagger:
+	`yarn bin`/tsoa swagger
+
+# mostly stolen from replicatedcom/vendor-api and replicatedhq/docs
+# thanks martin!
+markup-deps:
+	mkdir -p java/
+	curl -o java/swagger2markup-cli-1.0.0.jar http://central.maven.org/maven2/io/github/swagger2markup/swagger2markup-cli/1.0.0/swagger2markup-cli-1.0.0.jar
+	curl -o java/swagger2markup-1.0.0.jar http://central.maven.org/maven2/io/github/swagger2markup/swagger2markup/1.0.0/swagger2markup-1.0.0.jar
+	sudo gem install asciidoctor
+
+markup-docs: swagger
+	java -cp java/swagger2markup-1.0.0.jar -jar java/swagger2markup-cli-1.0.0.jar convert -i build/swagger.json -f build/swagger
+	asciidoctor build/swagger.adoc
+	google-chrome ./build/swagger.html
+
+

@@ -1,35 +1,47 @@
-interface Event {
-  id: string;
-  action: string;
-  group?: {
-    id: string;
-    name?: string;
-  };
 
+export interface Group {
+  id: string;
+  name?: string;
+}
+
+export interface Actor {
+  id: string;
+  name?: string;
+  href?: string;
+}
+
+export interface Target {
+  id: string;
+  name: string;
+  href?: string;
+  type?: string;
+}
+
+export interface Fields {
+  [key: string]: string;
+}
+
+export type crud = "c" | "r" | "u" | "d";
+
+export interface RetracedEvent {
+  id?: string;
+  action: string;
+  group?: Group;
   displayTitle?: string;
   created?: number;
-  actor?: {
-    id: string;
-    name: string;
-    href?: string;
-  };
-  target?: {
-    id: string;
-    name: string;
-    href?: string;
-    type?: string;
-  };
-  crud?: "c" | "r" | "u" | "d";
+  actor?: Actor;
+  target?: Target;
+  crud?: crud;
   sourceIp?: string;
   description?: string;
   isAnonymous?: boolean;
   isFailure?: boolean;
-  fields?: { [key: string]: string };
+  fields?: Fields;
 }
 
-export default Event;
+export default RetracedEvent;
 
-export function fromCreateEventInput(eventInput: any, newEventId: string): Event {
+export function fromCreateEventInput(eventInput: any, newEventId: string): RetracedEvent {
   return {
     id: newEventId,
     action: eventInput["action"],

@@ -63,7 +63,7 @@ import { EventCreater } from "../../handlers/createEvent";
             fakeUUID,
         );
 
-        const resp: any = await creater.createEvent(request.object);
+        const resp: any = await creater.createEventRaw(request.object);
 
         expect(resp.status).to.equal(201);
         const responseBody = JSON.parse(resp.body);

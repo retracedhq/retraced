@@ -9,7 +9,10 @@ import * as util from "util";
 import * as bugsnag from "bugsnag";
 import * as Sigsci from "sigsci-module-nodejs";
 
-import routes from "./routes";
+import { wrapRoute, register, requestId, preRequest, onSuccess, onError } from "./router";
+import { wrapTSOARoute, TSOARoutes } from "./tsoa_routes";
+import { LegacyRoutes } from "./routes";
+
 import * as metrics from "./metrics";
 import * as swagger from "./swagger";
 
@@ -24,6 +27,7 @@ if (!process.env["BUGSNAG_TOKEN"]) {
 
 const app = express();
 
+// Sigsci middleware has to be installed before routes and other middleware
 if (!process.env["SIGSCI_RPCADDRESS"]) {
   console.error("SIGSCI_RPCADDRESS not set, Signal Sciences module will not be installed");
 } else {
@@ -52,89 +56,17 @@ function buildRoutes() {
 
   app.get("/publisher/v1/swagger.json", (req, res) => {
     res.setHeader("ContentType", "application/json");
-    res.send(swagger.publisherSpec);
+    res.send(swagger.publisherApi);
   });
 
-  // Define the handling callback for each route.
-  _.forOwn(routes, (route, handlerName) => {
-    const routeCallback = (req, res) => {
-      const reqId = `${handlerName}:${uuid.v4().replace("-", "").substring(0, 8)}`;
-      console.log(chalk.yellow(`[${reqId}] <- ${req.method} ${req.originalUrl}`));
-      if (!_.isEmpty(req.body)) {
-        let bodyString = JSON.stringify(req.body);
-        if (bodyString.length > 512) {
-          bodyString = `${bodyString.substring(0, 512)} (... truncated, total ${bodyString.length} bytes)`;
-        }
-        console.log(chalk.yellow(`[${reqId}] <- ${bodyString}`));
-      }
+  _.forOwn(TSOARoutes(), (route, handlerName: string) => {
+    const handler = wrapTSOARoute(route, handlerName);
+    register(route, handler, app);
+  });
 
-      const handlerFunc = route.handler;
-
-      // FIXME: I couldn't get this to work using async/await. Node kept complaining about
-      // unhandled promise rejections. Something to do with the transpiler?
-      handlerFunc(req)
-        .then((result: any) => {
-          if (result) {
-            let statusToSend = result.status || 200;
-            let contentType = result.contentType || "application/json";
-
-            let bodyToLog = result.body;
-            if (!bodyToLog) {
-              bodyToLog = "";
-            } else if (bodyToLog.length > 512) {
-              bodyToLog = `${bodyToLog.substring(0, 512)} (... truncated, total ${bodyToLog.length} bytes)`;
-            }
-            console.log(chalk.cyan(`[${reqId}] => ${result.status} ${bodyToLog}`));
-            let respObj = res.status(statusToSend).type(contentType).set("X-Retraced-RequestId", reqId);
-            if (result.filename) {
-              respObj.attachment(result.filename);
-            }
-            if (result.headers) {
-              _.forOwn(result.headers, (value, key) => {
-                respObj.set(key, value);
-              });
-            }
-            respObj.send(result.body);
-          } else {
-            // Generic response. Shouldn't happen in most cases, but...
-            console.log(chalk.cyan(`[${reqId}] => 200`));
-            res.status(200).set("X-Retraced-RequestId", reqId).json(result);
-          }
-        })
-        .catch((err) => {
-          bugsnag.notify(err);
-          if (err.status) {
-            // Structured error, specific status code.
-            const errMsg = err.err ? err.err.message : "An unexpected error occurred";
-            console.log(chalk.red(`[${reqId}] !! ${err.status} ${errMsg} ${err.stack || util.inspect(err)}`));
-            const bodyToSend = {
-              error: errMsg,
-            };
-            res.status(err.status).set("X-Retraced-RequestId", reqId).json(bodyToSend);
-          } else {
-            // Generic error, default code (500).
-            const bodyToSend = {
-              error: err.message || "An unexpected error occurred",
-            };
-            console.log(chalk.red(`[${reqId}] !! 500 ${err.stack || err.message || util.inspect(err)}`));
-            res.status(500).set("X-Retraced-RequestId", reqId).json(bodyToSend);
-          }
-        });
-    };
-
-    // Register this route and callback with express.
-    console.log(`[${route.method}] '${route.path}'`);
-    if (route.method === "get") {
-      app.get(route.path, routeCallback);
-    } else if (route.method === "post") {
-      app.post(route.path, routeCallback);
-    } else if (route.method === "put") {
-      app.put(route.path, routeCallback);
-    } else if (route.method === "delete") {
-      app.delete(route.path, routeCallback);
-    } else {
-      console.log(`Unhandled HTTP method: '${route.method}'`);
-    }
+  _.forOwn(LegacyRoutes(), (route, handlerName: string) => {
+    const handler = wrapRoute(route, handlerName);
+    register(route, handler, app);
   });
 
   app.use((req, res, next) => {

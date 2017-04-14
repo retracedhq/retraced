@@ -24,3 +24,36 @@ Key responsibilities of the retraced API include:
 #### Running with [Composer](https://github.com/retracedhq/composer)
 
 > `docker-compose -f ../composer/docker-compose.yml up api`
+
+
+## Swagger Documentation
+
+Swagger spec is generated from source using [TSOA](https://github.com/lukeautry/tsoa)
+
+By default, a swagger spec is built as part of `make build`, and is served by express at `/publisher/v1/swagger.json`.
+
+In staging/production, these specs are fed to [readme.io](https://readme.io), but it is possible to generate/preview them locally.
+
+
+#### Generating a spec
+
+To generate swagger.json from Typescript sources use
+
+```
+make swagger
+```
+
+The outputs will be written to build/swagger.json
+
+#### Previewing a spec
+
+The first time you generate markup, you will need to `make markup-deps` to install tooling.
+
+Then you can 
+
+```
+make markup-docs
+```
+
+which will build `build/swagger.adoc`, convert to `build/swagger.html`, and open using `google-chrome`
+
