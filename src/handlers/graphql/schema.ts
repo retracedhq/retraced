@@ -13,6 +13,7 @@ import {
 import search from "./search";
 
 const targetType = new GraphQLObjectType({
+  description: "The object an event is performed on.",
   name: "Target",
   fields: () => ({
     id: {
@@ -24,15 +25,18 @@ const targetType = new GraphQLObjectType({
       description: "The name of this target.",
     },
     href: {
+      description: "The URL associated with this target.",
       type: GraphQLString,
     },
     type: {
+      description: "The type of this target entity.",
       type: GraphQLString,
     },
   }),
 });
 
 const actorType = new GraphQLObjectType({
+  description: "The agent who performed an event.",
   name: "Actor",
   fields: () => ({
     id: {
@@ -44,12 +48,14 @@ const actorType = new GraphQLObjectType({
       description: "The name of this actor.",
     },
     href: {
+      description: "The URL associated with this actor.",
       type: GraphQLString,
     },
   }),
 });
 
 const groupType = new GraphQLObjectType({
+  description: "The group this event is associated with.",
   name: "Group",
   fields: () => ({
     id: {
@@ -64,6 +70,7 @@ const groupType = new GraphQLObjectType({
 });
 
 const eventType = new GraphQLObjectType({
+  description: "A single record in an audit log.",
   name: "Event",
   fields: () => ({
     id: {
@@ -73,7 +80,7 @@ const eventType = new GraphQLObjectType({
 
     action: {
       type: GraphQLString,
-      description: "The action that was taken to generate this event.",
+      description: "The type of action that was taken to generate this event.",
     },
 
     description: {
@@ -82,19 +89,24 @@ const eventType = new GraphQLObjectType({
     },
 
     group: {
+      description: "The group associated with this event.",
       type: groupType,
     },
 
     actor: {
+      description: "The actor associated with this event.",
       type: actorType,
     },
 
     target: {
+      description: "The target associated with this event.",
       type: targetType,
     },
 
     crud: {
+      description: "The classification of this event as create, read, update, or delete.",
       type: new GraphQLEnumType({
+        description: "Create  | Read | Update | Delete",
         name: "CRUD",
         values: {
           c: {
@@ -130,7 +142,7 @@ const eventType = new GraphQLObjectType({
 
     created: {
       type: GraphQLString,
-      description: "The time that the event was reported as performed.",
+      description: "The time that this event was reported as performed.",
       resolve: ({ created }) => created && moment.utc(created).format(),
     },
 
@@ -166,13 +178,16 @@ const eventType = new GraphQLObjectType({
 
     // GraphQL does not have a map type. Fields is a list of key-value objects.
     fields: {
+      description: "The set of fields associated with this event.",
       type: new GraphQLList(new GraphQLObjectType({
         name: "Field",
         fields: () => ({
           key: {
+            description: "The key for this field.",
             type: GraphQLString,
           },
           value: {
+            description: "The value for this field.",
             type: GraphQLString,
           },
         }),
@@ -182,41 +197,50 @@ const eventType = new GraphQLObjectType({
 });
 
 const queryType = new GraphQLObjectType({
+  description: "The root query object of the Retraced GraphQL interface.",
   name: "Query",
   fields: {
     search: {
+      description: "Run an advanced search for events.",
       type: new GraphQLObjectType({
+        description: "The results of a search query.",
         name: "EventsConnection",
         fields: {
           edges: {
+            description: "The events and cursors matching the query.",
             type: new GraphQLList(new GraphQLObjectType({
+              description: "The event and cursor for a single result.",
               name: "EventEdge",
               fields: {
                 node: {
+                  description: "The event object.",
                   type: eventType,
                 },
                 cursor: {
+                  description: "An opaque cursor for paginating from this point in the search results. Use it as the <code>after</code> argument to paginate forward or the <code>before</code> argument to paginate backward.",
                   type: GraphQLString,
                 },
               },
             })),
           },
           pageInfo: {
+            description: "Indications that more search results are available.",
             type: new GraphQLObjectType({
               name: "PageInfo",
               fields: {
                 hasNextPage: {
                   type: GraphQLBoolean,
-                  description: "Indicates there are newer events matching the query when paging from oldest to newest.",
+                  description: "Indicates there are newer events matching the query when paging from oldest to newest with the <code>first</code> argument.",
                 },
                 hasPreviousPage: {
                   type: GraphQLBoolean,
-                  description: "Indicates there are older events matching the query when paging from newest to oldest.",
+                  description: "Indicates there are older events matching the query when paging from newest to oldest with the <code>last</code> argument.",
                 },
               },
             }),
           },
           totalCount: {
+            description: "The total number of search results matched by the query.",
             type: GraphQLInt,
           },
         },
@@ -224,19 +248,19 @@ const queryType = new GraphQLObjectType({
       args: {
         query: {
           type: GraphQLString,
-          description: "The operators used to filter events.",
+          description: "The <a href=/documentation/getting-started/searching-for-events/#structured-advanced-search>structured search operators</a> used to filter events.",
         },
         first: {
           type: GraphQLInt,
-          description: "Limit of events to return, sorted from oldest to newest",
+          description: "The limit of events to return, sorted from oldest to newest. It can optionally be used with the <code>after</code> argument.",
         },
         after: {
           type: GraphQLString,
-          description: "An cursor returned from a previous query.",
+          description: "A cursor returned from a previous query.",
         },
         last: {
           type: GraphQLInt,
-          description: "Limit of events to return, sorted from newest to oldest",
+          description: "The limit of events to return, sorted from newest to oldest. It can optionally be used with the <code>before</code> argument.",
         },
         before: {
           type: GraphQLString,
