@@ -33,7 +33,7 @@ export default function (event: Event): string {
   }
 
   let canonicalString = "";
-  canonicalString += `${encodePassOne(event.id)}:`;
+  canonicalString += `${encodePassOne(event.id!)}:`;
   canonicalString += `${encodePassOne(event.action)}:`;
   canonicalString += _.isEmpty(event.target) ? ":" : `${encodePassOne(event.target!.id)}:`;
   canonicalString += _.isEmpty(event.actor) ? ":" : `${encodePassOne(event.actor!.id)}:`;
