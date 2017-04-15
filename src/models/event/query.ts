@@ -1,6 +1,7 @@
 import "source-map-support/register";
 import * as _ from "lodash";
 import * as searchQueryParser from "search-query-parser";
+import * as moment from "moment";
 
 import getEs from "../../persistence/elasticsearch";
 
@@ -47,11 +48,33 @@ function isPrefix(term: string) {
   return /\*$/.test(term);
 }
 
+function scrubDatetimeRange(input: string | string[]): [number, number] {
+  if (!Array.isArray(input) || input.length !== 2) {
+    throw { status: 400, err: new Error("The received field requires a range of two datetimes.")};
+  }
+
+  const range = (input as [string, string]).map((datetime) => moment(datetime));
+  range.forEach((m) => {
+    if (!m.isValid()) {
+      throw { status: 400, err: new Error(`Cannot parse received datetime ${range[0]}`) };
+    }
+  });
+
+  return range.map((m) => m.valueOf());
+}
+
 // exported for testing
 export function parse(query: string): any {
   const options = {
     keywords: [
       "action",
+      "crud",
+      "received",
+      "created",
+      "actor.id",
+      "actor.name",
+      "description",
+      "location",
     ],
   };
   const keywords = searchQueryParser.parse(query, options);
@@ -61,13 +84,94 @@ export function parse(query: string): any {
     },
   };
 
-  if (isPrefix(keywords.action)) {
+  if (keywords.action) {
+    if (isPrefix(keywords.action)) {
+      q.bool.filter.push({
+        prefix: {action: _.trimEnd(keywords.action, "*")},
+      });
+    } else {
+      q.bool.filter.push({
+        term: {action: _.trimEnd(keywords.action, "*")},
+      });
+    }
+  }
+
+  if (keywords.crud) {
+    // crud:c,d will have been split to ["c", "d"]
+    if (Array.isArray(keywords.crud)) {
+      q.bool.filter.push({
+        bool: {
+          should: keywords.crud.map((letter) => ({
+            term: { crud: letter },
+          })),
+        },
+      });
+    } else {
+      q.bool.filter.push({
+        term: { crud: keywords.crud },
+      });
+    }
+  }
+
+  if (keywords.received) {
+    const range = scrubDatetimeRange(keywords.received);
+
     q.bool.filter.push({
-      prefix: {action: _.trimEnd(keywords.action, "*")},
+      range: {
+        received: {
+          gte: range[0].valueOf(),
+          lt: range[1].valueOf(),
+        },
+      },
     });
-  } else {
+  }
+
+  if (keywords.created) {
+    const range = scrubDatetimeRange(keywords.created);
+
     q.bool.filter.push({
-      term: {action: _.trimEnd(keywords.action, "*")},
+      range: {
+        created: {
+          gte: range[0].valueOf(),
+          lt: range[1].valueOf(),
+        },
+      },
+    });
+  }
+
+  if (keywords["actor.id"]) {
+    q.bool.filter.push({
+      term: { "actor.id": keywords["actor.id"] },
+    });
+  }
+
+  if (keywords["actor.name"]) {
+    q.bool.filter.push({
+      match: { "actor.name": keywords["actor.name"] },
+    });
+  }
+
+  if (keywords.description) {
+    q.bool.filter.push({
+      match: { description: keywords.description },
+    });
+  }
+
+  if (keywords.location) {
+    q.bool.filter.push({
+      multi_match: {
+        query: keywords.location,
+        fields: ["country", "loc_subdiv1", "loc_subdiv2"],
+      },
+    });
+  }
+
+  if (_.isString(keywords) || keywords.text) {
+    q.bool.filter.push({
+      multi_match: {
+        query: _.isString(keywords) ? keywords : keywords.text,
+        fields: [ "_all" ],
+      },
     });
   }
 
