@@ -8,6 +8,7 @@ import * as chalk from "chalk";
 import * as util from "util";
 import * as bugsnag from "bugsnag";
 import * as Sigsci from "sigsci-module-nodejs";
+import * as swaggerUI from "swagger-ui-express";
 
 import { wrapRoute, register, requestId, preRequest, onSuccess, onError } from "./router";
 import { wrapTSOARoute, TSOARoutes } from "./tsoa_routes";
@@ -58,6 +59,8 @@ function buildRoutes() {
     res.setHeader("ContentType", "application/json");
     res.send(swagger.publisherApi);
   });
+
+  app.use("/publisher/v1/swagger", swaggerUI.serve, swaggerUI.setup(swagger.publisherApi));
 
   _.forOwn(TSOARoutes(), (route, handlerName: string) => {
     const handler = wrapTSOARoute(route, handlerName);

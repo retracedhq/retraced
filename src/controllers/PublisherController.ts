@@ -3,7 +3,7 @@ import { Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controlle
 import { RetracedEvent } from "../models/event/";
 import {EventCreater, CreateEventResult} from "../handlers/createEvent";
 
-@Route("publisher/v1")
+@Route("")
 export class PublisherController extends Controller {
 
     private readonly eventCreater: EventCreater;
