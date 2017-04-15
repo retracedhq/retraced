@@ -8,7 +8,7 @@ import updateEnvUser from "../../models/environmentuser/update";
 const unsubDailyURL = "https://www.retraced.io/unsubscribed/daily-reports/";
 const unsubAnomalyURL = "https://www.retraced.io/unsubscribed/anomaly-reports/";
 
-export default async function (req) {
+export default async function(req) {
   const envUser = await getEnvUser({
     environment_id: req.params.environmentId,
     user_id: req.params.userId,

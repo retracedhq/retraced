@@ -1,7 +1,7 @@
 import { checkViewerAccess } from "../../security/helpers";
 import deleteEitapiToken from "../../models/eitapi_token/delete";
 
-export default async function (req) {
+export default async function(req) {
   const claims = await checkViewerAccess(req);
 
   // We pass more than the id in here just to be safe.

@@ -9,7 +9,7 @@ export interface Options {
   environmentId: string;
 }
 
-export default async function (opts: Options): Promise<any> {
+export default async function(opts: Options): Promise<any> {
   const pg = await pgPool.connect();
   try {
     const fields = `id, environment_id, event_count, foreign_id, name, project_id, url, type,

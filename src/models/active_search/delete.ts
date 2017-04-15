@@ -9,7 +9,7 @@ export interface Options {
   groupId: string;
 }
 
-export default async function (opts: Options) {
+export default async function(opts: Options) {
   const pg = await pgPool.connect();
   try {
     const deleteStmt = `delete from active_search where

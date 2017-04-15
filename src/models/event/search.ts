@@ -40,7 +40,7 @@ export interface Result {
   scrollId?: string;
 }
 
-export default async function (opts: Options): Promise<Result> {
+export default async function(opts: Options): Promise<Result> {
   if (!opts.newScroll && opts.scrollId && opts.scrollLifetime) {
     // This isn't a normal query: it's a request for another page of results.
     const scrollParams = {

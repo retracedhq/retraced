@@ -1,7 +1,7 @@
 import { checkAdminAccess } from "../../security/helpers";
 import deleteApiToken from "../../models/api_token/delete";
 
-export default async function (req) {
+export default async function(req) {
   await checkAdminAccess(req);
 
   await deleteApiToken({

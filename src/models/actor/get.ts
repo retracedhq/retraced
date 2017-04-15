@@ -6,7 +6,7 @@ export interface Options {
   actorId: string;
 }
 
-export default async function (opts: Options): Promise<any> {
+export default async function(opts: Options): Promise<any> {
   const pg = await pgPool.connect();
   try {
     const fields = `

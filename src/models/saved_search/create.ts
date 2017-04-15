@@ -15,7 +15,7 @@ export interface Options {
   startTime?: number;
 }
 
-export default async function (opts: Options) {
+export default async function(opts: Options) {
   const pg = await pgPool.connect();
   try {
     const desc: QueryDescriptor = {

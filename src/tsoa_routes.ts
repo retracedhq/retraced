@@ -33,7 +33,7 @@ export function TSOARoutes(publisherController?: PublisherController): TSOARoute
       controllerMethod: publisherController.createEvent,
       argsFrom: (request: express.Request) => [request.get("Authorization"), request.params.projectId, request.body],
     },
-    publisherCreatedEvent: {
+    publisherCreateEvent: {
       path: "/publisher/v1/project/:projectId/event",
       method: "post",
       controller: publisherController,

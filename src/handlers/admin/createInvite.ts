@@ -1,7 +1,7 @@
 import { checkAdminAccess } from "../../security/helpers";
 import createInvite from "../../models/invite/create";
 
-export default async function (req) {
+export default async function(req) {
   checkAdminAccess(req);
 
   const invite = await createInvite({

@@ -3,7 +3,7 @@ import createEnvironment from "../../models/environment/create";
 import getProject from "../../models/project/get";
 import populateEnvUsers from "../../models/environmentuser/populate_from_project";
 
-export default async function (req) {
+export default async function(req) {
   await checkAdminAccess(req);
 
   const env = await createEnvironment({

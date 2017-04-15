@@ -1,7 +1,7 @@
 import { checkAdminAccess } from "../../security/helpers";
 import deleteInvite from "../../models/invite/delete";
 
-export default async function (req) {
+export default async function(req) {
   await checkAdminAccess(req);
 
   await deleteInvite({

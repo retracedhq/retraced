@@ -27,9 +27,11 @@ import listActors from "./handlers/admin/listActors";
 import listInvites from "./handlers/admin/listInvites";
 import listProjects from "./handlers/admin/listProjects";
 import listTargets from "./handlers/admin/listTargets";
-import updateAction from "./handlers/admin/updateAction";
 import updateUser from "./handlers/admin/updateUser";
 import searchGroups from "./handlers/admin/searchGroups";
+import searchTemplates from "./handlers/admin/searchTemplates";
+import createTemplate from "./handlers/admin/createTemplate";
+import publicRenderEvent from "./handlers/admin/publicRenderEvent";
 
 // enterprise
 import enterpriseCreateActiveSearch from "./handlers/enterprise/createActiveSearch";
@@ -191,11 +193,6 @@ export default {
     path: "/admin/v1/project/:projectId/events/search",
     method: "post",
     handler: searchEvents,
-  },
-  adminUpdateAction: {
-    path: "/admin/v1/project/:projectId/action/:actionId",
-    method: "put",
-    handler: updateAction,
   },
   adminUpdateUser: {
     path: "/admin/v1/user/:userId",
@@ -447,8 +444,18 @@ export default {
   },
   searchGroups: {
     path: "/v1/project/:projectId/groups",
-    method: "get",
+    method: "post",
     handler: searchGroups,
+  },
+  searchTemplates: {
+    path: "/v1/project/:projectId/templates",
+    method: "post",
+    handler: searchTemplates,
+  },
+  createTemplate: {
+    path: "/v1/project/:projectId/template",
+    method: "post",
+    handler: createTemplate,
   },
   listTargets: {
     path: "/v1/project/:projectId/targets",
@@ -460,11 +467,6 @@ export default {
     method: "post",
     handler: searchEvents,
   },
-  updateAction: {
-    path: "/v1/project/:projectId/action/:actionId",
-    method: "put",
-    handler: updateAction,
-  },
   updateUser: {
     path: "/v1/user/:userId",
     method: "put",
@@ -474,6 +476,11 @@ export default {
     path: "/v1/graphql",
     method: "post",
     handler: adminGraphQL,
+  },
+  publicRenderEvent: {
+    path: "/v1/public/render",
+    method: "post",
+    handler: publicRenderEvent,
   },
 
   //

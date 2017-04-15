@@ -6,7 +6,7 @@ import { DashboardTile, DashboardOptions } from "../../dashboard/interfaces";
 import getActionsTile from "../../dashboard/actions/top";
 import getGroupsTile from "../../dashboard/groups/top";
 
-export default async function (req) {
+export default async function(req) {
   await checkAdminAccess(req);
 
   // This is hard coded for now.  TODO, we should consider making this

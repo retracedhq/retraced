@@ -6,7 +6,7 @@ export interface Options {
   actorIds: string[];
 }
 
-export default async function (opts: Options): Promise<any> {
+export default async function(opts: Options): Promise<any> {
   if (!opts.actorIds || opts.actorIds.length === 0) {
     return [];
   }

@@ -17,7 +17,7 @@ const requiredSubfields = [
 
 // Produces a canonical hash string representation of an event.
 // See the Swagger spec for more details.
-export default function (event: Event): string {
+export default function(event: Event): string {
   for (const fieldName of requiredFields) {
     if (_.isEmpty(_.get(event, fieldName))) {
       throw new Error(`Canonicalization failed: missing required event attribute '${fieldName}'`);
