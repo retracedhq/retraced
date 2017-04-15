@@ -68,12 +68,12 @@ import {
   }
 
   @test public "parse(created:2017-01-01,2018-01-01)"() {
-    expect(parse("received:2017-01-01,2018-01-01")).to.deep.equal({
+    expect(parse("created:2017-01-01,2018-01-01")).to.deep.equal({
       bool: {
         filter: [
           {
             range: {
-              received: {
+              created: {
                 gte: 1483228800000,
                 lt: 1514764800000,
               },
