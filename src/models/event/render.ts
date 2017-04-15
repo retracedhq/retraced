@@ -1,7 +1,7 @@
 import * as Handlebars from "handlebars";
 
 export interface Options {
-  event: Object;
+  event: object;
   template: string;
   source: string;
 }

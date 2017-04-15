@@ -27,7 +27,7 @@ query: {
   delete: boolean;
 }
 */
-export default async function (req) {
+export default async function(req) {
   const claims = await checkViewerAccess(req);
 
   const reqOpts = req.body.query;

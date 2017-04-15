@@ -6,7 +6,7 @@ export interface Options {
   savedSearchId: string;
 }
 
-export default async function (opts: Options) {
+export default async function(opts: Options) {
   const pg = await pgPool.connect();
   try {
     let q = `

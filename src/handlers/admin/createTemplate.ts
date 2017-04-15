@@ -1,7 +1,7 @@
 import { checkAdminAccess } from "../../security/helpers";
 import createTemplate from "../../models/template/create";
 
-export default async function (req) {
+export default async function(req) {
   await checkAdminAccess(req);
 
   const template = await createTemplate({

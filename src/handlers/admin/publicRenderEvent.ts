@@ -1,26 +1,15 @@
 import renderEvent from "../../models/event/render";
 import eventRulesCheck from "../../models/event/rulesCheck";
-import { isStringValidJSON } from "../../util/json";
 
-export default async function (req) {
+export default async function(req) {
   const rule = req.body.rule;
   const template = req.body.template;
   const event = req.body.event;
   const source = req.body.source;
 
-  if (!isStringValidJSON(event)) {
-    return {
-      status: 400,
-      body: JSON.stringify({
-        error: "Bad Request",
-        message: "'event' must be a valid JSON object",
-      }),
-    };
-  }
-
   const rulesOpts = {
-    rule: JSON.parse(rule),
-    event: JSON.parse(event),
+    rule,
+    event,
   };
   const ruleMatch = eventRulesCheck(rulesOpts);
   if (!ruleMatch) {
@@ -33,7 +22,7 @@ export default async function (req) {
   }
 
   const renderOpts = {
-    event: JSON.parse(event),
+    event,
     template,
     source,
   };

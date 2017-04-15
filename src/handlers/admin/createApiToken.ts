@@ -2,7 +2,7 @@ import { checkAdminAccess } from "../../security/helpers";
 import createApiToken from "../../models/api_token/create";
 import listApiTokens from "../../models/api_token/list";
 
-export default async function (req) {
+export default async function(req) {
   await checkAdminAccess(req);
 
   await createApiToken({

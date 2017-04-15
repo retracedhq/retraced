@@ -9,7 +9,7 @@ export interface Options {
   displayTemplate: string;
 }
 
-export default async function (opts: Options): Promise<any> {
+export default async function(opts: Options): Promise<any> {
   const pg = await pgPool.connect();
   try {
     const values = `id, environment_id, event_count, action, project_id, display_template,

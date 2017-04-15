@@ -4,7 +4,7 @@ import { checkAdminAccess } from "../../security/helpers";
 import listProjects from "../../models/project/list";
 import hydrateProject from "../../models/project/hydrate";
 
-export default async function (req) {
+export default async function(req) {
   const claims = await checkAdminAccess(req);
 
   const projects = await listProjects({

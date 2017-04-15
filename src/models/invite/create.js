@@ -63,7 +63,7 @@ export default function createInvite(opts) {
           template_content: templateContent,
         };
 
-        mandrillClient.templates.render(params, function (rendered) {
+        mandrillClient.templates.render(params, function(rendered) {
           const moreParams = {
             message: {
               html: rendered.html,
@@ -79,15 +79,15 @@ export default function createInvite(opts) {
             async: false,
           };
           mandrillClient.messages.send(moreParams,
-            function (result) {
+            function(result) {
               resolve(invite);
             },
-            function (mandrillErr) {
+            function(mandrillErr) {
               console.log("Error sending email: ", mandrillErr);
               reject(mandrillErr);
             },
           );
-        }, function (mandrillErr) {
+        }, function(mandrillErr) {
           console.log("Error rendering email: ", mandrillErr);
           reject(mandrillErr);
         });

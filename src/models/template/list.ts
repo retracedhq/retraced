@@ -17,23 +17,15 @@ export default async function(opts: Options): Promise<Result> {
   // (said order is current undefined)
   // This is used internally today when attempting to render
   // a large set of events.
+  const fields = `name, rule, template`;
+  const q = `select ${fields} from display_template where environment_id = $1`;
+  const v = [
+    opts.environmentId,
+  ];
+  const pgResult = await pgPool.query(q, v);
 
-  const pg = await pgPool.connect();
-  try {
-    const fields = `name, rule, template`;
-    const q = `select ${fields} from display_template where environment_id = $1`;
-    const v = [
-      opts.environmentId,
-    ];
-    const pgResult = await pg.query(q, v);
-
-    const result: Result = {
-      templates: pgResult.rows,
-    };
-
-    return result;
-
-  } finally {
-    pg.release();
-  }
+  const result: Result = {
+    templates: pgResult.rows,
+  };
+  return result;
 }

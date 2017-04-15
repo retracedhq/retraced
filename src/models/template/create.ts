@@ -12,7 +12,7 @@ interface Opts {
   name: string;
   rule: string;
   template: string;
-};
+}
 
 export default async function createTemplate(opts: Opts) {
   const template = {

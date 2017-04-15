@@ -3,7 +3,7 @@ import * as ruler from "ruler";
 
 export interface Options {
   rule: any;
-  event: Object;
+  event: object;
 }
 
 export default function eventRulesCheck(opts: Options): boolean {
