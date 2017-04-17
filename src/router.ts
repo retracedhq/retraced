@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+
 import * as bugsnag from "bugsnag";
 import * as chalk from "chalk";
 import * as express from "express";

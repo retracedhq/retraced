@@ -4,5 +4,11 @@
         "entryFile": "./src/index.ts",
         "host": "localhost:3000",
         "basePath": "/publisher/v1"
+    },
+    "routes": {
+	    "entryFile": "./src/index.ts",
+	    "middleware": "express",
+	    "routesDir": "./src/gen",
+	    "middlewareTemplate": "./src/gen/express.tstmpl"
     }
 }

@@ -1,16 +1,16 @@
 import { Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
 
 import { RetracedEvent } from "../models/event/";
-import {EventCreater, CreateEventResult} from "../handlers/createEvent";
+import {defaultEventCreater, EventCreater, CreateEventResult} from "../handlers/createEvent";
 
 @Route("")
 export class PublisherController extends Controller {
 
     private readonly eventCreater: EventCreater;
 
-    constructor(eventCreater: EventCreater) {
+    constructor(eventCreater?: EventCreater) {
         super();
-        this.eventCreater = eventCreater;
+        this.eventCreater = eventCreater || defaultEventCreater;
     }
 
     @Post("project/{projectId}/event")
