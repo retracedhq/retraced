@@ -129,9 +129,17 @@ const eventType = new GraphQLObjectType({
       }),
     },
 
-    display_title: {
-      type: GraphQLString,
-      description: "The display title for this event.",
+    display: {
+      description: "The display text for this event.",
+      type: new GraphQLObjectType({
+        name: "Display",
+        fields: {
+          markdown: {
+            type: GraphQLString,
+            dsecription: "The Markdown formatted display text for this event.",
+          },
+        },
+      }),
     },
 
     received: {
@@ -144,6 +152,12 @@ const eventType = new GraphQLObjectType({
       type: GraphQLString,
       description: "The time that this event was reported as performed.",
       resolve: ({ created }) => created && moment.utc(created).format(),
+    },
+
+    canonical_time: {
+      type: GraphQLString,
+      description: "The created time if specified; else the received time.",
+      resolve: ({ canonical_time }) => canonical_time && moment.utc(canonical_time).format(),
     },
 
     is_failure: {
@@ -192,6 +206,11 @@ const eventType = new GraphQLObjectType({
           },
         }),
       })),
+    },
+
+    raw: {
+      type: GraphQLString,
+      description: "The raw event sent to the Retraced API.",
     },
   }),
 });
