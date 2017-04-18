@@ -11,8 +11,10 @@ import * as Sigsci from "sigsci-module-nodejs";
 import * as swaggerUI from "swagger-ui-express";
 
 import { wrapRoute, register, requestId, preRequest, onSuccess, onError } from "./router";
-import { wrapTSOARoute, TSOARoutes } from "./tsoa_routes";
 import { LegacyRoutes } from "./routes";
+import { RegisterRoutes } from "./gen/routes";
+
+import "./controllers/PublisherController";
 
 import * as metrics from "./metrics";
 import * as swagger from "./swagger";
@@ -62,10 +64,7 @@ function buildRoutes() {
 
   app.use("/publisher/v1/swagger", swaggerUI.serve, swaggerUI.setup(swagger.publisherApi));
 
-  _.forOwn(TSOARoutes(), (route, handlerName: string) => {
-    const handler = wrapTSOARoute(route, handlerName);
-    register(route, handler, app);
-  });
+  RegisterRoutes(app);
 
   _.forOwn(LegacyRoutes(), (route, handlerName: string) => {
     const handler = wrapRoute(route, handlerName);

@@ -9,6 +9,7 @@ deps:
 
 build: prebuild swagger
 	`yarn bin`/tslint --project ./tsconfig.json --fix
+	`yarn bin`/tsoa routes
 	`yarn bin`/tsc
 
 run:

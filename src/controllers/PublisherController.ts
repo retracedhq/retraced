@@ -1,18 +1,28 @@
 import { Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
 
 import { RetracedEvent } from "../models/event/";
-import {EventCreater, CreateEventResult} from "../handlers/createEvent";
+import { defaultEventCreater, EventCreater, CreateEventResult } from "../handlers/createEvent";
+import { handler, ViewerToken } from "../handlers/createViewerDescriptor";
 
-@Route("")
+@Route("publisher/v1")
 export class PublisherController extends Controller {
 
     private readonly eventCreater: EventCreater;
 
-    constructor(eventCreater: EventCreater) {
+    constructor(eventCreater?: EventCreater) {
         super();
-        this.eventCreater = eventCreater;
+        this.eventCreater = eventCreater || defaultEventCreater;
     }
 
+    /**
+     * Create an event. Returns the id of the created event, and
+     * a cryptographic hash of the received event, as described at
+     * https://preview.retraced.io/documentation/architecture/hashing-formula/
+     *
+     * @param auth      auth header of the form token=...
+     * @param projectId the project id
+     * @param event     The event body to log
+     */
     @Post("project/{projectId}/event")
     @SuccessResponse("201", "Created")
     @Example<CreateEventResult>({
@@ -30,5 +40,39 @@ export class PublisherController extends Controller {
         this.setStatus(result.status);
         return Promise.resolve(result.body);
 
+    }
+
+    /**
+     * Create a token for use with the Retraced embedded viewer as described at
+     *
+     * https://preview.retraced.io/documentation/getting-started/embedded-viewer/
+     *
+     * **Note**: At least one of `group_id` or `team_id` is required.
+     *
+     * @param auth      auth header of the form token=...
+     * @param projectId the project id
+     * @param groupId   The group identifier. Same as `team_id`. If both are passed, `group_id` will be used.
+     * @param isAdmin   Whether to display the Enterprise Settings and API Token Management. Set to `true` to show the settings.
+     * @param targetId  If passed, only events relating to this target will be returned in a viewer that uses the token created
+     * @param teamId    Same as `group_id`. If both are passed, `group_id` will be used. This field is deprecated.
+     */
+    @Get("project/{projectId}/viewertoken")
+    @SuccessResponse("201", "Created")
+    @Example<ViewerToken>({
+        token: "5b570bff4628b35262fb401d2f6c9bb38d29e212f6e0e8ea93445b4e5a253d50",
+    })
+    public async createViewerDescriptor(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Query("group_id") groupId?: string,
+        @Query("is_admin") isAdmin?: string,
+        @Query("target_id") targetId?: string,
+        @Query("team_id") teamId?: string,
+    ): Promise<ViewerToken> {
+
+        const result: any = await handler(auth, projectId, isAdmin === "true", groupId || teamId, targetId);
+
+        this.setStatus(result.status);
+        return Promise.resolve(result.body);
     }
 }

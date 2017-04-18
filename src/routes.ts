@@ -318,6 +318,11 @@ export default {
     method: "post",
     handler: createAdminSession,
   },
+  createEvent: {
+    path: "/v1/project/:projectId/event",
+    method: "post",
+    handler: createEvent,
+  },
   createViewerDescriptor: {
     path: "/v1/project/:projectId/viewertoken",
     method: "get",
