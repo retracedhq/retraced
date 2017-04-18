@@ -6,11 +6,11 @@ import * as express from "express";
 import * as util from "util";
 import * as uuid from "uuid";
 
-export const onSuccess = (res: express.Response, reqId: string, statusCode?: number) => (result: any) => {
+export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter?: () => number|undefined) => (result: any) => {
 
   if (result) {
 
-    const statusToSend = result.status || statusCode || 200;
+    const statusToSend = result.status || (statusCodeGetter && statusCodeGetter()) || 200;
     const body = result.body || JSON.stringify(result);
     const contentType = result.contentType || "application/json";
 

@@ -11,9 +11,10 @@ import * as Sigsci from "sigsci-module-nodejs";
 import * as swaggerUI from "swagger-ui-express";
 
 import { wrapRoute, register, requestId, preRequest, onSuccess, onError } from "./router";
-// import { wrapTSOARoute, TSOARoutes } from "./tsoa_routes";
 import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";
+
+import "./controllers/PublisherController";
 
 import * as metrics from "./metrics";
 import * as swagger from "./swagger";
