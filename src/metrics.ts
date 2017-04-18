@@ -1,4 +1,6 @@
-import { StatsdReporter, StatusPageReporter, getRegistry } from "monkit";
+import * as StatsdClient from "statsd-client";
+
+import { StatsdReporter, StatusPageReporter, SysdigNameRewriter, getRegistry } from "monkit";
 
 export function startStatsdReporter(
     statsdHost: string,
@@ -6,12 +8,13 @@ export function startStatsdReporter(
     intervalMs: number,
 ) {
     console.log(`starting statsd reporter ${statsdHost}:${statsdPort} at interval ${intervalMs}ms`);
+    const rewriter = new SysdigNameRewriter(SysdigNameRewriter.CLASS_METHOD_METRIC_AGGREGATION);
 
     const reporter = new StatsdReporter(
         getRegistry(),
         "",
-        statsdHost,
-        statsdPort,
+        new StatsdClient({host: statsdHost, port: statsdPort}),
+        rewriter.rewriteName.bind(rewriter),
     );
     console.log("created");
 
