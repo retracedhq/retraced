@@ -44,6 +44,7 @@
     "sigsci-module-nodejs": "https://dl.signalsciences.net/sigsci-module-nodejs/sigsci-module-nodejs_latest.tgz",
     "source-map-support": "^0.4.11",
     "swagger-jsdoc": "^1.9.2",
+    "swagger-ui-express": "^1.0.7",
     "threads": "^0.7.2",
     "ts-node": "^1.7.0",
     "tsoa": "^1.1.7",

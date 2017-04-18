@@ -3749,6 +3749,10 @@ swagger-schema-official@2.0.0-bab6bed:
   version "2.0.0-bab6bed"
   resolved "https://registry.yarnpkg.com/swagger-schema-official/-/swagger-schema-official-2.0.0-bab6bed.tgz#70070468d6d2977ca5237b2e519ca7d06a2ea3fd"
 
+swagger-ui-express@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/swagger-ui-express/-/swagger-ui-express-1.0.7.tgz#5df3df27678cb2738c1d4590c400359a0709f834"
+
 tar-pack@^3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/tar-pack/-/tar-pack-3.4.0.tgz#23be2d7f671a8339376cbdb0b8fe3fdebf317984"
