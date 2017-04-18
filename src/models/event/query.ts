@@ -53,7 +53,7 @@ function scrubDatetimeRange(input: string | string[]): [number, number] {
     throw { status: 400, err: new Error("The received field requires a range of two datetimes.")};
   }
 
-  const range = (input as [string, string]).map((datetime) => moment(datetime));
+  const range = (input as [string, string]).map((datetime) => moment.utc(datetime));
   range.forEach((m) => {
     if (!m.isValid()) {
       throw { status: 400, err: new Error(`Cannot parse received datetime ${range[0]}`) };

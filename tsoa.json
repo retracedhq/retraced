@@ -3,7 +3,7 @@
         "outputDirectory": "./build",
         "entryFile": "./src/index.ts",
         "host": "localhost:3000",
-        "basePath": "/publisher/v1"
+        "basePath": ""
     },
     "routes": {
 	    "entryFile": "./src/index.ts",

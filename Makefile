@@ -7,9 +7,16 @@ deps:
 	yarn global add node-gyp
 	yarn install --force
 
-build: prebuild swagger
+lint:
 	`yarn bin`/tslint --project ./tsconfig.json --fix
+
+swagger:
+	`yarn bin`/tsoa swagger
+
+routes:
 	`yarn bin`/tsoa routes
+
+build: prebuild lint swagger routes
 	`yarn bin`/tsc
 
 run:
@@ -34,8 +41,6 @@ k8s-ingress:
 k8s: k8s-pre k8s-deployment k8s-service k8s-ingress
 	: "Templated k8s yamls"
 
-swagger:
-	`yarn bin`/tsoa swagger
 
 # mostly stolen from replicatedcom/vendor-api and replicatedhq/docs
 # thanks martin!
