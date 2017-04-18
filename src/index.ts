@@ -13,11 +13,11 @@ import * as swaggerUI from "swagger-ui-express";
 import { wrapRoute, register, requestId, preRequest, onSuccess, onError } from "./router";
 import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";
-
-import "./controllers/PublisherController";
-
 import * as metrics from "./metrics";
 import * as swagger from "./swagger";
+
+import "./controllers/PublisherController";
+import "./controllers/AdminController";
 
 if (!process.env["BUGSNAG_TOKEN"]) {
   console.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
