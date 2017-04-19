@@ -1,6 +1,6 @@
 import getApiToken from "../models/api_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";
-import createViewerDescriptor from "../models/viewer_descriptor/create";
+import modelCreateViewerDescriptor from "../models/viewer_descriptor/create";
 
 export interface ViewerToken {
   token: string;
@@ -13,10 +13,10 @@ export default async function handlerRaw(req) {
   const teamId = req.query.team_id;
   const isAdmin = req.query.is_admin === "true";
   const targetId = req.query.target_id;
-  return handler(auth, projectId, isAdmin, groupId, teamId, targetId);
+  return createViewerDescriptor(auth, projectId, isAdmin, groupId, teamId, targetId);
 }
 
-export async function handler(
+export async function createViewerDescriptor(
   authorization: string,
   projectId: string,
   isAdmin: boolean,
@@ -37,7 +37,7 @@ export async function handler(
     throw { status: 401, err: new Error("Unauthorized") };
   }
 
-  const newDesc = await createViewerDescriptor({
+  const newDesc = await modelCreateViewerDescriptor({
     projectId,
     environmentId: apiToken.environment_id,
     groupId,
