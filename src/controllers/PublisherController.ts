@@ -2,7 +2,8 @@ import { Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controlle
 
 import { RetracedEvent } from "../models/event/";
 import { defaultEventCreater, EventCreater, CreateEventResult } from "../handlers/createEvent";
-import { handler, ViewerToken } from "../handlers/createViewerDescriptor";
+import { createViewerDescriptor, ViewerToken } from "../handlers/createViewerDescriptor";
+import { createEnterpriseToken, CreateEnterpriseToken, EnterpriseToken } from "../handlers/createEnterpriseToken";
 
 @Route("publisher/v1")
 export class PublisherController extends Controller {
@@ -59,7 +60,7 @@ export class PublisherController extends Controller {
     @Get("project/{projectId}/viewertoken")
     @SuccessResponse("201", "Created")
     @Example<ViewerToken>({
-        token: "5b570bff4628b35262fb401d2f6c9bb38d29e212f6e0e8ea93445b4e5a253d50",
+        token: "abf053dc4a3042459818833276eec717",
     })
     public async createViewerDescriptor(
         @Header("Authorization") auth: string,
@@ -70,7 +71,35 @@ export class PublisherController extends Controller {
         @Query("team_id") teamId?: string,
     ): Promise<ViewerToken> {
 
-        const result: any = await handler(auth, projectId, isAdmin === "true", groupId, teamId, targetId);
+        const result: any = await createViewerDescriptor(auth, projectId, isAdmin === "true", groupId, teamId, targetId);
+
+        this.setStatus(result.status);
+        return Promise.resolve(result.body);
+    }
+
+    /**
+     * Create a token for use with Enterprise IT API
+     *
+     * https://preview.retraced.io/documentation/apis/enterprise-api/
+     *
+     * @param auth      auth header of the form token=...
+     * @param projectId the project id
+     * @param groupId   The group identifier. The generated token will be scoped to the specified group.
+     * @param token     The details for creating the token
+     */
+    @Post("project/{projectId}/group/{groupId}/enterprisetoken")
+    @SuccessResponse("201", "Created")
+    @Example<EnterpriseToken>({
+        token: "abf053dc4a3042459818833276eec717",
+    })
+    public async createEnterpriseToken(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Path("groupId") groupId: string,
+        @Body() token: CreateEnterpriseToken,
+    ): Promise<EnterpriseToken> {
+
+        const result: any = await createEnterpriseToken(auth, projectId, groupId, token);
 
         this.setStatus(result.status);
         return Promise.resolve(result.body);

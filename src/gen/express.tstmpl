@@ -63,10 +63,9 @@ export function RegisterRoutes(app: any) {
             {{else}}
             const controller = new {{../name}}();
             {{/if}}
-	    // TODO get api namespace from beginning of path
-	    const api = "publisher";
+	        // TODO get api namespace from beginning of path
             // function.name of the controller method;
-            const handlerName = `${api}.${controller.{{name}}.name}`;
+            const handlerName = `${controller.constructor.name}.${controller.{{name}}.name}`;
             const reqId = requestId(request, handlerName);
 	    preRequest(request, reqId);
             // End customization
