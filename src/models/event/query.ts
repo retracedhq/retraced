@@ -166,7 +166,7 @@ export function parse(query: string): any {
     });
   }
 
-  if (_.isString(keywords) || keywords.text) {
+  if ((_.isString(keywords) && keywords) || keywords.text) {
     q.bool.filter.push({
       multi_match: {
         query: _.isString(keywords) ? keywords : keywords.text,
