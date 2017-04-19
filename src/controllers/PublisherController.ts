@@ -1,9 +1,10 @@
-import { Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
+import { Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
 
 import { RetracedEvent } from "../models/event/";
 import { defaultEventCreater, EventCreater, CreateEventResult } from "../handlers/createEvent";
 import { createViewerDescriptor, ViewerToken } from "../handlers/createViewerDescriptor";
 import { createEnterpriseToken, CreateEnterpriseToken, EnterpriseToken } from "../handlers/createEnterpriseToken";
+import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
 
 @Route("publisher/v1")
 export class PublisherController extends Controller {
@@ -100,6 +101,34 @@ export class PublisherController extends Controller {
     ): Promise<EnterpriseToken> {
 
         const result: any = await createEnterpriseToken(auth, projectId, groupId, token);
+
+        this.setStatus(result.status);
+        return Promise.resolve(result.body);
+    }
+
+    /**
+     * Delete an Enterprise IT API token
+     *
+     * https://preview.retraced.io/documentation/apis/enterprise-api/
+     *
+     * @param auth      auth header of the form token=...
+     * @param projectId the project id
+     * @param groupId   The group identifier.
+     * @param tokenId   The token to delete.
+     */
+    @Delete("project/{projectId}/group/{groupId}/enterprisetoken/{tokenId}")
+    @SuccessResponse("201", "Created")
+    @Example<EnterpriseToken>({
+        token: "abf053dc4a3042459818833276eec717",
+    })
+    public async deleteEnterpriseToken(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Path("groupId") groupId: string,
+        @Path("tokenId") tokenId: string,
+    ): Promise<EnterpriseToken> {
+
+        const result: any = await deleteEnterpriseToken(auth, projectId, groupId, tokenId);
 
         this.setStatus(result.status);
         return Promise.resolve(result.body);
