@@ -17,12 +17,19 @@ export async function deleteEnterpriseToken(
         throw { status: 401, err: new Error("Unauthorized") };
     }
 
-    const result = await modelsDeleteEnterpriseToken({
+    const wasDeleted = await modelsDeleteEnterpriseToken({
         projectId,
         groupId,
         eitapiTokenId,
         environmentId: apiToken.environment_id,
     });
+
+    if (!wasDeleted) {
+        throw {
+            status: 404,
+            err: new Error(`Not Found`),
+        };
+    }
 
     return { status: 204 };
 }

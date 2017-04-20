@@ -9,7 +9,10 @@ export interface Opts {
   groupId: string;
 }
 
-export default async function deleteEitapiToken(opts) {
+/**
+ * @returns true if the token was deleted
+ */
+export default async function deleteEitapiToken(opts): Promise<boolean> {
   const deleteStmt = `delete from eitapi_token where
       id = $1 and
       project_id = $2 and
@@ -24,10 +27,6 @@ export default async function deleteEitapiToken(opts) {
 
   const result = await pgPool.query(deleteStmt, deleteVals);
 
-  if (result.rowCount !== 1) {
-    throw {
-      status: 404,
-      err: new Error(`Not Found`),
-    };
-  }
+  return result.rowCount === 1;
+
 }
