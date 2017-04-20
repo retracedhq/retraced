@@ -5,6 +5,7 @@ import { defaultEventCreater, EventCreater, CreateEventResult } from "../handler
 import { createViewerDescriptor, ViewerToken } from "../handlers/createViewerDescriptor";
 import { createEnterpriseToken, CreateEnterpriseToken, EnterpriseToken } from "../handlers/createEnterpriseToken";
 import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
+import { listEnterpriseTokens } from "../handlers/listEnterpriseTokens";
 
 @Route("publisher/v1")
 export class PublisherController extends Controller {
@@ -92,6 +93,7 @@ export class PublisherController extends Controller {
     @SuccessResponse("201", "Created")
     @Example<EnterpriseToken>({
         token: "abf053dc4a3042459818833276eec717",
+        display_name: "Default Production Token",
     })
     public async createEnterpriseToken(
         @Header("Authorization") auth: string,
@@ -101,6 +103,35 @@ export class PublisherController extends Controller {
     ): Promise<EnterpriseToken> {
 
         const result: any = await createEnterpriseToken(auth, projectId, groupId, token);
+
+        this.setStatus(result.status);
+        return Promise.resolve(result.body);
+    }
+
+    /**
+     * List all Enterprise IT API tokens.
+     *
+     * https://preview.retraced.io/documentation/apis/enterprise-api/
+     *
+     * @param auth      auth header of the form token=...
+     * @param projectId the project id
+     * @param groupId   The group identifier.
+     */
+    @Get("project/{projectId}/group/{groupId}/enterprisetoken")
+    @SuccessResponse("200", "OK")
+    @Example<EnterpriseToken[]>([{
+        token: "abf053dc4a3042459818833276eec717",
+        display_name: "Primary Token",
+    }, {
+        token: "f053dc4a3042459818833276eec717ab",
+        display_name: "Secondary Token",
+    }])
+    public async listEnterpriseTokens(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Path("groupId") groupId: string,
+    ): Promise<EnterpriseToken[]> {
+        const result = await listEnterpriseTokens(auth, projectId, groupId);
 
         this.setStatus(result.status);
         return Promise.resolve(result.body);
