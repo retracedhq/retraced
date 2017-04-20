@@ -12,16 +12,21 @@ import findTargets from "../models/target/find";
 // Authorization: Token token=abcdef
 export function apiTokenFromAuthHeader(authHeader?: string): string {
   if (!authHeader) {
-    throw new Error("Missing Authorization header");
+    throw {
+      status: 401, err: new Error("Missing Authorization header"),
+    };
   }
 
   const parts = authHeader.match(/token=(.+)/);
   if (!parts) {
-    console.log(`authHeader='${authHeader}', parts=${util.inspect(parts)}`);
-    throw new Error("Invalid Authorization header format");
+    throw {
+      status: 401, err: new Error("Invalid Authorization header form"),
+    };
   }
   if (parts.length < 2 || _.isEmpty(parts[1])) {
-    throw new Error("Missing token in Authorization header");
+    throw {
+      status: 401, err: new Error("Missing token in Authorization header"),
+    };
   }
 
   return parts[1];
