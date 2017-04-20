@@ -63,12 +63,9 @@ export function RegisterRoutes(app: any) {
             {{else}}
             const controller = new {{../name}}();
             {{/if}}
-	        // TODO get api namespace from beginning of path
-            // function.name of the controller method;
             const handlerName = `${controller.constructor.name}.${controller.{{name}}.name}`;
             const reqId = requestId(request, handlerName);
 	    preRequest(request, reqId);
-            // End customization
             const args = {
                 {{#each parameters}}
                     {{@key}}: {{{json this}}},
@@ -79,11 +76,9 @@ export function RegisterRoutes(app: any) {
             try {
                 validatedArgs = getValidatedArgs(args, request);
             } catch (err) {
-		        return onError(response, reqId);
+                return onError(response, reqId)(err);
             }
 
-
-            // Begin customization of template from https://raw.githubusercontent.com/lukeautry/tsoa/master/src/routeGeneration/templates/express.ts
             const promise = controller.{{name}}.apply(controller, validatedArgs);
 
             promise
