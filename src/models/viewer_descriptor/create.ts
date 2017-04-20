@@ -9,7 +9,7 @@ export interface Options {
   environmentId: string;
   groupId: string;
   isAdmin: boolean;
-  targetId: string;
+  targetId?: string;
 }
 
 export default async function createViewerDescriptor(opts: Options): Promise<ViewerDescriptor> {

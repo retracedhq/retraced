@@ -1,15 +1,16 @@
 import * as _ from "lodash";
+
 import * as bugsnag from "bugsnag";
 import * as chalk from "chalk";
 import * as express from "express";
 import * as util from "util";
 import * as uuid from "uuid";
 
-export const onSuccess = (res: express.Response, reqId: string, statusCode?: number) => (result: any) => {
+export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter?: () => number|undefined) => (result: any) => {
 
   if (result) {
 
-    const statusToSend = result.status || statusCode || 200;
+    const statusToSend = result.status || (statusCodeGetter && statusCodeGetter()) || 200;
     const body = result.body || JSON.stringify(result);
     const contentType = result.contentType || "application/json";
 
@@ -39,8 +40,8 @@ export const onSuccess = (res: express.Response, reqId: string, statusCode?: num
 
 export const onError = (res: express.Response, reqId: string) => (err: any) => {
 
-  bugsnag.notify(err);
   if (err.status) {
+    bugsnag.notify(err.err || err.message);
     // Structured error, specific status code.
     const errMsg = err.err ? err.err.message : "An unexpected error occurred";
     console.log(chalk.red(`[${reqId}] !! ${err.status} ${errMsg} ${err.stack || util.inspect(err)}`));
@@ -49,6 +50,7 @@ export const onError = (res: express.Response, reqId: string) => (err: any) => {
     };
     res.status(err.status).set("X-Retraced-RequestId", reqId).json(bodyToSend);
   } else {
+    bugsnag.notify(err);
     // Generic error, default code (500).
     const bodyToSend = {
       error: err.message || "An unexpected error occurred",

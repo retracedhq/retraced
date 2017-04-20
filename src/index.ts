@@ -8,13 +8,16 @@ import * as chalk from "chalk";
 import * as util from "util";
 import * as bugsnag from "bugsnag";
 import * as Sigsci from "sigsci-module-nodejs";
+import * as swaggerUI from "swagger-ui-express";
 
 import { wrapRoute, register, requestId, preRequest, onSuccess, onError } from "./router";
-import { wrapTSOARoute, TSOARoutes } from "./tsoa_routes";
 import { LegacyRoutes } from "./routes";
-
+import { RegisterRoutes } from "./gen/routes";
 import * as metrics from "./metrics";
 import * as swagger from "./swagger";
+
+import "./controllers/PublisherController";
+import "./controllers/AdminController";
 
 if (!process.env["BUGSNAG_TOKEN"]) {
   console.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
@@ -59,10 +62,9 @@ function buildRoutes() {
     res.send(swagger.publisherApi);
   });
 
-  _.forOwn(TSOARoutes(), (route, handlerName: string) => {
-    const handler = wrapTSOARoute(route, handlerName);
-    register(route, handler, app);
-  });
+  app.use("/publisher/v1/swagger", swaggerUI.serve, swaggerUI.setup(swagger.publisherApi));
+
+  RegisterRoutes(app);
 
   _.forOwn(LegacyRoutes(), (route, handlerName: string) => {
     const handler = wrapRoute(route, handlerName);

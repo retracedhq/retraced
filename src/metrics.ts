@@ -1,4 +1,6 @@
-import { StatsdReporter, StatusPageReporter, getRegistry } from "monkit";
+import * as StatsdClient from "statsd-client";
+
+import { StatsdReporter, StatusPageReporter, SysdigNameRewriter, getRegistry } from "monkit";
 
 export function startStatsdReporter(
     statsdHost: string,
@@ -6,12 +8,13 @@ export function startStatsdReporter(
     intervalMs: number,
 ) {
     console.log(`starting statsd reporter ${statsdHost}:${statsdPort} at interval ${intervalMs}ms`);
+    const rewriter = new SysdigNameRewriter(SysdigNameRewriter.CLASS_METHOD_METRIC_AGGREGATION);
 
     const reporter = new StatsdReporter(
         getRegistry(),
         "",
-        statsdHost,
-        statsdPort,
+        new StatsdClient({host: statsdHost, port: statsdPort}),
+        rewriter.rewriteName.bind(rewriter),
     );
     console.log("created");
 
@@ -57,8 +60,8 @@ export function bootstrapFromEnv() {
     const statusPageUrl = process.env.STATUSPAGEIO_URL || "api.statuspage.io";
     const intervalMs = process.env.STATUSPAGEIO_INTERVAL_MILLIS || 30000;
     const metricIds = {
-        "EventCreater.createEvent.mean": "whb4rfgv5fzv",
-        "EventCreater.createEvent.p98": "stkhk01nkb4f",
+        "EventCreater.createEvent.timer.mean": "whb4rfgv5fzv",
+        "EventCreater.createEvent.timer.p98": "stkhk01nkb4f",
         "EventCreater.createEvent.errors.m1_rate": "xgntq7qsk0cl",
     };
 

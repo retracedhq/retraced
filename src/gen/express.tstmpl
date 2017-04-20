@@ -1,0 +1,134 @@
+/* tslint:disable */
+import * as _ from "lodash";
+{{#if canImportByAlias}}
+  import { ValidateParam } from 'tsoa';
+  import { Controller } from 'tsoa';
+{{else}}
+  import { ValidateParam } from '../../../src/routeGeneration/templateHelpers';
+  import { Controller } from '../../../src/interfaces/controller';
+{{/if}}
+{{#if iocModule}}
+import { iocContainer } from '{{iocModule}}';
+{{/if}}
+{{#each controllers}}
+import { {{name}} } from '{{modulePath}}';
+{{/each}}
+{{#if useSecurity}}
+import { set } from 'lodash';
+{{/if}}
+{{#if authenticationModule}}
+import { expressAuthentication } from '{{authenticationModule}}';
+{{/if}}
+
+// Begin customization of template from https://raw.githubusercontent.com/lukeautry/tsoa/master/src/routeGeneration/templates/express.ts
+import { requestId, onSuccess, onError, preRequest } from "../router";
+// End customization
+
+const models: any = {
+  {{#each models}}
+  "{{name}}": {
+      {{#if properties}}
+      properties: {
+          {{#each properties}}
+              "{{@key}}": {{{json this}}},
+          {{/each}}
+      },
+      {{/if}}
+      {{#if additionalProperties}}
+      additionalProperties: [
+          {{#each additionalProperties}}
+          {typeName: '{{typeName}}'},
+          {{/each}}
+      ],
+      {{/if}}
+  },
+  {{/each}}
+};
+
+export function RegisterRoutes(app: any) {
+    {{#each controllers}}
+    {{#each actions}}
+        app.{{method}}('{{../../basePath}}/{{../path}}{{path}}', 
+            {{#if security}} 
+            authenticateMiddleware('{{security.name}}'
+                {{#if security.scopes.length}} 
+                ,{{{json security.scopes}}}
+                {{/if}}), 
+            {{/if}} 
+            function (request: any, response: any) {
+            // Begin customization of template from https://raw.githubusercontent.com/lukeautry/tsoa/master/src/routeGeneration/templates/express.ts
+            // Moved from directly below validation to enable getting handlerName
+            {{#if ../../iocModule}}
+            const controller = iocContainer.get<{{../name}}>({{../name}});
+            {{else}}
+            const controller = new {{../name}}();
+            {{/if}}
+            const handlerName = `${controller.constructor.name}.${controller.{{name}}.name}`;
+            const reqId = requestId(request, handlerName);
+	    preRequest(request, reqId);
+            const args = {
+                {{#each parameters}}
+                    {{@key}}: {{{json this}}},
+                {{/each}}
+            };
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request);
+            } catch (err) {
+                return onError(response, reqId)(err);
+            }
+
+            const promise = controller.{{name}}.apply(controller, validatedArgs);
+
+            promise
+              .then(onSuccess(response, reqId, statusCodeGetter(controller)))
+              .catch(onError(response, reqId));
+	    // End customization
+        });
+    {{/each}}
+    {{/each}}
+
+    function statusCodeGetter(controller: any): () => number|undefined {
+        return () => {
+            if (_.isFunction(controller.getStatus)) {
+                return controller.getStatus();
+            }
+        }
+    }
+
+    {{#if useSecurity}}
+    function authenticateMiddleware(name: string, scopes: string[] = []) {
+        return (request: any, response: any, next: any) => {
+            expressAuthentication(request, name, scopes).then((user: any) => {
+                set(request, 'user', user);
+                next();
+            })
+            .catch((error: any) => {
+                response.status(401);
+                next(error)
+            });
+        }
+    }
+    {{/if}}
+
+    function getValidatedArgs(args: any, request: any): any[] {
+        return Object.keys(args).map(key => {
+            const name = args[key].name;
+            switch (args[key].in) {
+            case 'request':
+                return request;
+            case 'query':
+                return ValidateParam(args[key], request.query[name], models, name)
+            case 'path':
+                return ValidateParam(args[key], request.params[name], models, name)
+            case 'header':
+                return ValidateParam(args[key], request.header(name), models, name);
+            case 'body':
+                return ValidateParam(args[key], request.body, models, name);
+            case 'body-prop':
+                return ValidateParam(args[key], request.body[name], models, name);
+            }
+        });
+    }
+}
