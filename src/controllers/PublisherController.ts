@@ -117,20 +117,15 @@ export class PublisherController extends Controller {
      * @param tokenId   The token to delete.
      */
     @Delete("project/{projectId}/group/{groupId}/enterprisetoken/{tokenId}")
-    @SuccessResponse("201", "Created")
-    @Example<EnterpriseToken>({
-        token: "abf053dc4a3042459818833276eec717",
-    })
+    @SuccessResponse("204", "Deleted")
     public async deleteEnterpriseToken(
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
-    ): Promise<EnterpriseToken> {
+    ): Promise<void> {
 
         const result: any = await deleteEnterpriseToken(auth, projectId, groupId, tokenId);
-
         this.setStatus(result.status);
-        return Promise.resolve(result.body);
     }
 }
