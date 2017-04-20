@@ -1,4 +1,4 @@
-import { Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
+import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
 
 import { RetracedEvent } from "../models/event/";
 import { defaultEventCreater, EventCreater, CreateEventResult } from "../handlers/createEvent";
@@ -6,6 +6,8 @@ import { createViewerDescriptor, ViewerToken } from "../handlers/createViewerDes
 import { createEnterpriseToken, CreateEnterpriseToken, EnterpriseToken } from "../handlers/createEnterpriseToken";
 import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
 import { listEnterpriseTokens } from "../handlers/listEnterpriseTokens";
+import { updateEnterpriseToken } from "../handlers/updateEnterpriseToken";
+import { getEnterpriseToken } from "../handlers/getEnterpriseToken";
 
 @Route("publisher/v1")
 export class PublisherController extends Controller {
@@ -135,6 +137,64 @@ export class PublisherController extends Controller {
 
         this.setStatus(result.status);
         return Promise.resolve(result.body);
+    }
+
+    /**
+     * Retrieve an Enterprise IT API token.
+     *
+     * https://preview.retraced.io/documentation/apis/enterprise-api/
+     *
+     * @param auth      auth header of the form token=...
+     * @param projectId The project id.
+     * @param groupId   The group identifier.
+     * @param tokenId   The token id.
+     */
+    @Get("project/{projectId}/group/{groupId}/enterprisetoken/{tokenId}")
+    @SuccessResponse("200", "OK")
+    @Example<EnterpriseToken>({
+        token: "f053dc4a3042459818833276eec717ab",
+        display_name: "Production Token",
+    })
+    public async getEnterpriseToken(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Path("groupId") groupId: string,
+        @Path("tokenId") tokenId: string,
+    ): Promise<EnterpriseToken> {
+        const result = await getEnterpriseToken(auth, projectId, groupId, tokenId);
+
+        this.setStatus(result.status);
+        return Promise.resolve(result.body);
+    }
+
+    /**
+     * Update an Enterprise IT API token
+     *
+     * https://preview.retraced.io/documentation/apis/enterprise-api/
+     *
+     * @param auth      auth header of the form token=...
+     * @param projectId the project id
+     * @param groupId   The group identifier.
+     * @param tokenId   The token to update.
+     * @param token     The updated token.
+     */
+    @Put("project/{projectId}/group/{groupId}/enterprisetoken/{tokenId}")
+    @SuccessResponse("200", "OK")
+    @Example<EnterpriseToken>({
+        token: "abf053dc4a3042459818833276eec717",
+        display_name: "Updated Token Name",
+    })
+    public async updateEnterpriseToken(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Path("groupId") groupId: string,
+        @Path("tokenId") tokenId: string,
+        @Body() token: CreateEnterpriseToken,
+    ): Promise<EnterpriseToken> {
+      const result = await updateEnterpriseToken(auth, projectId, groupId, tokenId, token.displayName);
+
+      this.setStatus(result.status);
+      return Promise.resolve(result.body);
     }
 
     /**
