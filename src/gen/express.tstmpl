@@ -76,7 +76,7 @@ export function RegisterRoutes(app: any) {
             try {
                 validatedArgs = getValidatedArgs(args, request);
             } catch (err) {
-		        return onError(response, reqId)(err);
+                return onError(response, reqId)(err);
             }
 
             const promise = controller.{{name}}.apply(controller, validatedArgs);
