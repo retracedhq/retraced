@@ -60,8 +60,8 @@ export function bootstrapFromEnv() {
     const statusPageUrl = process.env.STATUSPAGEIO_URL || "api.statuspage.io";
     const intervalMs = process.env.STATUSPAGEIO_INTERVAL_MILLIS || 30000;
     const metricIds = {
-        "EventCreater.createEvent.mean": "whb4rfgv5fzv",
-        "EventCreater.createEvent.p98": "stkhk01nkb4f",
+        "EventCreater.createEvent.timer.mean": "whb4rfgv5fzv",
+        "EventCreater.createEvent.timer.p98": "stkhk01nkb4f",
         "EventCreater.createEvent.errors.m1_rate": "xgntq7qsk0cl",
     };
 
