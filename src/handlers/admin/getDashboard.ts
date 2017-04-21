@@ -1,4 +1,5 @@
 import * as moment from "moment";
+import * as _ from "lodash";
 
 import { checkAdminAccess } from "../../security/helpers";
 
@@ -13,10 +14,22 @@ export default async function(req) {
   // all stored in the db so that a user can customize
   // FUTURE VERSION!
 
+  const crud = req.query.crud ? req.query.crud : "cud";
+  let startTime = moment().subtract(1, "days").valueOf();
+  let endTime = moment().valueOf();
+
+  if (req.query.start_time) {
+    startTime = parseInt(req.query.start_time, 10);
+  }
+  if (req.query.end_time) {
+    endTime = parseInt(req.query.end_time, 10);
+  }
+
   const opts: DashboardOptions = {
     index: `retraced.${req.params.projectId}.${req.query.environment_id}`,
-    startTime: moment().subtract(1, "days").valueOf(),
-    endTime: moment().valueOf(),
+    startTime,
+    endTime,
+    crud: _.split(crud, ""),
   };
 
   const actionsTile = await getActionsTile(opts);

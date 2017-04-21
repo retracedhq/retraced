@@ -23,6 +23,14 @@ export default async function(opts: DashboardOptions): Promise<any> {
     range: { canonical_time: { lte: opts.endTime } },
   });
 
+  filters.push({
+    bool: {
+      should: opts.crud.map((letter) => ({
+        term: { crud: letter },
+      })),
+    },
+  });
+
   const query = {
     bool: {
       filter: filters,
