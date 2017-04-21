@@ -5,6 +5,7 @@ export interface DashboardOptions {
   index: string;
   startTime: number;
   endTime: number;
+  crud: string[];
 }
 
 export interface DashboardTile {

@@ -19,6 +19,7 @@ import getPgPool from "../persistence/pg";
 
 const requiredFields = [
   "action",
+  "crud",
 ];
 
 const possibleCrudValues = [
@@ -204,7 +205,7 @@ export class EventCreater {
     }
 
     // crud field, if present, must contain a valid value
-    if (!_.isEmpty(maybeEvent["crud"]) && _.indexOf(possibleCrudValues, maybeEvent["crud"]) < 0) {
+    if (_.indexOf(possibleCrudValues, maybeEvent["crud"]) < 0) {
       throw new Error(`Invalid value for 'crud' field: ${maybeEvent["crud"]}`);
     }
 
