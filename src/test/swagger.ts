@@ -52,6 +52,7 @@ import { ApiSpec, removeRoutesNotMatching, filterAndAssign } from "../swagger";
 
         filterAndAssign(swagger, specs);
 
+        // tslint:disable:unused-expression
         expect(specs[0].swagger.paths["/publisher/v1/project/{projectId}/event"]).to.exist;
         expect(specs[0].swagger.paths["/admin/v1/project/{projectId}/apitoken"]).not.to.exist;
         expect(specs[0].swagger.info.description).to.equal(specs[0].description);
@@ -61,6 +62,7 @@ import { ApiSpec, removeRoutesNotMatching, filterAndAssign } from "../swagger";
         expect(specs[1].swagger.paths["/admin/v1/project/{projectId}/apitoken"]).to.exist;
         expect(specs[1].swagger.info.description).to.equal(specs[1].description);
         expect(specs[1].swagger.info.title).to.equal(specs[1].title);
+        // tslint:enable:unused-expression
 
     }
 }

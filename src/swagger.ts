@@ -43,7 +43,7 @@ function fix(json: any, schemes: string[]): void {
 
 // exported for testing
 export function removeRoutesNotMatching(json: any, pattern: RegExp) {
-  for (let path of Object.keys(json.paths)) {
+  for (const path of Object.keys(json.paths)) {
     if (!path.match(pattern)) {
       _.unset(json.paths, path);
     }
@@ -75,7 +75,7 @@ export function filterAndAssign(json: any, apis: ApiSpec[]) {
     api.swagger = swaggerCopy;
     return api;
   });
-};
+}
 
 fix(compositeSpec, apiSchemes.split(","));
 filterAndAssign(compositeSpec, specs);
