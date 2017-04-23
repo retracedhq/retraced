@@ -53,6 +53,6 @@ markup-deps:
 markup-docs: swagger
 	java -cp java/swagger2markup-1.0.0.jar -jar java/swagger2markup-cli-1.0.0.jar convert -i build/swagger.json -f build/swagger
 	asciidoctor build/swagger.adoc
-	google-chrome ./build/swagger.html
+	echo docs available at file://${PWD}/build/swagger.html
 
 
