@@ -38,7 +38,7 @@ const specs: ApiSpec[] = [
 function fix(json: any, schemes: string[]): void {
   json.host = apiHost;
   _.unset(json, "definitions.Fields.required");
-  json.schemes = ["http", "https"];
+  json.schemes = schemes;
 }
 
 // exported for testing
