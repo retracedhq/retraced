@@ -86,14 +86,17 @@ export const wrapRoute = (route, handlerName) =>
 
 export function register(route, handler, app) {
   // Register this route and callback with express.
-  console.log(`[${route.method}] '${route.path}'`);
   if (route.method === "get") {
+    console.log(chalk.blue.dim(`GET    '${route.path}'`));
     app.get(route.path, handler);
   } else if (route.method === "post") {
+    console.log(chalk.green.dim(`POST   '${route.path}'`));
     app.post(route.path, handler);
   } else if (route.method === "put") {
+    console.log(chalk.yellow.dim(`PUT    '${route.path}'`));
     app.put(route.path, handler);
   } else if (route.method === "delete") {
+    console.log(chalk.red.dim(`DELETE '${route.path}'`));
     app.delete(route.path, handler);
   } else {
     console.log(`Unhandled HTTP method: '${route.method}'`);

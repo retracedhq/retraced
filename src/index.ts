@@ -58,6 +58,8 @@ function buildRoutes() {
   });
 
   swaggerSpecs.forEach((spec) => {
+    console.log(chalk.blue.dim(`GET    '${spec.path}/swagger.json'`));
+    console.log(chalk.blue.dim(`GET    '${spec.path}/swagger'`));
     app.get(`${spec.path}/swagger.json`, (req, res) => {
       res.setHeader("ContentType", "application/json");
       res.send(spec.swagger);
