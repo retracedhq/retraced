@@ -14,7 +14,7 @@ import { wrapRoute, register, requestId, preRequest, onSuccess, onError } from "
 import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";
 import * as metrics from "./metrics";
-import * as swagger from "./swagger";
+import swaggerSpecs from "./swagger";
 
 import "./controllers/PublisherController";
 import "./controllers/AdminController";
@@ -57,12 +57,13 @@ function buildRoutes() {
     res.send("");
   });
 
-  app.get("/publisher/v1/swagger.json", (req, res) => {
-    res.setHeader("ContentType", "application/json");
-    res.send(swagger.publisherApi);
+  swaggerSpecs.forEach((spec) => {
+    app.get(`${spec.path}/swagger.json`, (req, res) => {
+      res.setHeader("ContentType", "application/json");
+      res.send(spec.swagger);
+    });
+    app.use(`${spec.path}/swagger`, swaggerUI.serve, swaggerUI.setup(spec.swagger));
   });
-
-  app.use("/publisher/v1/swagger", swaggerUI.serve, swaggerUI.setup(swagger.publisherApi));
 
   RegisterRoutes(app);
 
