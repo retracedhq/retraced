@@ -31,8 +31,8 @@ if (!process.env["BUGSNAG_TOKEN"]) {
 const app = express();
 
 // Sigsci middleware has to be installed before routes and other middleware
-if (!process.env["SIGSCI_RPCADDRESS"]) {
-  console.error("SIGSCI_RPCADDRESS not set, Signal Sciences module will not be installed");
+if (!process.env["SIGSCI_RPC_ADDRESS"]) {
+  console.error("SIGSCI_RPC_ADDRESS not set, Signal Sciences module will not be installed");
 } else {
   const sigsci = new Sigsci({
     path: process.env.SIGSCI_RPCADDRESS,
@@ -52,9 +52,11 @@ serve();
 metrics.bootstrapFromEnv();
 
 function buildRoutes() {
+
   // Needed for Kubernetes health checks
   app.get("/", (req, res) => {
-    res.send("");
+    // trying a slight delay to keep sigsci from freaking out
+    setTimeout(() => res.send(""), 200);
   });
 
   swaggerSpecs.forEach((spec) => {

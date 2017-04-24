@@ -26,6 +26,8 @@ spec:
               name: var-run
               readOnly: true
           env:
+            - name: SIGSCI_RPC_ADDRESS
+              value: /var/run/retraced/sigsci.sock
             - name: REDIS_URI
               valueFrom:
                 secretKeyRef:
