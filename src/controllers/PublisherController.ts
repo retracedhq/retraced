@@ -1,7 +1,7 @@
 import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
 
 import { RetracedEvent } from "../models/event/";
-import { defaultEventCreater, EventCreater, CreateEventResult } from "../handlers/createEvent";
+import { defaultEventCreater, EventCreater, CreateEventRequest, CreateEventResponse } from "../handlers/createEvent";
 import { createViewerDescriptor, ViewerToken } from "../handlers/createViewerDescriptor";
 import { createEnterpriseToken, CreateEnterpriseToken, EnterpriseToken } from "../handlers/createEnterpriseToken";
 import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
@@ -30,15 +30,15 @@ export class PublisherController extends Controller {
      */
     @Post("project/{projectId}/event")
     @SuccessResponse("201", "Created")
-    @Example<CreateEventResult>({
+    @Example<CreateEventResponse>({
         id: "abf053dc4a3042459818833276eec717",
         hash: "5b570bff4628b35262fb401d2f6c9bb38d29e212f6e0e8ea93445b4e5a253d50",
     })
     public async createEvent(
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
-        @Body() event: RetracedEvent,
-    ): Promise<CreateEventResult> {
+        @Body() event: CreateEventRequest,
+        ): Promise<CreateEventResponse> {
 
         const result: any = await this.eventCreater.createEvent(auth, projectId, event);
 

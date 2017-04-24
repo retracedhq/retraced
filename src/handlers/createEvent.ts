@@ -6,10 +6,10 @@ import * as util from "util";
 import * as uuid from "uuid";
 import * as express from "express";
 import { instrumented } from "monkit";
-import {Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller } from "tsoa";
+import { Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller } from "tsoa";
 
 import createCanonicalHash from "../models/event/canonicalize";
-import Event from "../models/event/";
+import Event, { Fields, crud } from "../models/event/";
 import { fromCreateEventInput } from "../models/event";
 import getApiToken from "../models/api_token/get";
 import uniqueId from "../models/uniqueId";
@@ -35,7 +35,40 @@ const requiredSubfields = [
   ["target", "target.id"],
 ];
 
-export interface CreateEventResult {
+export interface GroupRequest {
+  id?: string;
+  name?: string;
+}
+
+export interface ActorRequest {
+  id?: string;
+  name?: string;
+  href?: string;
+}
+
+export interface TargetRequest {
+  id?: string;
+  name?: string;
+  href?: string;
+  type?: string;
+}
+
+export interface CreateEventRequest {
+  action: string;
+  group?: GroupRequest;
+  displayTitle?: string;
+  created?: number;
+  actor?: ActorRequest;
+  target?: TargetRequest;
+  crud?: crud;
+  sourceIp?: string;
+  description?: string;
+  isAnonymous?: boolean;
+  isFailure?: boolean;
+  fields?: Fields;
+}
+
+export interface CreateEventResponse {
   id: string;
   hash: string;
 }
@@ -71,7 +104,7 @@ export class EventCreater {
     return this.createEvent(req.get("Authorization"), req.params.projectId, req.body);
   }
   @instrumented
-  public async createEvent(authorization: string, projectId: string, body: Event): Promise<any> {
+  public async createEvent(authorization: string, projectId: string, body: CreateEventRequest): Promise<any> {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, this.pgPool.query.bind(this.pgPool));
     const validAccess = apiToken && apiToken.project_id === projectId;
@@ -95,7 +128,7 @@ export class EventCreater {
     });
 
     // This is what will be returned to the caller.
-    let results: CreateEventResult[] = [];
+    let results: CreateEventResponse[] = [];
 
     // Create a new ingestion task for each event passed in.
     for (const eventInput of eventInputs) {
