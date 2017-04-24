@@ -6,7 +6,7 @@ import * as express from "express";
 import * as util from "util";
 import * as uuid from "uuid";
 
-export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter?: () => number|undefined) => (result: any) => {
+export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter?: () => number | undefined) => (result: any) => {
 
   if (result) {
 
@@ -55,6 +55,10 @@ export const onError = (res: express.Response, reqId: string) => (err: any) => {
     const bodyToSend = {
       error: err.message || "An unexpected error occurred",
     };
+    if (err.message.indexOf("Can't set headers after they are sent") !== -1 ||
+        err.stack.indexOf("Can't set headers after they are sent") !== -1) {
+      console.log("Middleware error, current response object is", util.inspect(res, false, 100, true));
+    }
     console.log(chalk.red(`[${reqId}] !! 500 ${err.stack || err.message || util.inspect(err)}`));
     res.status(500).set("X-Retraced-RequestId", reqId).json(bodyToSend);
   }
@@ -82,7 +86,7 @@ export const wrapRoute = (route, handlerName) =>
     route.handler(req)
       .then(onSuccess(res, reqId))
       .catch(onError(res, reqId));
-};
+  };
 
 export function register(route, handler, app) {
   // Register this route and callback with express.
