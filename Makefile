@@ -30,7 +30,7 @@ k8s-pre:
 	mkdir -p build/k8s
 
 k8s-deployment:
-	`yarn bin`/handlebars --tag $(tag)       < deploy/k8s/api-deployment.yml.hbs > build/k8s/api-deployment.yml
+	`yarn bin`/handlebars --tag '"$(tag)"'       < deploy/k8s/api-deployment.yml.hbs > build/k8s/api-deployment.yml
 
 k8s-service:
 	`yarn bin`/handlebars                          < deploy/k8s/api-service.yml.hbs    > build/k8s/api-service.yml
