@@ -1,5 +1,6 @@
 /* tslint:disable */
 import * as _ from "lodash";
+import * as leftPad from "left-pad";
 {{#if canImportByAlias}}
   import { ValidateParam } from 'tsoa';
   import { Controller } from 'tsoa';
@@ -48,6 +49,7 @@ const models: any = {
 export function RegisterRoutes(app: any) {
     {{#each controllers}}
     {{#each actions}}
+        console.log(`TSOA ${leftPad('{{method}}', 6)} {{../../basePath}}/{{../path}}{{path}}`);
         app.{{method}}('{{../../basePath}}/{{../path}}{{path}}', 
             {{#if security}} 
             authenticateMiddleware('{{security.name}}'
