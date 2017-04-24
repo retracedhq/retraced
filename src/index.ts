@@ -35,7 +35,7 @@ if (!process.env["SIGSCI_RPC_ADDRESS"]) {
   console.error("SIGSCI_RPC_ADDRESS not set, Signal Sciences module will not be installed");
 } else {
   const sigsci = new Sigsci({
-    path: process.env.SIGSCI_RPCADDRESS,
+    path: process.env.SIGSCI_RPC_ADDRESS,
   });
   app.use(sigsci.express());
 }
