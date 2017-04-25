@@ -55,7 +55,8 @@ function buildRoutes() {
 
   // Needed for Kubernetes health checks
   app.get("/", (req, res) => {
-    res.send("");
+    // trying a slight delay to keep sigsci from freaking out
+    setTimeout(() => res.send(""), 200);
   });
 
   swaggerSpecs.forEach((spec) => {
