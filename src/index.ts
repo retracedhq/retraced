@@ -76,6 +76,16 @@ function buildRoutes() {
     register(route, handler, app);
   });
 
+  ["get", "post", "delete", "put"].forEach((method) => {
+    app[method]("*", (req, res, next) => {
+      if (!res.statusCode) {
+        const errMsg = `Route not found for ${req.method} ${req.originalUrl}`;
+        console.log(chalk.red(`[${req.ip}] ${errMsg}`));
+        res.status(404).send(errMsg);
+      }
+    });
+  });
+
 }
 
 function serve() {
