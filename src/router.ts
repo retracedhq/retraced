@@ -20,7 +20,7 @@ export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter
     } else if (bodyToLog.length > 512) {
       bodyToLog = `${bodyToLog.substring(0, 512)} (... truncated, total ${bodyToLog.length} bytes)`;
     }
-    if (res.statusCode) {
+    if (res.statusCode !== 200) {
       console.log(`[${reqId}] WARN response already has statusCode ${res.statusCode}, a response might have already been sent!`);
       console.log(util.inspect(res));
     }
