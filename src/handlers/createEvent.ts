@@ -55,16 +55,16 @@ export interface TargetRequest {
 
 export interface CreateEventRequest {
   action: string;
+  crud: crud;
   group?: GroupRequest;
   displayTitle?: string;
   created?: number;
   actor?: ActorRequest;
   target?: TargetRequest;
-  crud?: crud;
-  sourceIp?: string;
+  source_ip?: string;
   description?: string;
-  isAnonymous?: boolean;
-  isFailure?: boolean;
+  is_anonymous?: boolean;
+  is_failure?: boolean;
   fields?: Fields;
 }
 

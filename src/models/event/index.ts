@@ -27,7 +27,7 @@ export interface RetracedEvent {
   id?: string;
   action: string;
   group?: Group;
-  displayTitle?: string;
+  display_title?: string;
   created?: number;
   actor?: Actor;
   target?: Target;
