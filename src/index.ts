@@ -54,9 +54,10 @@ metrics.bootstrapFromEnv();
 function buildRoutes() {
 
   // Needed for Kubernetes health checks
-  app.get("/", wrapRoute((req) => {
-    return { body: "" };
-  }, "healthzRoot"));
+  app.get("/", (req, res) => {
+    // trying a slight delay to keep sigsci from freaking out
+    setTimeout(() => res.send(""), 200);
+  });
 
   swaggerSpecs.forEach((spec) => {
     console.log(chalk.blue.dim(`GET    '${spec.path}/swagger.json'`));
@@ -73,6 +74,12 @@ function buildRoutes() {
   _.forOwn(LegacyRoutes(), (route, handlerName: string) => {
     const handler = wrapRoute(route, handlerName);
     register(route, handler, app);
+  });
+
+  app.use((req, res, next) => {
+    const errMsg = `Route not found for ${req.method} ${req.originalUrl}`;
+    console.log(chalk.red(`[${req.ip}] ${errMsg}`));
+    res.status(404).send(errMsg);
   });
 
 }
