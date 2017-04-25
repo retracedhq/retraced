@@ -57,7 +57,7 @@ export const onError = (res: express.Response, reqId: string) => (err: any) => {
     };
     if (err.message.indexOf("Can't set headers after they are sent") !== -1 ||
         err.stack.indexOf("Can't set headers after they are sent") !== -1) {
-      console.log("Middleware error, current response object is", util.inspect(res, false, 100, true));
+      console.log("Middleware error, current response object is", util.inspect(res, false, 3, true));
     }
     console.log(chalk.red(`[${reqId}] !! 500 ${err.stack || err.message || util.inspect(err)}`));
     res.status(500).set("X-Retraced-RequestId", reqId).json(bodyToSend);
