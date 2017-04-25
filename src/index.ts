@@ -78,9 +78,11 @@ function buildRoutes() {
 
   ["get", "post", "delete", "put"].forEach((method) => {
     app[method]("*", (req, res, next) => {
-      const errMsg = `Route not found for ${req.method} ${req.originalUrl}`;
-      console.log(chalk.red(`[${req.ip}] ${errMsg}`));
-      res.status(404).send(errMsg);
+      if (!res.statusCode) {
+        const errMsg = `Route not found for ${req.method} ${req.originalUrl}`;
+        console.log(chalk.red(`[${req.ip}] ${errMsg}`));
+        res.status(404).send(errMsg);
+      }
     });
   });
 
