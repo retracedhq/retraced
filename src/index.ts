@@ -54,10 +54,9 @@ metrics.bootstrapFromEnv();
 function buildRoutes() {
 
   // Needed for Kubernetes health checks
-  app.get("/", (req, res) => {
-    // trying a slight delay to keep sigsci from freaking out
-    res.send("");
-  });
+  app.get("/", wrapRoute((req) => {
+    return { body: "" };
+  }, "healthzRoot"));
 
   swaggerSpecs.forEach((spec) => {
     console.log(chalk.blue.dim(`GET    '${spec.path}/swagger.json'`));
