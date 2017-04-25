@@ -54,10 +54,8 @@ metrics.bootstrapFromEnv();
 function buildRoutes() {
 
   // Needed for Kubernetes health checks
-  app.get("/", wrapRoute({
-    handler: (req) => {
-      return { body: "" };
-    },
+  app.get("/", wrapRoute((req) => {
+    return { body: "" };
   }, "healthzRoot"));
 
   swaggerSpecs.forEach((spec) => {
