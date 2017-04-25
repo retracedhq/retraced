@@ -20,6 +20,10 @@ export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter
     } else if (bodyToLog.length > 512) {
       bodyToLog = `${bodyToLog.substring(0, 512)} (... truncated, total ${bodyToLog.length} bytes)`;
     }
+    if (res.statusCode) {
+      console.log(`[${reqId}] WARN response already has statusCode ${res.statusCode}, a response might have already been sent!`);
+      console.log(util.inspect(res));
+    }
     console.log(chalk.cyan(`[${reqId}] => ${result.status} ${bodyToLog}`));
     const respObj = res.status(statusToSend).type(contentType).set("X-Retraced-RequestId", reqId);
     if (result.filename) {
@@ -57,7 +61,7 @@ export const onError = (res: express.Response, reqId: string) => (err: any) => {
     };
     if (err.message.indexOf("Can't set headers after they are sent") !== -1 ||
         err.stack.indexOf("Can't set headers after they are sent") !== -1) {
-      console.log("Middleware error, current response object is", util.inspect(res, false, 100, true));
+      console.log("Middleware error, current response object is", util.inspect(res));
     }
     console.log(chalk.red(`[${reqId}] !! 500 ${err.stack || err.message || util.inspect(err)}`));
     res.status(500).set("X-Retraced-RequestId", reqId).json(bodyToSend);
