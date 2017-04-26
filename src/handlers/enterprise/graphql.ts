@@ -9,7 +9,6 @@ export default async function(req) {
   return await handler(req, {
     projectId: eitapiToken.project_id,
     environmentId: eitapiToken.environment_id,
-    groupIds: [eitapiToken.group_id],
-    admin: false,
+    groupId: eitapiToken.group_id,
   });
 }

@@ -9,8 +9,7 @@ export default async function(req) {
   return await handler(req, {
     projectId: claims.projectId,
     environmentId: claims.environmentId,
-    groupIds: [claims.groupId],
+    groupId: claims.groupId,
     targetIds: await scopeTargets(claims),
-    admin: false,
   });
 }
