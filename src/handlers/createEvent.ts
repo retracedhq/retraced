@@ -35,37 +35,70 @@ const requiredSubfields = [
   ["target", "target.id"],
 ];
 
-export interface GroupRequest {
+/** A group is a single organization that is an end customer of a vendor app */
+export interface RequestGroup {
+  /** The id of this group in the vendor app's data model  */
   id?: string;
+  /** A human-readable name */
   name?: string;
 }
 
-export interface ActorRequest {
+/** An actor is the person or identity (like an API token) that performed the action */
+export interface RequestActor {
+  /** The id of this actor in the vendor app's data model  */
   id?: string;
+  /** A human-readable name */
   name?: string;
+  /** A url to view this actor in the vendor app.
+   * Can be referenced in Retraced [Display Templates](https://preview.retraced.io/documentation/advanced-retraced/display-templates/)
+   * to create an interactive embedded viewer experience.
+   */
   href?: string;
 }
 
-export interface TargetRequest {
+/** A target is the object upon which the action is performed */
+export interface RequestTarget {
+  /** The id of this target in the vendor app's data model  */
   id?: string;
+  /** A human-readable name */
   name?: string;
+  /** A url to view this target in the vendor app.
+   * Can be referenced in Retraced
+   * to create an interactive embedded viewer experience.
+   */
   href?: string;
+  /** Identifies the type */
   type?: string;
 }
 
 export interface CreateEventRequest {
+  /** The action that occured e.g. `user.login` or `spreadsheet.create` */
   action: string;
+  /** Denotes whether this is a "Create", "Read", "Update", or "Delete" event. */
   crud: crud;
-  group?: GroupRequest;
+  group?: RequestGroup;
+  /** A title to display for the event.
+   *  This field is deprecated in favor of [Display Templates](https://preview.retraced.io/documentation/advanced-retraced/display-templates/)
+   */
   displayTitle?: string;
+  /** milliseconds since the epoch that this event occurent. `created` will be tracked in addtion to `received` */
   created?: number;
-  actor?: ActorRequest;
-  target?: TargetRequest;
+  actor?: RequestActor;
+  target?: RequestTarget;
+  /** The source IP address from which the event was initiated */
   source_ip?: string;
+  /** A human-readable description of the event */
   description?: string;
+  /** Denotes whether this event was anonymous. Must be `true` if `actor` is absent */
   is_anonymous?: boolean;
+  /** Denotes whether this event represents a failure to perform the action */
   is_failure?: boolean;
+  /** An optional set of additional arbitrary event about the data */
   fields?: Fields;
+  /** An identifier for the vendor app component that sent the event */
+  component?: string;
+  /** An identifier for the version of the vendor app that sent the event, usually a git SHA */
+  version?: string;
 }
 
 export interface CreateEventResponse {

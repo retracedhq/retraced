@@ -37,6 +37,8 @@ export interface RetracedEvent {
   isAnonymous?: boolean;
   isFailure?: boolean;
   fields?: Fields;
+  component?: string;
+  version?: string;
 }
 
 export default RetracedEvent;
@@ -55,5 +57,7 @@ export function fromCreateEventInput(eventInput: any, newEventId: string): Retra
     isAnonymous: eventInput["is_anonymous"],
     isFailure: eventInput["is_failure"],
     fields: eventInput["fields"],
+    component: eventInput["component"],
+    version: eventInput["version"],
   };
 }
