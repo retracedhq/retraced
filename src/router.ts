@@ -6,6 +6,11 @@ import * as express from "express";
 import * as util from "util";
 import * as uuid from "uuid";
 
+/*
+ * This file contains express middleware functions
+ * for Pre/Post request logging and response generation.
+ */
+
 export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter?: () => number | undefined) => (result: any) => {
 
   if (result) {
@@ -43,30 +48,47 @@ export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter
 };
 
 export const onError = (res: express.Response, reqId: string) => (err: any) => {
-
   if (err.status) {
-    bugsnag.notify(err.err || err.message);
-    // Structured error, specific status code.
-    const errMsg = err.err ? err.err.message : "An unexpected error occurred";
-    console.log(chalk.red(`[${reqId}] !! ${err.status} ${errMsg} ${err.stack || util.inspect(err)}`));
-    const bodyToSend = {
-      error: errMsg,
-    };
-    res.status(err.status).set("X-Retraced-RequestId", reqId).json(bodyToSend);
+    handleFrameworkError(err, reqId, res);
   } else {
-    bugsnag.notify(err);
-    // Generic error, default code (500).
-    const bodyToSend = {
-      error: err.message || "An unexpected error occurred",
-    };
-    if (err.message.indexOf("Can't set headers after they are sent") !== -1 ||
-        err.stack.indexOf("Can't set headers after they are sent") !== -1) {
-      console.log("Middleware error, current response object is", util.inspect(res));
-    }
-    console.log(chalk.red(`[${reqId}] !! 500 ${err.stack || err.message || util.inspect(err)}`));
-    res.status(500).set("X-Retraced-RequestId", reqId).json(bodyToSend);
+    handleUnexpectedError(err, reqId, res);
   }
 };
+
+function handleFrameworkError(err: any, reqId: string, res: express.Response) {
+  bugsnag.notify(err.err || err.message);
+  // Structured error, specific status code.
+  const errMsg = err.err ? err.err.message : err.message || "An unexpected error occurred";
+  console.log(chalk.red(`[${reqId}] !! ${err.status} ${errMsg} ${err.stack || util.inspect(err)}`));
+
+  const errClass = err.constructor.name;
+  const hasMeaningfulType = ["Object", "Error"].indexOf(errClass) === -1;
+
+  const bodyToSend = {
+    status: err.status,
+    type: hasMeaningfulType ? errClass : "Error",
+    error: errMsg,
+  };
+  res.status(err.status).set("X-Retraced-RequestId", reqId).json(bodyToSend);
+
+}
+
+function handleUnexpectedError(err: any, reqId: string, res: express.Response) {
+  bugsnag.notify(err);
+  // Generic error, default code (500).
+  const bodyToSend = {
+    status: 500,
+    error: err.message || "An unexpected error occurred",
+    type: "Error",
+  };
+  if (
+    (err.message ? err.message : "").indexOf("Can't set headers after they are sent") !== -1 ||
+    (err.stack ? err.stack : "").indexOf("Can't set headers after they are sent") !== -1) {
+    console.log("Middleware error, current response object is", util.inspect(res));
+  }
+  console.log(chalk.red(`[${reqId}] !! 500 ${err.stack || err.message || util.inspect(err)}`));
+  res.status(500).set("X-Retraced-RequestId", reqId).json(bodyToSend);
+}
 
 export const preRequest = (req: express.Request, reqId: string) => {
   console.log(chalk.yellow(`[${reqId}] <- ${req.method} ${req.originalUrl}`));
