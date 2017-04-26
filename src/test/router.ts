@@ -10,7 +10,7 @@ import { onError } from "../router";
 
 const once = TypeMoq.Times.once;
 
-@suite class SwaggerTest {
+@suite class RouterTest {
     @test public "router.onError()({status: 400, message: 'Authorization is a required header parameter.'})"() {
         const res = TypeMoq.Mock.ofType<express.Response>();
         const reqId = "8675309";

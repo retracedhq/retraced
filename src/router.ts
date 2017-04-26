@@ -71,7 +71,7 @@ function handleFrameworkError(err: any, reqId: string, res: express.Response) {
   };
   res.status(err.status).set("X-Retraced-RequestId", reqId).json(bodyToSend);
 
-};
+}
 
 function handleUnexpectedError(err: any, reqId: string, res: express.Response) {
   bugsnag.notify(err);
