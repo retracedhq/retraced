@@ -3483,8 +3483,8 @@ signal-exit@^3.0.0, signal-exit@^3.0.1:
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
 "sigsci-module-nodejs@https://dl.signalsciences.net/sigsci-module-nodejs/sigsci-module-nodejs_latest.tgz":
-  version "1.4.3"
-  resolved "https://dl.signalsciences.net/sigsci-module-nodejs/sigsci-module-nodejs_latest.tgz#675993f6c33ecd68eb7374130b80d025728b738a"
+  version "1.4.4"
+  resolved "https://dl.signalsciences.net/sigsci-module-nodejs/sigsci-module-nodejs_latest.tgz#57cfa114a0db12a5b7cb65904506684432891f53"
   dependencies:
     msgpack5rpc "https://registry.npmjs.org/msgpack5rpc/-/msgpack5rpc-1.1.0.tgz"
 
