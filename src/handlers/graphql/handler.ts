@@ -1,16 +1,10 @@
 import "source-map-support/register";
 
+import { Scope } from "../../security/scope";
 import schema from "./schema";
 import { graphql } from "graphql";
 
-export interface Context {
-  projectId: string;
-  environmentId: string;
-  admin: boolean;
-  groupIds?: string[];
-  targetIds?: string[];
-}
-export default async function(req, context: Context) {
+export default async function(req, context: Scope) {
   const query = req.body.query || req.query.query;
   const op = req.body.operationName || req.query.operationName;
   const vars = req.body.variables || req.query.variables;

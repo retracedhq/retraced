@@ -4,6 +4,7 @@
   "description": "Retraced API",
   "main": "./build/index.js",
   "dependencies": {
+    "@types/elasticsearch": "^5.0.13",
     "@types/swagger-jsdoc": "^0.0.1",
     "analytics-node": "^2.1.0",
     "auth0-js": "^8.0.4",

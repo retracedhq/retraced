@@ -4,7 +4,6 @@ import { expect } from "chai";
 
 import {
   parse,
-  scopeFilters,
   searchParams,
   polyfillSearchAfter,
   Options,
@@ -160,43 +159,6 @@ import {
     });
   }
 
-  @test public "scopeFilters(groupIds=[g1], targetIds=[t1,t2])"() {
-    const output = scopeFilters({
-      projectId: "p1",
-      environmentId: "e1",
-      groupIds: ["g1"],
-      targetIds: ["t1", "t2"],
-    });
-    expect(output).to.have.length(2);
-    expect(output[0]).to.deep.equal({
-      bool: {
-        should: [
-          { term: {"group.id": "g1"}},
-          { term: {team_id: "g1"}},
-        ],
-      },
-    });
-    expect(output[1]).to.deep.equal({
-      bool: {
-        should: [
-          { term: {"target.id": "t1"}},
-          { term: {"target.id": "t2"}},
-        ],
-      },
-    });
-  }
-
-  @test public "scopeFilters(groupIds=[], targetIds=[])"() {
-    const output = scopeFilters({
-      projectId: "p1",
-      environmentId: "e1",
-      groupIds: [],
-      targetIds: [],
-    });
-
-    expect(output).to.deep.equal([]);
-  }
-
   @test public "searchParams"() {
     const input: Options = {
       query: "action:user.get",
@@ -205,7 +167,7 @@ import {
       scope: {
         projectId: "p1",
         environmentId: "e1",
-        groupIds: ["g1"],
+        groupId: "g1",
         targetIds: ["t1"],
       },
       cursor: [1492060162148, "abc123"],

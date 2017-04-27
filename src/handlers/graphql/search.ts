@@ -3,6 +3,7 @@ import * as _ from "lodash";
 
 import queryEvents, { unrestricted, Options } from "../../models/event/query";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
+import { Scope } from "../../security/scope";
 
 export interface Args {
   query: string;
@@ -12,18 +13,10 @@ export interface Args {
   before?: string;
 }
 
-export interface Context {
-  admin: boolean;
-  projectId: string;
-  environmentId: string;
-  groupIds?: string[];
-  targetIds?: string[];
-}
-
 export default async function search(
   q: any,
   args: Args,
-  context: Context,
+  context: Scope,
 ) {
   if (args.first && args.last) {
     throw { status: 400, err: new Error("Arguments 'first' and 'last' are exclusive") };
@@ -33,12 +26,7 @@ export default async function search(
   }
   const opts: Options = {
     query: args.query,
-    scope: {
-      projectId: context.projectId,
-      environmentId: context.environmentId,
-      groupIds: context.groupIds || unrestricted,
-      targetIds: context.targetIds || unrestricted,
-    },
+    scope: context,
     sort: args.last ? "desc" : "asc",
     size: args.last || args.first,
   };
@@ -55,7 +43,7 @@ export default async function search(
     projectId: context.projectId,
     environmentId: context.environmentId,
     events: results.events,
-    source: context.admin ? "admin" : "viewer",
+    source: context.groupId ? "viewer" : "admin",
   });
   const edges = events.map((event) => {
     if (event.fields) {
