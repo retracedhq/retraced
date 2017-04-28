@@ -22,7 +22,7 @@ export default async function counts(
   args: Args,
   context: Scope,
 ) {
-  const begin = args.after ? decodeCursor(args.after) : 0;
+  const begin = args.after ? decodeCursor(args.after) + 1 : 0;
   const limit = _.isNumber(args.first) ? args.first : defaultPageSize;
   const end = begin + limit;
 
@@ -35,21 +35,37 @@ export default async function counts(
       .split("");
   }
 
+  let startTime = moment(0);
+  let endTime = moment();
+
+  if (args.startTime) {
+    startTime = moment(args.startTime);
+    if (!startTime.isValid()) {
+      throw { status: 400, err: new Error("Invalid startTime") };
+    }
+  }
+  if (args.endTime) {
+    endTime = moment(args.endTime);
+    if (!endTime.isValid()) {
+      throw { status: 400, err: new Error("Invalid endTime") };
+    }
+  }
+
   // No size limit so the totalCount can be returned
   const counts = await actionCounts({
     crud,
-    startTime: args.startTime ? moment(args.startTime).valueOf() : 0,
-    endTime: args.endTime ? moment(args.endTime).valueOf() : Date.now(),
+    startTime: startTime.valueOf(),
+    endTime: endTime.valueOf(),
     scope: context,
   });
 
   const edges = counts
-    .slice(begin, end)
     .map(({ action, count }, i) => ({
       node: action,
       count,
       cursor: encodeCursor(i),
-    }));
+    }))
+    .slice(begin, end);
 
   return {
     totalCount: counts.length,
