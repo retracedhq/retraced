@@ -1,8 +1,11 @@
 #!/bin/bash
+# Circle CI Script to run integration tests against
+# staging api
 
 set -e
 set -o nounset
 set -o pipefail
+
 
 
 # try several times with increasing sleep time between
@@ -17,7 +20,7 @@ for time in 3000 6000 10000 20000; do
     echo QA_INTEGRATION_VERSION=$QA_INTEGRATION_VERSION
     echo ES_INDEX_WAIT_MS=$time
 
-    docker run -it --rm \
+    sudo docker run -it --rm \
         -e PUBLISHER_API_ENDPOINT=$PUBLISHER_API_ENDPOINT \
         -e PROJECT_ID=$PROJECT_ID \
         -e ENVIRONMENT_ID=$ENVIRONMENT_ID \
