@@ -8,6 +8,7 @@ import {
   GraphQLObjectType,
   GraphQLEnumType,
   GraphQLList,
+  GraphQLUnionType,
 } from "graphql";
 
 import search from "./search";
@@ -68,6 +69,17 @@ const groupType = new GraphQLObjectType({
       description: "The name of this group.",
     },
   }),
+});
+
+const actionType = new GraphQLObjectType({
+  description: "An action.",
+  name: "Action",
+  fields: {
+    action: {
+      type: GraphQLString,
+      description: "The action field of an event such as \"user.login\".",
+    },
+  },
 });
 
 const eventType = new GraphQLObjectType({
@@ -292,7 +304,7 @@ const queryType = new GraphQLObjectType({
       resolve: search,
     },
     counts: {
-      description: "Get event counts aggregated by action or event.",
+      description: "Get event counts aggregated by action or group.",
       type: new GraphQLObjectType({
         description: "The results of a counts request.",
         name: "CountsConnection",
@@ -304,8 +316,18 @@ const queryType = new GraphQLObjectType({
               description: "The node, cursor, and count for a single result.",
               fields: {
                 node: {
-                  description: "An action.",
-                  type: GraphQLString,
+                  description: "An action or group.",
+                  type: new GraphQLUnionType({
+                    name: "ActionOrGroup",
+                    types: [actionType, groupType],
+                    description: "Type depends on type argument passed to the counts query.",
+                    resolveType(value) {
+                      if (value.action) {
+                        return actionType;
+                      }
+                      return groupType;
+                    },
+                  }),
                 },
                 count: {
                   description: "The aggregate action count",

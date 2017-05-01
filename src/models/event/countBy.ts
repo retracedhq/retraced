@@ -9,6 +9,7 @@ import getEs, { scope } from "../../persistence/elasticsearch";
 const esClient = getEs();
 
 interface Options {
+  groupBy: "action" | "group.id";
   scope: Scope;
   startTime: number;
   endTime: number;
@@ -17,11 +18,11 @@ interface Options {
 }
 
 interface Result {
-  action: string;
+  value: string;
   count: number;
 }
 
-export async function countActions(es: Elasticsearch.Client, opts: Options): Promise<Result[]> {
+export async function countBy(es: Elasticsearch.Client, opts: Options): Promise<Result[]> {
   const [index, scopeFilters] = scope(opts.scope);
   const filters: any[] = [];
 
@@ -44,9 +45,9 @@ export async function countActions(es: Elasticsearch.Client, opts: Options): Pro
   };
 
   const aggs = {
-    action: {
+    groupedBy: {
       terms: {
-        field: "action",
+        field: opts.groupBy,
         size: opts.limit,
       },
     },
@@ -63,9 +64,9 @@ export async function countActions(es: Elasticsearch.Client, opts: Options): Pro
   };
 
   const response = await es.search(params);
-  const data = _.map(response.aggregations.action.buckets, (bucket: any) => {
+  const data = _.map(response.aggregations.groupedBy.buckets, (bucket: any) => {
     const row: Result = {
-      action: bucket.key,
+      value: bucket.key,
       count:  bucket.doc_count,
     };
 
@@ -76,7 +77,7 @@ export async function countActions(es: Elasticsearch.Client, opts: Options): Pro
 }
 
 export default async function(opts: Options): Promise<Result[]> {
-  return await instrument("Elasticsearch.countActions", async () => {
-    return await countActions(esClient, opts);
+  return await instrument("Elasticsearch.countBy", async () => {
+    return await countBy(esClient, opts);
   });
 }

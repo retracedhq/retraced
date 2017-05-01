@@ -3,7 +3,8 @@ import * as _ from "lodash";
 import * as moment from "moment";
 
 import { Scope } from "../../security/scope";
-import actionCounts from "../../models/action/counts";
+import countBy from "../../models/event/countBy";
+import getGroups from "../../models/group/gets";
 
 const defaultPageSize = 20;
 
@@ -27,7 +28,6 @@ export default async function counts(
   const end = begin + limit;
 
   let crud = ["c", "r", "u", "d"];
-
   if (_.isString(args.crud)) {
     crud = args.crud
       .trim()
@@ -37,7 +37,6 @@ export default async function counts(
 
   let startTime = moment(0);
   let endTime = moment();
-
   if (args.startTime) {
     startTime = moment(args.startTime);
     if (!startTime.isValid()) {
@@ -51,21 +50,57 @@ export default async function counts(
     }
   }
 
-  // No size limit so the totalCount can be returned
-  const counts = await actionCounts({
+  let groupBy: "action" | "group.id" = "action";
+  switch (args.type) {
+  case "action":
+    groupBy = "action";
+    break;
+  case "group":
+    groupBy = "group.id";
+    break;
+  default:
+    throw { status: 400, err: new Error("Invalid type") };
+  }
+
+  const counts = await countBy({
+    groupBy,
     crud,
     startTime: startTime.valueOf(),
     endTime: endTime.valueOf(),
     scope: context,
   });
-
-  const edges = counts
-    .map(({ action, count }, i) => ({
-      node: action,
+  let edges: any[] = counts
+    .map(({ value, count }, i) => ({
+      node: value,
       count,
       cursor: encodeCursor(i),
     }))
     .slice(begin, end);
+
+  // Each edge.node is a string but needs to be an object.
+  if (groupBy === "action") {
+    edges = edges.map((edge) => ({
+      ...edge,
+      node: { action: edge.node },
+    }));
+  }
+  if (groupBy === "group.id") {
+    const groupList = await getGroups({
+      group_ids: edges.map((edge) => edge.node),
+    });
+    const groupNodesById = groupList.reduce((accm, group) => {
+      // all the fields that can be returned in the graphql response
+      accm[group.group_id] = {
+        id: group.group_id,
+        name: group.name,
+      };
+      return accm;
+    }, {});
+    edges = edges.map((edge) => ({
+      ...edge,
+      node: groupNodesById[edge.node],
+    }));
+  }
 
   return {
     totalCount: counts.length,
@@ -73,7 +108,7 @@ export default async function counts(
     pageInfo: {
       hasNextPage: end < counts.length,
     },
- };
+  };
 }
 
 function encodeCursor(pos: number): string {
