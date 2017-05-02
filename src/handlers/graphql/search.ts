@@ -4,6 +4,7 @@ import * as _ from "lodash";
 import queryEvents, { unrestricted, Options } from "../../models/event/query";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { Scope } from "../../security/scope";
+import getGroups from "../../models/group/gets";
 
 export interface Args {
   query: string;
@@ -45,7 +46,26 @@ export default async function search(
     events: results.events,
     source: context.groupId ? "viewer" : "admin",
   });
+
+  // prepare to populate the group.name where there is only group.id
+  const groupIdsWithoutName = events.reduce((accm, event) => {
+    if (event.group && event.group.id && !event.group.name) {
+      accm.push(event.group.id);
+    }
+    return accm;
+  }, []);
+  const groupListWithoutName = await getGroups({
+    group_ids: groupIdsWithoutName,
+  });
+  const groupsByIdWithoutName = groupListWithoutName.reduce((accm, group) => {
+    accm[group.group_id] = group;
+    return accm;
+  }, {});
+
   const edges = events.map((event) => {
+    if (event.group && event.group.id && !event.group.name) {
+      event.group = groupsByIdWithoutName[event.group.id];
+    }
     if (event.fields) {
       const fields: any[] = [];
 
@@ -73,6 +93,8 @@ export default async function search(
     const { totalHits } = await queryEvents(opts);
     totalCount = totalHits;
   }
+
+
 
   return {
     totalCount,
