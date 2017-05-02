@@ -94,8 +94,6 @@ export default async function search(
     totalCount = totalHits;
   }
 
-
-
   return {
     totalCount,
     edges,
