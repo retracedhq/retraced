@@ -4,15 +4,15 @@ import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 import * as elasticsearch from "elasticsearch";
 
-import { countActions } from "../../../models/action/counts";
+import { countBy } from "../../../models/event/countBy";
 
-@suite class CountActionsTest {
+@suite class EventsCountByTest {
 
-    @test public async "actions.count()"() {
+    @test public async "events.countBy()"() {
         const es = TypeMoq.Mock.ofType<elasticsearch.Client>();
         const esResponse = {
             aggregations: {
-                action: {
+                groupedBy: {
                     buckets: [
                         { key: "user.login", doc_count: 100 },
                         { key: "user.logout", doc_count: 95 },
@@ -39,7 +39,8 @@ import { countActions } from "../../../models/action/counts";
                 return Promise.resolve(esResponse);
             });
 
-        const counts = await countActions(es.object, {
+        const counts = await countBy(es.object, {
+          groupBy: "action",
           scope: {
             projectId: "p1",
             environmentId: "e1",
@@ -50,9 +51,8 @@ import { countActions } from "../../../models/action/counts";
         });
 
         expect(counts).to.deep.equal([
-            { action: "user.login", count: 100 },
-            { action: "user.logout", count: 95 },
+            { value: "user.login", count: 100 },
+            { value: "user.logout", count: 95 },
         ]);
     }
-
 }
