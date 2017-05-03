@@ -60,12 +60,8 @@ function getDefaultMarkdownForEvent(event, source): string {
 
   markdown = markdown + " performed the action **{{action}}**";
 
-  if (event.target) {
-    if (event.target.name) {
-      markdown = markdown + " on the item **{{target.name}}**";
-    } else {
-      markdown = markdown + " on **an unknown item**";
-    }
+  if (event.target && event.target.name) {
+    markdown = markdown + " on the item **{{target.name}}**";
   }
 
   markdown = markdown + ".";
