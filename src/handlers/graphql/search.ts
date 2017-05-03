@@ -67,16 +67,10 @@ export default async function search(
       event.group = groupsByIdWithoutName[event.group.id];
     }
     if (event.fields) {
-      const fields: any[] = [];
-
-      for (const field of event.fields) {
-        fields.push({
-          key: field,
-          value: event.fields[field],
-        });
-      }
-
-      event.fields = fields;
+      event.fields = _.map(event.fields, (value, key) => ({
+        key,
+        value,
+      }));
     }
 
     return {
