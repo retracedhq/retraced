@@ -14,6 +14,20 @@ import {
 import search from "./search";
 import counts from "./counts";
 
+const fieldsType = new GraphQLList(new GraphQLObjectType({
+  name: "Field",
+  fields: () => ({
+    key: {
+      description: "The key for this field.",
+      type: GraphQLString,
+    },
+    value: {
+      description: "The value for this field.",
+      type: GraphQLString,
+    },
+  }),
+}));
+
 const targetType = new GraphQLObjectType({
   description: "The object an event is performed on.",
   name: "Target",
@@ -34,6 +48,11 @@ const targetType = new GraphQLObjectType({
       description: "The type of this target entity.",
       type: GraphQLString,
     },
+    // GraphQL does not have a map type. Fields is a list of key-value objects.
+    fields: {
+      description: "The set of fields associated with this target.",
+      type: fieldsType,
+    },
   }),
 });
 
@@ -52,6 +71,11 @@ const actorType = new GraphQLObjectType({
     href: {
       description: "The URL associated with this actor.",
       type: GraphQLString,
+    },
+    // GraphQL does not have a map type. Fields is a list of key-value objects.
+    fields: {
+      description: "The set of fields associated with this actor.",
+      type: fieldsType,
     },
   }),
 });
@@ -206,19 +230,7 @@ const eventType = new GraphQLObjectType({
     // GraphQL does not have a map type. Fields is a list of key-value objects.
     fields: {
       description: "The set of fields associated with this event.",
-      type: new GraphQLList(new GraphQLObjectType({
-        name: "Field",
-        fields: () => ({
-          key: {
-            description: "The key for this field.",
-            type: GraphQLString,
-          },
-          value: {
-            description: "The value for this field.",
-            type: GraphQLString,
-          },
-        }),
-      })),
+      type: fieldsType,
     },
 
     raw: {
