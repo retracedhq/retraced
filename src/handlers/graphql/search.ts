@@ -73,6 +73,20 @@ export default async function search(
       }));
     }
 
+    if (event.target.fields) {
+      event.target.fields = _.map(event.target.fields, (value, key) => ({
+        key,
+        value,
+      }));
+    }
+
+    if (event.actor.fields) {
+      event.actor.fields = _.map(event.actor.fields, (value, key) => ({
+        key,
+        value,
+      }));
+    }
+
     return {
       node: event,
       cursor: encodeCursor(event.canonical_time, event.id),
