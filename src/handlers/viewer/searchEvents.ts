@@ -35,15 +35,7 @@ export default async function(req) {
   let targetIds;
   if (claims.scope) {
     const scope = querystring.parse(claims.scope);
-    const findTargetsOpts = {
-      foreignTargetIds: [scope.target_id],
-      environmentId: claims.environmentId,
-    };
-    const targets = await findTargets(findTargetsOpts);
-    targetIds = [];
-    for (const target of targets) {
-      targetIds.push(target.id);
-    }
+    targetIds = [scope.target_id];
   }
 
   const opts: Options = {
