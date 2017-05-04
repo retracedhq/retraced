@@ -74,21 +74,3 @@ export async function checkEitapiAccess(req) {
 export async function checkViewerAccess(req): Promise<ViewerDescriptor> {
   return await validateViewerDescriptorVoucher(req.get("Authorization"));
 }
-
-export async function scopeTargets(claims: ViewerDescriptor): Promise<string[]> {
-  const targetIds: string[] = [];
-
-  if (claims.scope) {
-    const scope = querystring.parse(claims.scope);
-    const findTargetsOpts = {
-      foreignTargetIds: [scope.target_id],
-      environmentId: claims.environmentId,
-    };
-    const targets = await findTargets(findTargetsOpts);
-    for (const target of targets) {
-      targetIds.push(target.id);
-    }
-  }
-
-  return targetIds;
-}

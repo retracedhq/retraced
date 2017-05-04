@@ -31,12 +31,12 @@ export function scope(scope: Scope): [string, any[]] {
     });
   }
 
-  if (scope.targetIds) {
-    const should = scope.targetIds.map((targetId) => ({
-      term: { "target.id": targetId },
-    }));
-
-    filters.push({ bool: { should } });
+  if (scope.targetId) {
+    filters.push({
+      bool: {
+        term: { "target.id": scope.targetId },
+      },
+    });
   }
 
   return [index, filters];

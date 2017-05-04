@@ -168,7 +168,7 @@ import {
         projectId: "p1",
         environmentId: "e1",
         groupId: "g1",
-        targetIds: ["t1"],
+        targetId: "t1",
       },
       cursor: [1492060162148, "abc123"],
     };
@@ -197,9 +197,7 @@ import {
               },
               {
                 bool: {
-                  should: [
-                    { term: {"target.id": "t1"}},
-                  ],
+                  term: {"target.id": "t1"},
                 },
               },
               // target scope filters
