@@ -9,7 +9,7 @@ export class NSQClient {
 
   private writer: Promise<any>;
 
-  constructor (
+  constructor(
     private readonly host: string,
     private readonly port: number,
   ) {}
