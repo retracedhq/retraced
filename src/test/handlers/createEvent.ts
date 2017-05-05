@@ -4,14 +4,14 @@ import * as TypeMoq from "typemoq";
 
 import * as pg from "pg";
 import * as express from "express";
-import { DisqueClient } from "../../persistence/disque";
+import { NSQClient } from "../../persistence/nsq";
 
 import { EventCreater } from "../../handlers/createEvent";
 
 @suite class EventCreaterTest {
     @test public async "EventCreater#createEvent()"() {
         const pool = TypeMoq.Mock.ofType(pg.Pool);
-        const disque = TypeMoq.Mock.ofType(DisqueClient);
+        const nsq = TypeMoq.Mock.ofType(NSQClient);
         const request = TypeMoq.Mock.ofType<express.Request>();
         const fakeHasher = (e) => "fake-hash";
         const fakeUUID = () => "kfbr392";
@@ -50,15 +50,15 @@ import { EventCreater } from "../../handlers/createEvent";
         pool.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())) // Still need to validate args
             .verifiable(TypeMoq.Times.once());
 
-        // set up disque
+        // set up nsq
         const jobBody = JSON.stringify({taskId: "kfbr392"});
-        disque
-            .setup((x) => x.addjob("normalize_event", jobBody, 2000, TypeMoq.It.isAny()))
-            .returns((args) => Promise.resolve("some-disque-job-id"));
+        nsq
+            .setup((x) => x.produce("raw_events", jobBody))
+            .returns((args) => Promise.resolve());
 
         const creater = new EventCreater(
             pool.object,
-            disque.object,
+            nsq.object,
             fakeHasher,
             fakeUUID,
         );
