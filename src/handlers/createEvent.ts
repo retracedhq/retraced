@@ -14,7 +14,7 @@ import { fromCreateEventInput } from "../models/event";
 import getApiToken from "../models/api_token/get";
 import uniqueId from "../models/uniqueId";
 import { apiTokenFromAuthHeader } from "../security/helpers";
-import { default as getDisque, DisqueClient } from "../persistence/disque";
+import { NSQClient } from "../persistence/nsq";
 import getPgPool from "../persistence/pg";
 
 const requiredFields = [
@@ -117,18 +117,18 @@ export class EventCreater {
       )`;
 
   private readonly pgPool: pg.Pool;
-  private readonly disque: DisqueClient;
+  private readonly nsq: NSQClient;
   private readonly hasher: (event: Event) => string;
   private readonly idSource: () => string;
 
   constructor(
     pgPool: pg.Pool,
-    disque: DisqueClient,
+    nsq: NSQClient,
     hasher: (event: Event) => string,
     idSource: () => string,
   ) {
     this.pgPool = pgPool;
-    this.disque = disque;
+    this.nsq = nsq;
     this.hasher = hasher;
     this.idSource = idSource;
   }
@@ -183,18 +183,12 @@ export class EventCreater {
       const job = JSON.stringify({
         taskId: newTaskId,
       });
-      const opts = {
-        retry: 600, // seconds
-        async: false,
-      };
-      // This task will normalize the event and save its important bits to postgres.
-      // It'll then enqueue tasks for saving to the other databases.
-      this.disque.addjob("normalize_event", job, 2000, opts)
+      this.nsq.produce("raw_events", job)
         .then((res) => {
-          console.log(`sent task ${job} to normalize_event, received ${res}`);
+          console.log(`sent task ${job} to raw_events`);
         })
         .catch((err) => {
-          console.log(`failed to send task ${job} to normalize_event: ${chalk.red(util.inspect(err))}`);
+          console.log(`failed to send task ${job} to raw_events: ${chalk.red(util.inspect(err))}`);
         });
 
       // Coerce the input event into a proper Event object.
@@ -280,7 +274,7 @@ export class EventCreater {
 
 export const defaultEventCreater = new EventCreater(
   getPgPool(),
-  getDisque(),
+  NSQClient.fromEnv(),
   createCanonicalHash,
   uniqueId,
 );

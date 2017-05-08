@@ -136,3 +136,13 @@ spec:
                 secretKeyRef:
                   name: bugsnag
                   key: STAGE
+            - name: NSQD_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: nsq
+                  key: NSQD_HOST
+            - name: NSQD_TCP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: nsq
+                  key: NSQD_TCP_PORT
