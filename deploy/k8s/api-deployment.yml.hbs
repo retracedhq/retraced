@@ -96,16 +96,6 @@ spec:
                 secretKeyRef:
                   name: elasticsearch
                   key: ELASTICSEARCH_NODES
-            - name: DISQUE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: disque
-                  key: DISQUE_PASSWORD
-            - name: DISQUE_NODES
-              valueFrom:
-                secretKeyRef:
-                  name: disque
-                  key: DISQUE_NODES
             - name: AUTH0_CLIENT_DOMAIN
               valueFrom:
                 secretKeyRef:

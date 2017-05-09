@@ -4,10 +4,8 @@ import * as jwt from "jsonwebtoken";
 
 import ViewerDescriptor from "../models/viewer_descriptor/def";
 import getViewerDescriptor from "../models/viewer_descriptor/get";
-import getDisque from "../persistence/disque";
+import nsq from "../persistence/nsq";
 import { createViewerDescriptorVoucher } from "../security/vouchers";
-
-const disque = getDisque();
 
 export default async function handler(req) {
   // Note that, because these "viewer descriptor" values are being read from redis,
@@ -26,11 +24,7 @@ export default async function handler(req) {
     event: "viewer_session",
     timestamp: moment().valueOf(),
   });
-  const opts = {
-    retry: 600, // seconds
-    async: true,
-  };
-  disque.addjob("user_reporting_task", job, 0, opts);
+  await nsq.produce("user_reporting_task", job);
 
   return {
     status: 200,
