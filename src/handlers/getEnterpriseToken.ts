@@ -36,6 +36,7 @@ export async function getEnterpriseToken(
         body: {
             token: token.id,
             display_name: token.display_name,
+            view_log_action: token.view_log_action,
         },
     };
 }

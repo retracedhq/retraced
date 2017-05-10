@@ -165,40 +165,12 @@ export class EventCreater {
 
     // Create a new ingestion task for each event passed in.
     for (const eventInput of eventInputs) {
-      const insertStmt = EventCreater.insertIntoIngestTask;
-
-      const newTaskId = this.idSource();
-      const newEventId = this.idSource();
-      const insertVals = [
-        newTaskId,
-        JSON.stringify(eventInput),
+      const result = await this.saveRawEvent(
         apiToken.project_id,
         apiToken.environment_id,
-        newEventId,
-        moment().valueOf(),
-      ];
-
-      await this.pgPool.query(insertStmt, insertVals);
-
-      const job = JSON.stringify({
-        taskId: newTaskId,
-      });
-      this.nsq.produce("raw_events", job)
-        .then((res) => {
-          console.log(`sent task ${job} to raw_events`);
-        })
-        .catch((err) => {
-          console.log(`failed to send task ${job} to raw_events: ${chalk.red(util.inspect(err))}`);
-        });
-
-      // Coerce the input event into a proper Event object.
-      // Then, generate an authoritative hash from its contents.
-      // This will be returned to the caller.
-      const event = fromCreateEventInput(eventInput, newEventId);
-      results.push({
-        id: newEventId,
-        hash: this.hasher(event),
-      });
+        eventInput,
+      );
+      results.push(result);
     }
 
     const responseBody = JSON.stringify(results[0]);
@@ -206,6 +178,44 @@ export class EventCreater {
     return {
       status: 201,
       body: responseBody,
+    };
+  }
+
+  public async saveRawEvent(projectId: string, envId: string, eventInput: CreateEventRequest) {
+    const insertStmt = EventCreater.insertIntoIngestTask;
+
+    const newTaskId = this.idSource();
+    const newEventId = this.idSource();
+    const insertVals = [
+      newTaskId,
+      JSON.stringify(eventInput),
+      projectId,
+      envId,
+      newEventId,
+      moment().valueOf(),
+    ];
+
+    await this.pgPool.query(insertStmt, insertVals);
+
+    const job = JSON.stringify({
+      taskId: newTaskId,
+    });
+    this.nsq.produce("raw_events", job)
+      .then((res) => {
+        console.log(`sent task ${job} to raw_events`);
+      })
+      .catch((err) => {
+        console.log(`failed to send task ${job} to raw_events: ${chalk.red(util.inspect(err))}`);
+      });
+
+    // Coerce the input event into a proper Event object.
+    // Then, generate an authoritative hash from its contents.
+    // This will be returned to the caller.
+    const event = fromCreateEventInput(eventInput, newEventId);
+
+    return {
+      id: newEventId,
+      hash: this.hasher(event),
     };
   }
 

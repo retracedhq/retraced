@@ -9,11 +9,13 @@ const pgPool = getPgPool();
 
 export interface CreateEnterpriseToken {
     displayName: string;
+    viewLogAction?: string;
 }
 
 export interface EnterpriseToken {
     token: string;
     display_name: string;
+    view_log_action: string;
 }
 
 export async function createEnterpriseToken(
@@ -35,10 +37,12 @@ export async function createEnterpriseToken(
         groupId,
         environmentId: apiToken.environment_id,
         displayName: opts.displayName,
+        viewLogAction: opts.viewLogAction || "audit.log.view",
     });
     const body = {
       token: result.id,
       display_name: result.display_name,
+      view_log_action: result.view_log_action,
     };
 
     return {

@@ -73,9 +73,10 @@ export class PublisherController extends Controller {
         @Query("is_admin") isAdmin?: string,
         @Query("target_id") targetId?: string,
         @Query("team_id") teamId?: string,
+        @Query("view_log_action") viewLogAction?: string,
     ): Promise<ViewerToken> {
 
-        const result: any = await createViewerDescriptor(auth, projectId, isAdmin === "true", groupId, teamId, targetId);
+        const result: any = await createViewerDescriptor(auth, projectId, isAdmin === "true", groupId, teamId, targetId, viewLogAction);
 
         this.setStatus(result.status);
         return Promise.resolve(result.body);
@@ -96,6 +97,7 @@ export class PublisherController extends Controller {
     @Example<EnterpriseToken>({
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Default Production Token",
+        view_log_action: "view.audit.log",
     })
     public async createEnterpriseToken(
         @Header("Authorization") auth: string,
@@ -124,9 +126,11 @@ export class PublisherController extends Controller {
     @Example<EnterpriseToken[]>([{
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Primary Token",
+        view_log_action: "view.audit.log",
     }, {
         token: "f053dc4a3042459818833276eec717ab",
         display_name: "Secondary Token",
+        view_log_action: "view.audit.log",
     }])
     public async listEnterpriseTokens(
         @Header("Authorization") auth: string,
@@ -154,6 +158,7 @@ export class PublisherController extends Controller {
     @Example<EnterpriseToken>({
         token: "f053dc4a3042459818833276eec717ab",
         display_name: "Production Token",
+        view_log_action: "audit.log.view",
     })
     public async getEnterpriseToken(
         @Header("Authorization") auth: string,
@@ -183,6 +188,7 @@ export class PublisherController extends Controller {
     @Example<EnterpriseToken>({
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Updated Token Name",
+        view_log_action: "view.audit.log",
     })
     public async updateEnterpriseToken(
         @Header("Authorization") auth: string,

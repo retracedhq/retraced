@@ -7,6 +7,7 @@ import getSavedSearch from "../../models/saved_search/get";
 import getActiveSearch from "../../models/active_search/get";
 import updateActiveSearch from "../../models/active_search/update";
 import QueryDescriptor from "../../models/query_desc/def";
+import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 
 export default async function handler(req) {
   const eitapiToken = await checkEitapiAccess(req);
@@ -108,6 +109,22 @@ export default async function handler(req) {
       },
     });
   }
+
+  const thisViewEvent: CreateEventRequest = {
+    action: eitapiToken.viewLogAction,
+    crud: "r",
+    is_anonymous: true,
+    group: {
+      id: eitapiToken.group_id,
+    },
+    description: `${req.method} ${req.originalUrl}`,
+    source_ip: req.ip,
+  };
+  await defaultEventCreater.saveRawEvent(
+    eitapiToken.project_id,
+    eitapiToken.environment_id,
+    thisViewEvent,
+  );
 
   const response: any = {
     events: results.events,

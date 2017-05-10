@@ -8,7 +8,9 @@ export default async function(req) {
     projectId: req.params.projectId,
     environmentId: claims.environmentId,
     groupId: claims.groupId,
+    viewLogAction: claims.viewLogAction,
   });
+
   return {
     status: 201,
     body: JSON.stringify(result),
