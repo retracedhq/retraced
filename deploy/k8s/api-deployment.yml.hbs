@@ -136,3 +136,8 @@ spec:
                 secretKeyRef:
                   name: nsq
                   key: NSQD_TCP_PORT
+            - name: NSQD_HTTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: nsq
+                  key: NSQD_HTTP_PORT
