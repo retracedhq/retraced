@@ -6,15 +6,15 @@ import * as util from "util";
 import * as uuid from "uuid";
 import * as express from "express";
 import { instrumented } from "monkit";
-import {Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller } from "tsoa";
+import { Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller } from "tsoa";
 
 import createCanonicalHash from "../models/event/canonicalize";
-import Event from "../models/event/";
+import Event, { Fields, crud } from "../models/event/";
 import { fromCreateEventInput } from "../models/event";
 import getApiToken from "../models/api_token/get";
 import uniqueId from "../models/uniqueId";
 import { apiTokenFromAuthHeader } from "../security/helpers";
-import { default as getDisque, DisqueClient } from "../persistence/disque";
+import { NSQClient } from "../persistence/nsq";
 import getPgPool from "../persistence/pg";
 
 const requiredFields = [
@@ -35,7 +35,73 @@ const requiredSubfields = [
   ["target", "target.id"],
 ];
 
-export interface CreateEventResult {
+/** A group is a single organization that is an end customer of a vendor app */
+export interface RequestGroup {
+  /** The id of this group in the vendor app's data model  */
+  id?: string;
+  /** A human-readable name */
+  name?: string;
+}
+
+/** An actor is the person or identity (like an API token) that performed the action */
+export interface RequestActor {
+  /** The id of this actor in the vendor app's data model  */
+  id?: string;
+  /** A human-readable name */
+  name?: string;
+  /** A url to view this actor in the vendor app.
+   * Can be referenced in Retraced [Display Templates](https://preview.retraced.io/documentation/advanced-retraced/display-templates/)
+   * to create an interactive embedded viewer experience.
+   */
+  href?: string;
+}
+
+/** A target is the object upon which the action is performed */
+export interface RequestTarget {
+  /** The id of this target in the vendor app's data model  */
+  id?: string;
+  /** A human-readable name */
+  name?: string;
+  /** A url to view this target in the vendor app.
+   * Can be referenced in Retraced
+   * to create an interactive embedded viewer experience.
+   */
+  href?: string;
+  /** Identifies the type */
+  type?: string;
+}
+
+export interface CreateEventRequest {
+  /** The action that occured e.g. `user.login` or `spreadsheet.create` */
+  action: string;
+  /** Denotes whether this is a "Create", "Read", "Update", or "Delete" event. */
+  crud: crud;
+  group?: RequestGroup;
+  /** A title to display for the event.
+   *  This field is deprecated in favor of [Display Templates](https://preview.retraced.io/documentation/advanced-retraced/display-templates/)
+   */
+  displayTitle?: string;
+  /** milliseconds since the epoch that this event occurent. `created` will be tracked in addtion to `received` */
+  created?: number;
+  actor?: RequestActor;
+  target?: RequestTarget;
+  /** The source IP address from which the event was initiated */
+  source_ip?: string;
+  /** A human-readable description of the event */
+  description?: string;
+  /** Denotes whether this event was anonymous. Must be `true` if `actor` is absent */
+  is_anonymous?: boolean;
+  /** Denotes whether this event represents a failure to perform the action */
+  is_failure?: boolean;
+  /** An optional set of additional arbitrary event about the data */
+  fields?: Fields;
+  /** An identifier for the vendor app component that sent the event */
+  component?: string;
+  /** An identifier for the version of the vendor app that sent the event, usually a git SHA */
+  version?: string;
+}
+
+export interface CreateEventResponse {
   id: string;
   hash: string;
 }
@@ -51,18 +117,18 @@ export class EventCreater {
       )`;
 
   private readonly pgPool: pg.Pool;
-  private readonly disque: DisqueClient;
+  private readonly nsq: NSQClient;
   private readonly hasher: (event: Event) => string;
   private readonly idSource: () => string;
 
   constructor(
     pgPool: pg.Pool,
-    disque: DisqueClient,
+    nsq: NSQClient,
     hasher: (event: Event) => string,
     idSource: () => string,
   ) {
     this.pgPool = pgPool;
-    this.disque = disque;
+    this.nsq = nsq;
     this.hasher = hasher;
     this.idSource = idSource;
   }
@@ -71,7 +137,7 @@ export class EventCreater {
     return this.createEvent(req.get("Authorization"), req.params.projectId, req.body);
   }
   @instrumented
-  public async createEvent(authorization: string, projectId: string, body: Event): Promise<any> {
+  public async createEvent(authorization: string, projectId: string, body: CreateEventRequest): Promise<any> {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, this.pgPool.query.bind(this.pgPool));
     const validAccess = apiToken && apiToken.project_id === projectId;
@@ -95,7 +161,7 @@ export class EventCreater {
     });
 
     // This is what will be returned to the caller.
-    let results: CreateEventResult[] = [];
+    let results: CreateEventResponse[] = [];
 
     // Create a new ingestion task for each event passed in.
     for (const eventInput of eventInputs) {
@@ -117,18 +183,12 @@ export class EventCreater {
       const job = JSON.stringify({
         taskId: newTaskId,
       });
-      const opts = {
-        retry: 600, // seconds
-        async: false,
-      };
-      // This task will normalize the event and save its important bits to postgres.
-      // It'll then enqueue tasks for saving to the other databases.
-      this.disque.addjob("normalize_event", job, 2000, opts)
+      this.nsq.produce("raw_events", job)
         .then((res) => {
-          console.log(`sent task ${job} to normalize_event, received ${res}`);
+          console.log(`sent task ${job} to raw_events`);
         })
         .catch((err) => {
-          console.log(`failed to send task ${job} to normalize_event: ${chalk.red(util.inspect(err))}`);
+          console.log(`failed to send task ${job} to raw_events: ${chalk.red(util.inspect(err))}`);
         });
 
       // Coerce the input event into a proper Event object.
@@ -214,7 +274,7 @@ export class EventCreater {
 
 export const defaultEventCreater = new EventCreater(
   getPgPool(),
-  getDisque(),
+  NSQClient.fromEnv(),
   createCanonicalHash,
   uniqueId,
 );

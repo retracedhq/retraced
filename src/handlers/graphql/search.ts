@@ -3,6 +3,8 @@ import * as _ from "lodash";
 
 import queryEvents, { unrestricted, Options } from "../../models/event/query";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
+import { Scope } from "../../security/scope";
+import getGroups from "../../models/group/gets";
 
 export interface Args {
   query: string;
@@ -12,18 +14,10 @@ export interface Args {
   before?: string;
 }
 
-export interface Context {
-  admin: boolean;
-  projectId: string;
-  environmentId: string;
-  groupIds?: string[];
-  targetIds?: string[];
-}
-
 export default async function search(
   q: any,
   args: Args,
-  context: Context,
+  context: Scope,
 ) {
   if (args.first && args.last) {
     throw { status: 400, err: new Error("Arguments 'first' and 'last' are exclusive") };
@@ -33,12 +27,7 @@ export default async function search(
   }
   const opts: Options = {
     query: args.query,
-    scope: {
-      projectId: context.projectId,
-      environmentId: context.environmentId,
-      groupIds: context.groupIds || unrestricted,
-      targetIds: context.targetIds || unrestricted,
-    },
+    scope: context,
     sort: args.last ? "desc" : "asc",
     size: args.last || args.first,
   };
@@ -55,20 +44,47 @@ export default async function search(
     projectId: context.projectId,
     environmentId: context.environmentId,
     events: results.events,
-    source: context.admin ? "admin" : "viewer",
+    source: context.groupId ? "viewer" : "admin",
   });
+
+  // prepare to populate the group.name where there is only group.id
+  const groupIdsWithoutName = events.reduce((accm, event) => {
+    if (event.group && event.group.id && !event.group.name) {
+      accm.push(event.group.id);
+    }
+    return accm;
+  }, []);
+  const groupListWithoutName = await getGroups({
+    group_ids: groupIdsWithoutName,
+  });
+  const groupsByIdWithoutName = groupListWithoutName.reduce((accm, group) => {
+    accm[group.group_id] = group;
+    return accm;
+  }, {});
+
   const edges = events.map((event) => {
+    if (event.group && event.group.id && !event.group.name) {
+      event.group = groupsByIdWithoutName[event.group.id];
+    }
     if (event.fields) {
-      const fields: any[] = [];
+      event.fields = _.map(event.fields, (value, key) => ({
+        key,
+        value,
+      }));
+    }
 
-      for (const field of event.fields) {
-        fields.push({
-          key: field,
-          value: event.fields[field],
-        });
-      }
+    if (event.target.fields) {
+      event.target.fields = _.map(event.target.fields, (value, key) => ({
+        key,
+        value,
+      }));
+    }
 
-      event.fields = fields;
+    if (event.actor.fields) {
+      event.actor.fields = _.map(event.actor.fields, (value, key) => ({
+        key,
+        value,
+      }));
     }
 
     return {

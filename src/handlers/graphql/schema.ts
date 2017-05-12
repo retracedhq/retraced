@@ -8,9 +8,25 @@ import {
   GraphQLObjectType,
   GraphQLEnumType,
   GraphQLList,
+  GraphQLUnionType,
 } from "graphql";
 
 import search from "./search";
+import counts from "./counts";
+
+const fieldsType = new GraphQLList(new GraphQLObjectType({
+  name: "Field",
+  fields: () => ({
+    key: {
+      description: "The key for this field.",
+      type: GraphQLString,
+    },
+    value: {
+      description: "The value for this field.",
+      type: GraphQLString,
+    },
+  }),
+}));
 
 const targetType = new GraphQLObjectType({
   description: "The object an event is performed on.",
@@ -32,6 +48,11 @@ const targetType = new GraphQLObjectType({
       description: "The type of this target entity.",
       type: GraphQLString,
     },
+    // GraphQL does not have a map type. Fields is a list of key-value objects.
+    fields: {
+      description: "The set of fields associated with this target.",
+      type: fieldsType,
+    },
   }),
 });
 
@@ -51,6 +72,11 @@ const actorType = new GraphQLObjectType({
       description: "The URL associated with this actor.",
       type: GraphQLString,
     },
+    // GraphQL does not have a map type. Fields is a list of key-value objects.
+    fields: {
+      description: "The set of fields associated with this actor.",
+      type: fieldsType,
+    },
   }),
 });
 
@@ -67,6 +93,17 @@ const groupType = new GraphQLObjectType({
       description: "The name of this group.",
     },
   }),
+});
+
+const actionType = new GraphQLObjectType({
+  description: "An action.",
+  name: "Action",
+  fields: {
+    action: {
+      type: GraphQLString,
+      description: "The action field of an event such as \"user.login\".",
+    },
+  },
 });
 
 const eventType = new GraphQLObjectType({
@@ -193,19 +230,7 @@ const eventType = new GraphQLObjectType({
     // GraphQL does not have a map type. Fields is a list of key-value objects.
     fields: {
       description: "The set of fields associated with this event.",
-      type: new GraphQLList(new GraphQLObjectType({
-        name: "Field",
-        fields: () => ({
-          key: {
-            description: "The key for this field.",
-            type: GraphQLString,
-          },
-          value: {
-            description: "The value for this field.",
-            type: GraphQLString,
-          },
-        }),
-      })),
+      type: fieldsType,
     },
 
     raw: {
@@ -213,6 +238,20 @@ const eventType = new GraphQLObjectType({
       description: "The raw event sent to the Retraced API.",
     },
   }),
+});
+
+const pageInfoType = new GraphQLObjectType({
+  name: "PageInfo",
+  fields: {
+    hasNextPage: {
+      type: GraphQLBoolean,
+      description: "When paging forward with <code>first</code>, indicates more results are available.",
+    },
+    hasPreviousPage: {
+      type: GraphQLBoolean,
+      description: "When paging backward with <code>last</code>, indicates more results are available.",
+    },
+  },
 });
 
 const queryType = new GraphQLObjectType({
@@ -244,19 +283,7 @@ const queryType = new GraphQLObjectType({
           },
           pageInfo: {
             description: "Indications that more search results are available.",
-            type: new GraphQLObjectType({
-              name: "PageInfo",
-              fields: {
-                hasNextPage: {
-                  type: GraphQLBoolean,
-                  description: "Indicates there are newer events matching the query when paging from oldest to newest with the <code>first</code> argument.",
-                },
-                hasPreviousPage: {
-                  type: GraphQLBoolean,
-                  description: "Indicates there are older events matching the query when paging from newest to oldest with the <code>last</code> argument.",
-                },
-              },
-            }),
+            type: pageInfoType,
           },
           totalCount: {
             description: "The total number of search results matched by the query.",
@@ -287,6 +314,81 @@ const queryType = new GraphQLObjectType({
         },
       },
       resolve: search,
+    },
+    counts: {
+      description: "Get event counts aggregated by action or group.",
+      type: new GraphQLObjectType({
+        description: "The results of a counts request.",
+        name: "CountsConnection",
+        fields: {
+          edges: {
+            description: "The page of requested counts",
+            type: new GraphQLList(new GraphQLObjectType({
+              name: "CountEdge",
+              description: "The node, cursor, and count for a single result.",
+              fields: {
+                node: {
+                  description: "An action or group.",
+                  type: new GraphQLUnionType({
+                    name: "ActionOrGroup",
+                    types: [actionType, groupType],
+                    description: "Type depends on type argument passed to the counts query.",
+                    resolveType(value) {
+                      if (value.action) {
+                        return actionType;
+                      }
+                      return groupType;
+                    },
+                  }),
+                },
+                count: {
+                  description: "The aggregate action count",
+                  type: GraphQLInt,
+                },
+                cursor: {
+                  description: "An opaque cursor for paginating from this point in the results. Use it as the <code>after</code> argument to paginate forward.",
+                  type: GraphQLString,
+                },
+              },
+            })),
+          },
+          pageInfo: {
+            description: "Indicates whether more results are available.",
+            type: pageInfoType,
+          },
+          totalCount: {
+            description: "The number of distinct actions.",
+            type: GraphQLInt,
+          },
+        },
+      }),
+      args: {
+        type: {
+          type: GraphQLString,
+          description: "action | group",
+        },
+        startTime: {
+          type: GraphQLString,
+          description: "The beginning of the range as ISO 8601 datetime.",
+        },
+        endTime: {
+          type: GraphQLString,
+          description: "The end of the range as ISO 8601 datetime.",
+        },
+        crud: {
+          type: GraphQLString,
+          description: `Limit results to Create, Read, Update, or Delete actions. Example: "cud"`,
+        },
+        first: {
+          type: GraphQLInt,
+          description: "The limit of results to return, sorted from highest to lowest count. It can optionally be used with the <code>after</code> argument.",
+        },
+        after: {
+          type: GraphQLString,
+          description: "A cursor returned from a previous query.",
+        },
+      },
+      resolve: counts,
     },
   },
 });

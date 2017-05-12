@@ -10,6 +10,5 @@ export default async function(req) {
   return await handler(req, {
     projectId: req.params.projectId,
     environmentId: req.params.environmentId,
-    admin: true,
   });
 }

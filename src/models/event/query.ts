@@ -3,18 +3,13 @@ import * as _ from "lodash";
 import * as searchQueryParser from "search-query-parser";
 import * as moment from "moment";
 
-import getEs from "../../persistence/elasticsearch";
+import { Scope } from "../../security/scope";
+import getEs, { scope } from "../../persistence/elasticsearch";
 
 const es = getEs();
 
 // An empty list for groupIds or targetIds means unrestricted.
 export const unrestricted = Object.seal([]);
-export interface Scope {
-  projectId: string;
-  environmentId: string;
-  groupIds: string[];
-  targetIds: string[];
-}
 
 // query may contain untrusted searches a user is not authorized to see.
 // scope contains the security-relevant restrictions on results.
@@ -178,40 +173,14 @@ export function parse(query: string): any {
   return q;
 }
 
-// If the scope is limited by groupIds or targetIds add them as filters.
-// Restricts viewer and enterprise clients to authorized data.
-export function scopeFilters(scope: Scope): any[] {
-  const filters: any[] = [];
-
-  if (scope.groupIds.length) {
-    const should = scope.groupIds.reduce((clauses, groupId) => ([
-      ...clauses,
-      { term: { "group.id": groupId } },
-      { term: { team_id: groupId } },
-    ]), [] as any[]);
-
-    filters.push({ bool: { should } });
-  }
-
-  if (scope.targetIds.length) {
-    const should = scope.targetIds.map((targetId) => ({
-      term: { "target.id": targetId },
-    }));
-
-    filters.push({ bool: { should } });
-  }
-
-  return filters;
-}
-
 export function searchParams(opts: Options): any {
   const query = parse(opts.query);
-  const securityFilters = scopeFilters(opts.scope);
+  const [index, securityFilters] = scope(opts.scope);
 
   query.bool.filter = query.bool.filter.concat(securityFilters);
 
   return {
-    index: `retraced.${opts.scope.projectId}.${opts.scope.environmentId}`,
+    index,
     type: "event",
     _source: true,
     size: opts.size,

@@ -26,6 +26,11 @@ spec:
               name: var-run
               readOnly: true
           env:
+            - name: SIGSCI_RPC_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: sigsci
+                  key: SIGSCI_RPC_ADDRESS
             - name: REDIS_URI
               valueFrom:
                 secretKeyRef:
@@ -76,6 +81,11 @@ spec:
                 secretKeyRef:
                   name: retraced
                   key: RETRACED_API_BASE
+            - name: RETRACED_API_SCHEMES
+              valueFrom:
+                secretKeyRef:
+                  name: retraced
+                  key: RETRACED_API_SCHEMES
             - name: MANDRILL_KEY
               valueFrom:
                 secretKeyRef:
@@ -86,16 +96,6 @@ spec:
                 secretKeyRef:
                   name: elasticsearch
                   key: ELASTICSEARCH_NODES
-            - name: DISQUE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: disque
-                  key: DISQUE_PASSWORD
-            - name: DISQUE_NODES
-              valueFrom:
-                secretKeyRef:
-                  name: disque
-                  key: DISQUE_NODES
             - name: AUTH0_CLIENT_DOMAIN
               valueFrom:
                 secretKeyRef:
@@ -126,3 +126,18 @@ spec:
                 secretKeyRef:
                   name: bugsnag
                   key: STAGE
+            - name: NSQD_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: nsq
+                  key: NSQD_HOST
+            - name: NSQD_TCP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: nsq
+                  key: NSQD_TCP_PORT
+            - name: NSQD_HTTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: nsq
+                  key: NSQD_HTTP_PORT

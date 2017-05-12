@@ -6,11 +6,9 @@ import * as moment from "moment";
 
 import { checkViewerAccess } from "../../security/helpers";
 import searchEvents, { Options } from "../../models/event/search";
-import getDisque from "../../persistence/disque";
+import nsq from "../../persistence/nsq";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import findTargets from "../../models/target/find";
-
-const disque = getDisque();
 
 /*
 What we're expecting from clients:
@@ -35,15 +33,7 @@ export default async function(req) {
   let targetIds;
   if (claims.scope) {
     const scope = querystring.parse(claims.scope);
-    const findTargetsOpts = {
-      foreignTargetIds: [scope.target_id],
-      environmentId: claims.environmentId,
-    };
-    const targets = await findTargets(findTargetsOpts);
-    targetIds = [];
-    for (const target of targets) {
-      targetIds.push(target.id);
-    }
+    targetIds = [scope.target_id];
   }
 
   const opts: Options = {
@@ -89,11 +79,7 @@ export default async function(req) {
       event: "viewer_search",
       timestamp: moment().valueOf(),
     });
-    const disqOpts = {
-      retry: 600, // seconds,
-      async: true,
-    };
-    await disque.addjob("user_reporting_task", job, 0, disqOpts);
+    await nsq.produce("user_reporting_task", job);
   }
 
   return {

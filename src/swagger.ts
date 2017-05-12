@@ -37,8 +37,18 @@ const specs: ApiSpec[] = [
 
 function fix(json: any, schemes: string[]): void {
   json.host = apiHost;
-  _.unset(json, "definitions.Fields.required");
   json.schemes = schemes;
+  removeEmptyRequired(json);
+}
+
+function removeEmptyRequired(json: any) {
+  json.definitions = _.mapValues(json.definitions, (def) => {
+    if (_.isEmpty(def.required)) {
+      _.unset(def, "required");
+    }
+    return def;
+  });
+
 }
 
 // exported for testing

@@ -1,7 +1,9 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: api-ingress
+  name: api-ingress-static
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "api-ingress"
 spec:
   tls:
     - secretName: api-tls

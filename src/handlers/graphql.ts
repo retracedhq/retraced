@@ -11,6 +11,5 @@ export default async function graphql(req) {
   return await handler(req, {
     projectId: apiToken.project_id,
     environmentId: apiToken.environment_id,
-    admin: true,
   });
 }
