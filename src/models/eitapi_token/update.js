@@ -12,6 +12,7 @@ opts:
   groupId
 
   displayName
+  viewLogAction
 */
 export default async function updateEitapiToken(opts) {
   const pg = await pgPool.connect();
@@ -22,9 +23,12 @@ export default async function updateEitapiToken(opts) {
       environment_id: opts.environmentId,
       group_id: opts.groupId,
       display_name: opts.displayName,
+      view_log_action: opts.viewLogAction,
     };
     const updateStmt = `update eitapi_token
-      set display_name = $5
+      set
+        display_name = $5,
+        view_log_action = $6
       where id = $1 and
         project_id = $2 and
         environment_id = $3 and
@@ -35,6 +39,7 @@ export default async function updateEitapiToken(opts) {
       updatedEitapiToken.environment_id,
       updatedEitapiToken.group_id,
       updatedEitapiToken.display_name,
+      updatedEitapiToken.view_log_action,
     ];
     const result = await pg.query(updateStmt, updateVals);
     if (result.rowCount !== 1) {

@@ -4,6 +4,7 @@ interface ViewerDescriptor {
   environmentId: string;
   groupId: string;
   isAdmin: boolean;
+  viewLogAction: string;
   created: number;
   scope: string;
 }

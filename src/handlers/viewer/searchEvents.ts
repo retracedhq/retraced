@@ -9,6 +9,7 @@ import searchEvents, { Options } from "../../models/event/search";
 import nsq from "../../persistence/nsq";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import findTargets from "../../models/target/find";
+import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 
 /*
 What we're expecting from clients:
@@ -27,6 +28,16 @@ query: {
 */
 export default async function(req) {
   const claims = await checkViewerAccess(req);
+  const thisViewEvent: CreateEventRequest = {
+    action: claims.viewLogAction,
+    crud: "r",
+    is_anonymous: true,
+    group: {
+      id: claims.groupId,
+    },
+    description: `${req.method} ${req.originalUrl}`,
+    source_ip: req.ip,
+  };
 
   const reqOpts = req.body.query;
 
@@ -34,6 +45,7 @@ export default async function(req) {
   if (claims.scope) {
     const scope = querystring.parse(claims.scope);
     targetIds = [scope.target_id];
+    thisViewEvent.target = { id: scope.target_id };
   }
 
   const opts: Options = {
@@ -81,6 +93,11 @@ export default async function(req) {
     });
     await nsq.produce("user_reporting_task", job);
   }
+  defaultEventCreater.saveRawEvent(
+    req.params.projectId,
+    claims.environmentId,
+    thisViewEvent,
+  );
 
   return {
     status: 200,

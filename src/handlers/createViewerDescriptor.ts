@@ -13,7 +13,8 @@ export default async function handlerRaw(req) {
   const teamId = req.query.team_id;
   const isAdmin = req.query.is_admin === "true";
   const targetId = req.query.target_id;
-  return createViewerDescriptor(auth, projectId, isAdmin, groupId, teamId, targetId);
+  const viewLogAction = req.query.view_log_action;
+  return createViewerDescriptor(auth, projectId, isAdmin, groupId, teamId, targetId, viewLogAction);
 }
 
 export async function createViewerDescriptor(
@@ -23,6 +24,7 @@ export async function createViewerDescriptor(
   groupId?: string,
   teamId?: string,
   targetId?: string,
+  viewLogAction?: string,
 ) {
 
   groupId = groupId || teamId;
@@ -43,6 +45,7 @@ export async function createViewerDescriptor(
     groupId,
     isAdmin,
     targetId,
+    viewLogAction: viewLogAction || "audit.log.view",
   });
 
   return {

@@ -41,6 +41,7 @@ export async function updateEnterpriseToken(
         body: {
             token: updated.id,
             display_name: displayName,
+            view_log_action: updated.view_log_action,
         },
     };
 }
