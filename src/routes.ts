@@ -11,6 +11,7 @@ import adminGraphQL from "./handlers/admin/graphql";
 import cancelEmailReport from "./handlers/admin/cancelEmailReport";
 import createApiToken from "./handlers/admin/createApiToken";
 import createEnvironment from "./handlers/admin/createEnvironment";
+import deleteEnvironment from "./handlers/admin/deleteEnvironment";
 import createInvite from "./handlers/admin/createInvite";
 import createProject from "./handlers/admin/createProject";
 import deleteApiToken from "./handlers/admin/deleteApiToken";
@@ -98,6 +99,11 @@ export default {
     path: "/admin/v1/project/:projectId/environment",
     method: "post",
     handler: createEnvironment,
+  },
+  adminDeleteEnvironment: {
+    path: "/admin/v1/project/:projectId/environment/:environmentId",
+    method: "delete",
+    handler: deleteEnvironment,
   },
   adminCreateInvite: {
     path: "/admin/v1/project/:projectId/invite",
