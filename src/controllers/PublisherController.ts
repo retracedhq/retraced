@@ -97,7 +97,7 @@ export class PublisherController extends Controller {
     @Example<EnterpriseToken>({
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Default Production Token",
-        view_log_action: "view.audit.log",
+        view_log_action: "audit.log.view",
     })
     public async createEnterpriseToken(
         @Header("Authorization") auth: string,
@@ -126,11 +126,11 @@ export class PublisherController extends Controller {
     @Example<EnterpriseToken[]>([{
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Primary Token",
-        view_log_action: "view.audit.log",
+        view_log_action: "audit.log.view",
     }, {
         token: "f053dc4a3042459818833276eec717ab",
         display_name: "Secondary Token",
-        view_log_action: "view.audit.log",
+        view_log_action: "audit.log.view",
     }])
     public async listEnterpriseTokens(
         @Header("Authorization") auth: string,
@@ -188,7 +188,7 @@ export class PublisherController extends Controller {
     @Example<EnterpriseToken>({
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Updated Token Name",
-        view_log_action: "view.audit.log",
+        view_log_action: "audit.log.view",
     })
     public async updateEnterpriseToken(
         @Header("Authorization") auth: string,
