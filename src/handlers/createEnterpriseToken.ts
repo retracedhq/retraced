@@ -1,9 +1,11 @@
 import * as _ from "lodash";
+import * as express from "express";
 import getApiToken from "../models/api_token/get";
 import uniqueId from "../models/uniqueId";
 import createEitapiToken from "../models/eitapi_token/create";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
+import { defaultEventCreater, CreateEventRequest } from "./createEvent";
 
 const pgPool = getPgPool();
 
@@ -23,6 +25,7 @@ export async function createEnterpriseToken(
     projectId: string,
     groupId: string,
     opts: CreateEnterpriseToken,
+    req: express.Request,
 ) {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
@@ -44,6 +47,25 @@ export async function createEnterpriseToken(
       display_name: result.display_name,
       view_log_action: result.view_log_action,
     };
+
+    const thisEvent: CreateEventRequest = {
+        action: "eitapi_token.create",
+        crud: "c",
+        actor: {
+            id: "Publisher API",
+            name: apiToken.name,
+        },
+        group: {
+            id: groupId,
+        },
+        description: `${req.method} ${req.originalUrl}`,
+        source_ip: req.ip,
+    };
+    await defaultEventCreater.saveRawEvent(
+        projectId,
+        apiToken.environment_id,
+        thisEvent,
+    );
 
     return {
         status: 201,
