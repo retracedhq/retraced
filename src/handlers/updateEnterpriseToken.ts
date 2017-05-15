@@ -1,5 +1,4 @@
 import "source-map-support/register";
-import * as express from "express";
 import getApiToken from "../models/api_token/get";
 import modelsUpdateEnterpriseToken from "../models/eitapi_token/update";
 import { apiTokenFromAuthHeader } from "../security/helpers";
@@ -15,7 +14,8 @@ export async function updateEnterpriseToken(
     eitapiTokenId: string,
     displayName: string,
     viewLogAction: string | undefined,
-    req: express.Request,
+    ip: string,
+    route: string,
 ) {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
@@ -54,8 +54,8 @@ export async function updateEnterpriseToken(
         target: {
             id: eitapiTokenId,
         },
-        description: `${req.method} ${req.originalUrl}`,
-        source_ip: req.ip,
+        description: route,
+        source_ip: ip,
         fields: {
             displayName,
         },

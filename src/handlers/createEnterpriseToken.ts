@@ -1,5 +1,4 @@
 import * as _ from "lodash";
-import * as express from "express";
 import getApiToken from "../models/api_token/get";
 import uniqueId from "../models/uniqueId";
 import createEitapiToken from "../models/eitapi_token/create";
@@ -25,7 +24,8 @@ export async function createEnterpriseToken(
     projectId: string,
     groupId: string,
     opts: CreateEnterpriseToken,
-    req: express.Request,
+    ip: string,
+    route: string,
 ) {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
@@ -58,8 +58,8 @@ export async function createEnterpriseToken(
         group: {
             id: groupId,
         },
-        description: `${req.method} ${req.originalUrl}`,
-        source_ip: req.ip,
+        description: route,
+        source_ip: ip,
     };
     await defaultEventCreater.saveRawEvent(
         projectId,

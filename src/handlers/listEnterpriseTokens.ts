@@ -1,5 +1,4 @@
 import "source-map-support/register";
-import * as express from "express";
 import getApiToken from "../models/api_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import modelsListEnterpriseTokens from "../models/eitapi_token/list";
@@ -13,7 +12,8 @@ export async function listEnterpriseTokens(
   authorization: string,
   projectId: string,
   groupId: string,
-  req: express.Request,
+  ip: string,
+  route: string,
 ) {
   const apiTokenId = apiTokenFromAuthHeader(authorization);
   const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
@@ -45,8 +45,8 @@ export async function listEnterpriseTokens(
     group: {
       id: groupId,
     },
-    description: `${req.method} ${req.originalUrl}`,
-    source_ip: req.ip,
+    description: route,
+    source_ip: ip,
   };
   await defaultEventCreater.saveRawEvent(
     projectId,

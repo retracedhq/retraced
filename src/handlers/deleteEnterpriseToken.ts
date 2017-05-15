@@ -1,4 +1,4 @@
-import * as express from "express";
+import "source-map-support/register";
 import getApiToken from "../models/api_token/get";
 import uniqueId from "../models/uniqueId";
 import modelsDeleteEnterpriseToken from "../models/eitapi_token/delete";
@@ -13,7 +13,8 @@ export async function deleteEnterpriseToken(
     projectId: string,
     groupId: string,
     eitapiTokenId: string,
-    req: express.Request,
+    ip: string,
+    route: string,
 ) {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
@@ -50,8 +51,8 @@ export async function deleteEnterpriseToken(
         target: {
             id: eitapiTokenId,
         },
-        description: `${req.method} ${req.originalUrl}`,
-        source_ip: req.ip,
+        description: route,
+        source_ip: ip,
     };
     await defaultEventCreater.saveRawEvent(
         projectId,
