@@ -3,6 +3,7 @@ import getApiToken from "../models/api_token/get";
 import modelsUpdateEnterpriseToken from "../models/eitapi_token/update";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
+import { defaultEventCreater, CreateEventRequest } from "./createEvent";
 
 const pgPool = getPgPool();
 
@@ -12,6 +13,9 @@ export async function updateEnterpriseToken(
     groupId: string,
     eitapiTokenId: string,
     displayName: string,
+    viewLogAction: string | undefined,
+    ip: string,
+    route: string,
 ) {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
@@ -26,6 +30,7 @@ export async function updateEnterpriseToken(
         projectId,
         groupId,
         displayName,
+        viewLogAction,
         environmentId: apiToken.environment_id,
     });
 
@@ -35,6 +40,34 @@ export async function updateEnterpriseToken(
             err: new Error(`Not Found`),
         };
     }
+
+    const thisEvent: CreateEventRequest = {
+        action: "eitapi_token.update",
+        crud: "u",
+        actor: {
+            id: "Publisher API",
+            name: apiToken.name,
+        },
+        group: {
+            id: groupId,
+        },
+        target: {
+            id: eitapiTokenId,
+        },
+        description: route,
+        source_ip: ip,
+        fields: {
+            displayName,
+        },
+    };
+    if (viewLogAction) {
+        thisEvent.fields!.viewLogAction = viewLogAction;
+    }
+    await defaultEventCreater.saveRawEvent(
+        projectId,
+        apiToken.environment_id,
+        thisEvent,
+    );
 
     return {
         status: 200,

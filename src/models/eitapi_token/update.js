@@ -12,7 +12,7 @@ opts:
   groupId
 
   displayName
-  viewLogAction
+  viewLogAction?
 */
 export default async function updateEitapiToken(opts) {
   const pg = await pgPool.connect();
@@ -28,11 +28,12 @@ export default async function updateEitapiToken(opts) {
     const updateStmt = `update eitapi_token
       set
         display_name = $5,
-        view_log_action = $6
+        view_log_action = COALESCE($6, eitapi_token.view_log_action)
       where id = $1 and
         project_id = $2 and
         environment_id = $3 and
-        group_id = $4`;
+        group_id = $4
+      returning view_log_action`;
     const updateVals = [
       updatedEitapiToken.id,
       updatedEitapiToken.project_id,
@@ -45,6 +46,7 @@ export default async function updateEitapiToken(opts) {
     if (result.rowCount !== 1) {
       throw new Error(`Expected updated row count of 1, got ${result.rowCount}`);
     }
+    updatedEitapiToken.view_log_action = result.rows.view_log_action;
 
     return updatedEitapiToken;
 

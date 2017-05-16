@@ -3,6 +3,7 @@ import getApiToken from "../models/api_token/get";
 import modelsGetEnterpriseToken from "../models/eitapi_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
+import { defaultEventCreater, CreateEventRequest } from "./createEvent";
 
 const pgPool = getPgPool();
 
@@ -11,6 +12,8 @@ export async function getEnterpriseToken(
     projectId: string,
     groupId: string,
     eitapiTokenId: string,
+    ip: string,
+    route: string,
 ) {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
@@ -30,6 +33,28 @@ export async function getEnterpriseToken(
     if (token.project_id !== apiToken.project_id) {
         throw { status: 401, err: new Error("Unauthorized") };
     }
+
+    const thisEvent: CreateEventRequest = {
+        action: "eitapi_token.get",
+        crud: "r",
+        actor: {
+            id: "Publisher API",
+            name: apiToken.name,
+        },
+        group: {
+            id: groupId,
+        },
+        target: {
+            id: eitapiTokenId,
+        },
+        description: route,
+        source_ip: ip,
+    };
+    await defaultEventCreater.saveRawEvent(
+        projectId,
+        apiToken.environment_id,
+        thisEvent,
+    );
 
     return {
         status: 200,

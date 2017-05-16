@@ -1,4 +1,5 @@
-import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
+import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example, Request } from "tsoa";
+import * as express from "express";
 
 import { RetracedEvent } from "../models/event/";
 import { defaultEventCreater, EventCreater, CreateEventRequest, CreateEventResponse } from "../handlers/createEvent";
@@ -8,6 +9,8 @@ import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
 import { listEnterpriseTokens } from "../handlers/listEnterpriseTokens";
 import { updateEnterpriseToken } from "../handlers/updateEnterpriseToken";
 import { getEnterpriseToken } from "../handlers/getEnterpriseToken";
+
+const route = (req: express.Request) => `${req.method} ${req.originalUrl}`;
 
 @Route("publisher/v1")
 export class PublisherController extends Controller {
@@ -104,9 +107,17 @@ export class PublisherController extends Controller {
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
         @Body() token: CreateEnterpriseToken,
+        @Request() req: express.Request,
     ): Promise<EnterpriseToken> {
 
-        const result: any = await createEnterpriseToken(auth, projectId, groupId, token);
+        const result: any = await createEnterpriseToken(
+          auth,
+          projectId,
+          groupId,
+          token,
+          req.ip,
+          route(req),
+        );
 
         this.setStatus(result.status);
         return Promise.resolve(result.body);
@@ -136,8 +147,15 @@ export class PublisherController extends Controller {
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
+        @Request() req: express.Request,
     ): Promise<EnterpriseToken[]> {
-        const result = await listEnterpriseTokens(auth, projectId, groupId);
+        const result = await listEnterpriseTokens(
+          auth,
+          projectId,
+          groupId,
+          req.ip,
+          route(req),
+        );
 
         this.setStatus(result.status);
         return Promise.resolve(result.body);
@@ -165,8 +183,16 @@ export class PublisherController extends Controller {
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
+        @Request() req: express.Request,
     ): Promise<EnterpriseToken> {
-        const result = await getEnterpriseToken(auth, projectId, groupId, tokenId);
+        const result = await getEnterpriseToken(
+          auth,
+          projectId,
+          groupId,
+          tokenId,
+          req.ip,
+          route(req),
+        );
 
         this.setStatus(result.status);
         return Promise.resolve(result.body);
@@ -196,8 +222,18 @@ export class PublisherController extends Controller {
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
         @Body() token: CreateEnterpriseToken,
+        @Request() req: express.Request,
     ): Promise<EnterpriseToken> {
-      const result = await updateEnterpriseToken(auth, projectId, groupId, tokenId, token.displayName);
+      const result = await updateEnterpriseToken(
+        auth,
+        projectId,
+        groupId,
+        tokenId,
+        token.displayName,
+        token.viewLogAction,
+        req.ip,
+        route(req),
+      );
 
       this.setStatus(result.status);
       return Promise.resolve(result.body);
@@ -220,9 +256,17 @@ export class PublisherController extends Controller {
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
+        @Request() req: express.Request,
     ): Promise<void> {
 
-        const result: any = await deleteEnterpriseToken(auth, projectId, groupId, tokenId);
+        const result: any = await deleteEnterpriseToken(
+          auth,
+          projectId,
+          groupId,
+          tokenId,
+          req.ip,
+          route(req),
+        );
         this.setStatus(result.status);
     }
 }
