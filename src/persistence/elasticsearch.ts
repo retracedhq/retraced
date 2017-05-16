@@ -23,21 +23,27 @@ let es;
 // It retries without backoff so set it to a low number. The only errors the ES
 // client library retries are errors emitted by Node's standard library http[s]
 // module.
-const requestRetries = 1;
+const requestRetries = intFromEnv("ELASTICSEARCH_REQUEST_RETRIES", 1);
 
 // requestTimeout specifies how long the ES client library will wait for a
 // request including retries. Set it high so actual long-running requests
 // are not interrupted. Most requests will hit requestRetries limit before
 // this timeout.
-const requestTimeout = 15000;
+const requestTimeout = intFromEnv("ELASTICSEARCH_REQUEST_TIMEOUT", 15000);
 
 // backoff is the initial backoff after the first failure by the ES client lib.
 // It's used by our wrapper, not passed to the ES client lib.
-const backoff = 1000;
+const backoff = intFromEnv("ELASTICSEARCH_BACKOFF", 1000);
 
 // totalTimeout is for all requests and retries with backoffs. Outstanding
 // requests will not be interrupted. Used only by our wrapper.
-const totalTimeout = 25000;
+const totalTimeout = intFromEnv("ELASTICSEARCH_TOTAL_TIMEOUT", 25000);
+
+function intFromEnv(key, defaultN) {
+  const env = Number(process.env[key]);
+
+  return _.isNaN(env) ? defaultN : env;
+}
 
 export default function getElasticsearch() {
   if (!es) {
