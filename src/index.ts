@@ -39,6 +39,9 @@ if (!process.env["SIGSCI_RPC_ADDRESS"]) {
 }
 
 app.set("etag", false); // we're doing our own etag thing I guess
+// The nearest ip address in the X-Forwarded-For header not in a private
+// subnet will be used as req.ip.
+app.set("trust proxy", "uniquelocal");
 
 app.use(bugsnag.requestHandler);
 app.use(bodyParser.json());

@@ -16,7 +16,10 @@ export default async function(req) {
   const thisViewEvent: CreateEventRequest = {
     action: eitapiToken.viewLogAction,
     crud: "r",
-    is_anonymous: true,
+    actor: {
+      id: `enterprise:${eitapiToken.id.substring(0, 7)}`,
+      name: eitapiToken.displayName,
+    },
     group: {
       id: eitapiToken.group_id,
     },

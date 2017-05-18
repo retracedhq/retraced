@@ -3,7 +3,6 @@ import getApiToken from "../models/api_token/get";
 import modelsDeleteEnterpriseToken from "../models/eitapi_token/delete";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
-import { defaultEventCreater, CreateEventRequest } from "./createEvent";
 
 const pgPool = getPgPool();
 
@@ -12,8 +11,6 @@ export async function deleteEnterpriseToken(
     projectId: string,
     groupId: string,
     eitapiTokenId: string,
-    ip: string,
-    route: string,
 ) {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
@@ -36,26 +33,4 @@ export async function deleteEnterpriseToken(
             err: new Error(`Not Found`),
         };
     }
-
-    const thisEvent: CreateEventRequest = {
-        action: "eitapi_token.delete",
-        crud: "d",
-        actor: {
-            id: "Publisher API",
-            name: apiToken.name,
-        },
-        group: {
-            id: groupId,
-        },
-        target: {
-            id: eitapiTokenId,
-        },
-        description: route,
-        source_ip: ip,
-    };
-    await defaultEventCreater.saveRawEvent(
-        projectId,
-        apiToken.environment_id,
-        thisEvent,
-    );
 }

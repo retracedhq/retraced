@@ -19,7 +19,7 @@ export default async function(req) {
     action: "eitapi_token.update",
     crud: "u",
     actor: {
-      id: `viewer:${claims.id}`,
+      id: claims.actorId,
     },
     group: {
       id: claims.groupId,
@@ -28,7 +28,7 @@ export default async function(req) {
       id: req.params.tokenId,
     },
     description: `${req.method} ${req.originalUrl}`,
-    source_ip: req.ip,
+    source_ip: claims.ip,
     fields: {
       displayName: req.body.displayName,
     },

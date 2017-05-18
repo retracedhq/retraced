@@ -4,7 +4,6 @@ import { apiTokenFromAuthHeader } from "../security/helpers";
 import modelsListEnterpriseTokens from "../models/eitapi_token/list";
 import { EnterpriseToken } from "./createEnterpriseToken";
 import getPgPool from "../persistence/pg";
-import { defaultEventCreater, CreateEventRequest } from "./createEvent";
 
 const pgPool = getPgPool();
 
@@ -12,8 +11,6 @@ export async function listEnterpriseTokens(
   authorization: string,
   projectId: string,
   groupId: string,
-  ip: string,
-  route: string,
 ): Promise<EnterpriseToken[]> {
   const apiTokenId = apiTokenFromAuthHeader(authorization);
   const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
@@ -34,25 +31,6 @@ export async function listEnterpriseTokens(
         display_name,
       };
     });
-
-  const thisEvent: CreateEventRequest = {
-    action: "eitapi_tokens.list",
-    crud: "r",
-    actor: {
-      id: "Publisher API",
-      name: apiToken.name,
-    },
-    group: {
-      id: groupId,
-    },
-    description: route,
-    source_ip: ip,
-  };
-  await defaultEventCreater.saveRawEvent(
-    projectId,
-    apiToken.environment_id,
-    thisEvent,
-  );
 
   return tokens;
 }
