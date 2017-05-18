@@ -80,9 +80,9 @@ export default function getElasticsearch() {
   return Object.assign({}, es, {
     search: withRetry((params) => es.search(params)),
     scroll: withRetry((params) => es.scroll(params)),
-    indices: {
+    indices: Object.assign({}, es.indices, {
       create: withRetry((params) => es.indices.create(params)),
-    },
+    }),
   });
 }
 
