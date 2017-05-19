@@ -24,7 +24,7 @@ export class AdminController extends Controller {
         @Path("templateId") templateId: string,
         @Query("environment_id") environmentId: string,
     ): Promise<void> {
-        const result: any = await deleteTemplate(auth, projectId, templateId, environmentId);
-        this.setStatus(result.status);
+        await deleteTemplate(auth, projectId, templateId, environmentId);
+        this.setStatus(204);
     }
 }

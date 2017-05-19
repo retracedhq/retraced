@@ -6,6 +6,26 @@ import * as express from "express";
 import * as util from "util";
 import * as uuid from "uuid";
 
+export interface Response<T> {
+  status: number;
+  body: T;
+  contentType?: string;
+  headers?: object;
+  filename?: string;
+}
+
+export interface RawResponse extends Response<string> {
+}
+
+export const Responses = {
+  created(entity: any): RawResponse {
+    return {
+      status: 201,
+      body: JSON.stringify(entity),
+    };
+  },
+};
+
 /*
  * This file contains express middleware functions
  * for Pre/Post request logging and response generation.
@@ -29,7 +49,7 @@ export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter
       console.log(`[${reqId}] WARN response already has statusCode ${res.statusCode}, a response might have already been sent!`);
       console.log(util.inspect(res));
     }
-    console.log(chalk.cyan(`[${reqId}] => ${result.status} ${bodyToLog}`));
+    console.log(chalk.cyan(`[${reqId}] => ${statusToSend} ${bodyToLog}`));
     const respObj = res.status(statusToSend).type(contentType).set("X-Retraced-RequestId", reqId);
     if (result.filename) {
       respObj.attachment(result.filename);

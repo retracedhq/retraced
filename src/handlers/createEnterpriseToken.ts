@@ -5,6 +5,7 @@ import createEitapiToken from "../models/eitapi_token/create";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
 import { defaultEventCreater, CreateEventRequest } from "./createEvent";
+import { Response } from "../router";
 
 const pgPool = getPgPool();
 
@@ -26,29 +27,29 @@ export async function createEnterpriseToken(
     opts: CreateEnterpriseToken,
     ip: string,
     route: string,
-) {
-    const apiTokenId = apiTokenFromAuthHeader(authorization);
-    const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
-    const validAccess = apiToken && apiToken.project_id === projectId;
+): Promise<EnterpriseToken> {
+   const apiTokenId = apiTokenFromAuthHeader(authorization);
+   const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
+   const validAccess = apiToken && apiToken.project_id === projectId;
 
-    if (!validAccess) {
+   if (!validAccess) {
         throw { status: 401, err: new Error("Unauthorized") };
     }
 
-    const result = await createEitapiToken({
+   const result = await createEitapiToken({
         projectId,
         groupId,
         environmentId: apiToken.environment_id,
         displayName: opts.displayName,
         viewLogAction: opts.viewLogAction || "audit.log.view",
     });
-    const body = {
+   const body = {
       token: result.id,
       display_name: result.display_name,
       view_log_action: result.view_log_action,
     };
 
-    const thisEvent: CreateEventRequest = {
+   const thisEvent: CreateEventRequest = {
         action: "eitapi_token.create",
         crud: "c",
         actor: {
@@ -61,14 +62,11 @@ export async function createEnterpriseToken(
         description: route,
         source_ip: ip,
     };
-    await defaultEventCreater.saveRawEvent(
+   await defaultEventCreater.saveRawEvent(
         projectId,
         apiToken.environment_id,
         thisEvent,
     );
 
-    return {
-        status: 201,
-        body,
-    };
+   return body;
 }

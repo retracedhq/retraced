@@ -5,6 +5,7 @@ import modelsListEnterpriseTokens from "../models/eitapi_token/list";
 import { EnterpriseToken } from "./createEnterpriseToken";
 import getPgPool from "../persistence/pg";
 import { defaultEventCreater, CreateEventRequest } from "./createEvent";
+import { Response } from "../router";
 
 const pgPool = getPgPool();
 
@@ -14,7 +15,7 @@ export async function listEnterpriseTokens(
   groupId: string,
   ip: string,
   route: string,
-) {
+): Promise<EnterpriseToken[]> {
   const apiTokenId = apiTokenFromAuthHeader(authorization);
   const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
   const validAccess = apiToken && apiToken.project_id === projectId;
@@ -54,5 +55,5 @@ export async function listEnterpriseTokens(
     thisEvent,
   );
 
-  return { status: 200, body: tokens };
+  return tokens;
 }

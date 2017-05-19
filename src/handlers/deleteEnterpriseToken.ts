@@ -59,6 +59,4 @@ export async function deleteEnterpriseToken(
         apiToken.environment_id,
         thisEvent,
     );
-
-    return { status: 204 };
 }

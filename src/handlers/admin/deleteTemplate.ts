@@ -17,6 +17,6 @@ export default async function handle(
 
   console.log(`AUDIT user ${claims.userId} deleted template ${templateId} in ${environmentId}`);
 
-  return { status: 204 };
+  return;
 
 }
