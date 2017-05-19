@@ -1,6 +1,5 @@
 import * as _ from "lodash";
 import * as crypto from "crypto";
-import * as util from "util";
 
 import Event from "./";
 

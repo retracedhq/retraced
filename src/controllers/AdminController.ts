@@ -1,4 +1,4 @@
-import { Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
+import { Delete, Route, Query, Header, Path, SuccessResponse, Controller } from "tsoa";
 
 import deleteTemplate from "../handlers/admin/deleteTemplate";
 
@@ -24,7 +24,7 @@ export class AdminController extends Controller {
         @Path("templateId") templateId: string,
         @Query("environment_id") environmentId: string,
     ): Promise<void> {
-        const result: any = await deleteTemplate(auth, projectId, templateId, environmentId);
-        this.setStatus(result.status);
+        await deleteTemplate(auth, projectId, templateId, environmentId);
+        this.setStatus(204);
     }
 }

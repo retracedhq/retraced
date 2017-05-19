@@ -3,14 +3,12 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as _ from "lodash";
-import * as uuid from "uuid";
 import * as chalk from "chalk";
-import * as util from "util";
 import * as bugsnag from "bugsnag";
 import * as Sigsci from "sigsci-module-nodejs";
 import * as swaggerUI from "swagger-ui-express";
 
-import { wrapRoute, register, requestId, preRequest, onSuccess, onError } from "./router";
+import { wrapRoute, register } from "./router";
 import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";
 import * as metrics from "./metrics";

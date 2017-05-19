@@ -1,7 +1,5 @@
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
-
-import * as util from "util";
 import { ApiSpec, removeRoutesNotMatching, filterAndAssign } from "../swagger";
 
 @suite class SwaggerTest {

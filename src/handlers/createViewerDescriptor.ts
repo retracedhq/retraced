@@ -1,12 +1,13 @@
 import getApiToken from "../models/api_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import modelCreateViewerDescriptor from "../models/viewer_descriptor/create";
+import { RawResponse, Responses } from "../router";
 
 export interface ViewerToken {
   token: string;
 }
 
-export default async function handlerRaw(req) {
+export default async function handlerRaw(req): Promise<RawResponse> {
   const auth = req.get("Authorization");
   const projectId = req.params.projectId;
   const groupId = req.query.group_id;
@@ -14,25 +15,26 @@ export default async function handlerRaw(req) {
   const isAdmin = req.query.is_admin === "true";
   const targetId = req.query.target_id;
   const viewLogAction = req.query.view_log_action;
-  return createViewerDescriptor(auth, projectId, isAdmin, groupId, teamId, targetId, viewLogAction);
+  const token: ViewerToken =
+      await createViewerDescriptor(auth, projectId, isAdmin, groupId, teamId, targetId, viewLogAction);
+  return Responses.created(token);
 }
 
 export async function createViewerDescriptor(
-  authorization: string,
+  auth: string,
   projectId: string,
   isAdmin: boolean,
   groupId?: string,
   teamId?: string,
   targetId?: string,
   viewLogAction?: string,
-) {
-
+): Promise<ViewerToken> {
   groupId = groupId || teamId;
   if (!groupId) {
     throw { status: 400, err: new Error("Either group_id or team_id is required") };
   }
 
-  const apiTokenId = apiTokenFromAuthHeader(authorization);
+  const apiTokenId = apiTokenFromAuthHeader(auth);
   const apiToken: any = await getApiToken(apiTokenId);
   const validAccess = apiToken && apiToken.project_id === projectId;
   if (!validAccess) {
@@ -48,8 +50,5 @@ export async function createViewerDescriptor(
     viewLogAction: viewLogAction || "audit.log.view",
   });
 
-  return {
-    status: 201,
-    body: JSON.stringify({ token: newDesc.id }),
-  };
+  return { token: newDesc.id };
 }

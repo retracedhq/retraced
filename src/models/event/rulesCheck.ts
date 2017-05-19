@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+
 import * as ruler from "ruler";
 
 export interface Options {

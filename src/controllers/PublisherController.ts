@@ -1,9 +1,7 @@
 import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example, Request } from "tsoa";
 import * as express from "express";
-
-import { RetracedEvent } from "../models/event/";
 import { defaultEventCreater, EventCreater, CreateEventRequest, CreateEventResponse } from "../handlers/createEvent";
-import { createViewerDescriptor, ViewerToken } from "../handlers/createViewerDescriptor";
+import { ViewerToken, createViewerDescriptor } from "../handlers/createViewerDescriptor";
 import { createEnterpriseToken, CreateEnterpriseToken, EnterpriseToken } from "../handlers/createEnterpriseToken";
 import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
 import { listEnterpriseTokens } from "../handlers/listEnterpriseTokens";
@@ -41,12 +39,12 @@ export class PublisherController extends Controller {
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Body() event: CreateEventRequest,
-        ): Promise<CreateEventResponse> {
+    ): Promise<CreateEventResponse> {
 
-        const result: any = await this.eventCreater.createEvent(auth, projectId, event);
+        const result: CreateEventResponse = await this.eventCreater.createEvent(auth, projectId, event);
 
-        this.setStatus(result.status);
-        return Promise.resolve(result.body);
+        this.setStatus(201);
+        return result;
 
     }
 
@@ -79,10 +77,18 @@ export class PublisherController extends Controller {
         @Query("view_log_action") viewLogAction?: string,
     ): Promise<ViewerToken> {
 
-        const result: any = await createViewerDescriptor(auth, projectId, isAdmin === "true", groupId, teamId, targetId, viewLogAction);
+        const token: ViewerToken = await createViewerDescriptor(
+            auth,
+            projectId,
+            isAdmin === "true",
+            groupId,
+            teamId,
+            targetId,
+            viewLogAction,
+        );
 
-        this.setStatus(result.status);
-        return Promise.resolve(result.body);
+        this.setStatus(201);
+        return token;
     }
 
     /**
@@ -110,17 +116,17 @@ export class PublisherController extends Controller {
         @Request() req: express.Request,
     ): Promise<EnterpriseToken> {
 
-        const result: any = await createEnterpriseToken(
-          auth,
-          projectId,
-          groupId,
-          token,
-          req.ip,
-          route(req),
+        const result: EnterpriseToken = await createEnterpriseToken(
+            auth,
+            projectId,
+            groupId,
+            token,
+            req.ip,
+            route(req),
         );
 
-        this.setStatus(result.status);
-        return Promise.resolve(result.body);
+        this.setStatus(201);
+        return result;
     }
 
     /**
@@ -149,16 +155,15 @@ export class PublisherController extends Controller {
         @Path("groupId") groupId: string,
         @Request() req: express.Request,
     ): Promise<EnterpriseToken[]> {
-        const result = await listEnterpriseTokens(
-          auth,
-          projectId,
-          groupId,
-          req.ip,
-          route(req),
+        const tokens: EnterpriseToken[] = await listEnterpriseTokens(
+            auth,
+            projectId,
+            groupId,
+            req.ip,
+            route(req),
         );
 
-        this.setStatus(result.status);
-        return Promise.resolve(result.body);
+        return tokens;
     }
 
     /**
@@ -185,17 +190,16 @@ export class PublisherController extends Controller {
         @Path("tokenId") tokenId: string,
         @Request() req: express.Request,
     ): Promise<EnterpriseToken> {
-        const result = await getEnterpriseToken(
-          auth,
-          projectId,
-          groupId,
-          tokenId,
-          req.ip,
-          route(req),
+        const token: EnterpriseToken = await getEnterpriseToken(
+            auth,
+            projectId,
+            groupId,
+            tokenId,
+            req.ip,
+            route(req),
         );
 
-        this.setStatus(result.status);
-        return Promise.resolve(result.body);
+        return token;
     }
 
     /**
@@ -224,19 +228,18 @@ export class PublisherController extends Controller {
         @Body() token: CreateEnterpriseToken,
         @Request() req: express.Request,
     ): Promise<EnterpriseToken> {
-      const result = await updateEnterpriseToken(
-        auth,
-        projectId,
-        groupId,
-        tokenId,
-        token.displayName,
-        token.viewLogAction,
-        req.ip,
-        route(req),
-      );
+        const updated: EnterpriseToken = await updateEnterpriseToken(
+            auth,
+            projectId,
+            groupId,
+            tokenId,
+            token.displayName,
+            token.viewLogAction,
+            req.ip,
+            route(req),
+        );
 
-      this.setStatus(result.status);
-      return Promise.resolve(result.body);
+        return updated;
     }
 
     /**
@@ -259,14 +262,15 @@ export class PublisherController extends Controller {
         @Request() req: express.Request,
     ): Promise<void> {
 
-        const result: any = await deleteEnterpriseToken(
-          auth,
-          projectId,
-          groupId,
-          tokenId,
-          req.ip,
-          route(req),
+        await deleteEnterpriseToken(
+            auth,
+            projectId,
+            groupId,
+            tokenId,
+            req.ip,
+            route(req),
         );
-        this.setStatus(result.status);
+
+        this.setStatus(204);
     }
 }

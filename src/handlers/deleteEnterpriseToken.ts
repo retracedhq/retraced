@@ -1,6 +1,5 @@
 import "source-map-support/register";
 import getApiToken from "../models/api_token/get";
-import uniqueId from "../models/uniqueId";
 import modelsDeleteEnterpriseToken from "../models/eitapi_token/delete";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
@@ -59,6 +58,4 @@ export async function deleteEnterpriseToken(
         apiToken.environment_id,
         thisEvent,
     );
-
-    return { status: 204 };
 }

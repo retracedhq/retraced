@@ -4,6 +4,7 @@ import modelsGetEnterpriseToken from "../models/eitapi_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
 import { defaultEventCreater, CreateEventRequest } from "./createEvent";
+import { EnterpriseToken } from "./createEnterpriseToken";
 
 const pgPool = getPgPool();
 
@@ -14,7 +15,7 @@ export async function getEnterpriseToken(
     eitapiTokenId: string,
     ip: string,
     route: string,
-) {
+): Promise<EnterpriseToken> {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
     const validAccess = apiToken && apiToken.project_id === projectId;
@@ -57,11 +58,8 @@ export async function getEnterpriseToken(
     );
 
     return {
-        status: 200,
-        body: {
-            token: token.id,
-            display_name: token.display_name,
-            view_log_action: token.view_log_action,
-        },
+        token: token.id,
+        display_name: token.display_name,
+        view_log_action: token.view_log_action,
     };
 }

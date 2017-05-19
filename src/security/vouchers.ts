@@ -1,5 +1,4 @@
 import * as jwt from "jsonwebtoken";
-import * as _ from "lodash";
 
 import ViewerDescriptor from "../models/viewer_descriptor/def";
 

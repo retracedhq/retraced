@@ -3,10 +3,8 @@ import * as chalk from "chalk";
 import * as moment from "moment";
 import * as pg from "pg";
 import * as util from "util";
-import * as uuid from "uuid";
 import * as express from "express";
 import { instrumented } from "monkit";
-import { Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller } from "tsoa";
 
 import createCanonicalHash from "../models/event/canonicalize";
 import Event, { Fields, crud } from "../models/event/";
@@ -16,6 +14,7 @@ import uniqueId from "../models/uniqueId";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import { NSQClient } from "../persistence/nsq";
 import getPgPool from "../persistence/pg";
+import { Responses, RawResponse } from "../router";
 
 const requiredFields = [
   "action",
@@ -81,7 +80,7 @@ export interface CreateEventRequest {
    *  This field is deprecated in favor of [Display Templates](https://preview.retraced.io/documentation/advanced-retraced/display-templates/)
    */
   displayTitle?: string;
-  /** milliseconds since the epoch that this event occurent. `created` will be tracked in addtion to `received` */
+  /** millis since epoch representing when this event occurent. `created` will be tracked in addtion to `received` */
   created?: number;
   actor?: RequestActor;
   target?: RequestTarget;
@@ -133,11 +132,14 @@ export class EventCreater {
     this.idSource = idSource;
   }
 
-  public async createEventRaw(req: express.Request): Promise<any> {
-    return this.createEvent(req.get("Authorization"), req.params.projectId, req.body);
+  public async createEventRaw(req: express.Request): Promise<RawResponse> {
+    return Responses.created(
+      await this.createEvent(req.get("Authorization"), req.params.projectId, req.body),
+    );
   }
+
   @instrumented
-  public async createEvent(authorization: string, projectId: string, body: CreateEventRequest): Promise<any> {
+  public async createEvent(authorization: string, projectId: string, body: CreateEventRequest): Promise<CreateEventResponse> {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, this.pgPool.query.bind(this.pgPool));
     const validAccess = apiToken && apiToken.project_id === projectId;
@@ -173,12 +175,7 @@ export class EventCreater {
       results.push(result);
     }
 
-    const responseBody = JSON.stringify(results[0]);
-
-    return {
-      status: 201,
-      body: responseBody,
-    };
+    return results[0];
   }
 
   public async saveRawEvent(projectId: string, envId: string, eventInput: CreateEventRequest) {
@@ -200,6 +197,7 @@ export class EventCreater {
     const job = JSON.stringify({
       taskId: newTaskId,
     });
+
     this.nsq.produce("raw_events", job)
       .then((res) => {
         console.log(`sent task ${job} to raw_events`);

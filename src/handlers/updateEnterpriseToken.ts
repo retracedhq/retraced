@@ -4,6 +4,7 @@ import modelsUpdateEnterpriseToken from "../models/eitapi_token/update";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
 import { defaultEventCreater, CreateEventRequest } from "./createEvent";
+import { EnterpriseToken } from "./createEnterpriseToken";
 
 const pgPool = getPgPool();
 
@@ -16,7 +17,7 @@ export async function updateEnterpriseToken(
     viewLogAction: string | undefined,
     ip: string,
     route: string,
-) {
+): Promise<EnterpriseToken> {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
     const validAccess = apiToken && apiToken.project_id === projectId;
@@ -70,11 +71,8 @@ export async function updateEnterpriseToken(
     );
 
     return {
-        status: 200,
-        body: {
-            token: updated.id,
-            display_name: displayName,
-            view_log_action: updated.view_log_action,
-        },
+        token: updated.id,
+        display_name: displayName,
+        view_log_action: updated.view_log_action,
     };
 }

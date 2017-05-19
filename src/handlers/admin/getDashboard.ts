@@ -3,7 +3,7 @@ import * as _ from "lodash";
 
 import { checkAdminAccess } from "../../security/helpers";
 
-import { DashboardTile, DashboardOptions } from "../../dashboard/interfaces";
+import { DashboardOptions } from "../../dashboard/interfaces";
 import getActionsTile from "../../dashboard/actions/top";
 import getGroupsTile from "../../dashboard/groups/top";
 
