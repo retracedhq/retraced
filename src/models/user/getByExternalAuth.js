@@ -1,10 +1,9 @@
-import { User, userFromRow } from "./";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
 // opts: email, authId
-export default async function getUser(opts): Promise<User|null> {
+export default async function(opts) {
   let pg;
   try {
     pg = await pgPool.connect();
@@ -12,7 +11,7 @@ export default async function getUser(opts): Promise<User|null> {
     const v = [opts.email, opts.authId];
     const result = await pg.query(q, v);
     if (result.rowCount > 0) {
-      return userFromRow(result.rows[0]);
+      return result.rows[0];
     }
 
     return null;

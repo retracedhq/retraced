@@ -4,8 +4,12 @@ import { checkAdminAccessUnwrapped } from "../../security/helpers";
 import deleteEnvironment from "../../models/environment/delete";
 import getDeletionRequestByResourceId from "../../models/deletion_request/getByResourceId";
 import deleteDeletionRequest from "../../models/deletion_request/delete";
+import {
+  deletionRequestHasExpired,
+  deletionRequestBackoffRemaining,
+} from "../../models/deletion_request";
 import getDeletionConfirmationsByDeletionRequest from "../../models/deletion_confirmation/getByDeletionRequest";
-import environmentHasEsIndex from "../../models/environment/hasEsIndex";
+import environmentIsEmpty from "../../models/environment/isEmpty";
 
 export default async function handle(
   authorization: string,
@@ -14,8 +18,8 @@ export default async function handle(
 ) {
   const claims = await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
 
-  // If no ES index exists for this env, fine, allow the deletion.
-  if (false === await environmentHasEsIndex({ projectId, environmentId })) {
+  // If no events exists for this env, fine, allow the deletion.
+  if (true === await environmentIsEmpty({ projectId, environmentId })) {
     await deleteEnvironment({ projectId, environmentId });
     console.log(`AUDIT user ${claims.userId} deleted EMPTY environment ${environmentId}`);
     return { status: 204 };
@@ -26,39 +30,35 @@ export default async function handle(
   if (!deletionRequest) {
     return {
       status: 403,
-      body: JSON.stringify({
+      body: {
         error: "Cannot delete a populated environment. Create a deletion request.",
-      }),
+      },
     };
   }
 
   // ... which isn't too old...
-  if (deletionRequest.created.isBefore(moment().subtract(1, "month"))) {
+  if (deletionRequestHasExpired(deletionRequest)) {
     // This should cascade-delete all related deletion_confirmation rows as well.
     await deleteDeletionRequest(deletionRequest.id);
 
     return {
       status: 403,
-      body: JSON.stringify({
+      body: {
         error: "Existing deletion request is too old. Create a new one.",
-      }),
+      },
     };
   }
 
   // ... which isn't still in its backoff period...
-  if (deletionRequest.backoffInterval) {
-    const backoffThresh = deletionRequest.created.add(
-      moment(deletionRequest.backoffInterval),
-    );
-    if (backoffThresh.isAfter()) {
-      return {
-        status: 403,
-        body: JSON.stringify({
-          error: `Cannot delete this environment until its deletion request ` +
-          `backoff period has passed (in ${backoffThresh.fromNow()}).`,
-        }),
-      };
-    }
+  const backoffRemaining = deletionRequestBackoffRemaining(deletionRequest);
+  if (backoffRemaining) {
+    return {
+      status: 403,
+      body: {
+        error: `Cannot delete this environment until its deletion request ` +
+        `backoff period has passed (${backoffRemaining.humanize(true)}).`,
+      },
+    };
   }
 
   // ... and whose confirmations (if any) have all been received.
@@ -74,10 +74,10 @@ export default async function handle(
     if (outstandingConfirmations > 0) {
       return {
         status: 403,
-        body: JSON.stringify({
+        body: {
           error: `Cannot delete this environment until all confirmations have ` +
           `been received (${outstandingConfirmations} still outstanding).`,
-        }),
+        },
       };
     }
   }

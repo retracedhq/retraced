@@ -1,7 +1,7 @@
 import * as Auth0 from "auth0-js";
 import { LocalStorage } from "node-localstorage";
 
-import getUser from "../models/user/get";
+import getUser from "../models/user/getByExternalAuth";
 import createUser, { ERR_DUPLICATE_EMAIL } from "../models/user/create";
 import getInvite from "../models/invite/get";
 import deleteInvite from "../models/invite/delete";

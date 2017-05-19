@@ -1,10 +1,11 @@
 import {
-    Post, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example,
+    Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example,
 } from "tsoa";
 
 import deleteTemplate from "../handlers/admin/deleteTemplate";
 import deleteEnvironment from "../handlers/admin/deleteEnvironment";
 import createDeletionRequest, { CreateDelReqRequestBody } from "../handlers/admin/createDeletionRequest";
+import getDeletionRequest from "../handlers/admin/getDeletionRequest";
 
 @Route("admin/v1")
 export class AdminController extends Controller {
@@ -35,7 +36,7 @@ export class AdminController extends Controller {
     /**
      * Delete an environment and all of its dependents.
      * This is only allowed if
-     * 1) the environment lacks an ES index (i.e. no events recorded), or
+     * 1) the environment is empty (i.e. it lacks any recorded events), or
      * 2) an outstanding "deletion request" has been approved.
      *
      *
@@ -65,7 +66,7 @@ export class AdminController extends Controller {
      */
     @Post("project/{projectId}/environment/{environmentId}/deletion_request")
     @SuccessResponse("201", "Created")
-    public async createEnvironmentDeletionRequest(
+    public async createDeletionRequest(
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Path("environmentId") environmentId: string,
@@ -75,6 +76,30 @@ export class AdminController extends Controller {
             auth, projectId, environmentId, requestBody,
         );
         this.setStatus(result.status);
+        return result.body;
     }
 
+    /**
+     * Get the current status of an outstanding deletion request.
+     *
+     *
+     * @param auth              Base64 ecoded JWT authentication
+     * @param projectId         The project id
+     * @param environmentId     The environment
+     * @param deletionRequestId The id of the deletion request to look up
+     */
+    @Get("project/{projectId}/environment/{environmentId}/deletion_request/{deletionRequestId}")
+    @SuccessResponse("200", "OK")
+    public async getDeletionRequest(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Path("environmentId") environmentId: string,
+        @Path("deletionRequestId") deletionRequestId: string,
+    ): Promise<void> {
+        const result: any = await getDeletionRequest(
+            auth, projectId, environmentId, deletionRequestId,
+        );
+        this.setStatus(result.status);
+        return result.body;
+    }
 }

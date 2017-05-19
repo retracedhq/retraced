@@ -1,3 +1,5 @@
+import * as util from "util";
+
 import getElasticsearch from "../../persistence/elasticsearch";
 
 const es = getElasticsearch();
@@ -17,10 +19,19 @@ export default async function (opts: Options): Promise<boolean> {
       }
 
       if (!Array.isArray(resp) || resp.length === 0) {
-        resolve(false);
+        resolve(true);
         return;
       }
-      resolve(true);
+
+      // See if index has any items in it.
+      es.count({ index: aliasName }, (err2, resp2) => {
+        if (err2) {
+          reject(err2);
+          return;
+        }
+
+        resolve(resp2.count === 0);
+      });
     });
   });
 }

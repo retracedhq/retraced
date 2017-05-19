@@ -12,7 +12,7 @@ interface Options {
 export default async function (opts: Options) {
   // We're doing a transaction here, so we want one consistent unique client
   // from the pool.
-  const pg = pgPool.connect();
+  const pg = await pgPool.connect();
   const rollback = async () => {
     try {
       await pg.query("ROLLBACK");
@@ -37,7 +37,6 @@ export default async function (opts: Options) {
     // TODO(zhaytee): Cascade to 'actionhour' rows. SQL constraint?
     "delete from action where environment_id = $1",
 
-    "delete from actionhour where environment_id = $1",
     "delete from target where environment_id = $1",
     "delete from eitapi_token where environment_id = $1",
     "delete from active_search where environment_id = $1",
@@ -47,11 +46,12 @@ export default async function (opts: Options) {
     "delete from active_actor where environment_id = $1",
     "delete from active_group where environment_id = $1",
     "delete from reporting_event where environment_id = $1",
+    "delete from environment where id = $1",
   ];
 
   for (const q of queries) {
     try {
-      await pgPool.query(q, [opts.environmentId]);
+      await pg.query(q, [opts.environmentId]);
     } catch (pgErr) {
       console.log(`
         Query failed during environment deletion: ${pgErr}
