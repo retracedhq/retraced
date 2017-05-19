@@ -80,8 +80,8 @@ export interface CreateEventRequest {
    *  This field is deprecated in favor of [Display Templates](https://preview.retraced.io/documentation/advanced-retraced/display-templates/)
    */
   displayTitle?: string;
-  /** millis since epoch representing when this event occurent. `created` will be tracked in addtion to `received` */
-  created?: number;
+  /** ISO8601 date string representing when this event occurent. `created` will be tracked in addtion to `received` */
+  created?: Date;
   actor?: RequestActor;
   target?: RequestTarget;
   /** The source IP address from which the event was initiated */
