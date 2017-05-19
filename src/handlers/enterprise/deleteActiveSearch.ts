@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 
 import { checkEitapiAccess } from "../../security/helpers";
 import deleteActiveSearch from "../../models/active_search/delete";

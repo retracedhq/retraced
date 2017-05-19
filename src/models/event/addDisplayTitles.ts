@@ -1,5 +1,3 @@
-import * as _ from "lodash";
-import * as Handlebars from "handlebars";
 
 import listTemplates from "../template/list";
 import rulesCheck from "../event/rulesCheck";

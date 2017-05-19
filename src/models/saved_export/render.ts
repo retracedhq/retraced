@@ -9,7 +9,7 @@ import QueryDescriptor from "../query_desc/def";
 const pgPool = getPgPool();
 
 export default async function renderSavedExport(opts) {
-  const { environmentId, projectId, groupId, savedExportId, format, source } = opts;
+  const { environmentId, projectId, groupId, savedExportId, format } = opts;
 
   const pg = await pgPool.connect();
   try {

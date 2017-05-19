@@ -1,11 +1,9 @@
-import * as _ from "lodash";
+
 import getApiToken from "../models/api_token/get";
-import uniqueId from "../models/uniqueId";
 import createEitapiToken from "../models/eitapi_token/create";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
 import { defaultEventCreater, CreateEventRequest } from "./createEvent";
-import { Response } from "../router";
 
 const pgPool = getPgPool();
 

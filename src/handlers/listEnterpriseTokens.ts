@@ -5,7 +5,6 @@ import modelsListEnterpriseTokens from "../models/eitapi_token/list";
 import { EnterpriseToken } from "./createEnterpriseToken";
 import getPgPool from "../persistence/pg";
 import { defaultEventCreater, CreateEventRequest } from "./createEvent";
-import { Response } from "../router";
 
 const pgPool = getPgPool();
 

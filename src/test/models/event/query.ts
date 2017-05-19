@@ -5,7 +5,6 @@ import { expect } from "chai";
 import {
   parse,
   searchParams,
-  polyfillSearchAfter,
   Options,
 } from "../../../models/event/query";
 

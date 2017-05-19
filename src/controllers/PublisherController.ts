@@ -1,8 +1,5 @@
 import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example, Request } from "tsoa";
 import * as express from "express";
-import * as util from "util";
-
-import { RetracedEvent } from "../models/event/";
 import { defaultEventCreater, EventCreater, CreateEventRequest, CreateEventResponse } from "../handlers/createEvent";
 import { ViewerToken, createViewerDescriptor } from "../handlers/createViewerDescriptor";
 import { createEnterpriseToken, CreateEnterpriseToken, EnterpriseToken } from "../handlers/createEnterpriseToken";
@@ -10,7 +7,6 @@ import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
 import { listEnterpriseTokens } from "../handlers/listEnterpriseTokens";
 import { updateEnterpriseToken } from "../handlers/updateEnterpriseToken";
 import { getEnterpriseToken } from "../handlers/getEnterpriseToken";
-import { Response } from "../router";
 
 const route = (req: express.Request) => `${req.method} ${req.originalUrl}`;
 

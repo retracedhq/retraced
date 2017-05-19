@@ -1,7 +1,7 @@
 import getApiToken from "../models/api_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import modelCreateViewerDescriptor from "../models/viewer_descriptor/create";
-import { RawResponse, Responses, Response } from "../router";
+import { RawResponse, Responses } from "../router";
 
 export interface ViewerToken {
   token: string;

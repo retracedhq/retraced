@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 
 import { checkAdminAccess } from "../../security/helpers";
 import getProject from "../../models/project/get";

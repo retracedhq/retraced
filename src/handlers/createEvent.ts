@@ -3,10 +3,8 @@ import * as chalk from "chalk";
 import * as moment from "moment";
 import * as pg from "pg";
 import * as util from "util";
-import * as uuid from "uuid";
 import * as express from "express";
 import { instrumented } from "monkit";
-import { Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller } from "tsoa";
 
 import createCanonicalHash from "../models/event/canonicalize";
 import Event, { Fields, crud } from "../models/event/";
@@ -16,7 +14,7 @@ import uniqueId from "../models/uniqueId";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import { NSQClient } from "../persistence/nsq";
 import getPgPool from "../persistence/pg";
-import { Response, Responses, RawResponse } from "../router";
+import { Responses, RawResponse } from "../router";
 
 const requiredFields = [
   "action",
@@ -176,8 +174,6 @@ export class EventCreater {
       );
       results.push(result);
     }
-
-    const responseBody = JSON.stringify(results[0]);
 
     return results[0];
   }

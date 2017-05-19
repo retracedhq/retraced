@@ -1,6 +1,5 @@
 import * as _ from "lodash";
 import * as querystring from "querystring";
-import * as util from "util";
 import * as uuid from "uuid";
 import * as moment from "moment";
 
@@ -8,7 +7,6 @@ import { checkViewerAccess } from "../../security/helpers";
 import searchEvents, { Options } from "../../models/event/search";
 import nsq from "../../persistence/nsq";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
-import findTargets from "../../models/target/find";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 
 /*

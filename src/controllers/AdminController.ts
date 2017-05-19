@@ -1,4 +1,4 @@
-import { Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
+import { Delete, Route, Query, Header, Path, SuccessResponse, Controller } from "tsoa";
 
 import deleteTemplate from "../handlers/admin/deleteTemplate";
 

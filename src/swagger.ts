@@ -1,5 +1,4 @@
 import * as _ from "lodash";
-import * as util from "util";
 import * as compositeSpec from "./swagger.json";
 
 const apiHost: string = process.env.RETRACED_API_BASE || "localhost:3000";

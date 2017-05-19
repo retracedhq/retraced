@@ -1,6 +1,4 @@
-import * as _ from "lodash";
 
-import getApiToken from "../models/api_token/get";
 import getPgPool from "../persistence/pg";
 
 const pgPool = getPgPool();
