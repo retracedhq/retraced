@@ -1,5 +1,6 @@
 import "source-map-support/register";
 import * as uuid from "uuid";
+import * as moment from "moment";
 
 import getPgPool from "../../persistence/pg";
 import getEs from "../../persistence/elasticsearch";
@@ -20,10 +21,12 @@ export default async function createEnvironment(opts: Opts) {
   };
 
   // Create the ES index
-  const alias = `retraced.${environment.project_id}.${environment.id}`;
+  const searchAlias = `retraced.${environment.project_id}.${environment.id}`;
+  const writeAlias = `retraced.${environment.project_id}.${environment.id}.${moment.utc().format("YYYYMMDD")}`;
   const newIndex = `retraced.api.${uuid.v4().replace(/-/g, "")}`;
   const aliases = {};
-  aliases[alias] = {};
+  aliases[searchAlias] = {};
+  aliases[writeAlias] = {};
   const params = {
     index: newIndex,
     body: {
