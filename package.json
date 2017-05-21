@@ -51,7 +51,8 @@
     "threads": "^0.7.2",
     "ts-node": "^1.7.0",
     "tsoa": "^1.1.7",
-    "uuid": "^2.0.2"
+    "uuid": "^2.0.2",
+    "snyk": "^1.30.1"
   },
   "devDependencies": {
     "@types/express": "^4.0.35",
@@ -73,7 +74,9 @@
     "test": "mocha --recursive build/test/",
     "cover": "yarn run pretest && istanbul cover _mocha --include-all-sources true --report lcovonly -- --recursive build/test/",
     "cover-xml": "yarn run pretest && istanbul cover _mocha --include-all-sources true --report lcovonly -- --recursive --reporter mocha-junit-reporter build/test/",
-    "report-coverage": "coveralls < ./coverage/lcov.info && codeclimate-test-reporter < ./coverage/lcov.info"
+    "report-coverage": "coveralls < ./coverage/lcov.info && codeclimate-test-reporter < ./coverage/lcov.info",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "author": "",
   "nyc": {
@@ -93,5 +96,6 @@
     ],
     "sourceMap": true,
     "instrument": true
-  }
+  },
+  "snyk": true
 }
