@@ -10,13 +10,14 @@ export interface ViewerToken {
 export default async function handlerRaw(req): Promise<RawResponse> {
   const auth = req.get("Authorization");
   const projectId = req.params.projectId;
+  const isAdmin = req.query.is_admin === "true";
   const groupId = req.query.group_id;
   const teamId = req.query.team_id;
-  const isAdmin = req.query.is_admin === "true";
   const targetId = req.query.target_id;
   const viewLogAction = req.query.view_log_action;
+  const actorId = req.query.actor_id;
   const token: ViewerToken =
-      await createViewerDescriptor(auth, projectId, isAdmin, groupId, teamId, targetId, viewLogAction);
+      await createViewerDescriptor(auth, projectId, isAdmin, actorId, groupId, teamId, targetId, viewLogAction);
   return Responses.created(token);
 }
 
@@ -24,6 +25,7 @@ export async function createViewerDescriptor(
   auth: string,
   projectId: string,
   isAdmin: boolean,
+  actorId: string,
   groupId?: string,
   teamId?: string,
   targetId?: string,
@@ -47,6 +49,7 @@ export async function createViewerDescriptor(
     groupId,
     isAdmin,
     targetId,
+    actorId,
     viewLogAction: viewLogAction || "audit.log.view",
   });
 

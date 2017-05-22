@@ -1,5 +1,4 @@
-import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example, Request } from "tsoa";
-import * as express from "express";
+import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
 import { defaultEventCreater, EventCreater, CreateEventRequest, CreateEventResponse } from "../handlers/createEvent";
 import { ViewerToken, createViewerDescriptor } from "../handlers/createViewerDescriptor";
 import { createEnterpriseToken, CreateEnterpriseToken, EnterpriseToken } from "../handlers/createEnterpriseToken";
@@ -7,8 +6,6 @@ import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
 import { listEnterpriseTokens } from "../handlers/listEnterpriseTokens";
 import { updateEnterpriseToken } from "../handlers/updateEnterpriseToken";
 import { getEnterpriseToken } from "../handlers/getEnterpriseToken";
-
-const route = (req: express.Request) => `${req.method} ${req.originalUrl}`;
 
 @Route("publisher/v1")
 export class PublisherController extends Controller {
@@ -55,12 +52,14 @@ export class PublisherController extends Controller {
      *
      * **Note**: At least one of `group_id` or `team_id` is required.
      *
-     * @param auth      auth header of the form token=...
-     * @param projectId the project id
-     * @param groupId   The group identifier. Same as `team_id`. If both are passed, `group_id` will be used.
-     * @param isAdmin   Whether to display the Enterprise Settings and API Token Management. Set to `true` to show the settings.
-     * @param targetId  If passed, only events relating to this target will be returned in a viewer that uses the token created
-     * @param teamId    Same as `group_id`. If both are passed, `group_id` will be used. This field is deprecated.
+     * @param auth          auth header of the form token=...
+     * @param projectId     the project id
+     * @param displayName   A name to associate with the viewer token. It will be used as actor.name when logging events performed with this token.
+     * @param groupId       The group identifier. Same as `team_id`. If both are passed, `group_id` will be used.
+     * @param isAdmin       Whether to display the Enterprise Settings and API Token Management. Set to `true` to show the settings.
+     * @param targetId      If passed, only events relating to this target will be returned in a viewer that uses the token created
+     * @param teamId        Same as `group_id`. If both are passed, `group_id` will be used. This field is deprecated.
+     * @param viewLogAction The action that will be logged when the token is used
      */
     @Get("project/{projectId}/viewertoken")
     @SuccessResponse("201", "Created")
@@ -70,6 +69,7 @@ export class PublisherController extends Controller {
     public async createViewerDescriptor(
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
+        @Query("actor_id") actorId: string,
         @Query("group_id") groupId?: string,
         @Query("is_admin") isAdmin?: string,
         @Query("target_id") targetId?: string,
@@ -81,6 +81,7 @@ export class PublisherController extends Controller {
             auth,
             projectId,
             isAdmin === "true",
+            actorId,
             groupId,
             teamId,
             targetId,
@@ -113,7 +114,6 @@ export class PublisherController extends Controller {
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
         @Body() token: CreateEnterpriseToken,
-        @Request() req: express.Request,
     ): Promise<EnterpriseToken> {
 
         const result: EnterpriseToken = await createEnterpriseToken(
@@ -121,8 +121,6 @@ export class PublisherController extends Controller {
             projectId,
             groupId,
             token,
-            req.ip,
-            route(req),
         );
 
         this.setStatus(201);
@@ -153,14 +151,11 @@ export class PublisherController extends Controller {
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
-        @Request() req: express.Request,
     ): Promise<EnterpriseToken[]> {
         const tokens: EnterpriseToken[] = await listEnterpriseTokens(
             auth,
             projectId,
             groupId,
-            req.ip,
-            route(req),
         );
 
         return tokens;
@@ -188,15 +183,12 @@ export class PublisherController extends Controller {
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
-        @Request() req: express.Request,
     ): Promise<EnterpriseToken> {
         const token: EnterpriseToken = await getEnterpriseToken(
             auth,
             projectId,
             groupId,
             tokenId,
-            req.ip,
-            route(req),
         );
 
         return token;
@@ -226,7 +218,6 @@ export class PublisherController extends Controller {
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
         @Body() token: CreateEnterpriseToken,
-        @Request() req: express.Request,
     ): Promise<EnterpriseToken> {
         const updated: EnterpriseToken = await updateEnterpriseToken(
             auth,
@@ -235,8 +226,6 @@ export class PublisherController extends Controller {
             tokenId,
             token.displayName,
             token.viewLogAction,
-            req.ip,
-            route(req),
         );
 
         return updated;
@@ -259,7 +248,6 @@ export class PublisherController extends Controller {
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
-        @Request() req: express.Request,
     ): Promise<void> {
 
         await deleteEnterpriseToken(
@@ -267,8 +255,6 @@ export class PublisherController extends Controller {
             projectId,
             groupId,
             tokenId,
-            req.ip,
-            route(req),
         );
 
         this.setStatus(204);

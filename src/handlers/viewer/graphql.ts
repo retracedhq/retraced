@@ -10,12 +10,14 @@ export default async function(req) {
   const thisViewEvent: CreateEventRequest = {
     action: claims.viewLogAction,
     crud: "r",
-    is_anonymous: true,
+    actor: {
+      id: claims.actorId,
+    },
     group: {
       id: claims.groupId,
     },
     description: `${req.method} ${req.originalUrl}`,
-    source_ip: req.ip,
+    source_ip: claims.ip,
   };
 
   let targetId;

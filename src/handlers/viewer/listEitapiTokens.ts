@@ -14,13 +14,13 @@ export default async function(req) {
     action: "eitapi_tokens.list",
     crud: "r",
     actor: {
-      id: `viewer:${claims.id}`,
+      id: claims.actorId,
     },
     group: {
       id: claims.groupId,
     },
     description: `${req.method} ${req.originalUrl}`,
-    source_ip: req.ip,
+    source_ip: claims.ip,
   };
   await defaultEventCreater.saveRawEvent(
     claims.projectId,

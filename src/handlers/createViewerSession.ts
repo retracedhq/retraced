@@ -11,6 +11,7 @@ export default async function handler(req) {
   const desc = await getViewerDescriptor({
     id: req.body.token,
   });
+  desc.ip = req.ip;
 
   const voucher = createViewerDescriptorVoucher(desc);
 
