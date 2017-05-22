@@ -3,10 +3,8 @@ import * as chalk from "chalk";
 import * as moment from "moment";
 import * as pg from "pg";
 import * as util from "util";
-import * as uuid from "uuid";
 import * as express from "express";
 import { instrumented } from "monkit";
-import { Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller } from "tsoa";
 
 import createCanonicalHash from "../models/event/canonicalize";
 import Event, { Fields, crud } from "../models/event/";
@@ -16,6 +14,7 @@ import uniqueId from "../models/uniqueId";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import { NSQClient } from "../persistence/nsq";
 import getPgPool from "../persistence/pg";
+import { Responses, RawResponse } from "../router";
 
 const requiredFields = [
   "action",
@@ -81,8 +80,8 @@ export interface CreateEventRequest {
    *  This field is deprecated in favor of [Display Templates](https://preview.retraced.io/documentation/advanced-retraced/display-templates/)
    */
   displayTitle?: string;
-  /** milliseconds since the epoch that this event occurent. `created` will be tracked in addtion to `received` */
-  created?: number;
+  /** ISO8601 date string representing when this event occurent. `created` will be tracked in addtion to `received` */
+  created?: Date;
   actor?: RequestActor;
   target?: RequestTarget;
   /** The source IP address from which the event was initiated */
@@ -133,11 +132,14 @@ export class EventCreater {
     this.idSource = idSource;
   }
 
-  public async createEventRaw(req: express.Request): Promise<any> {
-    return this.createEvent(req.get("Authorization"), req.params.projectId, req.body);
+  public async createEventRaw(req: express.Request): Promise<RawResponse> {
+    return Responses.created(
+      await this.createEvent(req.get("Authorization"), req.params.projectId, req.body),
+    );
   }
+
   @instrumented
-  public async createEvent(authorization: string, projectId: string, body: CreateEventRequest): Promise<any> {
+  public async createEvent(authorization: string, projectId: string, body: CreateEventRequest): Promise<CreateEventResponse> {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, this.pgPool.query.bind(this.pgPool));
     const validAccess = apiToken && apiToken.project_id === projectId;
@@ -165,47 +167,53 @@ export class EventCreater {
 
     // Create a new ingestion task for each event passed in.
     for (const eventInput of eventInputs) {
-      const insertStmt = EventCreater.insertIntoIngestTask;
-
-      const newTaskId = this.idSource();
-      const newEventId = this.idSource();
-      const insertVals = [
-        newTaskId,
-        JSON.stringify(eventInput),
+      const result = await this.saveRawEvent(
         apiToken.project_id,
         apiToken.environment_id,
-        newEventId,
-        moment().valueOf(),
-      ];
-
-      await this.pgPool.query(insertStmt, insertVals);
-
-      const job = JSON.stringify({
-        taskId: newTaskId,
-      });
-      this.nsq.produce("raw_events", job)
-        .then((res) => {
-          console.log(`sent task ${job} to raw_events`);
-        })
-        .catch((err) => {
-          console.log(`failed to send task ${job} to raw_events: ${chalk.red(util.inspect(err))}`);
-        });
-
-      // Coerce the input event into a proper Event object.
-      // Then, generate an authoritative hash from its contents.
-      // This will be returned to the caller.
-      const event = fromCreateEventInput(eventInput, newEventId);
-      results.push({
-        id: newEventId,
-        hash: this.hasher(event),
-      });
+        eventInput,
+      );
+      results.push(result);
     }
 
-    const responseBody = JSON.stringify(results[0]);
+    return results[0];
+  }
+
+  public async saveRawEvent(projectId: string, envId: string, eventInput: CreateEventRequest) {
+    const insertStmt = EventCreater.insertIntoIngestTask;
+
+    const newTaskId = this.idSource();
+    const newEventId = this.idSource();
+    const insertVals = [
+      newTaskId,
+      JSON.stringify(eventInput),
+      projectId,
+      envId,
+      newEventId,
+      moment().valueOf(),
+    ];
+
+    await this.pgPool.query(insertStmt, insertVals);
+
+    const job = JSON.stringify({
+      taskId: newTaskId,
+    });
+
+    this.nsq.produce("raw_events", job)
+      .then((res) => {
+        console.log(`sent task ${job} to raw_events`);
+      })
+      .catch((err) => {
+        console.log(`failed to send task ${job} to raw_events: ${chalk.red(util.inspect(err))}`);
+      });
+
+    // Coerce the input event into a proper Event object.
+    // Then, generate an authoritative hash from its contents.
+    // This will be returned to the caller.
+    const event = fromCreateEventInput(eventInput, newEventId);
 
     return {
-      status: 201,
-      body: responseBody,
+      id: newEventId,
+      hash: this.hasher(event),
     };
   }
 

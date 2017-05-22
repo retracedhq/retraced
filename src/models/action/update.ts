@@ -1,4 +1,3 @@
-import * as uuid from "uuid";
 
 import getPgPool from "../../persistence/pg";
 

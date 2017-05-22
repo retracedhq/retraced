@@ -1,10 +1,8 @@
 
 import { suite, test } from "mocha-typescript";
-import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 
 import * as express from "express";
-import * as tsoa from "tsoa";
 
 import { onError } from "../router";
 

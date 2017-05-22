@@ -1,5 +1,5 @@
+import "source-map-support/register";
 import getApiToken from "../models/api_token/get";
-import uniqueId from "../models/uniqueId";
 import modelsDeleteEnterpriseToken from "../models/eitapi_token/delete";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
@@ -33,6 +33,4 @@ export async function deleteEnterpriseToken(
             err: new Error(`Not Found`),
         };
     }
-
-    return { status: 204 };
 }

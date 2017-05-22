@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 
 import getPgPool from "../../persistence/pg";
 

@@ -3,14 +3,12 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as _ from "lodash";
-import * as uuid from "uuid";
 import * as chalk from "chalk";
-import * as util from "util";
 import * as bugsnag from "bugsnag";
 import * as Sigsci from "sigsci-module-nodejs";
 import * as swaggerUI from "swagger-ui-express";
 
-import { wrapRoute, register, requestId, preRequest, onSuccess, onError } from "./router";
+import { wrapRoute, register } from "./router";
 import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";
 import * as metrics from "./metrics";
@@ -41,6 +39,9 @@ if (!process.env["SIGSCI_RPC_ADDRESS"]) {
 }
 
 app.set("etag", false); // we're doing our own etag thing I guess
+// The nearest ip address in the X-Forwarded-For header not in a private
+// subnet will be used as req.ip.
+app.set("trust proxy", "uniquelocal");
 
 app.use(bugsnag.requestHandler);
 app.use(bodyParser.json());

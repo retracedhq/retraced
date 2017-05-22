@@ -9,6 +9,8 @@ export interface Options {
   environmentId: string;
   groupId: string;
   isAdmin: boolean;
+  viewLogAction: string;
+  actorId: string;
   targetId?: string;
 }
 
@@ -19,6 +21,8 @@ export default async function createViewerDescriptor(opts: Options): Promise<Vie
     environmentId: opts.environmentId,
     groupId: opts.groupId,
     isAdmin: opts.isAdmin,
+    viewLogAction: opts.viewLogAction,
+    actorId: opts.actorId,
     created: moment().valueOf(),
     scope: "",
   };

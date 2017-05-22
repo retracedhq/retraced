@@ -1,8 +1,6 @@
 import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
-
-import { RetracedEvent } from "../models/event/";
 import { defaultEventCreater, EventCreater, CreateEventRequest, CreateEventResponse } from "../handlers/createEvent";
-import { createViewerDescriptor, ViewerToken } from "../handlers/createViewerDescriptor";
+import { ViewerToken, createViewerDescriptor } from "../handlers/createViewerDescriptor";
 import { createEnterpriseToken, CreateEnterpriseToken, EnterpriseToken } from "../handlers/createEnterpriseToken";
 import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
 import { listEnterpriseTokens } from "../handlers/listEnterpriseTokens";
@@ -38,12 +36,12 @@ export class PublisherController extends Controller {
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Body() event: CreateEventRequest,
-        ): Promise<CreateEventResponse> {
+    ): Promise<CreateEventResponse> {
 
-        const result: any = await this.eventCreater.createEvent(auth, projectId, event);
+        const result: CreateEventResponse = await this.eventCreater.createEvent(auth, projectId, event);
 
-        this.setStatus(result.status);
-        return Promise.resolve(result.body);
+        this.setStatus(201);
+        return result;
 
     }
 
@@ -54,12 +52,14 @@ export class PublisherController extends Controller {
      *
      * **Note**: At least one of `group_id` or `team_id` is required.
      *
-     * @param auth      auth header of the form token=...
-     * @param projectId the project id
-     * @param groupId   The group identifier. Same as `team_id`. If both are passed, `group_id` will be used.
-     * @param isAdmin   Whether to display the Enterprise Settings and API Token Management. Set to `true` to show the settings.
-     * @param targetId  If passed, only events relating to this target will be returned in a viewer that uses the token created
-     * @param teamId    Same as `group_id`. If both are passed, `group_id` will be used. This field is deprecated.
+     * @param auth          auth header of the form token=...
+     * @param projectId     the project id
+     * @param displayName   A name to associate with the viewer token. It will be used as actor.name when logging events performed with this token.
+     * @param groupId       The group identifier. Same as `team_id`. If both are passed, `group_id` will be used.
+     * @param isAdmin       Whether to display the Enterprise Settings and API Token Management. Set to `true` to show the settings.
+     * @param targetId      If passed, only events relating to this target will be returned in a viewer that uses the token created
+     * @param teamId        Same as `group_id`. If both are passed, `group_id` will be used. This field is deprecated.
+     * @param viewLogAction The action that will be logged when the token is used
      */
     @Get("project/{projectId}/viewertoken")
     @SuccessResponse("201", "Created")
@@ -69,16 +69,27 @@ export class PublisherController extends Controller {
     public async createViewerDescriptor(
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
+        @Query("actor_id") actorId: string,
         @Query("group_id") groupId?: string,
         @Query("is_admin") isAdmin?: string,
         @Query("target_id") targetId?: string,
         @Query("team_id") teamId?: string,
+        @Query("view_log_action") viewLogAction?: string,
     ): Promise<ViewerToken> {
 
-        const result: any = await createViewerDescriptor(auth, projectId, isAdmin === "true", groupId, teamId, targetId);
+        const token: ViewerToken = await createViewerDescriptor(
+            auth,
+            projectId,
+            isAdmin === "true",
+            actorId,
+            groupId,
+            teamId,
+            targetId,
+            viewLogAction,
+        );
 
-        this.setStatus(result.status);
-        return Promise.resolve(result.body);
+        this.setStatus(201);
+        return token;
     }
 
     /**
@@ -96,6 +107,7 @@ export class PublisherController extends Controller {
     @Example<EnterpriseToken>({
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Default Production Token",
+        view_log_action: "audit.log.view",
     })
     public async createEnterpriseToken(
         @Header("Authorization") auth: string,
@@ -104,10 +116,15 @@ export class PublisherController extends Controller {
         @Body() token: CreateEnterpriseToken,
     ): Promise<EnterpriseToken> {
 
-        const result: any = await createEnterpriseToken(auth, projectId, groupId, token);
+        const result: EnterpriseToken = await createEnterpriseToken(
+            auth,
+            projectId,
+            groupId,
+            token,
+        );
 
-        this.setStatus(result.status);
-        return Promise.resolve(result.body);
+        this.setStatus(201);
+        return result;
     }
 
     /**
@@ -124,19 +141,24 @@ export class PublisherController extends Controller {
     @Example<EnterpriseToken[]>([{
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Primary Token",
+        view_log_action: "audit.log.view",
     }, {
         token: "f053dc4a3042459818833276eec717ab",
         display_name: "Secondary Token",
+        view_log_action: "audit.log.view",
     }])
     public async listEnterpriseTokens(
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
     ): Promise<EnterpriseToken[]> {
-        const result = await listEnterpriseTokens(auth, projectId, groupId);
+        const tokens: EnterpriseToken[] = await listEnterpriseTokens(
+            auth,
+            projectId,
+            groupId,
+        );
 
-        this.setStatus(result.status);
-        return Promise.resolve(result.body);
+        return tokens;
     }
 
     /**
@@ -154,6 +176,7 @@ export class PublisherController extends Controller {
     @Example<EnterpriseToken>({
         token: "f053dc4a3042459818833276eec717ab",
         display_name: "Production Token",
+        view_log_action: "audit.log.view",
     })
     public async getEnterpriseToken(
         @Header("Authorization") auth: string,
@@ -161,10 +184,14 @@ export class PublisherController extends Controller {
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
     ): Promise<EnterpriseToken> {
-        const result = await getEnterpriseToken(auth, projectId, groupId, tokenId);
+        const token: EnterpriseToken = await getEnterpriseToken(
+            auth,
+            projectId,
+            groupId,
+            tokenId,
+        );
 
-        this.setStatus(result.status);
-        return Promise.resolve(result.body);
+        return token;
     }
 
     /**
@@ -183,6 +210,7 @@ export class PublisherController extends Controller {
     @Example<EnterpriseToken>({
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Updated Token Name",
+        view_log_action: "audit.log.view",
     })
     public async updateEnterpriseToken(
         @Header("Authorization") auth: string,
@@ -191,10 +219,16 @@ export class PublisherController extends Controller {
         @Path("tokenId") tokenId: string,
         @Body() token: CreateEnterpriseToken,
     ): Promise<EnterpriseToken> {
-      const result = await updateEnterpriseToken(auth, projectId, groupId, tokenId, token.displayName);
+        const updated: EnterpriseToken = await updateEnterpriseToken(
+            auth,
+            projectId,
+            groupId,
+            tokenId,
+            token.displayName,
+            token.viewLogAction,
+        );
 
-      this.setStatus(result.status);
-      return Promise.resolve(result.body);
+        return updated;
     }
 
     /**
@@ -216,7 +250,13 @@ export class PublisherController extends Controller {
         @Path("tokenId") tokenId: string,
     ): Promise<void> {
 
-        const result: any = await deleteEnterpriseToken(auth, projectId, groupId, tokenId);
-        this.setStatus(result.status);
+        await deleteEnterpriseToken(
+            auth,
+            projectId,
+            groupId,
+            tokenId,
+        );
+
+        this.setStatus(204);
     }
 }

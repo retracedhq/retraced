@@ -1,8 +1,5 @@
 import * as uuid from "uuid";
 import * as moment from "moment";
-import * as jwt from "jsonwebtoken";
-
-import ViewerDescriptor from "../models/viewer_descriptor/def";
 import getViewerDescriptor from "../models/viewer_descriptor/get";
 import nsq from "../persistence/nsq";
 import { createViewerDescriptorVoucher } from "../security/vouchers";
@@ -14,6 +11,7 @@ export default async function handler(req) {
   const desc = await getViewerDescriptor({
     id: req.body.token,
   });
+  desc.ip = req.ip;
 
   const voucher = createViewerDescriptorVoucher(desc);
 

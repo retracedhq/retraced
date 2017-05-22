@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 
 import { checkEitapiAccess } from "../../security/helpers";
 import getSavedSearch from "../../models/saved_search/get";

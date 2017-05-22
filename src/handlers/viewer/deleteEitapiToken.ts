@@ -1,5 +1,6 @@
 import { checkViewerAccess } from "../../security/helpers";
 import deleteEitapiToken from "../../models/eitapi_token/delete";
+import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 
 export default async function(req) {
   const claims = await checkViewerAccess(req);
@@ -11,6 +12,28 @@ export default async function(req) {
     environmentId: claims.environmentId,
     groupId: claims.groupId,
   });
+
+  const thisEvent: CreateEventRequest = {
+    action: "eitapi_token.delete",
+    crud: "d",
+    actor: {
+      id: claims.actorId,
+    },
+    group: {
+      id: claims.groupId,
+    },
+    target: {
+      id: req.params.tokenId,
+    },
+    description: `${req.method} ${req.originalUrl}`,
+    source_ip: claims.ip,
+  };
+  await defaultEventCreater.saveRawEvent(
+    claims.projectId,
+    claims.environmentId,
+    thisEvent,
+  );
+
   return {
     status: 204,
     body: "",

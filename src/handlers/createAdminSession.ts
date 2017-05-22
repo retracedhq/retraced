@@ -1,7 +1,5 @@
 import * as Auth0 from "auth0-js";
 import { LocalStorage } from "node-localstorage";
-import * as util from "util";
-import * as jwt from "jsonwebtoken";
 
 import getUser from "../models/user/get";
 import createUser, { DUPLICATE_EMAIL } from "../models/user/create";

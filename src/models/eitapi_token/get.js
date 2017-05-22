@@ -11,7 +11,7 @@ export default async function getEitapiToken(opts) {
   try {
     let q = `
     select
-      id, display_name, project_id, environment_id, group_id
+      id, display_name, project_id, environment_id, group_id, view_log_action
     from
       eitapi_token
     where

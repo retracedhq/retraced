@@ -1,7 +1,7 @@
 import "source-map-support/register";
 import * as _ from "lodash";
 
-import queryEvents, { unrestricted, Options } from "../../models/event/query";
+import queryEvents, { Options } from "../../models/event/query";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { Scope } from "../../security/scope";
 import getGroups from "../../models/group/gets";

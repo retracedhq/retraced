@@ -1,13 +1,11 @@
-import * as querystring from "querystring";
+
 import * as _ from "lodash";
-import * as util from "util";
 
 import { AdminClaims, validateAdminVoucher, validateViewerDescriptorVoucher } from "./vouchers";
 import verifyProjectAccess from "./verifyProjectAccess";
 import verifyEnvironmentAccess from "./verifyEnvironmentAccess";
 import getEitapiToken from "../models/eitapi_token/get";
 import ViewerDescriptor from "../models/viewer_descriptor/def";
-import findTargets from "../models/target/find";
 
 // Authorization: Token token=abcdef
 export function apiTokenFromAuthHeader(authHeader?: string): string {
