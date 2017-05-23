@@ -11,6 +11,9 @@ export default async function handler(req) {
   const desc = await getViewerDescriptor({
     id: req.body.token,
   });
+  if (!desc) {
+    throw { status: 401, err: new Error("Unauthorized") };
+  }
   desc.ip = req.ip;
 
   const voucher = createViewerDescriptorVoucher(desc);
