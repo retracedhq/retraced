@@ -26,6 +26,8 @@ spec:
               name: var-run
               readOnly: true
           env:
+            - name: STATSD_USE_SYSDIG_NAME_REWRITER
+              value: "1"
             - name: SIGSCI_RPC_ADDRESS
               valueFrom:
                 secretKeyRef:

@@ -6,15 +6,17 @@ export function startStatsdReporter(
     statsdHost: string,
     statsdPort: number,
     intervalMs: number,
+    prefix: string,
+    rewrite: boolean,
 ) {
     console.log(`starting statsd reporter ${statsdHost}:${statsdPort} at interval ${intervalMs}ms`);
     const rewriter = new SysdigNameRewriter(SysdigNameRewriter.CLASS_METHOD_METRIC_AGGREGATION);
 
     const reporter = new StatsdReporter(
         getRegistry(),
-        "",
+        prefix,
         new StatsdClient({host: statsdHost, port: statsdPort}),
-        rewriter.rewriteName.bind(rewriter),
+        rewrite ? rewriter.rewriteName.bind(rewriter) : (s) => s,
     );
     console.log("created");
 
@@ -45,14 +47,16 @@ export function startStatusPageReporter(
 };
 
 export function bootstrapFromEnv() {
-    const statsdHost = process.env.KUBERNETES_SERVICE_HOST || process.env.STATSD_HOST;
+    const statsdHost = process.env.STATSD_HOST || process.env.KUBERNETES_SERVICE_HOST;
     const statsdPort = process.env.STATSD_PORT || 8125;
     const statsdIntervalMillis = process.env.STATSD_INTERVAL_MILLIS || 30000;
+    const statsdPrefix = process.env.STATSD_PREFIX || "";
+    const sysdigRewriter = process.env.STATSD_USE_SYSDIG_NAME_REWRITER || false;
 
     if (!statsdHost) {
         console.error("neither KUBERNETES_SERVICE_HOST nor STATSD_HOST is set, metrics will not be reported to statsd or sysdig");
     } else {
-        startStatsdReporter(statsdHost, statsdPort, statsdIntervalMillis);
+        startStatsdReporter(statsdHost, statsdPort, statsdIntervalMillis, statsdPrefix, sysdigRewriter);
     }
 
     const statusPageToken = process.env.STATUSPAGEIO_TOKEN;
