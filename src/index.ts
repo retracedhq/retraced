@@ -11,6 +11,7 @@ import * as swaggerUI from "swagger-ui-express";
 import { wrapRoute, register } from "./router";
 import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";
+import { AdminUserBootstrap } from "./handlers/admin/AdminUserBootstrap";
 import * as metrics from "./metrics";
 import swaggerSpecs from "./swagger";
 
@@ -76,6 +77,12 @@ function buildRoutes() {
     const handler = wrapRoute(route, handlerName);
     register(route, handler, app);
   });
+
+  if (process.env.ADMIN_ROOT_TOKEN) {
+    const route = { method: "post", path: "/admin/v1/user/_login" };
+    const handler = wrapRoute({ handler: AdminUserBootstrap.default().handler() }, "_login");
+    register(route, handler, app);
+  }
 
   app.use((req, res, next) => {
     const errMsg = `Route not found for ${req.method} ${req.originalUrl}`;
