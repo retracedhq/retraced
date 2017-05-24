@@ -1,5 +1,4 @@
 import * as uuid from "uuid";
-import * as moment from "moment";
 
 import getPgPool from "../../persistence/pg";
 import {

@@ -1,5 +1,3 @@
-import * as moment from "moment";
-
 import { checkAdminAccessUnwrapped } from "../../security/helpers";
 import getDeletionRequest from "../../models/deletion_request/get";
 import getDeletionConfirmations from "../../models/deletion_confirmation/getByDeletionRequest";
@@ -16,11 +14,11 @@ export default async function handler(
   environmentId: string,
   deletionRequestId: string,
 ) {
-  const claims = await checkAdminAccessUnwrapped(auth, projectId, environmentId);
+  await checkAdminAccessUnwrapped(auth, projectId, environmentId);
 
   const request = await getDeletionRequest(deletionRequestId);
   if (!request) {
-    return { status: 404 };
+    throw { status: 404 };
   }
 
   const backoffRemaining = deletionRequestBackoffRemaining(request);
@@ -43,11 +41,8 @@ export default async function handler(
   }
 
   return {
-    status: 200,
-    body: {
-      expired: deletionRequestHasExpired(request),
-      backoffRemaining: backoffRemaining ? backoffRemaining.humanize(true) : "none",
-      outstandingConfirmations,
-    },
+    expired: deletionRequestHasExpired(request),
+    backoffRemaining: backoffRemaining.asSeconds(),
+    outstandingConfirmations,
   };
 }

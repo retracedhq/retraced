@@ -1,11 +1,12 @@
 import {
-    Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example,
+    Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller,
 } from "tsoa";
 
 import deleteTemplate from "../handlers/admin/deleteTemplate";
 import deleteEnvironment from "../handlers/admin/deleteEnvironment";
 import createDeletionRequest, { CreateDelReqRequestBody } from "../handlers/admin/createDeletionRequest";
 import getDeletionRequest from "../handlers/admin/getDeletionRequest";
+import approveDeletionConfirmation from "../handlers/admin/approveDeletionConfirmation";
 
 @Route("admin/v1")
 export class AdminController extends Controller {
@@ -51,8 +52,8 @@ export class AdminController extends Controller {
         @Path("projectId") projectId: string,
         @Path("environmentId") environmentId: string,
     ): Promise<void> {
-        const result: any = await deleteEnvironment(auth, projectId, environmentId);
-        this.setStatus(result.status);
+        await deleteEnvironment(auth, projectId, environmentId);
+        this.setStatus(204);
     }
 
     /**
@@ -75,8 +76,8 @@ export class AdminController extends Controller {
         const result: any = await createDeletionRequest(
             auth, projectId, environmentId, requestBody,
         );
-        this.setStatus(result.status);
-        return result.body;
+        this.setStatus(201);
+        return result;
     }
 
     /**
@@ -99,7 +100,30 @@ export class AdminController extends Controller {
         const result: any = await getDeletionRequest(
             auth, projectId, environmentId, deletionRequestId,
         );
-        this.setStatus(result.status);
-        return result.body;
+        this.setStatus(200);
+        return result;
+    }
+
+    /**
+     * Mark a deletion confirmation as received (i.e. approve it).
+     *
+     *
+     * @param auth              Base64 ecoded JWT authentication
+     * @param projectId         The project id
+     * @param environmentId     The environment
+     * @param code              The confirmation code
+     */
+    @Post("project/{projectId}/environment/{environmentId}/deletion_confirmation/{code}")
+    @SuccessResponse("200", "OK")
+    public async approveDeletionConfirmation(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Path("environmentId") environmentId: string,
+        @Path("code") code: string,
+    ): Promise<void> {
+        await approveDeletionConfirmation(
+            auth, projectId, environmentId, code,
+        );
+        this.setStatus(200);
     }
 }

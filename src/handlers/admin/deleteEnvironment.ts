@@ -1,5 +1,3 @@
-import * as moment from "moment";
-
 import { checkAdminAccessUnwrapped } from "../../security/helpers";
 import deleteEnvironment from "../../models/environment/delete";
 import getDeletionRequestByResourceId from "../../models/deletion_request/getByResourceId";
@@ -22,17 +20,15 @@ export default async function handle(
   if (true === await environmentIsEmpty({ projectId, environmentId })) {
     await deleteEnvironment({ projectId, environmentId });
     console.log(`AUDIT user ${claims.userId} deleted EMPTY environment ${environmentId}`);
-    return { status: 204 };
+    return;
   }
 
   // Otherwise, we'll need an existing deletion request...
   const deletionRequest = await getDeletionRequestByResourceId(environmentId);
   if (!deletionRequest) {
-    return {
+    throw {
       status: 403,
-      body: {
-        error: "Cannot delete a populated environment. Create a deletion request.",
-      },
+      err: new Error("Cannot delete a populated environment. Create a deletion request."),
     };
   }
 
@@ -41,23 +37,19 @@ export default async function handle(
     // This should cascade-delete all related deletion_confirmation rows as well.
     await deleteDeletionRequest(deletionRequest.id);
 
-    return {
+    throw {
       status: 403,
-      body: {
-        error: "Existing deletion request is too old. Create a new one.",
-      },
+      err: new Error("Existing deletion request is too old. Create a new one."),
     };
   }
 
   // ... which isn't still in its backoff period...
   const backoffRemaining = deletionRequestBackoffRemaining(deletionRequest);
   if (backoffRemaining) {
-    return {
+    throw {
       status: 403,
-      body: {
-        error: `Cannot delete this environment until its deletion request ` +
-        `backoff period has passed (${backoffRemaining.humanize(true)}).`,
-      },
+      err: new Error(`Cannot delete this environment until its deletion request ` +
+        `backoff period has passed (${backoffRemaining.humanize(true)}).`),
     };
   }
 
@@ -72,12 +64,10 @@ export default async function handle(
     }
 
     if (outstandingConfirmations > 0) {
-      return {
+      throw {
         status: 403,
-        body: {
-          error: `Cannot delete this environment until all confirmations have ` +
-          `been received (${outstandingConfirmations} still outstanding).`,
-        },
+        err: new Error(`Cannot delete this environment until all confirmations have ` +
+          `been received (${outstandingConfirmations} still outstanding).`),
       };
     }
   }
@@ -89,6 +79,4 @@ export default async function handle(
   // This should cascade-delete all related deletion_confirmation rows as well.
   await deleteDeletionRequest(deletionRequest.id);
   console.log(`AUDIT deletion request ${deletionRequest.id} for environment ${environmentId} closed successfully`);
-
-  return { status: 204 };
 }

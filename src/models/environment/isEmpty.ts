@@ -1,5 +1,3 @@
-import * as util from "util";
-
 import getElasticsearch from "../../persistence/elasticsearch";
 
 const es = getElasticsearch();
@@ -24,7 +22,7 @@ export default async function (opts: Options): Promise<boolean> {
       }
 
       // See if index has any items in it.
-      es.count({ index: aliasName }, (err2, resp2) => {
+      es.raw.count({ index: aliasName }, (err2, resp2) => {
         if (err2) {
           reject(err2);
           return;
