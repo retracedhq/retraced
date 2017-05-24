@@ -1,8 +1,8 @@
 import * as uuid from "uuid";
-import * as mandrill from "mandrill-api/mandrill";
 import * as moment from "moment";
 
 import getPgPool from "../../persistence/pg";
+import nsq from "../../persistence/nsq";
 
 const pgPool = getPgPool();
 
@@ -49,47 +49,13 @@ export default function createInvite(opts) {
         }
 
         // Send the email
-        // TODO this should be async in a queue
-        const mandrillClient = new mandrill.Mandrill(process.env.MANDRILL_KEY);
-        const templateName = "retraced/invite-to-team";
-        const templateContent = [];
-        const mergeVars = [{
-          name: "invite_url",
-          content: `${process.env.RETRACED_PUBLIC_SITE}/invitation#${invite.id}`,
-        }];
-
-        const params = {
-          template_name: templateName,
-          template_content: templateContent,
-        };
-
-        mandrillClient.templates.render(params, function(rendered) {
-          const moreParams = {
-            message: {
-              html: rendered.html,
-              to: [{
-                email: invite.email,
-                type: "to",
-              }],
-              from_email: "contact@retraced.io",
-              from_name: "Retraced",
-              subject: "You have been invited to join a group on Retraced.",
-              global_merge_vars: mergeVars,
-            },
-            async: false,
-          };
-          mandrillClient.messages.send(moreParams,
-            function(result) {
-              resolve(invite);
-            },
-            function(mandrillErr) {
-              console.log("Error sending email: ", mandrillErr);
-              reject(mandrillErr);
-            },
-          );
-        }, function(mandrillErr) {
-          console.log("Error rendering email: ", mandrillErr);
-          reject(mandrillErr);
+        nsq.produce("emails", {
+          to: invite.email,
+          subject: "You have been invited to join a group on Retraced.",
+          template: "retraced/invite-to-team",
+          context: {
+            invite_url: `${process.env.RETRACED_PUBLIC_SITE}/invitation#${invite.id}`,
+          },
         });
       });
     });

@@ -88,11 +88,6 @@ spec:
                 secretKeyRef:
                   name: retraced
                   key: RETRACED_API_SCHEMES
-            - name: MANDRILL_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: mandrill
-                  key: MANDRILL_KEY
             - name: ELASTICSEARCH_NODES
               valueFrom:
                 secretKeyRef:
