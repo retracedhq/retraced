@@ -54,9 +54,11 @@ export default function createInvite(opts) {
           subject: "You have been invited to join a group on Retraced.",
           template: "retraced/invite-to-team",
           context: {
-            invite_url: `${process.env.RETRACED_PUBLIC_SITE}/invitation#${invite.id}`,
+            invite_url: `${process.env.RETRACED_APP_BASE}/invitations/${invite.id}`,
           },
         });
+
+        resolve();
       });
     });
   });
