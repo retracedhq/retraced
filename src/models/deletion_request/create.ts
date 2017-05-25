@@ -1,5 +1,6 @@
 import * as uuid from "uuid";
 import * as moment from "moment";
+import * as pg from "pg";
 
 import getPgPool from "../../persistence/pg";
 import {
@@ -10,7 +11,13 @@ import {
 
 const pgPool = getPgPool();
 
-export default async function create(drv: DeletionRequestValues): Promise<DeletionRequest> {
+export default async function create(
+  drv: DeletionRequestValues,
+  queryIn?: (q: string, v: any[]) => Promise<pg.QueryResult>,
+): Promise<DeletionRequest> {
+
+  const query = queryIn || pgPool.query.bind(pgPool);
+
   const newDeletionRequest: DeletionRequest = {
     id: uuid.v4().replace(/-/g, ""),
     created: moment(),
@@ -19,11 +26,13 @@ export default async function create(drv: DeletionRequestValues): Promise<Deleti
 
   const row = rowFromDeletionRequest(newDeletionRequest);
 
-  const insertStmt = `insert into deletion_request (
+  const insertStmt = `
+    insert into deletion_request (
       id, created, backoff_interval, resource_kind, resource_id
     ) values (
       $1, to_timestamp($2), $3, $4, $5
-    )`;
+    )
+  `;
   const insertVals = [
     row.id,
     row.created,
@@ -31,7 +40,8 @@ export default async function create(drv: DeletionRequestValues): Promise<Deleti
     row.resource_kind,
     row.resource_id,
   ];
-  await pgPool.query(insertStmt, insertVals);
+
+  await query(insertStmt, insertVals);
 
   return newDeletionRequest;
 }

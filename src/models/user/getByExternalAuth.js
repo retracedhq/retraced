@@ -3,6 +3,7 @@ import getPgPool from "../../persistence/pg";
 const pgPool = getPgPool();
 
 // opts: email, authId
+// TODO(zhaytee): Conform this to the RetracedUser interface
 export default async function(opts) {
   let pg;
   try {

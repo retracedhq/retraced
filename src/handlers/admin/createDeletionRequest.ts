@@ -2,6 +2,7 @@ import * as moment from "moment";
 import * as uuid from "uuid";
 
 import nsq from "../../persistence/nsq";
+import getPgPool from "../../persistence/pg";
 import { checkAdminAccessUnwrapped } from "../../security/helpers";
 import getDeletionRequestByResourceId from "../../models/deletion_request/getByResourceId";
 import deleteDeletionRequest from "../../models/deletion_request/delete";
@@ -10,6 +11,8 @@ import createDeletionConfirmation from "../../models/deletion_confirmation/creat
 import getUser from "../../models/user/get";
 import getEnvironment from "../../models/environment/get";
 import listTeamMembers from "../../models/team/listTeamMembers";
+
+const pgPool = getPgPool();
 
 // TODO(zhaytee): This should be configurable at some level.
 const defaultBackoffInterval = 60 * 60 * 48; // 48 hours
@@ -78,19 +81,29 @@ export default async function handle(
     }
   }
 
-  const newDeletionRequest = await createDeletionRequest({
-    resourceKind: requestBody.resourceKind,
-    resourceId: requestBody.resourceId,
-    backoffInterval: moment.duration(defaultBackoffInterval, "seconds"),
-  });
+  // We perform the following creations in a proper transaction in order to
+  // prevent the scenario where a new deletion request is created that requires
+  // no approval.
+  const tx = await pgPool.connect();
+  const rollback = async () => {
+    try {
+      await tx.query("ROLLBACK");
+    } catch (err) {
+      console.log(`Rollback failed: ${err}`);
+    }
+  };
+  await tx.query("BEGIN");
 
-  // For returning to the API caller
   const outstandingConfirmations: string[] = [];
+  let newDeletionRequest;
 
-  // Catch any issues with confirmation creation.
-  // If there's a problem, we roll back the deletion request to prevent the
-  // scenario where a deletion request exists that requires no approval.
   try {
+    newDeletionRequest = await createDeletionRequest({
+      resourceKind: requestBody.resourceKind,
+      resourceId: requestBody.resourceId,
+      backoffInterval: moment.duration(defaultBackoffInterval, "seconds"),
+    }, tx.query.bind(tx));
+
     for (const userId of confirmationUserIds) {
       const user = await getUser(userId);
       if (!user) {
@@ -104,7 +117,7 @@ export default async function handle(
         deletionRequestId: newDeletionRequest.id,
         retracedUserId: userId,
         visibleCode: code,
-      });
+      }, tx.query.bind(tx));
 
       nsq.produce("emails", JSON.stringify({
         to: user.email,
@@ -121,12 +134,13 @@ export default async function handle(
     }
   } catch (err) {
     console.log(`Rollback! Failed to create necessary deletion confirmations: ${err}`);
-    await deleteDeletionRequest(newDeletionRequest.id);
-    throw {
-      status: 500,
-      err,
-    };
+    await rollback();
+    tx.release();
+    throw err;
   }
+
+  await tx.query("COMMIT");
+  tx.release();
 
   return {
     id: newDeletionRequest.id,
