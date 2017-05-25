@@ -4,8 +4,8 @@ import {
 
 import deleteTemplate from "../handlers/admin/deleteTemplate";
 import deleteEnvironment from "../handlers/admin/deleteEnvironment";
-import createDeletionRequest, { CreateDelReqRequestBody } from "../handlers/admin/createDeletionRequest";
-import getDeletionRequest from "../handlers/admin/getDeletionRequest";
+import createDeletionRequest, { CreateDelReqRequestBody, CreateDelReqReport } from "../handlers/admin/createDeletionRequest";
+import getDeletionRequest, { GetDelReqReport } from "../handlers/admin/getDeletionRequest";
 import approveDeletionConfirmation from "../handlers/admin/approveDeletionConfirmation";
 
 @Route("admin/v1")
@@ -72,8 +72,8 @@ export class AdminController extends Controller {
         @Path("projectId") projectId: string,
         @Path("environmentId") environmentId: string,
         @Body() requestBody: CreateDelReqRequestBody,
-    ): Promise<void> {
-        const result: any = await createDeletionRequest(
+    ): Promise<CreateDelReqReport> {
+        const result = await createDeletionRequest(
             auth, projectId, environmentId, requestBody,
         );
         this.setStatus(201);
@@ -96,8 +96,8 @@ export class AdminController extends Controller {
         @Path("projectId") projectId: string,
         @Path("environmentId") environmentId: string,
         @Path("deletionRequestId") deletionRequestId: string,
-    ): Promise<void> {
-        const result: any = await getDeletionRequest(
+    ): Promise<GetDelReqReport> {
+        const result = await getDeletionRequest(
             auth, projectId, environmentId, deletionRequestId,
         );
         this.setStatus(200);

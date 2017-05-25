@@ -20,7 +20,7 @@ export default async function handle(
 
   // Kind of overkill, but... I guess it can't hurt.
   if (extant.retracedUserId !== claims.userId) {
-    throw { status: 403 };
+    throw { status: 404 }; // No access? No knowledge.
   }
 
   await markDeletionConfirmationReceived(extant.id);

@@ -2,7 +2,7 @@ import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
-export default async function (id: string) {
+export default async function (id: string): Promise<boolean> {
   const q = `
     delete
     from
@@ -18,5 +18,8 @@ export default async function (id: string) {
 
   if (response.rowCount === 0) {
     console.log(`Expected deletion_request row to be deleted, but rowCount == 0`);
+    return false;
   }
+
+  return true;
 }

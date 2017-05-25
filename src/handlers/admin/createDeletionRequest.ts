@@ -19,6 +19,11 @@ export interface CreateDelReqRequestBody {
   resourceId: string;
 }
 
+export interface CreateDelReqReport {
+  id: string;
+  outstandingConfirmations: string[];
+}
+
 export default async function handle(
   authorization: string,
   projectId: string,
@@ -82,32 +87,45 @@ export default async function handle(
   // For returning to the API caller
   const outstandingConfirmations: string[] = [];
 
-  for (const userId of confirmationUserIds) {
-    const user = await getUser(userId);
-    if (!user) {
-      console.log(`Deletion request contained user id we don't know about: '${userId}'`);
-      continue;
+  // Catch any issues with confirmation creation.
+  // If there's a problem, we roll back the deletion request to prevent the
+  // scenario where a deletion request exists that requires no approval.
+  try {
+    for (const userId of confirmationUserIds) {
+      const user = await getUser(userId);
+      if (!user) {
+        console.log(`Deletion request contained user id we don't know about: '${userId}'`);
+        continue;
+      }
+
+      const code = uuid.v4().replace(/-/g, "");
+
+      await createDeletionConfirmation({
+        deletionRequestId: newDeletionRequest.id,
+        retracedUserId: userId,
+        visibleCode: code,
+      });
+
+      nsq.produce("emails", JSON.stringify({
+        to: user.email,
+        subject: "Your approval is required for a critical operation.",
+        template: "retraced/deletion-request",
+        context: {
+          approve_url: `${process.env.RETRACED_APP_BASE}/project/${projectId}/${environmentId}/approve/${code}`,
+          resource_kind: newDeletionRequest.resourceKind,
+          resource_name: resourceName,
+        },
+      }));
+
+      outstandingConfirmations.push(user.email);
     }
-
-    const code = uuid.v4().replace(/-/g, "");
-    await createDeletionConfirmation({
-      deletionRequestId: newDeletionRequest.id,
-      retracedUserId: userId,
-      visibleCode: code,
-    });
-
-    nsq.produce("emails", JSON.stringify({
-      to: user.email,
-      subject: "Your approval is required for a critical operation.",
-      template: "retraced/deletion-request",
-      context: {
-        approve_url: `${process.env.RETRACED_APP_BASE}/project/${projectId}/${environmentId}/approve/${code}`,
-        resource_kind: newDeletionRequest.resourceKind,
-        resource_name: resourceName,
-      },
-    }));
-
-    outstandingConfirmations.push(user.email);
+  } catch (err) {
+    console.log(`Rollback! Failed to create necessary deletion confirmations: ${err}`);
+    await deleteDeletionRequest(newDeletionRequest.id);
+    throw {
+      status: 500,
+      err,
+    };
   }
 
   return {

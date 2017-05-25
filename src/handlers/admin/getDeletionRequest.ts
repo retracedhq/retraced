@@ -8,12 +8,18 @@ import {
 } from "../../models/deletion_request";
 import getUser from "../../models/user/get";
 
+export interface GetDelReqReport {
+  expired: boolean;
+  backoffRemaining: number;
+  outstandingConfirmations: string[];
+}
+
 export default async function handler(
   auth: string,
   projectId: string,
   environmentId: string,
   deletionRequestId: string,
-) {
+): Promise<GetDelReqReport> {
   await checkAdminAccessUnwrapped(auth, projectId, environmentId);
 
   const request = await getDeletionRequest(deletionRequestId);
@@ -33,7 +39,7 @@ export default async function handler(
     const user = await getUser(c.retracedUserId);
     if (!user) {
       console.log(`Removing bad outstanding confirmation from non-existent user ('${c.retracedUserId}')`);
-      await deleteDeletionConfirmation;
+      await deleteDeletionConfirmation(c.id);
       continue;
     }
 
