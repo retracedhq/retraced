@@ -20,10 +20,12 @@ export default async function createEnvironment(opts: Opts) {
   };
 
   // Create the ES index
-  const alias = `retraced.${environment.project_id}.${environment.id}`;
+  const searchAlias = `retraced.${environment.project_id}.${environment.id}`;
+  const writeAlias = `retraced.${environment.project_id}.${environment.id}.current`;
   const newIndex = `retraced.api.${uuid.v4().replace(/-/g, "")}`;
   const aliases = {};
-  aliases[alias] = {};
+  aliases[searchAlias] = {};
+  aliases[writeAlias] = {};
   const params = {
     index: newIndex,
     body: {

@@ -26,6 +26,8 @@ spec:
               name: var-run
               readOnly: true
           env:
+            - name: STATSD_USE_SYSDIG_NAME_REWRITER
+              value: "1"
             - name: SIGSCI_RPC_ADDRESS
               valueFrom:
                 secretKeyRef:
@@ -86,11 +88,6 @@ spec:
                 secretKeyRef:
                   name: retraced
                   key: RETRACED_API_SCHEMES
-            - name: MANDRILL_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: mandrill
-                  key: MANDRILL_KEY
             - name: ELASTICSEARCH_NODES
               valueFrom:
                 secretKeyRef:

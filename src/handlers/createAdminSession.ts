@@ -2,7 +2,7 @@ import * as Auth0 from "auth0-js";
 import { LocalStorage } from "node-localstorage";
 
 import getUser from "../models/user/get";
-import createUser, { DUPLICATE_EMAIL } from "../models/user/create";
+import createUser, { ERR_DUPLICATE_EMAIL } from "../models/user/create";
 import getInvite from "../models/invite/get";
 import deleteInvite from "../models/invite/delete";
 import addUserToProject from "../models/project/addUser";
@@ -25,8 +25,12 @@ export default async function handler(req) {
     throw { status: 400, err: new Error("Missing required auth") };
   }
 
-  const externalAuth = await validateExternalAuth(req.body.external_auth);
+  const externalAuth: ExternalAuth = await validateExternalAuth(req.body.external_auth);
 
+  return await createSession(externalAuth);
+}
+
+export async function createSession(externalAuth: ExternalAuth) {
   let user = await getUser({
     email: externalAuth.email,
     authId: externalAuth.upstreamToken,
@@ -38,7 +42,7 @@ export default async function handler(req) {
         authId: externalAuth.upstreamToken,
       });
     } catch (err) {
-      if (err === DUPLICATE_EMAIL) {
+      if (err === ERR_DUPLICATE_EMAIL) {
         throw { status: 409, err: new Error("Email already exists") };
       }
       throw err;
@@ -87,7 +91,7 @@ export default async function handler(req) {
   };
 }
 
-interface ExternalAuth {
+export interface ExternalAuth {
   email: string;
   upstreamToken: string;
   inviteId?: string;

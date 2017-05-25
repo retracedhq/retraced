@@ -37,6 +37,7 @@ const specs: ApiSpec[] = [
 function fix(json: any, schemes: string[]): void {
   json.host = apiHost;
   json.schemes = schemes;
+  json.basePath = "";
   removeEmptyRequired(json);
 }
 

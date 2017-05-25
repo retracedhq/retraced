@@ -30,15 +30,16 @@ export function apiTokenFromAuthHeader(authHeader?: string): string {
   return parts[1];
 }
 
-export async function checkAdminAccessUnwrapped(voucher: string, projectId?: string, environmentId?: string): Promise<AdminClaims> {
-  const claims = await validateAdminVoucher(voucher);
+export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: string, environmentId?: string): Promise<AdminClaims> {
+
+  const claims = await validateAdminVoucher(authHeader);
 
   // Some endpoints don't reference a project (such as list projects)
   if (!projectId) {
     return claims;
   }
 
-  if (!await verifyProjectAccess({projectId, userId: claims.userId})) {
+  if (!await verifyProjectAccess({ projectId, userId: claims.userId })) {
     throw { status: 404, err: new Error("Not found") };
   }
 
@@ -47,7 +48,7 @@ export async function checkAdminAccessUnwrapped(voucher: string, projectId?: str
     return claims;
   }
 
-  if (!await verifyEnvironmentAccess({environmentId, userId: claims.userId})) {
+  if (!await verifyEnvironmentAccess({ environmentId, userId: claims.userId })) {
     throw { status: 404, err: new Error("Not found") };
   }
 

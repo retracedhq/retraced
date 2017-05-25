@@ -1,14 +1,14 @@
 import * as uuid from "uuid";
-import * as util from "util";
 import * as moment from "moment";
 
+import { User } from "./";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
 const defaultTimezone = "US/Pacific";
 
-export const DUPLICATE_EMAIL = new Error("DUPLICATE_EMAIL");
+export const ERR_DUPLICATE_EMAIL = new Error("DUPLICATE_EMAIL");
 
 /**
  * createUser will create a new user account
@@ -16,7 +16,7 @@ export const DUPLICATE_EMAIL = new Error("DUPLICATE_EMAIL");
  * @param {Object} [opts] the request options
  * @param {string} [opts.email] the email address to use
  */
-export default async function createUser(opts) {
+export default async function createUser(opts): Promise<User> {
   let pg;
   try {
     pg = await pgPool.connect();
@@ -26,7 +26,7 @@ export default async function createUser(opts) {
     let v = [opts.email];
     const dupeCheckResult = await pg.query(q, v);
     if (dupeCheckResult.rows[0].count > 0) {
-      throw DUPLICATE_EMAIL;
+      throw ERR_DUPLICATE_EMAIL;
     }
 
     q = `insert into retraceduser (
@@ -48,6 +48,8 @@ export default async function createUser(opts) {
       id: v[0],
       email: v[1],
       timezone: v[5],
+      external_auth_id: opts.authId,
+      externalAuthId: opts.authId,
     };
 
   } finally {
