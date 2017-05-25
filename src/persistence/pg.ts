@@ -1,8 +1,8 @@
 import * as pg from "pg";
 
-let pgPool;
+let pgPool: pg.Pool;
 
-export default function getPgPool() {
+export default function getPgPool(): pg.Pool {
   if (!pgPool) {
     pgPool = new pg.Pool({
       user: process.env.POSTGRES_USER,

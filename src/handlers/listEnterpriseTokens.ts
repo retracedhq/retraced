@@ -29,6 +29,7 @@ export async function listEnterpriseTokens(
       return {
         token: id,
         display_name,
+        view_log_action: "audit.log.view", // ???
       };
     });
 
