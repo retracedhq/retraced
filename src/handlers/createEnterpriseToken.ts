@@ -14,7 +14,7 @@ export interface CreateEnterpriseToken {
 export interface EnterpriseToken {
     token: string;
     display_name: string;
-    view_log_action: string;
+    view_log_action?: string;
 }
 
 export async function createEnterpriseToken(
