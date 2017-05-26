@@ -8,9 +8,10 @@ import getActiveSearch from "../../models/active_search/get";
 import updateActiveSearch from "../../models/active_search/update";
 import QueryDescriptor from "../../models/query_desc/def";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
+import { EnterpriseToken } from "../../models/eitapi_token/index";
 
 export default async function handler(req) {
-  const eitapiToken = await checkEitapiAccess(req);
+  const eitapiToken: EnterpriseToken = await checkEitapiAccess(req);
 
   if (!req.params.activeSearchId) {
     throw {
@@ -111,11 +112,11 @@ export default async function handler(req) {
   }
 
   const thisViewEvent: CreateEventRequest = {
-    action: eitapiToken.viewLogAction,
+    action: eitapiToken.view_log_action,
     crud: "r",
     actor: {
       id: `enterprise:${eitapiToken.id.substring(0, 7)}`,
-      name: eitapiToken.displayName,
+      name: eitapiToken.display_name,
     },
     group: {
       id: eitapiToken.group_id,

@@ -9,7 +9,7 @@ import getDeletionRequest, { GetDelReqReport } from "../handlers/admin/getDeleti
 import approveDeletionConfirmation from "../handlers/admin/approveDeletionConfirmation";
 
 @Route("admin/v1")
-export class AdminController extends Controller {
+export class AdminAPI extends Controller {
 
     /**
      * Delete a template. An overview of Template usage in Retraced can be found at

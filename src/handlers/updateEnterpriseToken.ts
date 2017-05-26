@@ -3,7 +3,7 @@ import getApiToken from "../models/api_token/get";
 import modelsUpdateEnterpriseToken from "../models/eitapi_token/update";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
-import { EnterpriseToken } from "./createEnterpriseToken";
+import { EnterpriseTokenResponse } from "./createEnterpriseToken";
 
 const pgPool = getPgPool();
 
@@ -14,7 +14,7 @@ export async function updateEnterpriseToken(
     eitapiTokenId: string,
     displayName: string,
     viewLogAction: string | undefined,
-): Promise<EnterpriseToken> {
+): Promise<EnterpriseTokenResponse> {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
     const validAccess = apiToken && apiToken.project_id === projectId;

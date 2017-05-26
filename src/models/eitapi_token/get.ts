@@ -1,4 +1,5 @@
 import getPgPool from "../../persistence/pg";
+import { EnterpriseToken } from "./";
 
 const pgPool = getPgPool();
 
@@ -6,10 +7,15 @@ const pgPool = getPgPool();
   opts:
     eitapiTokenId
 */
-export default async function getEitapiToken(opts) {
+
+export interface Opts {
+  eitapiTokenId: string;
+}
+
+export default async function getEitapiToken(opts: Opts): Promise<EnterpriseToken|null> {
   const pg = await pgPool.connect();
   try {
-    let q = `
+    const q = `
     select
       id, display_name, project_id, environment_id, group_id, view_log_action
     from

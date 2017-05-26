@@ -1,14 +1,14 @@
 import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
 import { defaultEventCreater, EventCreater, CreateEventRequest, CreateEventResponse } from "../handlers/createEvent";
 import { ViewerToken, createViewerDescriptor } from "../handlers/createViewerDescriptor";
-import { createEnterpriseToken, CreateEnterpriseToken, EnterpriseToken } from "../handlers/createEnterpriseToken";
+import { createEnterpriseToken, CreateEnterpriseTokenRequest, EnterpriseTokenResponse } from "../handlers/createEnterpriseToken";
 import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
 import { listEnterpriseTokens } from "../handlers/listEnterpriseTokens";
 import { updateEnterpriseToken } from "../handlers/updateEnterpriseToken";
 import { getEnterpriseToken } from "../handlers/getEnterpriseToken";
 
 @Route("publisher/v1")
-export class PublisherController extends Controller {
+export class PublisherAPI extends Controller {
 
     private readonly eventCreater: EventCreater;
 
@@ -104,7 +104,7 @@ export class PublisherController extends Controller {
      */
     @Post("project/{projectId}/group/{groupId}/enterprisetoken")
     @SuccessResponse("201", "Created")
-    @Example<EnterpriseToken>({
+    @Example<EnterpriseTokenResponse>({
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Default Production Token",
         view_log_action: "audit.log.view",
@@ -113,10 +113,10 @@ export class PublisherController extends Controller {
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
-        @Body() token: CreateEnterpriseToken,
-    ): Promise<EnterpriseToken> {
+        @Body() token: CreateEnterpriseTokenRequest,
+    ): Promise<EnterpriseTokenResponse> {
 
-        const result: EnterpriseToken = await createEnterpriseToken(
+        const result: EnterpriseTokenResponse = await createEnterpriseToken(
             auth,
             projectId,
             groupId,
@@ -138,7 +138,7 @@ export class PublisherController extends Controller {
      */
     @Get("project/{projectId}/group/{groupId}/enterprisetoken")
     @SuccessResponse("200", "OK")
-    @Example<EnterpriseToken[]>([{
+    @Example<EnterpriseTokenResponse[]>([{
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Primary Token",
         view_log_action: "audit.log.view",
@@ -151,8 +151,8 @@ export class PublisherController extends Controller {
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
-    ): Promise<EnterpriseToken[]> {
-        const tokens: EnterpriseToken[] = await listEnterpriseTokens(
+    ): Promise<EnterpriseTokenResponse[]> {
+        const tokens: EnterpriseTokenResponse[] = await listEnterpriseTokens(
             auth,
             projectId,
             groupId,
@@ -173,7 +173,7 @@ export class PublisherController extends Controller {
      */
     @Get("project/{projectId}/group/{groupId}/enterprisetoken/{tokenId}")
     @SuccessResponse("200", "OK")
-    @Example<EnterpriseToken>({
+    @Example<EnterpriseTokenResponse>({
         token: "f053dc4a3042459818833276eec717ab",
         display_name: "Production Token",
         view_log_action: "audit.log.view",
@@ -183,8 +183,8 @@ export class PublisherController extends Controller {
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
-    ): Promise<EnterpriseToken> {
-        const token: EnterpriseToken = await getEnterpriseToken(
+    ): Promise<EnterpriseTokenResponse> {
+        const token: EnterpriseTokenResponse = await getEnterpriseToken(
             auth,
             projectId,
             groupId,
@@ -207,7 +207,7 @@ export class PublisherController extends Controller {
      */
     @Put("project/{projectId}/group/{groupId}/enterprisetoken/{tokenId}")
     @SuccessResponse("200", "OK")
-    @Example<EnterpriseToken>({
+    @Example<EnterpriseTokenResponse>({
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Updated Token Name",
         view_log_action: "audit.log.view",
@@ -217,15 +217,15 @@ export class PublisherController extends Controller {
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
-        @Body() token: CreateEnterpriseToken,
-    ): Promise<EnterpriseToken> {
-        const updated: EnterpriseToken = await updateEnterpriseToken(
+        @Body() token: CreateEnterpriseTokenRequest,
+    ): Promise<EnterpriseTokenResponse> {
+        const updated: EnterpriseTokenResponse = await updateEnterpriseToken(
             auth,
             projectId,
             groupId,
             tokenId,
-            token.displayName,
-            token.viewLogAction,
+            token.display_name,
+            token.view_log_action,
         );
 
         return updated;

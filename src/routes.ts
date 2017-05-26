@@ -55,11 +55,6 @@ import viewerUpdateExport from "./handlers/viewer/updateExport";
 
 export default {
 
-  pulisherCreateViewerDescriptor: {
-    path: "/publisher/v1/project/:projectId/viewertoken",
-    method: "get",
-    handler: createViewerDescriptor,
-  },
   publisherGraphQLGet: {
     path: "/publisher/v1/graphql",
     method: "get",
