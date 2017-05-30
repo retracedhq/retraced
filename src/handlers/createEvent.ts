@@ -3,18 +3,17 @@ import * as chalk from "chalk";
 import * as moment from "moment";
 import * as pg from "pg";
 import * as util from "util";
-import * as express from "express";
 import { instrumented } from "monkit";
 
 import createCanonicalHash from "../models/event/canonicalize";
 import Event, { Fields, crud } from "../models/event/";
 import { fromCreateEventInput } from "../models/event";
-import getApiToken from "../models/api_token/get";
 import uniqueId from "../models/uniqueId";
-import { apiTokenFromAuthHeader } from "../security/helpers";
 import { NSQClient } from "../persistence/nsq";
-import getPgPool from "../persistence/pg";
-import { Responses, RawResponse } from "../router";
+import getPgPool, { Querier } from "../persistence/pg";
+import Authenticator from "../security/Authenticator";
+
+const IP_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 
 const requiredFields = [
   "action",
@@ -114,71 +113,71 @@ export class EventCreater {
         $1, $2, $3, $4, $5,
         to_timestamp($6::double precision / 1000)
       )`;
-
-  private readonly pgPool: pg.Pool;
-  private readonly nsq: NSQClient;
-  private readonly hasher: (event: Event) => string;
-  private readonly idSource: () => string;
-
   constructor(
-    pgPool: pg.Pool,
-    nsq: NSQClient,
-    hasher: (event: Event) => string,
-    idSource: () => string,
-  ) {
-    this.pgPool = pgPool;
-    this.nsq = nsq;
-    this.hasher = hasher;
-    this.idSource = idSource;
-  }
+    private readonly pgPool: pg.Pool,
+    private readonly nsq: NSQClient,
+    private readonly hasher: (event: Event) => string,
+    private readonly idSource: () => string,
+    private readonly authenticator: Authenticator,
+    private readonly maxEvents: number,
+  ) { }
 
-  public async createEventRaw(req: express.Request): Promise<RawResponse> {
-    return Responses.created(
-      await this.createEvent(req.get("Authorization"), req.params.projectId, req.body),
-    );
+  @instrumented
+  public async createEvent(authorization: string, projectId: string, event: CreateEventRequest): Promise<CreateEventResponse> {
+    const apiToken = await this.authenticator.getProjectTokenOr401(authorization, projectId);
+    this.validateEventInput(event);
+    return await this.saveRawEvent(apiToken.project_id, apiToken.environment_id, event);
   }
 
   @instrumented
-  public async createEvent(authorization: string, projectId: string, body: CreateEventRequest): Promise<CreateEventResponse> {
-    const apiTokenId = apiTokenFromAuthHeader(authorization);
-    const apiToken: any = await getApiToken(apiTokenId, this.pgPool.query.bind(this.pgPool));
-    const validAccess = apiToken && apiToken.project_id === projectId;
-    if (!validAccess) {
-      throw { status: 401, err: new Error("Unauthorized") };
-    }
-
-    const eventInputs = [body];
-
-    // TODO(zhaytee): If an array of events is being submitted, allow valid ones to continue through?
-    // Currently, this rejects the entire call if a single event fails validation.
-    eventInputs.forEach((eventInput, index) => {
-      try {
-        this.validateEventInput(eventInput);
-      } catch (validationError) {
-        throw {
-          status: 400,
-          err: new Error(`Invalid event input at index ${index}: ${validationError.message}`),
-        };
-      }
-    });
-
-    // This is what will be returned to the caller.
-    let results: CreateEventResponse[] = [];
+  public async createEventBulk(authorization: string, projectId: string, eventInputs: CreateEventRequest[]): Promise<CreateEventResponse[]> {
+    const apiToken = await this.authenticator.getProjectTokenOr401(authorization, projectId);
+    this.validateEventInputs(eventInputs);
 
     // Create a new ingestion task for each event passed in.
-    for (const eventInput of eventInputs) {
-      const result = await this.saveRawEvent(
-        apiToken.project_id,
-        apiToken.environment_id,
-        eventInput,
+    const pgConn = await this.pgPool.connect();
+    await pgConn.query("BEGIN");
+    try {
+      const results = await Promise.all(
+        eventInputs.map(
+          (event) => this.saveEvent(
+            apiToken.project_id,
+            apiToken.environment_id,
+            event,
+            pgConn,
+          ),
+        ),
       );
-      results.push(result);
-    }
 
-    return results[0];
+      await pgConn.query("COMMIT");
+
+      results.forEach(this.nsqPublish.bind(this));
+
+      return results.map(({ id, hash }) => ({ id, hash }));
+    } catch (err) {
+      await pgConn.query("ROLLBACK");
+      throw err;
+    } finally {
+      try {
+        pgConn.release();
+      } catch (err) { /* ignored */ } // TypeMoq mock connection doesn't have release() method for whatever reason
+    }
   }
 
-  public async saveRawEvent(projectId: string, envId: string, eventInput: CreateEventRequest) {
+  /**
+   * Save an event to postgres, and publish to nsq
+   */
+  public async saveRawEvent(projectId: string, envId: string, eventInput: CreateEventRequest, querier?: Querier): Promise<CreateEventResponse> {
+    const { id, hash, taskId } = await this.saveEvent(projectId, envId, eventInput, querier);
+    this.nsqPublish({ taskId });
+    return { id, hash };
+  }
+
+  /**
+   * Save an event to postgres, returning id, hash and the taskId to send to NSQ
+   */
+  @instrumented
+  public async saveEvent(projectId: string, envId: string, eventInput: CreateEventRequest, querier?: Querier): Promise<{ id: string, hash: string, taskId: string }> {
     const insertStmt = EventCreater.insertIntoIngestTask;
 
     const newTaskId = this.idSource();
@@ -192,19 +191,7 @@ export class EventCreater {
       moment().valueOf(),
     ];
 
-    await this.pgPool.query(insertStmt, insertVals);
-
-    const job = JSON.stringify({
-      taskId: newTaskId,
-    });
-
-    this.nsq.produce("raw_events", job)
-      .then((res) => {
-        console.log(`sent task ${job} to raw_events`);
-      })
-      .catch((err) => {
-        console.log(`failed to send task ${job} to raw_events: ${chalk.red(util.inspect(err))}`);
-      });
+    await (querier || this.pgPool).query(insertStmt, insertVals);
 
     // Coerce the input event into a proper Event object.
     // Then, generate an authoritative hash from its contents.
@@ -214,7 +201,50 @@ export class EventCreater {
     return {
       id: newEventId,
       hash: this.hasher(event),
+      taskId: newTaskId,
     };
+  }
+
+  private async nsqPublish({ taskId }) {
+    const job = JSON.stringify({ taskId });
+    return this.nsq.produce("raw_events", job)
+      .then((res) => {
+        console.log(`sent task ${job} to raw_events`);
+      })
+      .catch((err) => {
+        console.log(`failed to send task ${job} to raw_events: ${chalk.red(util.inspect(err))}`);
+      });
+
+  }
+
+  private validateEventInputs(events: CreateEventRequest[]): void {
+    const invalidEvents: any[] = [];
+
+    if (events.length > this.maxEvents) {
+      throw {
+        status: 400,
+        err: new Error(`A maximum of ${this.maxEvents} events may be created at once, received ${events.length}`),
+      };
+    }
+
+    events.forEach((eventInput, index) => {
+      const violations = this.validateEventInput(eventInput);
+      if (!_.isEmpty(violations)) {
+        invalidEvents.push({
+          message: `Invalid event input at index ${index}:\n-- ${violations.map((i) => i.message).join("\n-- ")}`,
+          index,
+          violations,
+        });
+      }
+    });
+
+    if (!_.isEmpty(invalidEvents)) {
+      throw {
+        status: 400,
+        err: new Error(`One or more invalid inputs, no events were logged:\n- ${invalidEvents.map((err) => err.message).join("\n- ")}`),
+        invalid: invalidEvents,
+      };
+    }
   }
 
   /**
@@ -245,10 +275,15 @@ export class EventCreater {
    *    fields?: {[key: string]: string};
    *   }
    */
-  private validateEventInput(maybeEvent: any) {
+  private validateEventInput(maybeEvent: CreateEventRequest): Violation[] {
+    const violations: any[] = [];
     for (const fieldName of requiredFields) {
       if (_.isEmpty(_.get(maybeEvent, fieldName))) {
-        throw new Error(`Missing required field '${fieldName}'`);
+        violations.push({
+          message: `Missing required field '${fieldName}'`,
+          field: fieldName,
+          violation: "missing",
+        });
       }
     }
 
@@ -256,28 +291,64 @@ export class EventCreater {
       const hasField = !_.isEmpty(_.get(maybeEvent, field));
       const missingSubfield = hasField && _.isEmpty(_.get(maybeEvent, requiredSubfield));
       if (missingSubfield) {
-        throw new Error(`Field '${requiredSubfield}' is required if '${field}' is present`);
+        violations.push({
+          message: `Field '${requiredSubfield}' is required if '${field}' is present`,
+          field: requiredSubfield,
+          violation: "missing",
+        });
       }
     }
 
     // If not marked as anonymous, actor data must be present
     if (!maybeEvent.is_anonymous) {
       if (_.isEmpty(_.get(maybeEvent, "actor"))) {
-        throw new Error(`Event is not marked anonymous, and missing required field 'actor'`);
+        violations.push({
+          message: `Event is not marked anonymous, and missing required field 'actor'`,
+          field: "actor",
+          violation: "missing",
+        });
       }
     }
 
     // created timestamp, if present, must be parseable
     if (!_.isEmpty(maybeEvent["created"]) && !moment(maybeEvent["created"]).isValid()) {
-      throw new Error(`Unable to parse 'created' field as valid time: ${maybeEvent["created"]}`);
+      violations.push({
+        message: `Unable to parse 'created' field as valid time: ${maybeEvent["created"]}`,
+        field: "created",
+        received: maybeEvent.created,
+        violation: "invalid",
+      });
     }
 
     // crud field, if present, must contain a valid value
     if (_.indexOf(possibleCrudValues, maybeEvent["crud"]) < 0) {
-      throw new Error(`Invalid value for 'crud' field: ${maybeEvent["crud"]}`);
+      violations.push({
+        message: `Invalid value for 'crud' field: ${maybeEvent["crud"]}`,
+        field: "crud",
+        received: maybeEvent.crud,
+        violation: "invalid",
+      });
     }
 
+    if (maybeEvent.source_ip && !IP_REGEX.test(maybeEvent.source_ip)) {
+      violations.push({
+        message: `Unable to parse 'source_ip' field as valid IPV4 address: ${maybeEvent["source_ip"]}`,
+        field: "source_ip",
+        received: maybeEvent.source_ip,
+        violation: "invalid",
+      });
+    }
+
+    return violations;
+
   }
+}
+
+interface Violation {
+  message: string;
+  field: string;
+  violation: string;
+  received?: string;
 }
 
 export const defaultEventCreater = new EventCreater(
@@ -285,8 +356,6 @@ export const defaultEventCreater = new EventCreater(
   NSQClient.fromEnv(),
   createCanonicalHash,
   uniqueId,
+  Authenticator.default(),
+  Number(process.env.PUBLISHER_BULK_CREATE_MAX_EVENTS || "50"),
 );
-
-export default async function handle(req: express.Request): Promise<any> {
-  return defaultEventCreater.createEventRaw(req);
-}

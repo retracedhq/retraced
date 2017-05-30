@@ -3,9 +3,6 @@ import getApiToken from "../models/api_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import modelsListEnterpriseTokens from "../models/eitapi_token/list";
 import { EnterpriseTokenResponse } from "./createEnterpriseToken";
-import getPgPool from "../persistence/pg";
-
-const pgPool = getPgPool();
 
 export async function listEnterpriseTokens(
   authorization: string,
@@ -13,7 +10,7 @@ export async function listEnterpriseTokens(
   groupId: string,
 ): Promise<EnterpriseTokenResponse[]> {
   const apiTokenId = apiTokenFromAuthHeader(authorization);
-  const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
+  const apiToken: any = await getApiToken(apiTokenId);
   const validAccess = apiToken && apiToken.project_id === projectId;
 
   if (!validAccess) {

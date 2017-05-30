@@ -65,7 +65,7 @@ export async function checkEitapiAccess(req): Promise<EnterpriseToken> {
 }
 export async function checkEitapiAccessUnwrapped(auth: string): Promise<EnterpriseToken> {
   const eitapiTokenId = apiTokenFromAuthHeader(auth);
-  const eitapiToken: EnterpriseToken|null = await getEitapiToken({
+  const eitapiToken: EnterpriseToken | null = await getEitapiToken({
     eitapiTokenId,
   });
   if (!eitapiToken) {

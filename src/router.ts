@@ -88,6 +88,7 @@ function handleFrameworkError(err: any, reqId: string, res: express.Response) {
     status: err.status,
     type: hasMeaningfulType ? errClass : "Error",
     error: errMsg,
+    invalid: err.invalid,
   };
   res.status(err.status).set("X-Retraced-RequestId", reqId).json(bodyToSend);
 

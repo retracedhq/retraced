@@ -30,7 +30,7 @@ export async function createEnterpriseToken(
     opts: CreateEnterpriseTokenRequest,
 ): Promise<EnterpriseTokenResponse> {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
-    const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
+    const apiToken: any = await getApiToken(apiTokenId, pgPool);
     const validAccess = apiToken && apiToken.project_id === projectId;
 
     if (!validAccess) {
