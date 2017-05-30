@@ -3,17 +3,23 @@ import getApiToken from "../models/api_token/get";
 import createEitapiToken from "../models/eitapi_token/create";
 import { apiTokenFromAuthHeader } from "../security/helpers";
 import getPgPool from "../persistence/pg";
+import { EnterpriseToken } from "../models/eitapi_token/index";
 
 const pgPool = getPgPool();
 
-export interface CreateEnterpriseToken {
-    displayName: string;
-    viewLogAction?: string;
+export interface CreateEnterpriseTokenRequest {
+    /** the display name for the token */
+    display_name: string;
+    /** The `action` name that will be used to record usages of this token. Defaults to `audit.log.view` */
+    view_log_action?: string;
 }
 
-export interface EnterpriseToken {
+export interface EnterpriseTokenResponse {
+    /** The token that was created */
     token: string;
+    /** the display name for the token */
     display_name: string;
+    /** The `action` name that will be used to record usages of this token. Defaults to `audit.log.view` */
     view_log_action?: string;
 }
 
@@ -21,28 +27,26 @@ export async function createEnterpriseToken(
     authorization: string,
     projectId: string,
     groupId: string,
-    opts: CreateEnterpriseToken,
-): Promise<EnterpriseToken> {
-   const apiTokenId = apiTokenFromAuthHeader(authorization);
-   const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
-   const validAccess = apiToken && apiToken.project_id === projectId;
+    opts: CreateEnterpriseTokenRequest,
+): Promise<EnterpriseTokenResponse> {
+    const apiTokenId = apiTokenFromAuthHeader(authorization);
+    const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
+    const validAccess = apiToken && apiToken.project_id === projectId;
 
-   if (!validAccess) {
+    if (!validAccess) {
         throw { status: 401, err: new Error("Unauthorized") };
     }
 
-   const result = await createEitapiToken({
+    const result: EnterpriseToken = await createEitapiToken({
         projectId,
         groupId,
         environmentId: apiToken.environment_id,
-        displayName: opts.displayName,
-        viewLogAction: opts.viewLogAction || "audit.log.view",
+        displayName: opts.display_name,
+        viewLogAction: opts.view_log_action || "audit.log.view",
     });
-   const body = {
+    return {
       token: result.id,
       display_name: result.display_name,
       view_log_action: result.view_log_action,
     };
-
-   return body;
 }

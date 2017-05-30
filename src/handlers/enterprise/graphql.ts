@@ -14,11 +14,11 @@ export default async function(req) {
   });
 
   const thisViewEvent: CreateEventRequest = {
-    action: eitapiToken.viewLogAction,
+    action: eitapiToken.view_log_action,
     crud: "r",
     actor: {
       id: `enterprise:${eitapiToken.id.substring(0, 7)}`,
-      name: eitapiToken.displayName,
+      name: eitapiToken.display_name,
     },
     group: {
       id: eitapiToken.group_id,

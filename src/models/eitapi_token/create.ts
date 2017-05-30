@@ -1,21 +1,22 @@
 import * as uuid from "uuid";
 
 import getPgPool from "../../persistence/pg";
+import { EnterpriseToken } from "./";
 
 const pgPool = getPgPool();
 
-/*
-opts:
-  displayName
-  projectId
-  environmentId
-  groupId
-  viewLogAction
-*/
-export default async function createEitapiToken(opts) {
+export interface Opts {
+  displayName: string;
+  projectId: string;
+  environmentId: string;
+  groupId: string;
+  viewLogAction: string;
+}
+
+export default async function createEitapiToken(opts): Promise<EnterpriseToken> {
   const pg = await pgPool.connect();
   try {
-    const newEitapiToken = {
+    const newEitapiToken: EnterpriseToken = {
       id: uuid.v4().replace(/-/g, ""),
       display_name: opts.displayName,
       project_id: opts.projectId,
