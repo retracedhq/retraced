@@ -55,7 +55,7 @@ export class EnterpriseAPI extends Controller {
      * Authenticate with an Enterprise API token.
      *
      * @param auth      header of the form token=...
-     * @param request     The event body to log
+     * @param request     The search params
      */
     @Post("search/active")
     @SuccessResponse("201", "Created")
@@ -73,5 +73,4 @@ export class EnterpriseAPI extends Controller {
         return result;
 
     }
-
 }
