@@ -6,6 +6,8 @@ import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
 import { listEnterpriseTokens } from "../handlers/listEnterpriseTokens";
 import { updateEnterpriseToken } from "../handlers/updateEnterpriseToken";
 import { getEnterpriseToken } from "../handlers/getEnterpriseToken";
+import { graphQL } from "../handlers/graphql";
+import { GraphQLRequest, GraphQLResponse } from "../handlers/graphql/index";
 
 @Route("publisher/v1")
 export class PublisherController extends Controller {
@@ -258,5 +260,32 @@ export class PublisherController extends Controller {
         );
 
         this.setStatus(204);
+    }
+
+    /**
+     * Query events with GraphQL
+     *
+     * https://preview.staging.retraced.io/documentation/apis/graphql/
+     *
+     * @param auth            auth header of the form Token token=...
+     * @param projectId       the project id
+     * @param graphQLRequest  graphQL query, variables, and operationName
+     */
+    @Post("project/{projectId}/graphql")
+    @SuccessResponse("200", "OK")
+    public async graphqlPost(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Body() graphQLRequest: GraphQLRequest,
+    ): Promise<GraphQLResponse> {
+        const result = await graphQL(
+            auth,
+            projectId,
+            graphQLRequest,
+        );
+
+        this.setStatus(result.errors ? 400 : 200);
+
+        return result;
     }
 }
