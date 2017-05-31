@@ -1,6 +1,7 @@
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
+import * as moment from "moment";
 
 import * as pg from "pg";
 import { NSQClient } from "../../persistence/nsq";
@@ -41,14 +42,14 @@ import Authenticator from "../../security/Authenticator";
             },
         ];
 
-        authenticator.setup((x) => x.getProjectTokenOr401("token=some-token", "a-project"))
+        authenticator.setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
             .returns(() => Promise.resolve({
                 token: "some-token",
-                created: new Date(),
+                created: moment(),
                 name: "A Token",
                 disabled: false,
-                project_id: "a-project",
-                environment_id: "an-environment",
+                projectId: "a-project",
+                environmentId: "an-environment",
             }));
 
         const creater = new EventCreater(
@@ -102,14 +103,14 @@ import Authenticator from "../../security/Authenticator";
             },
         ];
 
-        authenticator.setup((x) => x.getProjectTokenOr401("token=some-token", "a-project"))
+        authenticator.setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
             .returns(() => Promise.resolve({
                 token: "some-token",
-                created: new Date(),
+                created: moment(),
                 name: "A Token",
                 disabled: false,
-                project_id: "a-project",
-                environment_id: "an-environment",
+                projectId: "a-project",
+                environmentId: "an-environment",
             }));
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object)).verifiable(TypeMoq.Times.once());
@@ -195,14 +196,14 @@ import Authenticator from "../../security/Authenticator";
             },
         };
 
-        authenticator.setup((x) => x.getProjectTokenOr401("token=some-token", "a-project"))
+        authenticator.setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
             .returns(() => Promise.resolve({
                 token: "some-token",
-                created: new Date(),
+                created: moment(),
                 name: "A Token",
                 disabled: false,
-                project_id: "a-project",
-                environment_id: "an-environment",
+                projectId: "a-project",
+                environmentId: "an-environment",
             }));
 
         pool.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())) // Still need to validate args
@@ -261,14 +262,14 @@ import Authenticator from "../../security/Authenticator";
             },
         ];
 
-        authenticator.setup((x) => x.getProjectTokenOr401("token=some-token", "a-project"))
+        authenticator.setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
             .returns(() => Promise.resolve({
                 token: "some-token",
-                created: new Date(),
+                created: moment(),
                 name: "A Token",
                 disabled: false,
-                project_id: "a-project",
-                environment_id: "an-environment",
+                projectId: "a-project",
+                environmentId: "an-environment",
             }));
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object)).verifiable(TypeMoq.Times.once());
@@ -324,14 +325,14 @@ import Authenticator from "../../security/Authenticator";
             },
         ];
 
-        authenticator.setup((x) => x.getProjectTokenOr401("token=some-token", "a-project"))
+        authenticator.setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
             .returns(() => Promise.resolve({
                 token: "some-token",
-                created: new Date(),
+                created: moment(),
                 name: "A Token",
                 disabled: false,
-                project_id: "a-project",
-                environment_id: "an-environment",
+                projectId: "a-project",
+                environmentId: "an-environment",
             }));
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object)).verifiable(TypeMoq.Times.once());

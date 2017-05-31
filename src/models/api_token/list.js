@@ -4,11 +4,7 @@ import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
-/**
- * Asynchronously returns all tokens for a project from the database
- *
- * @param {Object} [opts] The request options.
- */
+// TODO(zhaytee): Update this to use the ApiToken interface.
 export default function listApiTokens(opts) {
   return new Promise((resolve, reject) => {
     pgPool.connect((err, pg, done) => {
