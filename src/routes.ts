@@ -1,6 +1,5 @@
 // core
 import createAdminSession from "./handlers/createAdminSession";
-import createEvent from "./handlers/createEvent";
 import createViewerDescriptor from "./handlers/createViewerDescriptor";
 import createViewerSession from "./handlers/createViewerSession";
 import getInvite from "./handlers/getInvite";
@@ -312,11 +311,6 @@ export default {
     path: "/v1/user/login",
     method: "post",
     handler: createAdminSession,
-  },
-  createEvent: {
-    path: "/v1/project/:projectId/event",
-    method: "post",
-    handler: createEvent,
   },
   createViewerDescriptor: {
     path: "/v1/project/:projectId/viewertoken",

@@ -17,3 +17,7 @@ export default function getPgPool(): pg.Pool {
 
   return pgPool;
 }
+
+export interface Querier {
+  query(query: string, args?: any[]): Promise<pg.QueryResult>;
+}

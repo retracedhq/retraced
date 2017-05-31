@@ -46,6 +46,34 @@ export class PublisherAPI extends Controller {
     }
 
     /**
+     * Create an event. Returns the id of the created event, and
+     * a cryptographic hash of the received event, as described at
+     * https://preview.retraced.io/documentation/architecture/hashing-formula/
+     *
+     * @param auth      auth header of the form token=...
+     * @param projectId the project id
+     * @param event     An array of events to log
+     */
+    @Post("project/{projectId}/event/bulk")
+    @SuccessResponse("201", "Created")
+    @Example<CreateEventResponse[]>([{
+        id: "abf053dc4a3042459818833276eec717",
+        hash: "5b570bff4628b35262fb401d2f6c9bb38d29e212f6e0e8ea93445b4e5a253d50",
+    }])
+    public async createEventsBulk(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Body() events: CreateEventRequest[],
+    ): Promise<CreateEventResponse[]> {
+
+        const result: CreateEventResponse[] = await this.eventCreater.createEventBulk(auth, projectId, events);
+
+        this.setStatus(201);
+        return result;
+
+    }
+
+    /**
      * Create a token for use with the Retraced embedded viewer as described at
      *
      * https://preview.retraced.io/documentation/getting-started/embedded-viewer/
