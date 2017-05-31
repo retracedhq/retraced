@@ -227,6 +227,16 @@ const eventType = new GraphQLObjectType({
       description: "The granular area of the country the actor was in when the action was performed (City).",
     },
 
+    component: {
+      type: GraphQLString,
+      description: "An identifier for the vendor app component that sent the event.",
+    },
+
+    version: {
+      type: GraphQLString,
+      description: "An identifier for the version of the vendor app that sent the event, usually a git SHA",
+    },
+
     // GraphQL does not have a map type. Fields is a list of key-value objects.
     fields: {
       description: "The set of fields associated with this event.",
