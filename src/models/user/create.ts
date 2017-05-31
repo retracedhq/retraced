@@ -1,7 +1,6 @@
 import * as uuid from "uuid";
 import * as moment from "moment";
 
-import { User } from "./";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -16,7 +15,8 @@ export const ERR_DUPLICATE_EMAIL = new Error("DUPLICATE_EMAIL");
  * @param {Object} [opts] the request options
  * @param {string} [opts.email] the email address to use
  */
-export default async function createUser(opts): Promise<User> {
+// TODO(zhaytee): Conform this to the RetracedUser interface
+export default async function createUser(opts) {
   let pg;
   try {
     pg = await pgPool.connect();
@@ -49,7 +49,6 @@ export default async function createUser(opts): Promise<User> {
       email: v[1],
       timezone: v[5],
       external_auth_id: opts.authId,
-      externalAuthId: opts.authId,
     };
 
   } finally {

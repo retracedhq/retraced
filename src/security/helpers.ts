@@ -6,6 +6,7 @@ import verifyProjectAccess from "./verifyProjectAccess";
 import verifyEnvironmentAccess from "./verifyEnvironmentAccess";
 import getEitapiToken from "../models/eitapi_token/get";
 import ViewerDescriptor from "../models/viewer_descriptor/def";
+import { EnterpriseToken } from "../models/eitapi_token";
 
 // Authorization: Token token=abcdef
 export function apiTokenFromAuthHeader(authHeader?: string): string {
@@ -59,9 +60,12 @@ export async function checkAdminAccess(req): Promise<AdminClaims> {
   return checkAdminAccessUnwrapped(req.get("Authorization"), req.params.projectId, req.params.environment_id);
 }
 
-export async function checkEitapiAccess(req) {
-  const eitapiTokenId = apiTokenFromAuthHeader(req.get("Authorization"));
-  const eitapiToken = await getEitapiToken({
+export async function checkEitapiAccess(req): Promise<EnterpriseToken> {
+  return checkEitapiAccessUnwrapped(req.get("Authorization"));
+}
+export async function checkEitapiAccessUnwrapped(auth: string): Promise<EnterpriseToken> {
+  const eitapiTokenId = apiTokenFromAuthHeader(auth);
+  const eitapiToken: EnterpriseToken | null = await getEitapiToken({
     eitapiTokenId,
   });
   if (!eitapiToken) {

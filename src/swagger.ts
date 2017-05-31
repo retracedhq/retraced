@@ -37,7 +37,6 @@ const specs: ApiSpec[] = [
 function fix(json: any, schemes: string[]): void {
   json.host = apiHost;
   json.schemes = schemes;
-  json.basePath = "";
   removeEmptyRequired(json);
 }
 
@@ -60,6 +59,14 @@ export function removeRoutesNotMatching(json: any, pattern: RegExp) {
   }
 }
 
+export function replacePrefixWithBasePath(json: any, pattern: RegExp) {
+  for (const path of Object.keys(json.paths)) {
+    const prefixFreePath = path.replace(pattern, "");
+    json.paths[prefixFreePath] = json.paths[path];
+    _.unset(json.paths, path);
+  }
+}
+
 /**
  * Take all the `ApiSpec`s
  *
@@ -77,11 +84,13 @@ export function filterAndAssign(json: any, apis: ApiSpec[]) {
   return apis.map((api) => {
     const swaggerCopy = _.cloneDeep(json);
     removeRoutesNotMatching(swaggerCopy, api.match);
+    replacePrefixWithBasePath(swaggerCopy, api.match);
     if (!swaggerCopy.info) {
       swaggerCopy.info = {};
     }
     swaggerCopy.info.description = api.description;
     swaggerCopy.info.title = api.title;
+    swaggerCopy.basePath = api.path;
     api.swagger = swaggerCopy;
     return api;
   });

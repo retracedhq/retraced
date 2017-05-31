@@ -1,5 +1,6 @@
 import * as pg from "pg";
-import getPgPool from "../../persistence/pg";
+import getPgPool, { Querier } from "../../persistence/pg";
+import { PublisherToken } from "./index";
 
 const pgPool: pg.Pool = getPgPool();
 
@@ -10,12 +11,12 @@ const pgPool: pg.Pool = getPgPool();
  */
 export default async function getApiToken(
     token: string,
-    query?: (q: string, v: any[]) => Promise<pg.QueryResult>,
-): Promise<string | null> {
-    query = query || pgPool.query.bind(pgPool);
+    querier?: Querier,
+): Promise<PublisherToken | null> {
+    querier = querier || pgPool;
     const q = "select * from token where token = $1";
     const v = [token];
-    const result = await query!(q, v); // shouldn't need ! here but tsc is being weird
+    const result = await querier.query(q, v);
     if (result.rowCount > 0) {
         return result.rows[0];
     }

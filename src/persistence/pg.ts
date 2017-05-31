@@ -1,8 +1,8 @@
 import * as pg from "pg";
 
-let pgPool;
+let pgPool: pg.Pool;
 
-export default function getPgPool() {
+export default function getPgPool(): pg.Pool {
   if (!pgPool) {
     pgPool = new pg.Pool({
       user: process.env.POSTGRES_USER,
@@ -16,4 +16,8 @@ export default function getPgPool() {
   }
 
   return pgPool;
+}
+
+export interface Querier {
+  query(query: string, args?: any[]): Promise<pg.QueryResult>;
 }

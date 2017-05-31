@@ -17,6 +17,7 @@ import swaggerSpecs from "./swagger";
 
 import "./controllers/PublisherController";
 import "./controllers/AdminController";
+import "./controllers/EnterpriseController";
 
 if (!process.env["BUGSNAG_TOKEN"]) {
   console.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");

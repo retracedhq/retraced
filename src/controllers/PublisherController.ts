@@ -1,14 +1,16 @@
 import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
 import { defaultEventCreater, EventCreater, CreateEventRequest, CreateEventResponse } from "../handlers/createEvent";
 import { ViewerToken, createViewerDescriptor } from "../handlers/createViewerDescriptor";
-import { createEnterpriseToken, CreateEnterpriseToken, EnterpriseToken } from "../handlers/createEnterpriseToken";
+import { createEnterpriseToken, CreateEnterpriseTokenRequest, EnterpriseTokenResponse } from "../handlers/createEnterpriseToken";
 import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
 import { listEnterpriseTokens } from "../handlers/listEnterpriseTokens";
 import { updateEnterpriseToken } from "../handlers/updateEnterpriseToken";
 import { getEnterpriseToken } from "../handlers/getEnterpriseToken";
+import { graphQL } from "../handlers/graphql";
+import { GraphQLRequest, GraphQLResponse } from "../handlers/graphql/index";
 
 @Route("publisher/v1")
-export class PublisherController extends Controller {
+export class PublisherAPI extends Controller {
 
     private readonly eventCreater: EventCreater;
 
@@ -39,6 +41,34 @@ export class PublisherController extends Controller {
     ): Promise<CreateEventResponse> {
 
         const result: CreateEventResponse = await this.eventCreater.createEvent(auth, projectId, event);
+
+        this.setStatus(201);
+        return result;
+
+    }
+
+    /**
+     * Create an event. Returns the id of the created event, and
+     * a cryptographic hash of the received event, as described at
+     * https://preview.retraced.io/documentation/architecture/hashing-formula/
+     *
+     * @param auth      auth header of the form token=...
+     * @param projectId the project id
+     * @param event     An array of events to log
+     */
+    @Post("project/{projectId}/event/bulk")
+    @SuccessResponse("201", "Created")
+    @Example<CreateEventResponse[]>([{
+        id: "abf053dc4a3042459818833276eec717",
+        hash: "5b570bff4628b35262fb401d2f6c9bb38d29e212f6e0e8ea93445b4e5a253d50",
+    }])
+    public async createEventsBulk(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Body() events: CreateEventRequest[],
+    ): Promise<CreateEventResponse[]> {
+
+        const result: CreateEventResponse[] = await this.eventCreater.createEventBulk(auth, projectId, events);
 
         this.setStatus(201);
         return result;
@@ -104,7 +134,7 @@ export class PublisherController extends Controller {
      */
     @Post("project/{projectId}/group/{groupId}/enterprisetoken")
     @SuccessResponse("201", "Created")
-    @Example<EnterpriseToken>({
+    @Example<EnterpriseTokenResponse>({
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Default Production Token",
         view_log_action: "audit.log.view",
@@ -113,10 +143,10 @@ export class PublisherController extends Controller {
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
-        @Body() token: CreateEnterpriseToken,
-    ): Promise<EnterpriseToken> {
+        @Body() token: CreateEnterpriseTokenRequest,
+    ): Promise<EnterpriseTokenResponse> {
 
-        const result: EnterpriseToken = await createEnterpriseToken(
+        const result: EnterpriseTokenResponse = await createEnterpriseToken(
             auth,
             projectId,
             groupId,
@@ -138,7 +168,7 @@ export class PublisherController extends Controller {
      */
     @Get("project/{projectId}/group/{groupId}/enterprisetoken")
     @SuccessResponse("200", "OK")
-    @Example<EnterpriseToken[]>([{
+    @Example<EnterpriseTokenResponse[]>([{
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Primary Token",
         view_log_action: "audit.log.view",
@@ -151,8 +181,8 @@ export class PublisherController extends Controller {
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
-    ): Promise<EnterpriseToken[]> {
-        const tokens: EnterpriseToken[] = await listEnterpriseTokens(
+    ): Promise<EnterpriseTokenResponse[]> {
+        const tokens: EnterpriseTokenResponse[] = await listEnterpriseTokens(
             auth,
             projectId,
             groupId,
@@ -173,7 +203,7 @@ export class PublisherController extends Controller {
      */
     @Get("project/{projectId}/group/{groupId}/enterprisetoken/{tokenId}")
     @SuccessResponse("200", "OK")
-    @Example<EnterpriseToken>({
+    @Example<EnterpriseTokenResponse>({
         token: "f053dc4a3042459818833276eec717ab",
         display_name: "Production Token",
         view_log_action: "audit.log.view",
@@ -183,8 +213,8 @@ export class PublisherController extends Controller {
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
-    ): Promise<EnterpriseToken> {
-        const token: EnterpriseToken = await getEnterpriseToken(
+    ): Promise<EnterpriseTokenResponse> {
+        const token: EnterpriseTokenResponse = await getEnterpriseToken(
             auth,
             projectId,
             groupId,
@@ -207,7 +237,7 @@ export class PublisherController extends Controller {
      */
     @Put("project/{projectId}/group/{groupId}/enterprisetoken/{tokenId}")
     @SuccessResponse("200", "OK")
-    @Example<EnterpriseToken>({
+    @Example<EnterpriseTokenResponse>({
         token: "abf053dc4a3042459818833276eec717",
         display_name: "Updated Token Name",
         view_log_action: "audit.log.view",
@@ -217,15 +247,15 @@ export class PublisherController extends Controller {
         @Path("projectId") projectId: string,
         @Path("groupId") groupId: string,
         @Path("tokenId") tokenId: string,
-        @Body() token: CreateEnterpriseToken,
-    ): Promise<EnterpriseToken> {
-        const updated: EnterpriseToken = await updateEnterpriseToken(
+        @Body() token: CreateEnterpriseTokenRequest,
+    ): Promise<EnterpriseTokenResponse> {
+        const updated: EnterpriseTokenResponse = await updateEnterpriseToken(
             auth,
             projectId,
             groupId,
             tokenId,
-            token.displayName,
-            token.viewLogAction,
+            token.display_name,
+            token.view_log_action,
         );
 
         return updated;
@@ -258,5 +288,32 @@ export class PublisherController extends Controller {
         );
 
         this.setStatus(204);
+    }
+
+    /**
+     * Query events with GraphQL
+     *
+     * https://preview.staging.retraced.io/documentation/apis/graphql/
+     *
+     * @param auth            auth header of the form Token token=...
+     * @param projectId       the project id
+     * @param graphQLRequest  graphQL query, variables, and operationName
+     */
+    @Post("project/{projectId}/graphql")
+    @SuccessResponse("200", "OK")
+    public async graphqlPost(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Body() graphQLRequest: GraphQLRequest,
+    ): Promise<GraphQLResponse> {
+        const result = await graphQL(
+            auth,
+            projectId,
+            graphQLRequest,
+        );
+
+        this.setStatus(result.errors ? 400 : 200);
+
+        return result;
     }
 }

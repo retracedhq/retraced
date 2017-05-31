@@ -1,6 +1,5 @@
-
 import { ExternalAuth } from "../createAdminSession";
-import getUser from "../../models/user/get";
+import getUser from "../../models/user/getByExternalAuth";
 import createUser, { ERR_DUPLICATE_EMAIL } from "../../models/user/create";
 import { apiTokenFromAuthHeader } from "../../security/helpers";
 import { createAdminVoucher } from "../../security/vouchers";

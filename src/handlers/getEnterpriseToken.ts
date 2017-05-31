@@ -2,19 +2,16 @@ import "source-map-support/register";
 import getApiToken from "../models/api_token/get";
 import modelsGetEnterpriseToken from "../models/eitapi_token/get";
 import { apiTokenFromAuthHeader } from "../security/helpers";
-import getPgPool from "../persistence/pg";
-import { EnterpriseToken } from "./createEnterpriseToken";
-
-const pgPool = getPgPool();
+import { EnterpriseTokenResponse } from "./createEnterpriseToken";
 
 export async function getEnterpriseToken(
     authorization: string,
     projectId: string,
     groupId: string,
     eitapiTokenId: string,
-): Promise<EnterpriseToken> {
+): Promise<EnterpriseTokenResponse> {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
-    const apiToken: any = await getApiToken(apiTokenId, pgPool.query.bind(pgPool));
+    const apiToken: any = await getApiToken(apiTokenId);
     const validAccess = apiToken && apiToken.project_id === projectId;
 
     if (!validAccess) {
