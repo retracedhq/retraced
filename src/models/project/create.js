@@ -74,10 +74,9 @@ export default function createProject(opts) {
           project.environments.forEach((environment) => {
             const newApiToken = {
               name: `Default ${environment.name} Token`,
-              environment_id: environment.id,
-              project_id: project.id,
+              disabled: false,
             };
-            createTokenPromises.push(createApiToken(newApiToken));
+            createTokenPromises.push(createApiToken(project.id, environment.id, newApiToken));
           });
           return Promise.all(createTokenPromises);
         })

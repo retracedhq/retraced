@@ -1,11 +1,7 @@
 
-import getApiToken from "../models/api_token/get";
 import createEitapiToken from "../models/eitapi_token/create";
-import { apiTokenFromAuthHeader } from "../security/helpers";
-import getPgPool from "../persistence/pg";
+import Authenticator from "../security/Authenticator";
 import { EnterpriseToken } from "../models/eitapi_token/index";
-
-const pgPool = getPgPool();
 
 export interface CreateEnterpriseTokenRequest {
     /** the display name for the token */
@@ -29,24 +25,17 @@ export async function createEnterpriseToken(
     groupId: string,
     opts: CreateEnterpriseTokenRequest,
 ): Promise<EnterpriseTokenResponse> {
-    const apiTokenId = apiTokenFromAuthHeader(authorization);
-    const apiToken: any = await getApiToken(apiTokenId, pgPool);
-    const validAccess = apiToken && apiToken.project_id === projectId;
-
-    if (!validAccess) {
-        throw { status: 401, err: new Error("Unauthorized") };
-    }
-
+    const apiToken = await Authenticator.default().getApiTokenOr401(authorization, projectId);
     const result: EnterpriseToken = await createEitapiToken({
         projectId,
         groupId,
-        environmentId: apiToken.environment_id,
+        environmentId: apiToken.environmentId,
         displayName: opts.display_name,
         viewLogAction: opts.view_log_action || "audit.log.view",
     });
     return {
-      token: result.id,
-      display_name: result.display_name,
-      view_log_action: result.view_log_action,
+        token: result.id,
+        display_name: result.display_name,
+        view_log_action: result.view_log_action,
     };
 }

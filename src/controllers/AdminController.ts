@@ -1,5 +1,6 @@
 import {
-    Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller,
+    Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse,
+    Controller, Put,
 } from "tsoa";
 
 import deleteTemplate from "../handlers/admin/deleteTemplate";
@@ -7,6 +8,8 @@ import deleteEnvironment from "../handlers/admin/deleteEnvironment";
 import createDeletionRequest, { CreateDelReqRequestBody, CreateDelReqReport } from "../handlers/admin/createDeletionRequest";
 import getDeletionRequest, { GetDelReqReport } from "../handlers/admin/getDeletionRequest";
 import approveDeletionConfirmation from "../handlers/admin/approveDeletionConfirmation";
+import updateApiToken from "../handlers/admin/updateApiToken";
+import { ApiTokenValues } from "../models/api_token";
 
 @Route("admin/v1")
 export class AdminAPI extends Controller {
@@ -123,6 +126,28 @@ export class AdminAPI extends Controller {
     ): Promise<void> {
         await approveDeletionConfirmation(
             auth, projectId, environmentId, code,
+        );
+        this.setStatus(200);
+    }
+
+    /**
+     * Update an API token's fields.
+     *
+     *
+     * @param auth              Base64 ecoded JWT authentication
+     * @param projectId         The project id
+     * @param apiToken          The token to update
+     */
+    @Put("project/{projectId}/api_token/{apiToken}")
+    @SuccessResponse("200", "OK")
+    public async updateApiToken(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Path("apiToken") apiToken: string,
+        @Body() requestBody: Partial<ApiTokenValues>,
+    ): Promise<void> {
+        await updateApiToken(
+            auth, projectId, apiToken, requestBody,
         );
         this.setStatus(200);
     }

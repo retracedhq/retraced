@@ -1,7 +1,6 @@
 import "source-map-support/register";
-import getApiToken from "../models/api_token/get";
 import modelsUpdateEnterpriseToken from "../models/eitapi_token/update";
-import { apiTokenFromAuthHeader } from "../security/helpers";
+import Authenticator from "../security/Authenticator";
 import { EnterpriseTokenResponse } from "./createEnterpriseToken";
 
 export async function updateEnterpriseToken(
@@ -12,13 +11,7 @@ export async function updateEnterpriseToken(
     displayName: string,
     viewLogAction: string | undefined,
 ): Promise<EnterpriseTokenResponse> {
-    const apiTokenId = apiTokenFromAuthHeader(authorization);
-    const apiToken: any = await getApiToken(apiTokenId);
-    const validAccess = apiToken && apiToken.project_id === projectId;
-
-    if (!validAccess) {
-        throw { status: 401, err: new Error("Unauthorized") };
-    }
+    const apiToken = await Authenticator.default().getApiTokenOr401(authorization, projectId);
 
     const updated = await modelsUpdateEnterpriseToken({
         eitapiTokenId,
@@ -26,7 +19,7 @@ export async function updateEnterpriseToken(
         groupId,
         displayName,
         viewLogAction,
-        environmentId: apiToken.environment_id,
+        environmentId: apiToken.environmentId,
     });
 
     if (!updated) {

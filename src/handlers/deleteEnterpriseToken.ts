@@ -1,7 +1,6 @@
 import "source-map-support/register";
-import getApiToken from "../models/api_token/get";
 import modelsDeleteEnterpriseToken from "../models/eitapi_token/delete";
-import { apiTokenFromAuthHeader } from "../security/helpers";
+import Authenticator from "../security/Authenticator";
 
 export async function deleteEnterpriseToken(
     authorization: string,
@@ -9,19 +8,13 @@ export async function deleteEnterpriseToken(
     groupId: string,
     eitapiTokenId: string,
 ) {
-    const apiTokenId = apiTokenFromAuthHeader(authorization);
-    const apiToken: any = await getApiToken(apiTokenId);
-    const validAccess = apiToken && apiToken.project_id === projectId;
-
-    if (!validAccess) {
-        throw { status: 401, err: new Error("Unauthorized") };
-    }
+    const apiToken = await Authenticator.default().getApiTokenOr401(authorization, projectId);
 
     const wasDeleted = await modelsDeleteEnterpriseToken({
         projectId,
         groupId,
         eitapiTokenId,
-        environmentId: apiToken.environment_id,
+        environmentId: apiToken.environmentId,
     });
 
     if (!wasDeleted) {
