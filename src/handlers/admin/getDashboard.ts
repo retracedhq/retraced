@@ -8,7 +8,7 @@ import getActionsTile from "../../dashboard/actions/top";
 import getGroupsTile from "../../dashboard/groups/top";
 
 export default async function(req) {
-  await checkAdminAccess(req);
+  await checkAdminAccess(req.get("Authorization"), req.params.projectId, req.params.environment_id);
 
   // This is hard coded for now.  TODO, we should consider making this
   // all stored in the db so that a user can customize

@@ -3,7 +3,7 @@ import createEnvironment from "../../models/environment/create";
 import populateEnvUsers from "../../models/environmentuser/populate_from_project";
 
 export default async function(req) {
-  await checkAdminAccess(req);
+  await checkAdminAccess(req.get("Authorization"), req.params.projectId, req.params.environment_id);
 
   const env = await createEnvironment({
     project_id: req.params.projectId,

@@ -1,4 +1,4 @@
-import { checkAdminAccessUnwrapped } from "../../security/helpers";
+import { checkAdminAccess } from "../../security/helpers";
 import getDeletionRequest from "../../models/deletion_request/get";
 import getDeletionConfirmations from "../../models/deletion_confirmation/getByDeletionRequest";
 import deleteDeletionConfirmation from "../../models/deletion_confirmation/delete";
@@ -20,7 +20,7 @@ export default async function handler(
   environmentId: string,
   deletionRequestId: string,
 ): Promise<GetDelReqReport> {
-  await checkAdminAccessUnwrapped(auth, projectId, environmentId);
+  await checkAdminAccess(auth, projectId, environmentId);
 
   const request = await getDeletionRequest(deletionRequestId);
   if (!request) {

@@ -10,7 +10,7 @@ query: {
 }
 */
 export default async function handler(req) {
-  await checkAdminAccess(req);
+  await checkAdminAccess(req.get("Authorization"), req.params.projectId, req.params.environment_id);
 
   if (!req.query.environment_id) {
     throw { status: 400, err: new Error("Missing environment_id") };

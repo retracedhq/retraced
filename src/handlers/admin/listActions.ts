@@ -2,7 +2,7 @@ import { checkAdminAccess } from "../../security/helpers";
 import listActions from "../../models/action/list";
 
 export default async function(req) {
-  await checkAdminAccess(req);
+  await checkAdminAccess(req.get("Authorization"), req.params.projectId);
 
   const actions = await listActions({
     projectId: req.params.projectId,

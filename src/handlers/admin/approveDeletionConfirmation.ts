@@ -1,4 +1,4 @@
-import { checkAdminAccessUnwrapped } from "../../security/helpers";
+import { checkAdminAccess } from "../../security/helpers";
 import markDeletionConfirmationReceived from "../../models/deletion_confirmation/markReceived";
 import getDeletionConfirmationByVisibleCode from "../../models/deletion_confirmation/getByVisibleCode";
 
@@ -8,7 +8,7 @@ export default async function handle(
   environmentId: string,
   code: string,
 ) {
-  const claims = await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
+  const claims = await checkAdminAccess(authorization, projectId, environmentId);
 
   const extant = await getDeletionConfirmationByVisibleCode(code);
   if (!extant) {

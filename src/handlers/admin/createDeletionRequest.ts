@@ -3,7 +3,7 @@ import * as uuid from "uuid";
 
 import nsq from "../../persistence/nsq";
 import getPgPool from "../../persistence/pg";
-import { checkAdminAccessUnwrapped } from "../../security/helpers";
+import { checkAdminAccess } from "../../security/helpers";
 import getDeletionRequestByResourceId from "../../models/deletion_request/getByResourceId";
 import deleteDeletionRequest from "../../models/deletion_request/delete";
 import createDeletionRequest from "../../models/deletion_request/create";
@@ -33,7 +33,7 @@ export default async function handle(
   environmentId: string,
   requestBody: CreateDelReqRequestBody,
 ) {
-  const claims = await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
+  const claims = await checkAdminAccess(authorization, projectId, environmentId);
   const thisUserId = claims.userId;
 
   const extantDelReq = await getDeletionRequestByResourceId(requestBody.resourceId);
