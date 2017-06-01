@@ -5,6 +5,7 @@ import * as TypeMoq from "typemoq";
 
 import * as pg from "pg";
 import Authenticator from "../../security/Authenticator";
+import { getApiTokenQuery } from "../../models/api_token/get";
 
 @suite class AuthenticatorTest {
     @test public async "Authenticator#getApiTokenOr401() with valid token"() {
@@ -13,7 +14,7 @@ import Authenticator from "../../security/Authenticator";
         const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "some-token");
         const tokenRows = { rowCount: 1, rows: [{ id: "some-token", project_id: "a-project", environment_id: "an-environment" }] };
 
-        pool.setup((x) => x.query("select * from token where token = $1", tokenIdArgMatcher))
+        pool.setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
             .returns((args) => Promise.resolve(tokenRows))
             .verifiable(TypeMoq.Times.once());
 
@@ -30,7 +31,7 @@ import Authenticator from "../../security/Authenticator";
         // set up postgres pool
         const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "bad-token");
         const tokenRows = { rowCount: 1, rows: [] as any[] };
-        pool.setup((x) => x.query("select * from token where token = $1", tokenIdArgMatcher))
+        pool.setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
             .returns((args) => Promise.resolve(tokenRows))
             .verifiable(TypeMoq.Times.once());
 
@@ -51,7 +52,7 @@ import Authenticator from "../../security/Authenticator";
         // set up postgres pool
         const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "bad-token");
         const tokenRows = { rowCount: 1, rows: [{ id: "some-token", project_id: "a-project", environment_id: "an-environment" }] };
-        pool.setup((x) => x.query("select * from token where token = $1", tokenIdArgMatcher))
+        pool.setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
             .returns((args) => Promise.resolve(tokenRows))
             .verifiable(TypeMoq.Times.once());
 
