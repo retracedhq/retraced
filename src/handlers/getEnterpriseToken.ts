@@ -1,7 +1,6 @@
 import "source-map-support/register";
-import getApiToken from "../models/api_token/get";
 import modelsGetEnterpriseToken from "../models/eitapi_token/get";
-import { apiTokenFromAuthHeader } from "../security/helpers";
+import Authenticator from "../security/Authenticator";
 import { EnterpriseTokenResponse } from "./createEnterpriseToken";
 
 export async function getEnterpriseToken(
@@ -10,13 +9,7 @@ export async function getEnterpriseToken(
     groupId: string,
     eitapiTokenId: string,
 ): Promise<EnterpriseTokenResponse> {
-    const apiTokenId = apiTokenFromAuthHeader(authorization);
-    const apiToken: any = await getApiToken(apiTokenId);
-    const validAccess = apiToken && apiToken.project_id === projectId;
-
-    if (!validAccess) {
-        throw { status: 401, err: new Error("Unauthorized") };
-    }
+    const apiToken = await Authenticator.default().getApiTokenOr401(authorization, projectId);
 
     const token = await modelsGetEnterpriseToken({
         eitapiTokenId,
@@ -25,7 +18,7 @@ export async function getEnterpriseToken(
     if (!token) {
         throw { status: 404, err: new Error("Not Found") };
     }
-    if (token.project_id !== apiToken.project_id) {
+    if (token.project_id !== apiToken.projectId) {
         throw { status: 401, err: new Error("Unauthorized") };
     }
 
