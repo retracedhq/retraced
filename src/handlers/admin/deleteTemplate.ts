@@ -1,4 +1,4 @@
-import { checkAdminAccessUnwrapped } from "../../security/helpers";
+import { checkAdminAccess } from "../../security/helpers";
 import deleteTemplate from "../../models/template/delete";
 
 export default async function handle(
@@ -7,7 +7,7 @@ export default async function handle(
   templateId: string,
   environmentId: string,
 ) {
-  const claims = await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
+  const claims = await checkAdminAccess(authorization, projectId, environmentId);
 
   const deleted = await deleteTemplate({ templateId, environmentId });
 

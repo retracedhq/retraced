@@ -3,7 +3,7 @@ import createApiToken from "../../models/api_token/create";
 import listApiTokens from "../../models/api_token/list";
 
 export default async function(req) {
-  await checkAdminAccess(req);
+  await checkAdminAccess(req.get("Authorization"), req.params.projectId, req.params.environment_id);
 
   await createApiToken({
     project_id: req.params.projectId,

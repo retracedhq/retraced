@@ -31,7 +31,7 @@ export function apiTokenFromAuthHeader(authHeader?: string): string {
   return parts[1];
 }
 
-export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: string, environmentId?: string): Promise<AdminClaims> {
+export async function checkAdminAccess(authHeader: string, projectId?: string, environmentId?: string): Promise<AdminClaims> {
 
   const claims = await validateAdminVoucher(authHeader);
 
@@ -54,10 +54,6 @@ export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: 
   }
 
   return claims;
-}
-
-export async function checkAdminAccess(req): Promise<AdminClaims> {
-  return checkAdminAccessUnwrapped(req.get("Authorization"), req.params.projectId, req.params.environment_id);
 }
 
 export async function checkEitapiAccess(req): Promise<EnterpriseToken> {
