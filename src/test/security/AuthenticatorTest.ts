@@ -12,7 +12,7 @@ import { getApiTokenQuery } from "../../models/api_token/get";
         const pool = TypeMoq.Mock.ofType(pg.Pool);
 
         const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "some-token");
-        const tokenRows = { rowCount: 1, rows: [{ id: "some-token", project_id: "a-project", environment_id: "an-environment" }] };
+        const tokenRows = { rowCount: 1, rows: [{ token: "some-token", project_id: "a-project", environment_id: "an-environment" }] };
 
         pool.setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
             .returns((args) => Promise.resolve(tokenRows))
@@ -51,7 +51,7 @@ import { getApiTokenQuery } from "../../models/api_token/get";
         const pool = TypeMoq.Mock.ofType(pg.Pool);
         // set up postgres pool
         const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "bad-token");
-        const tokenRows = { rowCount: 1, rows: [{ id: "some-token", project_id: "a-project", environment_id: "an-environment" }] };
+        const tokenRows = { rowCount: 1, rows: [{ token: "some-token", project_id: "a-project", environment_id: "an-environment" }] };
         pool.setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
             .returns((args) => Promise.resolve(tokenRows))
             .verifiable(TypeMoq.Times.once());

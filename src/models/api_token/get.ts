@@ -1,6 +1,6 @@
 import * as pg from "pg";
 import getPgPool, { Querier } from "../../persistence/pg";
-import { ApiToken } from "./index";
+import { ApiToken, apiTokenFromRow } from "./";
 
 const pgPool: pg.Pool = getPgPool();
 
@@ -22,7 +22,7 @@ export default async function getApiToken(
   const v = [token];
   const result = await querier.query(getApiTokenQuery, v);
   if (result.rowCount > 0) {
-    return result.rows[0];
+    return apiTokenFromRow(result.rows[0]);
   }
 
   return null;
