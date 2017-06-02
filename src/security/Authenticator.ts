@@ -17,7 +17,7 @@ export default class Authenticator {
   public async getApiTokenOr401(authorization: string, projectId: string): Promise<ApiToken> {
     const apiTokenId = apiTokenFromAuthHeader(authorization);
     const apiToken = await getApiToken(apiTokenId, this.pgPool);
-    if (!apiToken || apiToken.projectId === projectId || apiToken.disabled) {
+    if (!apiToken || apiToken.projectId !== projectId || apiToken.disabled) {
       throw { status: 401, err: new Error("Unauthorized") };
     }
 
