@@ -47,11 +47,18 @@ deployment:
       - sudo docker tag quay.io/retracedhq/api:${CIRCLE_SHA1:0:7} registry.replicated.com/retraced/api:${CIRCLE_SHA1:0:7}
       - sudo docker login -e $DOCKER_EMAIL_REPLICATED -u $DOCKER_USER_REPLICATED -p $DOCKER_PASS_REPLICATED registry.replicated.com
       - sudo docker push registry.replicated.com/retraced/api:${CIRCLE_SHA1:0:7}
+  prem:
+    branch: release
+    owner: retracedhq
+    commands:
+      - sudo docker build -f deploy/Dockerfile -t quay.io/retracedhq/api:${CIRCLE_SHA1:0:7} .
+      - sudo docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
+
 
       - sudo docker tag quay.io/retracedhq/api:${CIRCLE_SHA1:0:7} quay.io/retracedhq/api:${QUAY_MAJOR}
       - sudo docker tag quay.io/retracedhq/api:${CIRCLE_SHA1:0:7} quay.io/retracedhq/api:${QUAY_MINOR}
       - sudo docker tag quay.io/retracedhq/api:${CIRCLE_SHA1:0:7} quay.io/retracedhq/api:${QUAY_PATCH}
-
       - sudo docker push quay.io/retracedhq/api:${QUAY_MAJOR}
       - sudo docker push quay.io/retracedhq/api:${QUAY_MINOR}
       - sudo docker push quay.io/retracedhq/api:${QUAY_PATCH}
+

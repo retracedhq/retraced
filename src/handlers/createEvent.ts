@@ -124,14 +124,14 @@ export class EventCreater {
 
   @instrumented
   public async createEvent(authorization: string, projectId: string, event: CreateEventRequest): Promise<CreateEventResponse> {
-    const apiToken = await this.authenticator.getProjectTokenOr401(authorization, projectId);
+    const apiToken = await this.authenticator.getApiTokenOr401(authorization, projectId);
     this.validateEventInput(event);
-    return await this.saveRawEvent(apiToken.project_id, apiToken.environment_id, event);
+    return await this.saveRawEvent(apiToken.projectId, apiToken.environmentId, event);
   }
 
   @instrumented
   public async createEventBulk(authorization: string, projectId: string, eventInputs: CreateEventRequest[]): Promise<CreateEventResponse[]> {
-    const apiToken = await this.authenticator.getProjectTokenOr401(authorization, projectId);
+    const apiToken = await this.authenticator.getApiTokenOr401(authorization, projectId);
     this.validateEventInputs(eventInputs);
 
     // Create a new ingestion task for each event passed in.
@@ -141,8 +141,8 @@ export class EventCreater {
       const results = await Promise.all(
         eventInputs.map(
           (event) => this.saveEvent(
-            apiToken.project_id,
-            apiToken.environment_id,
+            apiToken.projectId,
+            apiToken.environmentId,
             event,
             pgConn,
           ),

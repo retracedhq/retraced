@@ -1,5 +1,4 @@
-import getApiToken from "../models/api_token/get";
-import { apiTokenFromAuthHeader } from "../security/helpers";
+import Authenticator from "../security/Authenticator";
 import modelCreateViewerDescriptor from "../models/viewer_descriptor/create";
 import { RawResponse, Responses } from "../router";
 
@@ -17,7 +16,7 @@ export default async function handlerRaw(req): Promise<RawResponse> {
   const viewLogAction = req.query.view_log_action;
   const actorId = req.query.actor_id;
   const token: ViewerToken =
-      await createViewerDescriptor(auth, projectId, isAdmin, actorId, groupId, teamId, targetId, viewLogAction);
+    await createViewerDescriptor(auth, projectId, isAdmin, actorId, groupId, teamId, targetId, viewLogAction);
   return Responses.created(token);
 }
 
@@ -36,16 +35,11 @@ export async function createViewerDescriptor(
     throw { status: 400, err: new Error("Either group_id or team_id is required") };
   }
 
-  const apiTokenId = apiTokenFromAuthHeader(auth);
-  const apiToken: any = await getApiToken(apiTokenId);
-  const validAccess = apiToken && apiToken.project_id === projectId;
-  if (!validAccess) {
-    throw { status: 401, err: new Error("Unauthorized") };
-  }
+  const apiToken = await Authenticator.default().getApiTokenOr401(auth, projectId);
 
   const newDesc = await modelCreateViewerDescriptor({
     projectId,
-    environmentId: apiToken.environment_id,
+    environmentId: apiToken.environmentId,
     groupId,
     isAdmin,
     targetId,

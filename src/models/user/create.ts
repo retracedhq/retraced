@@ -17,41 +17,35 @@ export const ERR_DUPLICATE_EMAIL = new Error("DUPLICATE_EMAIL");
  */
 // TODO(zhaytee): Conform this to the RetracedUser interface
 export default async function createUser(opts) {
-  let pg;
-  try {
-    pg = await pgPool.connect();
 
-    // Check for dupe e-mail
-    let q = "select count(1) from retraceduser where email = $1";
-    let v = [opts.email];
-    const dupeCheckResult = await pg.query(q, v);
-    if (dupeCheckResult.rows[0].count > 0) {
-      throw ERR_DUPLICATE_EMAIL;
-    }
+  // Check for dupe e-mail
+  let q = "select count(1) from retraceduser where email = $1";
+  let v = [opts.email];
+  const dupeCheckResult = await pgPool.query(q, v);
+  if (dupeCheckResult.rows[0].count > 0) {
+    throw ERR_DUPLICATE_EMAIL;
+  }
 
-    q = `insert into retraceduser (
+  q = `insert into retraceduser (
       id, email, created, last_login, external_auth_id, timezone
     ) values (
       $1, $2, to_timestamp($3), to_timestamp($4), $5, $6
     )`;
-    v = [
-      uuid.v4().replace(/-/g, ""),
-      opts.email,
-      moment().unix(),
-      moment().unix(),
-      opts.authId,
-      defaultTimezone,
-    ];
-    pg.query(q, v);
+  v = [
+    uuid.v4().replace(/-/g, ""),
+    opts.email,
+    moment().unix(),
+    moment().unix(),
+    opts.authId,
+    defaultTimezone,
+  ];
+  await pgPool.query(q, v);
 
-    return {
-      id: v[0],
-      email: v[1],
-      timezone: v[5],
-      external_auth_id: opts.authId,
-    };
+  return {
+    id: v[0],
+    email: v[1],
+    timezone: v[5],
+    external_auth_id: opts.authId,
+  };
 
-  } finally {
-    pg.release();
-  }
 }
