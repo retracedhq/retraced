@@ -59,6 +59,7 @@ export default async function search(
   });
   const groupsByIdWithoutName = groupListWithoutName.reduce((accm, group) => {
     accm[group.group_id] = group;
+    accm[group.group_id].id = group.group_id;
     return accm;
   }, {});
 
