@@ -58,7 +58,7 @@ export default function createInvite(opts) {
           },
         });
 
-        resolve();
+        resolve(invite);
       });
     });
   });
