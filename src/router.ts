@@ -79,6 +79,7 @@ function handleFrameworkError(err: any, reqId: string, res: express.Response) {
   bugsnag.notify(err.err || err.message);
   // Structured error, specific status code.
   const errMsg = err.err ? err.err.message : err.message || "An unexpected error occurred";
+
   console.log(chalk.red(`[${reqId}] !! ${err.status} ${errMsg} ${err.stack || util.inspect(err)}`));
 
   const errClass = err.constructor.name;
