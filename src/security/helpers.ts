@@ -1,7 +1,10 @@
-
 import * as _ from "lodash";
 
-import { AdminClaims, validateAdminVoucher, validateViewerDescriptorVoucher } from "./vouchers";
+import {
+  AdminClaims,
+  validateAdminVoucher,
+  validateViewerDescriptorVoucher,
+} from "./vouchers";
 import verifyProjectAccess from "./verifyProjectAccess";
 import verifyEnvironmentAccess from "./verifyEnvironmentAccess";
 import getEitapiToken from "../models/eitapi_token/get";
@@ -32,6 +35,10 @@ export function apiTokenFromAuthHeader(authHeader?: string): string {
 }
 
 export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: string, environmentId?: string): Promise<AdminClaims> {
+
+  if (_.isEmpty(authHeader)) {
+    throw { status: 401, err: new Error("Missing Authorization header") };
+  }
 
   const claims = await validateAdminVoucher(authHeader);
 
