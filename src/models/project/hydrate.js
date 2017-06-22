@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import hydrateEnvironment from "../environment/hydrate";
 
 import listApiTokens from "../api_token/list";
 import listEnvironments from "../environment/list";
@@ -7,9 +8,12 @@ export default async function hydrateProject(project) {
   const environments = await listEnvironments({
     projectId: project.id,
   });
+  const hydratedEnvironments = await Promise.all(
+    environments.map(hydrateEnvironment),
+  );
 
   const prunedEnvironments = [];
-  _.forEach(environments, (env) => {
+  _.forEach(hydratedEnvironments, (env) => {
     prunedEnvironments.push(_.omit(env, ["project_id"]));
   });
 

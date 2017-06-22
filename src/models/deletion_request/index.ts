@@ -1,4 +1,5 @@
 import * as moment from "moment";
+import { DeletionConfirmation } from "../deletion_confirmation";
 
 export interface DeletionRequestValues {
   backoffInterval?: moment.Duration;
@@ -9,6 +10,10 @@ export interface DeletionRequestValues {
 export interface DeletionRequest extends DeletionRequestValues {
   id: string;
   created: moment.Moment;
+}
+
+export interface DeletionRequestHydrated extends DeletionRequest {
+  deletionConfirmations: DeletionConfirmation[];
 }
 
 export function deletionRequestFromRow(row: any): DeletionRequest {
