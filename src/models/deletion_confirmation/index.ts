@@ -16,6 +16,13 @@ export interface DeletionConfirmationHydrated extends DeletionConfirmation {
   retracedUser: RetracedUser | null;
 }
 
+export interface DeletionConfirmationSanitized {
+  id: string;
+  userId: string;
+  email: string;
+  approved: boolean;
+}
+
 export function deletionConfirmationFromRow(row: any): DeletionConfirmation {
   return {
     id: row.id,
