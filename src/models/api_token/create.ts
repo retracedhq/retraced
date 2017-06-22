@@ -11,13 +11,16 @@ import {
 const pgPool = getPgPool();
 
 export default async function create(
-  projectId: string, environmentId: string, values: ApiTokenValues,
+  projectId: string,
+  environmentId: string,
+  values: ApiTokenValues,
   querier?: Querier,
+  token?: string,
 ): Promise<ApiToken> {
   querier = querier || pgPool;
 
   const newApiToken: ApiToken = {
-    token: uuid.v4().replace(/-/g, ""),
+    token: token || uuid.v4().replace(/-/g, ""),
     created: moment(),
     projectId,
     environmentId,

@@ -1,7 +1,8 @@
 import {
     Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse,
-    Controller, Put,
+    Controller, Put, Request,
 } from "tsoa";
+import * as express from "express";
 
 import deleteTemplate from "../handlers/admin/deleteTemplate";
 import deleteEnvironment from "../handlers/admin/deleteEnvironment";
@@ -10,6 +11,7 @@ import getDeletionRequest, { GetDelReqReport } from "../handlers/admin/getDeleti
 import approveDeletionConfirmation from "../handlers/admin/approveDeletionConfirmation";
 import updateApiToken from "../handlers/admin/updateApiToken";
 import { ApiTokenValues } from "../models/api_token";
+import { audit } from "../headless";
 
 @Route("admin/v1")
 export class AdminAPI extends Controller {
@@ -134,7 +136,7 @@ export class AdminAPI extends Controller {
      * Update an API token's fields.
      *
      *
-     * @param auth              Base64 ecoded JWT authentication
+     * @param auth              Base64 encoded JWT authentication
      * @param projectId         The project id
      * @param apiToken          The token to update
      */
@@ -145,10 +147,18 @@ export class AdminAPI extends Controller {
         @Path("projectId") projectId: string,
         @Path("apiToken") apiToken: string,
         @Body() requestBody: Partial<ApiTokenValues>,
+        @Request() req: express.Request,
     ): Promise<void> {
+        await audit(req, "api_token.update", "u", {
+            target: {
+                id: apiToken,
+            },
+        });
+
         await updateApiToken(
             auth, projectId, apiToken, requestBody,
         );
+
         this.setStatus(200);
     }
 }

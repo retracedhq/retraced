@@ -7,7 +7,7 @@ import getApiToken from "../models/api_token/get";
 import { Scope } from "../security/scope";
 import schema from "./graphql/schema";
 import handler from "./graphql/handler";
-import { GraphQLRequest, GraphQLResponse } from "./graphql/index";
+import { GraphQLRequest, GraphQLResp } from "./graphql/index";
 
 export default async function(req) {
     const apiTokenId = apiTokenFromAuthHeader(req.get("Authorization"));
@@ -26,7 +26,7 @@ export async function graphQL(
     authorization: string,
     projectId: string,
     graphQLReq: GraphQLRequest,
-): Promise<GraphQLResponse> {
+): Promise<GraphQLResp> {
     const apiToken = await Authenticator.default().getApiTokenOr401(authorization, projectId);
 
     const context: Scope = {
