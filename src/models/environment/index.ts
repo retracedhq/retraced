@@ -1,3 +1,5 @@
+import { DeletionRequestHydrated } from "../deletion_request";
+
 export interface EnvironmentValues {
   name: string;
   projectId: string;
@@ -5,6 +7,10 @@ export interface EnvironmentValues {
 
 export interface Environment extends EnvironmentValues {
   id: string;
+}
+
+export interface EnvironmentHydrated extends Environment {
+  deletionRequest?: DeletionRequestHydrated;
 }
 
 export function environmentFromRow(row: any): Environment {

@@ -1,4 +1,5 @@
 import * as moment from "moment";
+import { RetracedUser } from "../user";
 
 export interface DeletionConfirmationValues {
   deletionRequestId: string;
@@ -9,6 +10,17 @@ export interface DeletionConfirmationValues {
 
 export interface DeletionConfirmation extends DeletionConfirmationValues {
   id: string;
+}
+
+export interface DeletionConfirmationHydrated extends DeletionConfirmation {
+  retracedUser: RetracedUser | null;
+}
+
+export interface DeletionConfirmationSanitized {
+  id: string;
+  userId: string;
+  email: string;
+  approved: boolean;
 }
 
 export function deletionConfirmationFromRow(row: any): DeletionConfirmation {
