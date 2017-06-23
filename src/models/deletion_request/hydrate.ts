@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import {DeletionRequest, DeletionRequestHydrated} from "../deletion_request";
+import {maxAge, DeletionRequest, DeletionRequestHydrated} from "../deletion_request";
 import {DeletionConfirmationSanitized} from "../deletion_confirmation";
 import getDeletionConfirmations from "../deletion_confirmation/getByDeletionRequest";
 import hydrateDeletionConfirmation from "../deletion_confirmation/hydrate";
@@ -25,5 +25,6 @@ export default async function hydrateDeletionRequest(dr: DeletionRequest): Promi
     return {
         ...dr,
         deletionConfirmations: sanitized,
+        expiration: dr.created.clone().add(maxAge),
     };
 }

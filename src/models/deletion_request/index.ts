@@ -14,6 +14,7 @@ export interface DeletionRequest extends DeletionRequestValues {
 
 export interface DeletionRequestHydrated extends DeletionRequest {
   deletionConfirmations: DeletionConfirmationSanitized[];
+  expiration: moment.Moment;
 }
 
 export function deletionRequestFromRow(row: any): DeletionRequest {
@@ -41,8 +42,10 @@ export function rowFromDeletionRequest(dr: DeletionRequest): any {
 ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
 
+export const maxAge = moment.duration(1, "month");
+
 export function deletionRequestHasExpired(request: DeletionRequest): boolean {
-  return request.created.isBefore(moment().subtract(1, "month"));
+  return request.created.isBefore(moment().subtract(maxAge));
 }
 
 export function deletionRequestBackoffRemaining(request: DeletionRequest): moment.Duration {
