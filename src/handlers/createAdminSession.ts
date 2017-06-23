@@ -8,12 +8,16 @@ import deleteInvite from "../models/invite/delete";
 import addUserToProject from "../models/project/addUser";
 import { createAdminVoucher } from "../security/vouchers";
 
-const auth0 = new Auth0.WebAuth({
-  domain: process.env.AUTH0_CLIENT_DOMAIN,
-  clientID: process.env.AUTH0_CLIENT_ID,
-  callbackURL: "",
-  leeway: 30,
-});
+let auth0;
+
+if (process.env.AUTH0_CLIENT_DOMAIN && process.env.AUTH0_CLIENT_ID) {
+  auth0 = new Auth0.WebAuth({
+    domain: process.env.AUTH0_CLIENT_DOMAIN,
+    clientID: process.env.AUTH0_CLIENT_ID,
+    callbackURL: "",
+    leeway: 30,
+  });
+}
 
 // This is to appease the Auth0 lib, which expects to be running in a browser. -_-
 global["window"] = {
@@ -99,6 +103,10 @@ export interface ExternalAuth {
 
 function validateExternalAuth(payload: string): Promise<ExternalAuth> {
   return new Promise<ExternalAuth>((resolve, reject) => {
+    if (!auth0) {
+      reject("Auth0 not initialized, admin sessions not available");
+      return;
+    }
     auth0.parseHash({ hash: payload }, (err, data) => {
       if (err) {
         reject(err);
