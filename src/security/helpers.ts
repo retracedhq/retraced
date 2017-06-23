@@ -71,7 +71,7 @@ export async function adminIdentity(req): Promise<[string | null, boolean]> {
   let claims;
 
   try {
-    claims = checkAdminAccess(req);
+    claims = await checkAdminAccess(req);
   } catch (err) {
     if (err.status === 401) {
       return [null, false];

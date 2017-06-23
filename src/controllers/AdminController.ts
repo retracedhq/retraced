@@ -153,6 +153,7 @@ export class AdminAPI extends Controller {
             target: {
                 id: apiToken,
             },
+            fields: requestBody,
         });
 
         await updateApiToken(
