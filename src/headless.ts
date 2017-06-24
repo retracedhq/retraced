@@ -70,13 +70,13 @@ export async function audit(
     await retraced.reportEvent(event);
 }
 
-function stringifyFields(source: any): Fields {
+export function stringifyFields(source: any): Fields {
     const fields: Fields = {};
 
     for (const key in source) {
       if (source.hasOwnProperty(key)) {
         const value = source[key];
-        if (typeof value !== "undefined") {
+        if (value != null) {
           fields[key] = value.toString();
         }
       }
