@@ -7,7 +7,7 @@ import { listEnterpriseTokens } from "../handlers/listEnterpriseTokens";
 import { updateEnterpriseToken } from "../handlers/updateEnterpriseToken";
 import { getEnterpriseToken } from "../handlers/getEnterpriseToken";
 import { graphQL } from "../handlers/graphql";
-import { GraphQLRequest, GraphQLResponse } from "../handlers/graphql/index";
+import { GraphQLRequest, GraphQLResp } from "../handlers/graphql/index";
 
 @Route("publisher/v1")
 export class PublisherAPI extends Controller {
@@ -67,7 +67,6 @@ export class PublisherAPI extends Controller {
         @Path("projectId") projectId: string,
         @Body() events: CreateEventRequest[],
     ): Promise<CreateEventResponse[]> {
-
         const result: CreateEventResponse[] = await this.eventCreater.createEventBulk(auth, projectId, events);
 
         this.setStatus(201);
@@ -305,7 +304,7 @@ export class PublisherAPI extends Controller {
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Body() graphQLRequest: GraphQLRequest,
-    ): Promise<GraphQLResponse> {
+    ): Promise<GraphQLResp> {
         const result = await graphQL(
             auth,
             projectId,

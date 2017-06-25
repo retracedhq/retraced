@@ -12,6 +12,7 @@ import { wrapRoute, register } from "./router";
 import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";
 import { AdminUserBootstrap } from "./handlers/admin/AdminUserBootstrap";
+import { ensureHeadlessProject } from "./headless";
 import * as metrics from "./metrics";
 import swaggerSpecs from "./swagger";
 
@@ -98,3 +99,5 @@ function serve() {
     console.log("Retraced API listening on port 3000...");
   });
 }
+
+ensureHeadlessProject();

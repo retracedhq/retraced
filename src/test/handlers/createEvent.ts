@@ -213,7 +213,7 @@ import Authenticator from "../../security/Authenticator";
         const jobBody = JSON.stringify({ taskId: "kfbr392" });
         nsq
             .setup((x) => x.produce("raw_events", jobBody))
-            .returns((args) => Promise.resolve());
+            .returns((args) => Promise.resolve({}));
 
         const creater = new EventCreater(
             pool.object,
@@ -279,7 +279,7 @@ import Authenticator from "../../security/Authenticator";
 
         // set up nsq
         nsq.setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
-            .returns((args) => Promise.resolve())
+            .returns((args) => Promise.resolve({}))
             .verifiable(TypeMoq.Times.exactly(3));
 
         const creater = new EventCreater(
@@ -341,7 +341,7 @@ import Authenticator from "../../security/Authenticator";
 
         // set up nsq
         nsq.setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
-            .returns((args) => Promise.resolve())
+            .returns((args) => Promise.resolve({}))
             .verifiable(TypeMoq.Times.exactly(1));
 
         const creater = new EventCreater(

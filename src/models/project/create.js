@@ -23,7 +23,7 @@ export default function createProject(opts) {
       }
 
       const project = {
-        id: uuid.v4().replace(/-/g, ""),
+        id: opts.id || uuid.v4().replace(/-/g, ""),
         name: opts.name,
         created: moment().unix(),
         environments: getDefaultEnvironments(),

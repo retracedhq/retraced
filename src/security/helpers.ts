@@ -67,9 +67,25 @@ export async function checkAdminAccess(req): Promise<AdminClaims> {
   return checkAdminAccessUnwrapped(req.get("Authorization"), req.params.projectId, req.params.environment_id);
 }
 
+export async function adminIdentity(req): Promise<[string | null, boolean]> {
+  let claims;
+
+  try {
+    claims = await checkAdminAccess(req);
+  } catch (err) {
+    if (err.status === 401) {
+      return [null, false];
+    }
+    throw err;
+  }
+
+  return [claims.userId, true];
+}
+
 export async function checkEitapiAccess(req): Promise<EnterpriseToken> {
   return checkEitapiAccessUnwrapped(req.get("Authorization"));
 }
+
 export async function checkEitapiAccessUnwrapped(auth: string): Promise<EnterpriseToken> {
   const eitapiTokenId = apiTokenFromAuthHeader(auth);
   const eitapiToken: EnterpriseToken | null = await getEitapiToken({
