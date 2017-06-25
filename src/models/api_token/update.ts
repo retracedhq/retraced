@@ -9,6 +9,9 @@ export default async function update(tokenId: string, fields: Partial<ApiTokenVa
   if (!extant) {
     throw new Error(`Can't find api token to be updated (token='${tokenId}')`);
   }
+  if (fields.disabled === undefined && fields.name === undefined) {
+    return extant;
+  }
 
   let sets: string[] = [];
   const v: any[] = [tokenId];

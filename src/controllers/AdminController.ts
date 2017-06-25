@@ -3,6 +3,7 @@ import {
     Controller, Put, Request,
 } from "tsoa";
 import * as express from "express";
+import * as uuid from "uuid";
 
 import deleteTemplate from "../handlers/admin/deleteTemplate";
 import deleteEnvironment from "../handlers/admin/deleteEnvironment";
@@ -10,7 +11,9 @@ import createDeletionRequest, { CreateDelReqRequestBody, CreateDelReqReport } fr
 import getDeletionRequest, { GetDelReqReport } from "../handlers/admin/getDeletionRequest";
 import approveDeletionConfirmation from "../handlers/admin/approveDeletionConfirmation";
 import updateApiToken from "../handlers/admin/updateApiToken";
-import { ApiTokenValues } from "../models/api_token";
+import createApiToken from "../handlers/admin/createApiToken";
+import deleteApiToken from "../handlers/admin/deleteApiToken";
+import { ApiTokenResponse, ApiTokenValues } from "../models/api_token";
 import { audit } from "../headless";
 
 @Route("admin/v1")
@@ -133,6 +136,52 @@ export class AdminAPI extends Controller {
     }
 
     /**
+     * Create a new API token.
+     *
+     *
+     * @param auth
+     * @param projectId         The project id
+     * @param environmentId     The environment id
+     */
+    @Post("project/{projectId}/token")
+    @SuccessResponse("201", "Created")
+    public async createApiToken(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Query("environment_id") environmentId: string,
+        @Body() body: ApiTokenValues,
+        @Request() req: express.Request,
+    ): Promise<ApiTokenResponse> {
+        // generate here so audit event can complete first
+        const tokenId = uuid.v4().replace(/-/g, "");
+        await audit(req, "api_token.create", "c", {
+            target: {
+                id: tokenId,
+                fields: body,
+            },
+        });
+
+        const newToken = await createApiToken(
+            auth,
+            projectId,
+            environmentId,
+            tokenId,
+            body,
+        );
+
+        this.setStatus(201);
+
+        return {
+            project_id: newToken.projectId,
+            environment_id: newToken.environmentId,
+            created: newToken.created.toISOString(),
+            token: newToken.token,
+            name: newToken.name,
+            disabled: newToken.disabled,
+        };
+    }
+
+    /**
      * Update an API token's fields.
      *
      *
@@ -140,7 +189,7 @@ export class AdminAPI extends Controller {
      * @param projectId         The project id
      * @param apiToken          The token to update
      */
-    @Put("project/{projectId}/api_token/{apiToken}")
+    @Put("project/{projectId}/token/{apiToken}")
     @SuccessResponse("200", "OK")
     public async updateApiToken(
         @Header("Authorization") auth: string,
@@ -148,7 +197,7 @@ export class AdminAPI extends Controller {
         @Path("apiToken") apiToken: string,
         @Body() requestBody: Partial<ApiTokenValues>,
         @Request() req: express.Request,
-    ): Promise<void> {
+    ): Promise<ApiTokenResponse> {
         await audit(req, "api_token.update", "u", {
             target: {
                 id: apiToken,
@@ -156,10 +205,50 @@ export class AdminAPI extends Controller {
             fields: requestBody,
         });
 
-        await updateApiToken(
+        const updatedToken = await updateApiToken(
             auth, projectId, apiToken, requestBody,
         );
 
         this.setStatus(200);
+
+        return {
+            project_id: updatedToken.projectId,
+            environment_id: updatedToken.environmentId,
+            created: updatedToken.created.toISOString(),
+            token: updatedToken.token,
+            name: updatedToken.name,
+            disabled: updatedToken.disabled,
+        };
+    }
+
+    /**
+     * Delete an API token.
+     *
+     *
+     * @param auth            Base64 encoded JWT authentication
+     * @param projectId       The project id
+     * @param tokenId         The token to delete
+     */
+    @Delete("project/{projectId}/token/{tokenId}")
+    @SuccessResponse("204", "Deleted")
+    public async deleteApiToken(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Path("tokenId") tokenId: string,
+        @Request() req: express.Request,
+    ): Promise<void> {
+        await audit(req, "api_token.delete", "d", {
+            target: {
+                id: tokenId,
+            },
+        });
+
+        await deleteApiToken(
+            auth,
+            projectId,
+            tokenId,
+        );
+
+        this.setStatus(204);
     }
 }
