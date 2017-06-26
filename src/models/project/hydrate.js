@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import hydrateEnvironment from "../environment/hydrate";
 
 import listApiTokens from "../api_token/list";
+import { responseFromApiToken } from "../api_token";
 import listEnvironments from "../environment/list";
 
 export default async function hydrateProject(project) {
@@ -24,6 +25,6 @@ export default async function hydrateProject(project) {
   return {
     ...project,
     environments: prunedEnvironments,
-    tokens: apiTokens,
+    tokens: apiTokens.map(responseFromApiToken),
   };
 }

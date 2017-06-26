@@ -3847,9 +3847,9 @@ restore-cursor@^1.0.1:
     exit-hook "^1.0.0"
     onetime "^1.0.0"
 
-retraced@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/retraced/-/retraced-0.3.3.tgz#26c46f472549e7abba3e2243b87dc9b649e901bf"
+retraced@^0.3.6:
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/retraced/-/retraced-0.3.6.tgz#bce5fc49767d49f546e4ba65b14f32a0b6a750ea"
   dependencies:
     isomorphic-fetch "^2.2.1"
     lodash "^4.17.4"

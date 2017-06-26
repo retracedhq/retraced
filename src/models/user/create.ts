@@ -1,7 +1,8 @@
 import * as uuid from "uuid";
 import * as moment from "moment";
 
-import getPgPool from "../../persistence/pg";
+import getPgPool, { Querier } from "../../persistence/pg";
+import { RetracedUser } from "./index";
 
 const pgPool = getPgPool();
 
@@ -9,14 +10,12 @@ const defaultTimezone = "US/Pacific";
 
 export const ERR_DUPLICATE_EMAIL = new Error("DUPLICATE_EMAIL");
 
-/**
- * createUser will create a new user account
- *
- * @param {Object} [opts] the request options
- * @param {string} [opts.email] the email address to use
- */
-// TODO(zhaytee): Conform this to the RetracedUser interface
-export default async function createUser(opts) {
+export interface Options {
+  email: string;
+  authId: string;
+}
+
+export default async function createUser(opts: Options, pg: Querier = pgPool): Promise<RetracedUser> {
 
   // Check for dupe e-mail
   let q = "select count(1) from retraceduser where email = $1";
@@ -26,6 +25,7 @@ export default async function createUser(opts) {
     throw ERR_DUPLICATE_EMAIL;
   }
 
+  const now = moment();
   q = `insert into retraceduser (
       id, email, created, last_login, external_auth_id, timezone
     ) values (
@@ -34,8 +34,8 @@ export default async function createUser(opts) {
   v = [
     uuid.v4().replace(/-/g, ""),
     opts.email,
-    moment().unix(),
-    moment().unix(),
+    now.unix(),
+    now.unix(),
     opts.authId,
     defaultTimezone,
   ];
@@ -44,8 +44,10 @@ export default async function createUser(opts) {
   return {
     id: v[0],
     email: v[1],
+    created: now,
+    lastLogin: now,
+    externalAuthId: v[4],
     timezone: v[5],
-    external_auth_id: opts.authId,
+    txEmailsRecipient: true,
   };
-
 }

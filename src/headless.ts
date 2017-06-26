@@ -4,7 +4,7 @@ import { crud, Fields } from "./models/event";
 import { adminIdentity } from "./security/helpers";
 import * as _ from "lodash";
 import * as chalk from "chalk";
-import { Client } from "retraced";
+import { Event, Client } from "retraced";
 import getProject from "./models/project/get";
 import hydrateProject from "./models/project/hydrate";
 import createProject from "./models/project/create";
@@ -21,6 +21,12 @@ const retraced = new Client({
     endpoint: process.env.RETRACED_API_BASE,
 });
 
+export async function reportEvents(events: Event[]) {
+  if (enabled) {
+    retraced.reportEvents(events);
+  }
+}
+
 export async function audit(
     req: express.Request,
     action: string,
@@ -30,42 +36,13 @@ export async function audit(
     if (!enabled) {
         return;
     }
-    const event: any = _.merge(
-        {
-          action,
-          crud,
-          group: {
-              id: req.params.projectId,
-          },
-          source_ip: req.ip,
-          description: `${req.method} ${req.originalUrl}`,
-        },
+    const fromReq = await fromRequest(req);
+    const event = makeEvent(
+        action,
+        crud,
+        fromReq,
         record,
     );
-    // Determine actor
-    const [userId, ok] = await adminIdentity(req);
-
-    if (ok) {
-        if (userId) {
-            event.actor = {
-                id: userId,
-            };
-        } else {
-            event.isAnonymous = true;
-        }
-    } else {
-        event.isFailure = true;
-    }
-
-    if (event.fields) {
-        event.fields = stringifyFields(event.fields);
-    }
-    if (event.target && event.target.fields) {
-        event.target.fields = stringifyFields(event.target.fields);
-    }
-    if (event.actor && event.actor.fields) {
-        event.actor.fields = stringifyFields(event.actor.fields);
-    }
 
     await retraced.reportEvent(event);
 }
@@ -83,6 +60,60 @@ export function stringifyFields(source: any): Fields {
     }
 
     return fields;
+}
+
+async function fromRequest(req: express.Request) {
+    const event: any = {
+        group: {
+            id: req.params.projectId,
+        },
+        source_ip: req.ip,
+        description: `${req.method} ${req.originalUrl}`,
+    };
+    // Determine actor
+    const [userId, ok] = await adminIdentity(req);
+
+    if (ok) {
+        if (userId) {
+            event.actor = {
+                id: userId,
+            };
+        } else {
+            event.isAnonymous = true;
+        }
+    } else {
+        event.isFailure = true;
+    }
+
+    return event;
+}
+
+function makeEvent(
+    action: string,
+    crud: crud,
+    fromRequest: any,
+    record?: any,
+) {
+    const event: any = _.merge(
+        {
+          action,
+          crud,
+        },
+        fromRequest,
+        record,
+    );
+
+    if (event.fields) {
+        event.fields = stringifyFields(event.fields);
+    }
+    if (event.target && event.target.fields) {
+        event.target.fields = stringifyFields(event.target.fields);
+    }
+    if (event.actor && event.actor.fields) {
+        event.actor.fields = stringifyFields(event.actor.fields);
+    }
+
+    return event;
 }
 
 // Checks that project exists with HEADLESS_PROJECT_ID and HEADLESS_API_KEY

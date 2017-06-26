@@ -21,6 +21,17 @@ export interface ApiTokenResponse {
   created: string;
 }
 
+export function responseFromApiToken(t: ApiToken): ApiTokenResponse {
+  return {
+    project_id: t.projectId,
+    environment_id: t.environmentId,
+    token: t.token,
+    disabled: t.disabled,
+    name: t.name,
+    created: t.created.toISOString(),
+  };
+}
+
 export function apiTokenFromRow(row: any): ApiToken {
   return {
     token: row.token,
