@@ -8,11 +8,11 @@ import graphQL from "./handlers/graphql";
 // admin
 import adminGraphQL from "./handlers/admin/graphql";
 import cancelEmailReport from "./handlers/admin/cancelEmailReport";
-import createApiToken from "./handlers/admin/createApiToken";
+import { deprecated as createApiToken } from "./handlers/admin/createApiToken";
 import createEnvironment from "./handlers/admin/createEnvironment";
 import createInvite from "./handlers/admin/createInvite";
 import createProject from "./handlers/admin/createProject";
-import deleteApiToken from "./handlers/admin/deleteApiToken";
+import { deprecated as deleteApiToken } from "./handlers/admin/deleteApiToken";
 import deleteTeamMember from "./handlers/admin/deleteTeamMember";
 import listTeamMembers from "./handlers/admin/listTeamMembers";
 import deleteInvite from "./handlers/admin/deleteInvite";
@@ -83,11 +83,6 @@ export default {
     method: "get",
     handler: cancelEmailReport,
   },
-  adminCreateApiToken: {
-    path: "/admin/v1/project/:projectId/token",
-    method: "post",
-    handler: createApiToken,
-  },
   adminCreateEnvironment: {
     path: "/admin/v1/project/:projectId/environment",
     method: "post",
@@ -102,11 +97,6 @@ export default {
     path: "/admin/v1/project",
     method: "post",
     handler: createProject,
-  },
-  adminDeleteApiToken: {
-    path: "/admin/v1/project/:projectId/token/:tokenId",
-    method: "delete",
-    handler: deleteApiToken,
   },
   adminDeleteTeamMember: {
     path: "/admin/v1/project/:projectId/team/member/:userId",

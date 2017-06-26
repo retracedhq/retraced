@@ -61,9 +61,9 @@ export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter
     }
     respObj.send(body);
   } else {
-    // Generic response. Shouldn't happen in most cases, but...
-    console.log(chalk.cyan(`[${reqId}] => 200`));
-    res.status(200).set("X-Retraced-RequestId", reqId).json(result);
+    const statusToSend = (statusCodeGetter && statusCodeGetter()) || 200;
+    console.log(chalk.cyan(`[${reqId}] => ${statusToSend}`));
+    res.status(statusToSend).set("X-Retraced-RequestId", reqId).json(result);
   }
 };
 

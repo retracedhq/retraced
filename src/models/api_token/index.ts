@@ -12,6 +12,15 @@ export interface ApiToken extends ApiTokenValues {
   projectId: string;
 }
 
+export interface ApiTokenResponse {
+  token: string;
+  project_id: string;
+  environment_id: string;
+  disabled: boolean;
+  name: string;
+  created: string;
+}
+
 export function apiTokenFromRow(row: any): ApiToken {
   return {
     token: row.token,

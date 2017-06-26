@@ -84,10 +84,12 @@ export default function createProject(opts) {
           for (const t of newApiTokens) {
             project.tokens.push(t);
           }
-          return addUserToProject({
-            projectId: project.id,
-            userId: opts.user_id,
-          });
+          if (opts.user_id) {
+            return addUserToProject({
+              projectId: project.id,
+              userId: opts.user_id,
+            });
+          }
         })
         .then(() => {
           resolve(project);
