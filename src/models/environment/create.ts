@@ -3,25 +3,28 @@ import * as uuid from "uuid";
 
 import getPgPool from "../../persistence/pg";
 import getEs from "../../persistence/elasticsearch";
+import { Environment } from "./index";
 
 const pgPool = getPgPool();
 const es = getEs();
 
 interface Opts {
   name: string;
-  project_id: string;
+  projectId: string;
+
+  id?: string;
 };
 
-export default async function createEnvironment(opts: Opts) {
+export default async function createEnvironment(opts: Opts): Promise<Environment> {
   const environment = {
-    id: uuid.v4().replace(/-/g, ""),
+    id: opts.id || uuid.v4().replace(/-/g, ""),
     name: opts.name,
-    project_id: opts.project_id,
+    projectId: opts.projectId,
   };
 
   // Create the ES index
-  const searchAlias = `retraced.${environment.project_id}.${environment.id}`;
-  const writeAlias = `retraced.${environment.project_id}.${environment.id}.current`;
+  const searchAlias = `retraced.${environment.projectId}.${environment.id}`;
+  const writeAlias = `retraced.${environment.projectId}.${environment.id}.current`;
   const newIndex = `retraced.api.${uuid.v4().replace(/-/g, "")}`;
   const aliases = {};
   aliases[searchAlias] = {};
@@ -43,7 +46,7 @@ export default async function createEnvironment(opts: Opts) {
   const v = [
     environment.id,
     environment.name,
-    environment.project_id,
+    environment.projectId,
   ];
   await pgPool.query(q, v);
 

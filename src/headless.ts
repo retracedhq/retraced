@@ -9,11 +9,11 @@ import getProject from "./models/project/get";
 import hydrateProject from "./models/project/hydrate";
 import createProject from "./models/project/create";
 import getToken from "./models/api_token/get";
+import getEnvironment from "./models/environment/get";
 import createToken from "./models/api_token/create";
+import createEnvironment from "./models/environment/create";
 
-const enabled = !!(process.env.HEADLESS_API_KEY && process.env.HEADLESS_PROJECT_ID);
-
-console.log(chalk.green(`Headless Retraced audit logging is ${enabled ? "enabled" : "disabled"}`));
+const enabled = !!(process.env.HEADLESS_API_KEY && process.env.HEADLESS_PROJECT_ID && process.env.HEADLESS_PROJECT_ENV);
 
 const retraced = new Client({
     apiKey: process.env.HEADLESS_API_KEY,
@@ -116,35 +116,73 @@ function makeEvent(
     return event;
 }
 
+export interface BootstrapOpts {
+    projectId: string;
+    apiKey: string;
+    environmentId: string;
+    projectName: string;
+    environmentName: string;
+    tokenName: string;
+    keyVarRef: string;
+    projectVarRef: string;
+    envVarRef: string;
+}
+
 // Checks that project exists with HEADLESS_PROJECT_ID and HEADLESS_API_KEY
 export async function ensureHeadlessProject() {
+    console.log(chalk.green(`Headless Retraced audit logging is ${enabled ? "enabled" : "disabled"}`));
     if (!enabled) {
         return;
     }
+    await bootstrapProject({
+        projectId: process.env.HEADLESS_PROJECT_ID,
+        apiKey: process.env.HEADLESS_API_KEY,
+        environmentId: process.env.HEADLESS_PROJECT_ENV,
+        projectName: "Headless Retraced",
+        environmentName: "HEADLESS_PROJECT_ENV",
+        tokenName: "HEADLESS_API_KEY",
+        keyVarRef: "HEADLESS_API_KEY",
+        projectVarRef: "HEADLESS_PROJECT_ID",
+        envVarRef: "HEADLESS_PROJECT_ENV",
+    });
+}
 
-    let project: any = await getProject(process.env.HEADLESS_PROJECT_ID);
+export async function bootstrapProject(opts: BootstrapOpts) {
+    let project: any = await getProject(opts.projectId);
+
     if (project) {
         project = await hydrateProject(project);
     } else {
         project = await createProject({
-            id: process.env.HEADLESS_PROJECT_ID,
-            name: "Headless Retraced",
+            id: opts.projectId,
+            name: opts.projectName,
         });
     }
 
-    let token = await getToken(process.env.HEADLESS_API_KEY);
+    let env = await getEnvironment(opts.environmentId);
+    if (!env) {
+        env = await createEnvironment({
+            id: opts.environmentId,
+            name: opts.environmentName,
+            projectId: project.id,
+        });
+    } else if (env.projectId !== project.id) {
+        throw new Error(`env ${opts.envVarRef} does not belong to project ${opts.projectVarRef}`);
+    }
+
+    const token = await getToken(opts.apiKey);
     if (!token) {
-        token = await createToken(
+        await createToken(
             project.id,
-            project.environments[0].id,
+            env.id,
             {
-                name: "HEADLESS_API_KEY",
+                name: opts.tokenName,
                 disabled: false,
             },
             undefined,
-            process.env.HEADLESS_API_KEY,
+            opts.apiKey,
         );
     } else if (token.projectId !== project.id) {
-        throw new Error("HEADLESS_API_KEY does not belong to HEADLESS_PROJECT_ID");
+        throw new Error(`api key ${opts.keyVarRef} does not belong to project ${opts.projectVarRef}`);
     }
 }
