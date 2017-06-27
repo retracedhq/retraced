@@ -2,6 +2,7 @@ build/
 lib/
 java/
 src/gen/routes.ts
+bin/
 
 *.DS_Store
 .AppleDouble

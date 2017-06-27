@@ -6,7 +6,7 @@ export default async function(req) {
   await checkAdminAccess(req);
 
   const env = await createEnvironment({
-    project_id: req.params.projectId,
+    projectId: req.params.projectId,
     name: req.body.name,
   });
 

@@ -18,6 +18,7 @@ routes:
 
 build: prebuild lint swagger routes
 	`yarn bin`/tsc
+	mkdir -p bin && mv build/retracedctl.js bin/retracedctl && chmod +x bin/retracedctl
 
 run:
 	node --no-deprecation ./build/index.js

@@ -63,7 +63,7 @@ export default function createProject(opts) {
         project.environments.forEach((environment) => {
           createEnvPromises.push(createEnvironment({
             name: environment.name,
-            project_id: project.id,
+            projectId: project.id,
           }));
         });
 
