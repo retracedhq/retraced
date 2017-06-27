@@ -1,8 +1,15 @@
+import "source-map-support/register";
 import getPgPool from "../../persistence/pg";
+import { Invite } from "./index";
 
 const pgPool = getPgPool();
 
-export default async function getInvite(opts) {
+export interface Options {
+  inviteId?: string;
+  email?: string;
+}
+
+export default async function getInvite(opts: Options): Promise<null|Invite> {
   const fields = `id, email, project_id,
       extract(epoch from created) * 1000 as created`;
 

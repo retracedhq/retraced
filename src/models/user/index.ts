@@ -13,6 +13,12 @@ export interface RetracedUser extends RetracedUserValues {
   created: moment.Moment;
 }
 
+export interface RetracedUserResponse {
+  id: string;
+  email: string;
+  timezone: string;
+}
+
 export function retracedUserFromRow(row: any): RetracedUser {
   return {
     id: row.id,
