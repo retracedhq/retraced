@@ -5,7 +5,12 @@ export default async function(req) {
   // Note that this call needs the JWT passed in as a query string param.
   // This is because we will be calling this from window.open() in a browser,
   // and there's no way to set headers in that circumstance.
+  //
+  // TODO
+  // Leaking the JWT is bad though, ideally this should use a single-use
+  // nonce instead
   const claims = await validateViewerDescriptorVoucher(req.query.jwt);
+
   const format = req.query.format || "csv";
   let contentType;
   switch (format) {
