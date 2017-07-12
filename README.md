@@ -11,6 +11,11 @@ Key responsibilities of the retraced API include:
 - Handle Auth0 login callback
 - Tokens, stats, etc.
 
+## Contributing
+
+If there's a relevant clubhouse story, include `chXXX` with the story ID
+in your pull request.
+
 ## Usage
 #### Install deps
 > `yarn`
@@ -56,4 +61,5 @@ make markup-docs
 ```
 
 which will build `build/swagger.adoc`, convert to `build/swagger.html`, and open using `google-chrome`
+
 
