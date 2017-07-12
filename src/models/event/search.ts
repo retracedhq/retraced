@@ -230,7 +230,10 @@ export default async function(opts: Options): Promise<Result> {
         results.events!.push(hit["_source"]);
       }
       while (true) {
-        const resp = await es.scroll(scrollParams);
+        const resp = await es.scroll({
+          scroll: scrollParams.scroll,
+          body: scrollParams.scroll_id,
+        });
         if (resp.hits.hits.length === 0) {
           break;
         }
