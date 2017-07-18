@@ -145,20 +145,30 @@ export async function createSession(externalAuth: ExternalAuth): Promise<CreateS
       }
     }
 
+    // BUG: When login is initiated from the admin site, externalAuth.inviteId
+    // contains a string, even when not following an invite link. This string is
+    // not an invite ID.
     if (externalAuth.inviteId) {
       // This login attempt is the direct result of someone following an invitation link.
       // This means we can look up the invitation directly by its id.
       // Ergo, this user can register with any e-mail address provided to us by Auth0.
       result.invite = await getInvite({ inviteId: externalAuth.inviteId });
-    } else {
+    }
+    if (!result.invite) {
       // Otherwise, we still check to see if this email has a pending invite, just in case.
       result.invite = await getInvite({ email: externalAuth.email });
     }
 
     if (result.invite) {
       console.log(`Found invite for user: ${externalAuth.email} / ${externalAuth.upstreamToken}, adding them to project '${result.invite.project_id}'`);
-      // It's possible a user is invited to a project they're already on. If so delete the invite.
+      await deleteInvite({
+        inviteId: result.invite.id,
+        projectId: result.invite.project_id,
+      }, pg);
+
+      // It's possible a user is invited to a project they're already on. If so delete result.invite.
       const userprojects = await listProjects({user_id: result.user.id});
+
       if (_.some(userprojects, (project) => project.id === result.invite.project_id)) {
         delete result.invite;
       } else {
@@ -167,10 +177,6 @@ export async function createSession(externalAuth: ExternalAuth): Promise<CreateS
           projectId: result.invite.project_id,
         }, pg);
       }
-      await deleteInvite({
-        inviteId: result.invite.id,
-        projectId: result.invite.project_id,
-      }, pg);
     }
 
     result.token = createAdminVoucher({
