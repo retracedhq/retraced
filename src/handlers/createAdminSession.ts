@@ -157,10 +157,16 @@ export async function createSession(externalAuth: ExternalAuth): Promise<CreateS
 
     if (result.invite) {
       console.log(`Found invite for user: ${externalAuth.email} / ${externalAuth.upstreamToken}, adding them to project '${result.invite.project_id}'`);
-      await addUserToProject({
-        userId: result.user.id,
-        projectId: result.invite.project_id,
-      }, pg);
+      // It's possible a user is invited to a project they're already on. If so delete the invite.
+      const userprojects = await listProjects({user_id: result.user.id});
+      if (_.some(userprojects, (project) => project.id === result.invite.project_id)) {
+        delete result.invite;
+      } else {
+        await addUserToProject({
+          userId: result.user.id,
+          projectId: result.invite.project_id,
+        }, pg);
+      }
       await deleteInvite({
         inviteId: result.invite.id,
         projectId: result.invite.project_id,
