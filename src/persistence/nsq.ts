@@ -91,6 +91,8 @@ export class NSQClient {
       let connected = false;
 
       w.connect();
+      console.log(chalk.green.dim(`NSQ writer attempting to connect to nsqd at ${this.host}:${this.port}`));
+
       w.on("ready", () => {
         connected = true;
         resolve(w);
@@ -98,6 +100,8 @@ export class NSQClient {
       });
       w.on("closed", () => {
         console.log(chalk.yellow(`NSQ writer disconnected from ${this.host}:${this.port}`));
+        connected = false;
+        delete this.writer;
       });
       w.on("error", (err) => {
         console.log(chalk.yellow(`NSQ writer ${this.host}:${this.port} : ${err.message}`));

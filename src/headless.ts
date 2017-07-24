@@ -13,7 +13,7 @@ import getEnvironment from "./models/environment/get";
 import createToken from "./models/api_token/create";
 import createEnvironment from "./models/environment/create";
 
-const enabled = !!(process.env.HEADLESS_API_KEY && process.env.HEADLESS_PROJECT_ID && process.env.HEADLESS_PROJECT_ENV);
+const enabled = !!(process.env.HEADLESS_API_KEY && process.env.HEADLESS_PROJECT_ID && process.env.HEADLESS_ENV_ID);
 
 const retraced = new Client({
     apiKey: process.env.HEADLESS_API_KEY,
