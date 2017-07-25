@@ -2,11 +2,13 @@ import "source-map-support/register";
 import * as uuid from "uuid";
 import * as moment from "moment";
 
+import { Template } from "./index";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
 interface Opts {
+  id?: string;
   project_id: string;
   environment_id: string;
   name: string;
@@ -14,10 +16,10 @@ interface Opts {
   template: string;
 }
 
-export default async function createTemplate(opts: Opts) {
+export default async function createTemplate(opts: Opts): Promise<Template> {
   const template = {
-    id: uuid.v4().replace(/-/g, ""),
-    created: moment().unix(),
+    id: opts.id || uuid.v4().replace(/-/g, ""),
+    created: moment(),
     updated: null,
     project_id: opts.project_id,
     environment_id: opts.environment_id,
@@ -33,7 +35,7 @@ export default async function createTemplate(opts: Opts) {
   )`;
   const v = [
     template.id,
-    template.created,
+    template.created.unix(),
     template.updated,
     template.project_id,
     template.environment_id,

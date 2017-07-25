@@ -5,7 +5,11 @@ import {
 import * as express from "express";
 import * as uuid from "uuid";
 
+import { TemplateSearchResults, TemplateResponse, TemplateValues } from "../models/template";
+import createTemplate from "../handlers/admin/createTemplate";
+import searchTemplates from "../handlers/admin/searchTemplates";
 import deleteTemplate from "../handlers/admin/deleteTemplate";
+
 import deleteEnvironment from "../handlers/admin/deleteEnvironment";
 import createDeletionRequest, { CreateDelReqRequestBody, CreateDelReqReport } from "../handlers/admin/createDeletionRequest";
 import getDeletionRequest, { GetDelReqReport } from "../handlers/admin/getDeletionRequest";
@@ -20,12 +24,82 @@ import { audit } from "../headless";
 export class AdminAPI extends Controller {
 
     /**
+     * Create a template. An overview of Template usage in Retraced can be found at
+     *
+     * https://preview.retraced.io/documentation/advanced-retraced/display-templates/
+     *
+     * @param auth          Base64 encoded JWT
+     * @param projectId     The project id
+     * @param environmentId The environment id
+     * @param body          The template resource to create
+     */
+    @Post("project/{projectId}/templates")
+    @SuccessResponse("201", "Created")
+    public async createTemplate(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Query("environment_id") environmentId: string,
+        @Body() body: TemplateValues,
+        @Request() req: express.Request,
+    ): Promise<TemplateResponse> {
+        // Generate ID here to audit before creating
+        const id = uuid.v4().replace(/-/g, "");
+
+        await audit(req, "template.create", "c", {
+            target: {
+                id,
+                fields: body,
+            },
+        });
+
+        const template = await createTemplate(auth, projectId, environmentId, Object.assign(body, { id }));
+
+        this.setStatus(201);
+
+        return template;
+    }
+
+    /**
+     * Search templates. An overview of Template usage in Retraced can be found at
+     *
+     * https://preview.retraced.io/documentation/advanced-retraced/display-templates/
+     *
+     * @param auth          Base64 encoded JWT
+     * @param projectId     The project id
+     * @param environmentId The environmentId
+     * @param length        The maximum number of results to return
+     * @param offset        How many results to skip
+     */
+    @Get("project/{projectId}/templates")
+    @SuccessResponse("200", "OK")
+    public async searchTemplates(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Query("environment_id") environmentId: string,
+        @Request() req: express.Request,
+        @Query("length") length?: number,
+        @Query("offset") offset?: number,
+    ): Promise<TemplateSearchResults> {
+        const results = await searchTemplates(
+            auth,
+            projectId,
+            environmentId,
+            length || 100,
+            offset || 0,
+        );
+
+        await audit(req, "template.search", "r");
+
+        return results;
+    }
+
+    /**
      * Delete a template. An overview of Template usage in Retraced can be found at
      *
      * https://preview.retraced.io/documentation/advanced-retraced/display-templates/
      *
      *
-     * @param auth          Base64 ecoded JWT authentication
+     * @param auth          Base64 encoded JWT authentication
      * @param projectId     The project id
      * @param templateId    The id of the template to delete
      * @param environmentId The environment
@@ -37,8 +111,16 @@ export class AdminAPI extends Controller {
         @Path("projectId") projectId: string,
         @Path("templateId") templateId: string,
         @Query("environment_id") environmentId: string,
+        @Request() req: express.Request,
     ): Promise<void> {
+        await audit(req, "template.delete", "d", {
+          target: {
+            id: templateId,
+          },
+        });
+
         await deleteTemplate(auth, projectId, templateId, environmentId);
+
         this.setStatus(204);
     }
 

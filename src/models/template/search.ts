@@ -8,7 +8,7 @@ export interface Options {
   projectId: string;
   environmentId: string;
   sort: "asc" | "desc";
-  sortColumn: "name" | "created" | "last_seen";
+  sortColumn: "name" | "created";
   length: number;
   offset: number;
 }
@@ -36,11 +36,13 @@ export default async function(opts: Options): Promise<Result> {
     // user opts directly into it. The value must be controlled to a known
     // and safe value.
     const direction = opts.sort === "asc" ? "asc" : "desc";
+    const orderBy = opts.sortColumn === "name" ? "name" : "created";
 
-    const q = `select ${fields} from display_template where environment_id = $1 order by $2 ${direction}`;
+    const q = `select ${fields} from display_template where environment_id = $1 order by ${orderBy} ${direction} limit $2 offset $3`;
     const v = [
       opts.environmentId,
-      opts.sortColumn,
+      opts.length,
+      opts.offset,
     ];
     const pgResult = await pg.query(q, v);
 

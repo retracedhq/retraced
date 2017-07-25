@@ -1,5 +1,6 @@
-import { checkAdminAccess } from "../../security/helpers";
-import searchTemplates, { Options } from "../../models/template/search";
+import { checkAdminAccess, checkAdminAccessUnwrapped } from "../../security/helpers";
+import searchTemplateModels, { Options } from "../../models/template/search";
+import { TemplateSearchResults } from "../../models/template";
 
 /*
 What we're expecting from clients:
@@ -9,7 +10,7 @@ query: {
   offset: number;
 }
 */
-export default async function handler(req) {
+export async function deprecated(req) {
   await checkAdminAccess(req);
 
   if (!req.query.environment_id) {
@@ -29,7 +30,7 @@ export default async function handler(req) {
     offset: reqOpts.offset,
   };
 
-  const results = await searchTemplates(opts);
+  const results = await searchTemplateModels(opts);
 
   return {
     status: 200,
@@ -37,5 +38,33 @@ export default async function handler(req) {
       total_hits: results.totalHits,
       templates: results.templates || [],
     }),
+  };
+}
+
+export default async function searchTemplates(
+  auth: string,
+  projectId: string,
+  environmentId: string,
+  length: number,
+  offset: number,
+): Promise<TemplateSearchResults> {
+  await checkAdminAccessUnwrapped(auth, projectId);
+
+  const opts: Options = {
+    index: `retraced.${projectId}.${environmentId}`,
+    projectId,
+    environmentId,
+    sort: "asc",
+    sortColumn: "name",
+
+    length,
+    offset,
+  };
+
+  const results = await searchTemplateModels(opts);
+
+  return {
+    total_hits: results.totalHits,
+    templates: results.templates || [],
   };
 }
