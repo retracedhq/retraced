@@ -28,8 +28,8 @@ import listProjects from "./handlers/admin/listProjects";
 import listTargets from "./handlers/admin/listTargets";
 import updateUser from "./handlers/admin/updateUser";
 import searchGroups from "./handlers/admin/searchGroups";
-import searchTemplates from "./handlers/admin/searchTemplates";
-import createTemplate from "./handlers/admin/createTemplate";
+import { deprecated as searchTemplates } from "./handlers/admin/searchTemplates";
+import { deprecated as createTemplate } from "./handlers/admin/createTemplate";
 import publicRenderEvent from "./handlers/admin/publicRenderEvent";
 
 // enterprise

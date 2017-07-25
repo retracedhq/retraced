@@ -7,7 +7,7 @@ export default async function handle(
   templateId: string,
   environmentId: string,
 ) {
-  const claims = await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
+  await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
 
   const deleted = await deleteTemplate({ templateId, environmentId });
 
@@ -15,8 +15,5 @@ export default async function handle(
     throw { status: 404, err: new Error("Not found") };
   }
 
-  console.log(`AUDIT user ${claims.userId} deleted template ${templateId} in ${environmentId}`);
-
   return;
-
 }
