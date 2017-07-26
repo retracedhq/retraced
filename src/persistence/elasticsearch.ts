@@ -122,9 +122,7 @@ export function scope(scope: Scope): [string, any[]] {
 
   if (scope.targetId) {
     filters.push({
-      bool: {
-        term: { "target.id": scope.targetId },
-      },
+      term: { "target.id": scope.targetId },
     });
   }
 

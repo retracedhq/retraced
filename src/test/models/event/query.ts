@@ -195,9 +195,7 @@ import {
                 },
               },
               {
-                bool: {
-                  term: {"target.id": "t1"},
-                },
+                term: {"target.id": "t1"},
               },
               // target scope filters
             ],

@@ -26,9 +26,7 @@ import {
       },
     });
     expect(filters[1]).to.deep.equal({
-      bool: {
-        term: { "target.id": "t1" },
-      },
+      term: { "target.id": "t1" },
     });
   }
 
