@@ -9,7 +9,10 @@ import { TemplateSearchResults, TemplateResponse, TemplateValues } from "../mode
 import createTemplate from "../handlers/admin/createTemplate";
 import searchTemplates from "../handlers/admin/searchTemplates";
 import deleteTemplate from "../handlers/admin/deleteTemplate";
-
+import { InviteResponse, InviteValues, responseFromInvite } from "../models/invite";
+import createInvite from "../handlers/admin/createInvite";
+import deleteInvite from "../handlers/admin/deleteInvite";
+import listInvites from "../handlers/admin/listInvites";
 import { EnvironmentValues, EnvironmentResponse, responseFromEnvironment } from "../models/environment";
 import createEnvironment from "../handlers/admin/createEnvironment";
 import deleteEnvironment from "../handlers/admin/deleteEnvironment";
@@ -24,6 +27,87 @@ import { audit } from "../headless";
 
 @Route("admin/v1")
 export class AdminAPI extends Controller {
+    /**
+     * Create an invite. Sends an invitation email to the user.
+     *
+     * @param auth          Base64 encoded JWT
+     * @param projectId     The project id
+     * @param body          The invite resource with the invitee's email
+     */
+    @Post("project/{projectId}/invite")
+    @SuccessResponse("201", "Created")
+    public async createInvite(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Body() body: InviteValues,
+        @Request() req: express.Request,
+    ): Promise<InviteResponse> {
+        const id = uuid.v4().replace(/-/g, "");
+
+        await audit(req, "invite.create", "c", {
+            target: {
+                id,
+                name: body.email,
+            },
+        });
+
+        const invite = await createInvite(
+            auth,
+            projectId,
+            body.email,
+            id,
+        );
+
+        this.setStatus(201);
+
+        return responseFromInvite(invite);
+    }
+
+    /**
+     * Delete an invite.
+     *
+     * @param auth          Base64 encoded JWT
+     * @param projectId     The project id
+     * @param inviteId      The environment id
+     */
+    @Delete(`project/{projectId}/invite/{inviteId}`)
+    @SuccessResponse("204", "No Content")
+    public async deleteInvite(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Path("inviteId") inviteId: string,
+        @Request() req: express.Request,
+    ): Promise<void> {
+        await audit(req, "invite.delete", "d", {
+            target: {
+                id: inviteId,
+            },
+        });
+
+        await deleteInvite(auth, projectId, inviteId);
+
+        this.setStatus(204);
+    }
+
+    /**
+     * List all invites.
+     *
+     * @param auth          Base64 encoded JWT
+     * @param projectId     The project id
+     */
+    @Get(`project/{projectId}/invite`)
+    @SuccessResponse("200", "OK")
+    public async listInvites(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Request() req: express.Request,
+    ): Promise<InviteResponse[]> {
+        const invites = await listInvites(auth, projectId);
+
+        audit(req, "invite.list", "r");
+
+        return invites.map(responseFromInvite);
+    }
 
     /**
      * Create a template. An overview of Template usage in Retraced can be found at
