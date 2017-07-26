@@ -9,7 +9,7 @@ import graphQL from "./handlers/graphql";
 import adminGraphQL from "./handlers/admin/graphql";
 import cancelEmailReport from "./handlers/admin/cancelEmailReport";
 import { deprecated as createApiToken } from "./handlers/admin/createApiToken";
-import createEnvironment from "./handlers/admin/createEnvironment";
+import { deprecated as createEnvironment } from "./handlers/admin/createEnvironment";
 import createInvite from "./handlers/admin/createInvite";
 import createProject from "./handlers/admin/createProject";
 import { deprecated as deleteApiToken } from "./handlers/admin/deleteApiToken";

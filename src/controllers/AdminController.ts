@@ -10,6 +10,8 @@ import createTemplate from "../handlers/admin/createTemplate";
 import searchTemplates from "../handlers/admin/searchTemplates";
 import deleteTemplate from "../handlers/admin/deleteTemplate";
 
+import { EnvironmentValues, EnvironmentResponse, responseFromEnvironment } from "../models/environment";
+import createEnvironment from "../handlers/admin/createEnvironment";
 import deleteEnvironment from "../handlers/admin/deleteEnvironment";
 import createDeletionRequest, { CreateDelReqRequestBody, CreateDelReqReport } from "../handlers/admin/createDeletionRequest";
 import getDeletionRequest, { GetDelReqReport } from "../handlers/admin/getDeletionRequest";
@@ -125,13 +127,50 @@ export class AdminAPI extends Controller {
     }
 
     /**
+     * Create a new environment.
+     *
+     * @param auth          Base64 encoded JWT
+     * @param projectId     The project id
+     * @param name          The name of the new environment
+     */
+    @Post("project/{projectId}/environment")
+    @SuccessResponse("201", "Created")
+    public async createEnvironmentRequest(
+        @Header("Authorization") auth: string,
+        @Path("projectId") projectId: string,
+        @Body() body: EnvironmentValues,
+        @Request() req: express.Request,
+    ): Promise<EnvironmentResponse> {
+        const id = uuid.v4().replace(/-/g, "");
+
+        await audit(req, "environment.create", "c", {
+            target: {
+                id,
+                name: body.name,
+                type: "environment",
+            },
+        });
+
+        const env = await createEnvironment(
+            auth,
+            projectId,
+            body.name,
+            id,
+        );
+
+        this.setStatus(201);
+
+        return responseFromEnvironment(env);
+    }
+
+    /**
      * Delete an environment and all of its dependents.
      * This is only allowed if
      * 1) the environment is empty (i.e. it lacks any recorded events), or
      * 2) an outstanding "deletion request" has been approved.
      *
      *
-     * @param auth          Base64 ecoded JWT authentication
+     * @param auth          Base64 encoded JWT authentication
      * @param projectId     The project id
      * @param environmentId The environment to be deleted
      */
@@ -141,8 +180,18 @@ export class AdminAPI extends Controller {
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
         @Path("environmentId") environmentId: string,
+        @Request() req: express.Request,
     ): Promise<void> {
-        await deleteEnvironment(auth, projectId, environmentId);
+        // Pass in audit function to run after all validations, just before deleting
+        const preDeleteHook = async () => {
+            await audit(req, "environment.delete", "d", {
+                target: {
+                    id: environmentId,
+                },
+            });
+        };
+
+        await deleteEnvironment(auth, projectId, environmentId, preDeleteHook);
         this.setStatus(204);
     }
 
@@ -151,7 +200,7 @@ export class AdminAPI extends Controller {
      * requirements (as necessary).
      *
      *
-     * @param auth          Base64 ecoded JWT authentication
+     * @param auth          Base64 encoded JWT authentication
      * @param projectId     The project id
      * @param environmentId The environment
      */
@@ -174,7 +223,7 @@ export class AdminAPI extends Controller {
      * Get the current status of an outstanding deletion request.
      *
      *
-     * @param auth              Base64 ecoded JWT authentication
+     * @param auth              Base64 encoded JWT authentication
      * @param projectId         The project id
      * @param environmentId     The environment
      * @param deletionRequestId The id of the deletion request to look up
@@ -198,7 +247,7 @@ export class AdminAPI extends Controller {
      * Mark a deletion confirmation as received (i.e. approve it).
      *
      *
-     * @param auth              Base64 ecoded JWT authentication
+     * @param auth              Base64 encoded JWT authentication
      * @param projectId         The project id
      * @param environmentId     The environment
      * @param code              The confirmation code

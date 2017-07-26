@@ -13,13 +13,16 @@ export default async function handle(
   authorization: string,
   projectId: string,
   environmentId: string,
+  preDeleteHook?: () => Promise<void>,
 ) {
-  const claims = await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
+  await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
 
   // If no events exists for this env, fine, allow the deletion.
   if (true === await environmentIsEmpty({ projectId, environmentId })) {
+    if (typeof preDeleteHook === "function") {
+        await preDeleteHook();
+    }
     await deleteEnvironment({ projectId, environmentId });
-    console.log(`AUDIT user ${claims.userId} deleted EMPTY environment ${environmentId}`);
     return;
   }
 
@@ -73,8 +76,10 @@ export default async function handle(
   }
 
   // Holy crap, this environment can be deleted now!
+  if (typeof preDeleteHook === "function") {
+      await preDeleteHook();
+  }
   await deleteEnvironment({ projectId, environmentId });
-  console.log(`AUDIT user ${claims.userId} deleted environment ${environmentId}`);
 
   // This should cascade-delete all related deletion_confirmation rows as well.
   await deleteDeletionRequest(deletionRequest.id);
