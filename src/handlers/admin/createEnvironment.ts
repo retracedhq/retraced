@@ -1,22 +1,39 @@
-import { checkAdminAccess } from "../../security/helpers";
-import createEnvironment from "../../models/environment/create";
+import { checkAdminAccessUnwrapped } from "../../security/helpers";
+import { Environment } from "../../models/environment";
+import createEnvironmentModel from "../../models/environment/create";
 import populateEnvUsers from "../../models/environmentuser/populate_from_project";
 
-export default async function(req) {
-  await checkAdminAccess(req);
-
-  const env = await createEnvironment({
-    projectId: req.params.projectId,
-    name: req.body.name,
-  });
-
-  await populateEnvUsers({
-    project_id: req.params.projectId,
-    environment_id: env.id,
-  });
+export async function deprecated(req) {
+  const env = await createEnvironment(
+    req.get("Authorization"),
+    req.params.projectId,
+    req.body.name,
+  );
 
   return {
     status: 201,
     body: JSON.stringify(env),
   };
+}
+
+export default async function createEnvironment(
+  auth: string,
+  projectId: string,
+  name: string,
+  id?: string,
+): Promise<Environment> {
+  await checkAdminAccessUnwrapped(auth, projectId);
+
+  const env = await createEnvironmentModel({
+    projectId,
+    name,
+    id,
+  });
+
+  await populateEnvUsers({
+    project_id: projectId,
+    environment_id: env.id,
+  });
+
+  return env;
 }
