@@ -1,5 +1,5 @@
 import * as pg from "pg";
-import { histogram } from "monkit";
+import { gauge } from "monkit";
 
 let pgPool: pg.Pool;
 
@@ -23,15 +23,17 @@ export interface Querier {
   query(query: string, args?: any[]): Promise<pg.QueryResult>;
 }
 
+const reportInterval = process.env.STATSD_INTERVAL_MILLIS || 30000;
+
 function updatePoolGauges() {
   // pg 7.0 + uses pg-pool 2.0 +, which has pool.waitingCount, etc.
   // but @types for 7.0 aren't out as of 7/27/2017
   const pool: any = getPgPool();
 
-  histogram("pgPool.waitingCount").update(pool.waitingCount);
-  histogram("pgPool.totalCount").update(pool.totalCount);
-  histogram("pgPool.idleCount").update(pool.idleCount);
-  histogram("pgPool.activeCount").update(pool.totalCount - pool.idleCount);
+  gauge("PgPool.clients.waiting.count").set(pool.waitingCount);
+  gauge("PgPool.clients.total.count").set(pool.totalCount);
+  gauge("PgPool.clients.idle.count").set(pool.idleCount);
+  gauge("PgPool.clients.active.count").set(pool.totalCount - pool.idleCount);
 }
 
-setInterval(updatePoolGauges, 1000);
+setInterval(updatePoolGauges, reportInterval);
