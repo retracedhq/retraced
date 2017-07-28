@@ -8,6 +8,7 @@ import { NSQClient } from "../../persistence/nsq";
 
 import { EventCreater, CreateEventRequest, CreateEventResponse } from "../../handlers/createEvent";
 import Authenticator from "../../security/Authenticator";
+import { Connection } from "./Connection";
 
 @suite class EventCreaterTest {
     @test public async "EventCreater#createEventsBulk() throws if more than max events are passed"() {
@@ -114,7 +115,6 @@ import Authenticator from "../../security/Authenticator";
             }));
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object)).verifiable(TypeMoq.Times.once());
-        conn.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())).throws(new Error("Postgres went away :("));
 
         const creater = new EventCreater(
             pool.object,
@@ -183,6 +183,7 @@ import Authenticator from "../../security/Authenticator";
     }
     @test public async "EventCreater#createEvent()"() {
         const pool = TypeMoq.Mock.ofType(pg.Pool);
+        const conn = TypeMoq.Mock.ofType(Connection);
         const nsq = TypeMoq.Mock.ofType(NSQClient);
         const authenticator = TypeMoq.Mock.ofType(Authenticator);
         const fakeHasher = (e) => "fake-hash";
@@ -206,8 +207,10 @@ import Authenticator from "../../security/Authenticator";
                 environmentId: "an-environment",
             }));
 
-        pool.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())) // Still need to validate args
+        conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
+        conn.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())) // Still need to validate args
             .verifiable(TypeMoq.Times.once());
+        pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object));
 
         // set up nsq
         const jobBody = JSON.stringify({ taskId: "kfbr392" });
@@ -232,7 +235,7 @@ import Authenticator from "../../security/Authenticator";
 
     @test public async "EventCreater#createEventsBulk()"() {
         const pool = TypeMoq.Mock.ofType(pg.Pool);
-        const conn = TypeMoq.Mock.ofType(pg.Client);
+        const conn = TypeMoq.Mock.ofType(Connection);
         const nsq = TypeMoq.Mock.ofType(NSQClient);
         const authenticator = TypeMoq.Mock.ofType(Authenticator);
         const fakeHasher = (e) => "fake-hash";
@@ -274,8 +277,8 @@ import Authenticator from "../../security/Authenticator";
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object)).verifiable(TypeMoq.Times.once());
 
-        pool.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())) // Still need to validate args
-            .verifiable(TypeMoq.Times.exactly(3));
+        conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
+        conn.setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).verifiable(TypeMoq.Times.once());
 
         // set up nsq
         nsq.setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
@@ -301,15 +304,11 @@ import Authenticator from "../../security/Authenticator";
         expect(created[1].hash).to.equal("fake-hash");
         expect(created[2].id).to.equal("kfbr392");
         expect(created[2].hash).to.equal("fake-hash");
-
-        conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.once());
-        conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.once());
-        conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     }
 
     @test public async "EventCreater#createEventsBulk() with postgres error"() {
         const pool = TypeMoq.Mock.ofType(pg.Pool);
-        const conn = TypeMoq.Mock.ofType(pg.Client);
+        const conn = TypeMoq.Mock.ofType(Connection);
         const nsq = TypeMoq.Mock.ofType(NSQClient);
         const authenticator = TypeMoq.Mock.ofType(Authenticator);
         const fakeHasher = (e) => "fake-hash";
@@ -337,7 +336,8 @@ import Authenticator from "../../security/Authenticator";
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object)).verifiable(TypeMoq.Times.once());
         // conn.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())).returns(() => Promise.resolve({ rowCount: 1 }));
-        conn.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())).throws(new Error("Postgres went away :("));
+        conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
+        conn.setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).throws(new Error("Postgres went away :("));
 
         // set up nsq
         nsq.setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
@@ -361,10 +361,6 @@ import Authenticator from "../../security/Authenticator";
         } catch (err) {
             expect(err.message).to.equal(expected.message);
         }
-
-        conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.once());
-        conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.once());
-        conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
 
         // make sure we didn't send any nsq messages if the txn is ROLLBACK'd
         nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());

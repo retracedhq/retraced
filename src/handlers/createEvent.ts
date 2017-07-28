@@ -2,8 +2,9 @@ import * as _ from "lodash";
 import * as chalk from "chalk";
 import * as moment from "moment";
 import * as pg from "pg";
+import * as pgFormat from "pg-format";
 import * as util from "util";
-import { instrumented } from "monkit";
+import { instrument, instrumented } from "monkit";
 
 import createCanonicalHash from "../models/event/canonicalize";
 import Event, { Fields, crud } from "../models/event/";
@@ -134,34 +135,47 @@ export class EventCreater {
     const apiToken = await this.authenticator.getApiTokenOr401(authorization, projectId);
     this.validateEventInputs(eventInputs);
 
-    // Create a new ingestion task for each event passed in.
-    const pgConn = await this.pgPool.connect();
-    await pgConn.query("BEGIN");
+    const received = moment().format();
+
+    const events = eventInputs.map((eventInput) => {
+      const newTaskId = this.idSource();
+      const newEventId = this.idSource();
+
+      const values = [
+        newTaskId,
+        JSON.stringify(eventInput),
+        apiToken.projectId,
+        apiToken.environmentId,
+        newEventId,
+        received,
+      ];
+
+      return {
+        id: newEventId,
+        hash: this.hasher(fromCreateEventInput(eventInput, newEventId)),
+        taskId: newTaskId,
+        values,
+      };
+    });
+
+    const query = pgFormat(`
+      insert into ingest_task (
+        id, original_event, project_id, environment_id, new_event_id, received
+      ) values %L`, events.map(({ values }) => values));
+
+    const pgConn: any = await instrument("pgPool.connect", this.pgPool.connect.bind(this.pgPool));
+
     try {
-      const results = await Promise.all(
-        eventInputs.map(
-          (event) => this.saveEvent(
-            apiToken.projectId,
-            apiToken.environmentId,
-            event,
-            pgConn,
-          ),
-        ),
-      );
-
-      await pgConn.query("COMMIT");
-
-      results.forEach(this.nsqPublish.bind(this));
-
-      return results.map(({ id, hash }) => ({ id, hash }));
-    } catch (err) {
-      await pgConn.query("ROLLBACK");
-      throw err;
+      await instrument("EventCreater.insertMany", async () => {
+        return await pgConn.query(query);
+      });
     } finally {
-      try {
-        pgConn.release();
-      } catch (err) { /* ignored */ } // TypeMoq mock connection doesn't have release() method for whatever reason
+      pgConn.release();
     }
+
+    events.forEach(this.nsqPublish.bind(this));
+
+    return events.map(({ id, hash }) => ({ id, hash }));
   }
 
   /**
@@ -191,7 +205,19 @@ export class EventCreater {
       moment().valueOf(),
     ];
 
-    await (querier || this.pgPool).query(insertStmt, insertVals);
+    if (querier) {
+      await querier.query(insertStmt, insertVals);
+    } else {
+      const conn: any = await instrument("pgPool.connect", this.pgPool.connect.bind(this.pgPool));
+
+      try {
+        await instrument("EventCreater.insertOne", async () => {
+          return await conn.query(insertStmt, insertVals);
+        });
+      } finally {
+        conn.release();
+      }
+    }
 
     // Coerce the input event into a proper Event object.
     // Then, generate an authoritative hash from its contents.
