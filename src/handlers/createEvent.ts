@@ -163,7 +163,7 @@ export class EventCreater {
         id, original_event, project_id, environment_id, new_event_id, received
       ) values %L`, events.map(({ values }) => values));
 
-    const pgConn: any = await instrument("pgPool.connect", this.pgPool.connect.bind(this.pgPool));
+    const pgConn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
 
     try {
       await instrument("EventCreater.insertMany", async () => {
@@ -208,7 +208,7 @@ export class EventCreater {
     if (querier) {
       await querier.query(insertStmt, insertVals);
     } else {
-      const conn: any = await instrument("pgPool.connect", this.pgPool.connect.bind(this.pgPool));
+      const conn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
 
       try {
         await instrument("EventCreater.insertOne", async () => {

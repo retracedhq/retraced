@@ -38,6 +38,11 @@ spec:
                 secretKeyRef:
                   name: redis
                   key: REDIS_URI
+            - name: POSTGRES_POOL_SIZE
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: POSTGRES_POOL_SIZE
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
