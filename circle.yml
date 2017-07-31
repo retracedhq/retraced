@@ -13,7 +13,7 @@ machine:
     # semver tags
     QUAY_MAJOR: "1"
     QUAY_MINOR: "1.1"
-    QUAY_PATCH: "1.1.3"
+    QUAY_PATCH: "1.1.4"
   services:
     - docker
   pre:
