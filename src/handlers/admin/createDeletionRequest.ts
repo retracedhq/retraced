@@ -124,7 +124,7 @@ export default async function handle(
         subject: "Your approval is required for a critical operation.",
         template: "retraced/deletion-request",
         context: {
-          approve_url: `${process.env.RETRACED_APP_BASE}/project/${projectId}/${environmentId}/approve/${code}`,
+          approve_url: `${process.env.RETRACED_APP_BASE}/project/${projectId}/${environmentId}/settings/environments?deleteRequest=${code}`,
           resource_kind: newDeletionRequest.resourceKind,
           resource_name: resourceName,
         },
