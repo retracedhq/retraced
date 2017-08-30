@@ -8,6 +8,7 @@ import {
 } from "../../models/deletion_request";
 import getDeletionConfirmationsByDeletionRequest from "../../models/deletion_confirmation/getByDeletionRequest";
 import environmentIsEmpty from "../../models/environment/isEmpty";
+import { log } from "../../logger";
 
 export default async function handle(
   authorization: string,
@@ -83,5 +84,5 @@ export default async function handle(
 
   // This should cascade-delete all related deletion_confirmation rows as well.
   await deleteDeletionRequest(deletionRequest.id);
-  console.log(`AUDIT deletion request ${deletionRequest.id} for environment ${environmentId} closed successfully`);
+  log(`AUDIT deletion request ${deletionRequest.id} for environment ${environmentId} closed successfully`);
 }

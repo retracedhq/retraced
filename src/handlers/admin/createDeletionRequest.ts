@@ -11,6 +11,7 @@ import createDeletionConfirmation from "../../models/deletion_confirmation/creat
 import getUser from "../../models/user/get";
 import getEnvironment from "../../models/environment/get";
 import listTeamMembers from "../../models/team/listTeamMembers";
+import { log } from "../../logger";
 
 const pgPool = getPgPool();
 
@@ -89,7 +90,7 @@ export default async function handle(
     try {
       await tx.query("ROLLBACK");
     } catch (err) {
-      console.log(`Rollback failed: ${err}`);
+      log(`Rollback failed: ${err}`);
     }
   };
   await tx.query("BEGIN");
@@ -107,7 +108,7 @@ export default async function handle(
     for (const userId of confirmationUserIds) {
       const user = await getUser(userId);
       if (!user) {
-        console.log(`Deletion request contained user id we don't know about: '${userId}'`);
+        log(`Deletion request contained user id we don't know about: '${userId}'`);
         continue;
       }
 
@@ -133,7 +134,7 @@ export default async function handle(
       outstandingConfirmations.push(user.email);
     }
   } catch (err) {
-    console.log(`Rollback! Failed to create necessary deletion confirmations: ${err}`);
+    log(`Rollback! Failed to create necessary deletion confirmations: ${err}`);
     await rollback();
     tx.release();
     throw err;

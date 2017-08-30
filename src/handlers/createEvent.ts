@@ -1,5 +1,4 @@
 import * as _ from "lodash";
-import * as chalk from "chalk";
 import * as moment from "moment";
 import * as pg from "pg";
 import * as pgFormat from "pg-format";
@@ -13,6 +12,7 @@ import uniqueId from "../models/uniqueId";
 import { NSQClient } from "../persistence/nsq";
 import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
+import { log } from "../logger";
 
 const IP_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 
@@ -235,10 +235,10 @@ export class EventCreater {
     const job = JSON.stringify({ taskId });
     return this.nsq.produce("raw_events", job)
       .then((res) => {
-        console.log(`sent task ${job} to raw_events`);
+        log(`sent task ${job} to raw_events`);
       })
       .catch((err) => {
-        console.log(`failed to send task ${job} to raw_events: ${chalk.red(util.inspect(err))}`);
+        log(`failed to send task ${job} to raw_events: ${(util.inspect(err))}`);
       });
 
   }

@@ -1,6 +1,7 @@
 import * as StatsdClient from "statsd-client";
 
 import { StatsdReporter, StatusPageReporter, SysdigNameRewriter, getRegistry } from "monkit";
+import { log, logger } from "./logger";
 
 export function startStatsdReporter(
     statsdHost: string,
@@ -9,7 +10,7 @@ export function startStatsdReporter(
     prefix: string,
     rewrite: boolean,
 ) {
-    console.log(`starting statsd reporter ${statsdHost}:${statsdPort} at interval ${intervalMs}ms`);
+    log(`starting statsd reporter ${statsdHost}:${statsdPort} at interval ${intervalMs}ms`);
     const rewriter = new SysdigNameRewriter(SysdigNameRewriter.CLASS_METHOD_METRIC_AGGREGATION);
 
     const reporter = new StatsdReporter(
@@ -18,10 +19,10 @@ export function startStatsdReporter(
         new StatsdClient({host: statsdHost, port: statsdPort}),
         rewrite ? rewriter.rewriteName.bind(rewriter) : (s) => s,
     );
-    console.log("created");
+    log("created");
 
     setInterval(() => { reporter.report(); }, intervalMs);
-    console.log("started");
+    log("started");
 };
 
 export function startStatusPageReporter(
@@ -31,7 +32,7 @@ export function startStatusPageReporter(
     metricIds: any,
     intervalMs: number,
 ) {
-    console.log(`starting statusPage reporter ${url}/${pageId} at interval ${intervalMs}ms`);
+    log(`starting statusPage reporter ${url}/${pageId} at interval ${intervalMs}ms`);
 
     const reporter = new StatusPageReporter(
         getRegistry(),
@@ -40,10 +41,10 @@ export function startStatusPageReporter(
         statusPageToken,
         metricIds,
     );
-    console.log("created");
+    log("created");
 
     setInterval(() => { reporter.report(); }, intervalMs);
-    console.log("started");
+    log("started");
 };
 
 export function bootstrapFromEnv() {
@@ -54,7 +55,7 @@ export function bootstrapFromEnv() {
     const sysdigRewriter = process.env.STATSD_USE_SYSDIG_NAME_REWRITER || false;
 
     if (!statsdHost) {
-        console.error("neither KUBERNETES_SERVICE_HOST nor STATSD_HOST is set, metrics will not be reported to statsd or sysdig");
+        logger.error("neither KUBERNETES_SERVICE_HOST nor STATSD_HOST is set, metrics will not be reported to statsd or sysdig");
     } else {
         startStatsdReporter(statsdHost, statsdPort, statsdIntervalMillis, statsdPrefix, sysdigRewriter);
     }
@@ -70,7 +71,7 @@ export function bootstrapFromEnv() {
     };
 
     if (!(statusPageToken)) {
-        console.error("STATUSPAGEIO_TOKEN not set, metrics will not be reported to statuspage.io");
+        logger.error("STATUSPAGEIO_TOKEN not set, metrics will not be reported to statuspage.io");
         return;
     }
 

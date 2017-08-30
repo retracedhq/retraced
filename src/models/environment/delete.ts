@@ -1,5 +1,6 @@
 import getPgPool from "../../persistence/pg";
 import getElasticsearch from "../../persistence/elasticsearch";
+import { log } from "../../logger";
 
 const pgPool = getPgPool();
 const es = getElasticsearch();
@@ -17,14 +18,14 @@ export default async function (opts: Options) {
     try {
       await pg.query("ROLLBACK");
     } catch (err) {
-      console.log(`Rollback failed: ${err}`);
+      log(`Rollback failed: ${err}`);
     }
   };
 
   try {
     await pg.query("BEGIN");
   } catch (beginErr) {
-    console.log(`Unable to begin Postgres transaction: ${beginErr}`);
+    log(`Unable to begin Postgres transaction: ${beginErr}`);
     throw beginErr;
   }
 
@@ -53,7 +54,7 @@ export default async function (opts: Options) {
     try {
       await pg.query(q, [opts.environmentId]);
     } catch (pgErr) {
-      console.log(`
+      log(`
         Query failed during environment deletion: ${pgErr}
         Query was: ${q}
       `);
@@ -103,7 +104,7 @@ export default async function (opts: Options) {
       });
     });
   } catch (esErr) {
-    console.log(`Elasticsearch index deletion failed: ${esErr}`);
+    log(`Elasticsearch index deletion failed: ${esErr}`);
     await rollback();
     pg.release();
     throw esErr;
