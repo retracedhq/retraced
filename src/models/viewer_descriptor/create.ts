@@ -3,7 +3,7 @@ import * as redis from "redis";
 import * as moment from "moment";
 
 import ViewerDescriptor from "./def";
-import { log } from "../../logger";
+import { logger } from "../../logger";
 
 export interface Options {
   projectId: string;
@@ -36,13 +36,13 @@ export default async function createViewerDescriptor(opts: Options): Promise<Vie
   await new Promise((resolve, reject) => {
     redisClient.HMSET(`viewer_descriptor:${newDesc.id}`, newDesc, (err, res) => {
       if (err) {
-        log(err);
+        logger.error(err);
         reject(err);
         return;
       }
       redisClient.expire(`viewer_descriptor:${newDesc.id}`, 5 * 60, (expireErr, expireRes) => {
         if (expireErr) {
-          log(expireErr);
+          logger.error(expireErr);
           reject(expireErr);
           return;
         }

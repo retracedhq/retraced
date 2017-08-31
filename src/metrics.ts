@@ -1,7 +1,7 @@
 import * as StatsdClient from "statsd-client";
 
-import { StatsdReporter, StatusPageReporter, SysdigNameRewriter, getRegistry } from "monkit";
-import { log, logger } from "./logger";
+import { getRegistry, StatsdReporter, StatusPageReporter, SysdigNameRewriter } from "monkit";
+import { logger } from "./logger";
 
 export function startStatsdReporter(
     statsdHost: string,
@@ -10,7 +10,7 @@ export function startStatsdReporter(
     prefix: string,
     rewrite: boolean,
 ) {
-    log(`starting statsd reporter ${statsdHost}:${statsdPort} at interval ${intervalMs}ms`);
+    logger.info(`starting statsd reporter ${statsdHost}:${statsdPort} at interval ${intervalMs}ms`);
     const rewriter = new SysdigNameRewriter(SysdigNameRewriter.CLASS_METHOD_METRIC_AGGREGATION);
 
     const reporter = new StatsdReporter(
@@ -19,10 +19,10 @@ export function startStatsdReporter(
         new StatsdClient({host: statsdHost, port: statsdPort}),
         rewrite ? rewriter.rewriteName.bind(rewriter) : (s) => s,
     );
-    log("created");
+    logger.info("created");
 
     setInterval(() => { reporter.report(); }, intervalMs);
-    log("started");
+    logger.info("started");
 };
 
 export function startStatusPageReporter(
@@ -32,7 +32,7 @@ export function startStatusPageReporter(
     metricIds: any,
     intervalMs: number,
 ) {
-    log(`starting statusPage reporter ${url}/${pageId} at interval ${intervalMs}ms`);
+    logger.info(`starting statusPage reporter ${url}/${pageId} at interval ${intervalMs}ms`);
 
     const reporter = new StatusPageReporter(
         getRegistry(),
@@ -41,10 +41,10 @@ export function startStatusPageReporter(
         statusPageToken,
         metricIds,
     );
-    log("created");
+    logger.info("created");
 
     setInterval(() => { reporter.report(); }, intervalMs);
-    log("started");
+    logger.info("started");
 };
 
 export function bootstrapFromEnv() {

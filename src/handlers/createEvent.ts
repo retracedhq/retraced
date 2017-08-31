@@ -6,13 +6,13 @@ import * as util from "util";
 import { instrument, instrumented } from "monkit";
 
 import createCanonicalHash from "../models/event/canonicalize";
-import Event, { Fields, crud } from "../models/event/";
+import Event, { crud, Fields } from "../models/event/";
 import { fromCreateEventInput } from "../models/event";
 import uniqueId from "../models/uniqueId";
 import { NSQClient } from "../persistence/nsq";
 import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
-import { log } from "../logger";
+import { logger } from "../logger";
 
 const IP_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 
@@ -234,11 +234,11 @@ export class EventCreater {
   private async nsqPublish({ taskId }) {
     const job = JSON.stringify({ taskId });
     return this.nsq.produce("raw_events", job)
-      .then((res) => {
-        log(`sent task ${job} to raw_events`);
+      .then(() => {
+        logger.info(`sent task ${job} to raw_events`);
       })
       .catch((err) => {
-        log(`failed to send task ${job} to raw_events: ${(util.inspect(err))}`);
+        logger.error(`failed to send task ${job} to raw_events: ${(util.inspect(err))}`);
       });
 
   }

@@ -14,7 +14,7 @@ import listProjects from "../models/project/list";
 import { createAdminVoucher } from "../security/vouchers";
 import { reportEvents } from "../headless";
 import getPgPool from "../persistence/pg";
-import { log } from "../logger";
+import { logger } from "../logger";
 
 const pgPool = getPgPool();
 let auth0;
@@ -161,7 +161,7 @@ export async function createSession(externalAuth: ExternalAuth): Promise<CreateS
     }
 
     if (result.invite) {
-      log(`Found invite for user: ${externalAuth.email} / ${externalAuth.upstreamToken}, adding them to project '${result.invite.project_id}'`);
+      logger.info(`Found invite for user: ${externalAuth.email} / ${externalAuth.upstreamToken}, adding them to project '${result.invite.project_id}'`);
       await deleteInvite({
         inviteId: result.invite.id,
         projectId: result.invite.project_id,

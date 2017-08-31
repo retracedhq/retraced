@@ -1,6 +1,5 @@
-
 import getPgPool from "../../persistence/pg";
-import { log } from "../../logger";
+import { logger } from "../../logger";
 
 const pgPool = getPgPool();
 
@@ -20,7 +19,7 @@ export default async function(opts: Options): Promise<boolean> {
   ];
 
   const result = await pgPool.query(q, v);
-  log(`deleted ${result.rowCount} templates`);
+  logger.info(`deleted ${result.rowCount} templates`);
 
   return !!result.rowCount;
 }

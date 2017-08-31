@@ -7,7 +7,7 @@ import * as bugsnag from "bugsnag";
 import * as Sigsci from "sigsci-module-nodejs";
 import * as swaggerUI from "swagger-ui-express";
 
-import { wrapRoute, register } from "./router";
+import { register, wrapRoute } from "./router";
 import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";
 import { AdminUserBootstrap } from "./handlers/admin/AdminUserBootstrap";
@@ -18,7 +18,7 @@ import swaggerSpecs from "./swagger";
 import "./controllers/PublisherController";
 import "./controllers/AdminController";
 import "./controllers/EnterpriseController";
-import { log, logger } from "./logger";
+import { logger } from "./logger";
 
 if (!process.env["BUGSNAG_TOKEN"]) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
@@ -64,8 +64,8 @@ function buildRoutes() {
   });
 
   swaggerSpecs.forEach((spec) => {
-    log(`GET    '${spec.path}/swagger.json'`);
-    log(`GET    '${spec.path}/swagger'`);
+    logger.debug(`GET    '${spec.path}/swagger.json'`);
+    logger.debug(`GET    '${spec.path}/swagger'`);
     app.get(`${spec.path}/swagger.json`, (req, res) => {
       res.setHeader("ContentType", "application/json");
       res.send(spec.swagger);
@@ -88,7 +88,7 @@ function buildRoutes() {
 
   app.use((req, res, next) => {
     const errMsg = `Route not found for ${req.method} ${req.originalUrl}`;
-    log(`[${req.ip}] ${errMsg}`);
+    logger.error(`[${req.ip}] ${errMsg}`);
     res.status(404).send(errMsg);
   });
 
@@ -96,7 +96,7 @@ function buildRoutes() {
 
 function serve() {
   app.listen(3000, "0.0.0.0", () => {
-    log("Retraced API listening on port 3000...");
+    logger.info("Retraced API listening on port 3000...");
   });
 }
 

@@ -5,14 +5,10 @@ function initLoggerFromEnv(): any {
   if (process.env.RETRACED_API_LOG_FILE) {
     return pino(
         fs.createWriteStream(process.env.RETRACED_API_LOG_FILE),
-    ).child({
-      tier: "api",
-    });
+    );
   }
 
-  return pino().child({
-    tier: "api",
-  });
+  return pino();
 }
 
 export const logger = initLoggerFromEnv();

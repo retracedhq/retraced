@@ -4,7 +4,7 @@ import * as bugsnag from "bugsnag";
 import * as express from "express";
 import * as util from "util";
 import * as uuid from "uuid";
-import { log } from "./logger";
+import { logger } from "./logger";
 
 export interface Response<T> {
   status: number;
@@ -46,10 +46,10 @@ export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter
       bodyToLog = `${bodyToLog.substring(0, 512)} (... truncated, total ${bodyToLog.length} bytes)`;
     }
     if (res.statusCode !== 200) {
-      log(`[${reqId}] WARN response already has statusCode ${res.statusCode}, a response might have already been sent!`);
-      log(util.inspect(res));
+      logger.warn(`[${reqId}] WARN response already has statusCode ${res.statusCode}, a response might have already been sent!`);
+      logger.warn(util.inspect(res));
     }
-    log(`[${reqId}] => ${statusToSend} ${bodyToLog}`);
+    logger.info(`[${reqId}] => ${statusToSend} ${bodyToLog}`);
     const respObj = res.status(statusToSend).type(contentType).set("X-Retraced-RequestId", reqId);
     if (result.filename) {
       respObj.attachment(result.filename);
@@ -62,7 +62,7 @@ export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter
     respObj.send(body);
   } else {
     const statusToSend = (statusCodeGetter && statusCodeGetter()) || 200;
-    log(`[${reqId}] => ${statusToSend}`);
+    logger.info(`[${reqId}] => ${statusToSend}`);
     res.status(statusToSend).set("X-Retraced-RequestId", reqId).json(result);
   }
 };
@@ -80,7 +80,7 @@ function handleFrameworkError(err: any, reqId: string, res: express.Response) {
   // Structured error, specific status code.
   const errMsg = err.err ? err.err.message : err.message || "An unexpected error occurred";
 
-  log(`[${reqId}] !! ${err.status} ${errMsg} ${err.stack || util.inspect(err)}`);
+  logger.info(`[${reqId}] !! ${err.status} ${errMsg} ${err.stack || util.inspect(err)}`);
 
   const errClass = err.constructor.name;
   const hasMeaningfulType = ["Object", "Error"].indexOf(errClass) === -1;
@@ -106,20 +106,20 @@ function handleUnexpectedError(err: any, reqId: string, res: express.Response) {
   if (
     (err.message ? err.message : "").indexOf("Can't set headers after they are sent") !== -1 ||
     (err.stack ? err.stack : "").indexOf("Can't set headers after they are sent") !== -1) {
-    log("Middleware error, current response object is", util.inspect(res));
+    logger.error("Middleware error, current response object is", util.inspect(res));
   }
-  log(`[${reqId}] !! 500 ${err.stack || err.message || util.inspect(err)}`);
+  logger.error(`[${reqId}] !! 500 ${err.stack || err.message || util.inspect(err)}`);
   res.status(500).set("X-Retraced-RequestId", reqId).json(bodyToSend);
 }
 
 export const preRequest = (req: express.Request, reqId: string) => {
-  log(`[${reqId}] <- ${req.method} ${req.originalUrl}`);
+  logger.info(`[${reqId}] <- ${req.method} ${req.originalUrl}`);
   if (!_.isEmpty(req.body)) {
     let bodyString = JSON.stringify(req.body);
     if (bodyString.length > 512) {
       bodyString = `${bodyString.substring(0, 512)} (... truncated, total ${bodyString.length} bytes)`;
     }
-    log(`[${reqId}] <- ${bodyString}`);
+    logger.info(`[${reqId}] <- ${bodyString}`);
   }
 };
 
@@ -147,18 +147,18 @@ export const wrapRoute = (route, handlerName) =>
 export function register(route, handler, app) {
   // Register this route and callback with express.
   if (route.method === "get") {
-    log(`GET    '${route.path}'`);
+    logger.debug(`GET    '${route.path}'`);
     app.get(route.path, handler);
   } else if (route.method === "post") {
-    log(`POST   '${route.path}'`);
+    logger.debug(`POST   '${route.path}'`);
     app.post(route.path, handler);
   } else if (route.method === "put") {
-    log(`PUT    '${route.path}'`);
+    logger.debug(`PUT    '${route.path}'`);
     app.put(route.path, handler);
   } else if (route.method === "delete") {
-    log(`DELETE '${route.path}'`);
+    logger.debug(`DELETE '${route.path}'`);
     app.delete(route.path, handler);
   } else {
-    log(`Unhandled HTTP method: '${route.method}'`);
+    logger.debug(`Unhandled HTTP method: '${route.method}'`);
   }
 }
