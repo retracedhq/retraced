@@ -1,6 +1,6 @@
 import { bootstrapProject } from "../headless";
 import * as util from "util";
-import * as chalk from "chalk";
+import { logger } from "../logger";
 
 exports.name = "bootstrap";
 exports.describe = "Bootstrap a retraced project with a specified projectId, environmentId, and apiKey";
@@ -39,11 +39,11 @@ exports.handler = async (argv) => {
     envVarRef: "environmentId",
   })
     .then(() => {
-      console.log(chalk.green(`bootstrapped project ${argv.projectId}`));
+      logger.info(`bootstrapped project ${argv.projectId}`);
       process.exit(0);
     })
     .catch((err) => {
-      console.log(chalk.red(util.inspect(err)));
+      logger.error(util.inspect(err));
       process.exit(1);
     });
 };

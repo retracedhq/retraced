@@ -3,8 +3,7 @@ import * as express from "express";
 import { crud, Fields } from "./models/event";
 import { adminIdentity } from "./security/helpers";
 import * as _ from "lodash";
-import * as chalk from "chalk";
-import { Event, Client } from "retraced";
+import { Client, Event } from "retraced";
 import getProject from "./models/project/get";
 import hydrateProject from "./models/project/hydrate";
 import createProject from "./models/project/create";
@@ -12,6 +11,7 @@ import getToken from "./models/api_token/get";
 import getEnvironment from "./models/environment/get";
 import createToken from "./models/api_token/create";
 import createEnvironment from "./models/environment/create";
+import { logger } from "./logger";
 
 const enabled = !!(process.env.HEADLESS_API_KEY && process.env.HEADLESS_PROJECT_ID && process.env.HEADLESS_ENV_ID);
 
@@ -130,7 +130,7 @@ export interface BootstrapOpts {
 
 // Checks that project exists with HEADLESS_PROJECT_ID and HEADLESS_API_KEY
 export async function ensureHeadlessProject() {
-    console.log(chalk.green(`Headless Retraced audit logging is ${enabled ? "enabled" : "disabled"}`));
+    logger.info(`Headless Retraced audit logging is ${enabled ? "enabled" : "disabled"}`);
     if (!enabled) {
         return;
     }

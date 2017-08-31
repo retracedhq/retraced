@@ -3,12 +3,11 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as _ from "lodash";
-import * as chalk from "chalk";
 import * as bugsnag from "bugsnag";
 import * as Sigsci from "sigsci-module-nodejs";
 import * as swaggerUI from "swagger-ui-express";
 
-import { wrapRoute, register } from "./router";
+import { register, wrapRoute } from "./router";
 import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";
 import { AdminUserBootstrap } from "./handlers/admin/AdminUserBootstrap";
@@ -19,9 +18,10 @@ import swaggerSpecs from "./swagger";
 import "./controllers/PublisherController";
 import "./controllers/AdminController";
 import "./controllers/EnterpriseController";
+import { logger } from "./logger";
 
 if (!process.env["BUGSNAG_TOKEN"]) {
-  console.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
+  logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
 } else {
   bugsnag.register(process.env["BUGSNAG_TOKEN"], {
     releaseStage: process.env["BUGSNAG_STAGE"],
@@ -33,7 +33,7 @@ const app = express();
 
 // Sigsci middleware has to be installed before routes and other middleware
 if (!process.env["SIGSCI_RPC_ADDRESS"]) {
-  console.error("SIGSCI_RPC_ADDRESS not set, Signal Sciences module will not be installed");
+  logger.error("SIGSCI_RPC_ADDRESS not set, Signal Sciences module will not be installed");
 } else {
   const sigsci = new Sigsci({
     path: process.env.SIGSCI_RPC_ADDRESS,
@@ -64,8 +64,8 @@ function buildRoutes() {
   });
 
   swaggerSpecs.forEach((spec) => {
-    console.log(chalk.blue.dim(`GET    '${spec.path}/swagger.json'`));
-    console.log(chalk.blue.dim(`GET    '${spec.path}/swagger'`));
+    logger.debug(`GET    '${spec.path}/swagger.json'`);
+    logger.debug(`GET    '${spec.path}/swagger'`);
     app.get(`${spec.path}/swagger.json`, (req, res) => {
       res.setHeader("ContentType", "application/json");
       res.send(spec.swagger);
@@ -88,7 +88,7 @@ function buildRoutes() {
 
   app.use((req, res, next) => {
     const errMsg = `Route not found for ${req.method} ${req.originalUrl}`;
-    console.log(chalk.red(`[${req.ip}] ${errMsg}`));
+    logger.error(`[${req.ip}] ${errMsg}`);
     res.status(404).send(errMsg);
   });
 
@@ -96,7 +96,7 @@ function buildRoutes() {
 
 function serve() {
   app.listen(3000, "0.0.0.0", () => {
-    console.log("Retraced API listening on port 3000...");
+    logger.info("Retraced API listening on port 3000...");
   });
 }
 

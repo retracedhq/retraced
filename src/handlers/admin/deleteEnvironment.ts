@@ -3,11 +3,12 @@ import deleteEnvironment from "../../models/environment/delete";
 import getDeletionRequestByResourceId from "../../models/deletion_request/getByResourceId";
 import deleteDeletionRequest from "../../models/deletion_request/delete";
 import {
-  deletionRequestHasExpired,
   deletionRequestBackoffRemaining,
+  deletionRequestHasExpired,
 } from "../../models/deletion_request";
 import getDeletionConfirmationsByDeletionRequest from "../../models/deletion_confirmation/getByDeletionRequest";
 import environmentIsEmpty from "../../models/environment/isEmpty";
+import { logger } from "../../logger";
 
 export default async function handle(
   authorization: string,
@@ -83,5 +84,5 @@ export default async function handle(
 
   // This should cascade-delete all related deletion_confirmation rows as well.
   await deleteDeletionRequest(deletionRequest.id);
-  console.log(`AUDIT deletion request ${deletionRequest.id} for environment ${environmentId} closed successfully`);
+  logger.info(`AUDIT deletion request ${deletionRequest.id} for environment ${environmentId} closed successfully`);
 }

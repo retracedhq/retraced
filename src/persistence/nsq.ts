@@ -1,7 +1,7 @@
 import "source-map-support/register";
 import * as nsq from "nsqjs";
-import * as chalk from "chalk";
-import { instrumented, meter, timer, histogram } from "monkit";
+import { histogram, instrumented, meter, timer } from "monkit";
+import { logger } from "../logger";
 
 export class NSQClient {
   public static fromEnv() {
@@ -75,7 +75,7 @@ export class NSQClient {
 
   // Destroy the writer, forcing a reconnect on the next produce operation.
   private forceReconnect(errorPct: number) {
-      console.log(`Error Percentage ${errorPct} is greater than threshold` +
+      logger.warn(`Error Percentage ${errorPct} is greater than threshold` +
                   `${this.circuitBreakerThreshold}, reconnecting to nsq at` +
                   `${this.host}:${this.port}`);
       if (this.writer) {
@@ -91,20 +91,20 @@ export class NSQClient {
       let connected = false;
 
       w.connect();
-      console.log(chalk.green.dim(`NSQ writer attempting to connect to nsqd at ${this.host}:${this.port}`));
+      logger.info(`NSQ writer attempting to connect to nsqd at ${this.host}:${this.port}`);
 
       w.on("ready", () => {
         connected = true;
         resolve(w);
-        console.log(chalk.green.dim(`NSQ writer connected to ${this.host}:${this.port}`));
+        logger.info(`NSQ writer connected to ${this.host}:${this.port}`);
       });
       w.on("closed", () => {
-        console.log(chalk.yellow(`NSQ writer disconnected from ${this.host}:${this.port}`));
+        logger.warn(`NSQ writer disconnected from ${this.host}:${this.port}`);
         connected = false;
         delete this.writer;
       });
       w.on("error", (err) => {
-        console.log(chalk.yellow(`NSQ writer ${this.host}:${this.port} : ${err.message}`));
+        logger.info(`NSQ writer ${this.host}:${this.port} : ${err.message}`);
         if (connected) {
           this.checkCircuitBreaker();
         } else {

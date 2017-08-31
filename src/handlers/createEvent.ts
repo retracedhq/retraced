@@ -1,5 +1,4 @@
 import * as _ from "lodash";
-import * as chalk from "chalk";
 import * as moment from "moment";
 import * as pg from "pg";
 import * as pgFormat from "pg-format";
@@ -7,12 +6,13 @@ import * as util from "util";
 import { instrument, instrumented } from "monkit";
 
 import createCanonicalHash from "../models/event/canonicalize";
-import Event, { Fields, crud } from "../models/event/";
+import Event, { crud, Fields } from "../models/event/";
 import { fromCreateEventInput } from "../models/event";
 import uniqueId from "../models/uniqueId";
 import { NSQClient } from "../persistence/nsq";
 import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
+import { logger } from "../logger";
 
 const IP_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 
@@ -234,11 +234,11 @@ export class EventCreater {
   private async nsqPublish({ taskId }) {
     const job = JSON.stringify({ taskId });
     return this.nsq.produce("raw_events", job)
-      .then((res) => {
-        console.log(`sent task ${job} to raw_events`);
+      .then(() => {
+        logger.info(`sent task ${job} to raw_events`);
       })
       .catch((err) => {
-        console.log(`failed to send task ${job} to raw_events: ${chalk.red(util.inspect(err))}`);
+        logger.error(`failed to send task ${job} to raw_events: ${(util.inspect(err))}`);
       });
 
   }

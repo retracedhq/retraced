@@ -3,10 +3,11 @@ import getDeletionRequest from "../../models/deletion_request/get";
 import getDeletionConfirmations from "../../models/deletion_confirmation/getByDeletionRequest";
 import deleteDeletionConfirmation from "../../models/deletion_confirmation/delete";
 import {
-  deletionRequestHasExpired,
   deletionRequestBackoffRemaining,
+  deletionRequestHasExpired,
 } from "../../models/deletion_request";
 import getUser from "../../models/user/get";
+import { logger } from "../../logger";
 
 export interface GetDelReqReport {
   expired: boolean;
@@ -38,7 +39,7 @@ export default async function handler(
 
     const user = await getUser(c.retracedUserId);
     if (!user) {
-      console.log(`Removing bad outstanding confirmation from non-existent user ('${c.retracedUserId}')`);
+      logger.info(`Removing bad outstanding confirmation from non-existent user ('${c.retracedUserId}')`);
       await deleteDeletionConfirmation(c.id);
       continue;
     }
