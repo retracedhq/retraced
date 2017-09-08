@@ -1,22 +1,12 @@
 import ViewerDescriptor from "./def";
+import getRedis from "../../persistence/redis";
 
-import * as redis from "redis";
-import { logger } from "../../logger";
+const redis = getRedis(process.env.REDIS_URI);
 
 export interface Options {
-  id: string;
+    id: string;
 }
 
 export default async function getViewerToken(opts: Options): Promise<ViewerDescriptor> {
-  return new Promise<ViewerDescriptor>((resolve, reject) => {
-    const redisClient = redis.createClient({ url: process.env.REDIS_URI });
-    redisClient.hgetall(`viewer_descriptor:${opts.id}`, (err, result) => {
-      if (err) {
-        logger.error(err);
-        reject(err);
-        return;
-      }
-      resolve(result);
-    });
-  });
+    return await redis.hgetallAsync(`viewer_descriptor:${opts.id}`);
 }
