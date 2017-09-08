@@ -1,9 +1,10 @@
 import * as uuid from "uuid";
-import * as redis from "redis";
 import * as moment from "moment";
 
 import ViewerDescriptor from "./def";
-import { logger } from "../../logger";
+import getRedis from "../../persistence/redis";
+
+const redis = getRedis(process.env.REDIS_URI);
 
 export interface Options {
   projectId: string;
@@ -32,24 +33,9 @@ export default async function createViewerDescriptor(opts: Options): Promise<Vie
     newDesc.scope = `target_id=${opts.targetId}`;
   }
 
-  const redisClient = redis.createClient({ url: process.env.REDIS_URI });
-  await new Promise((resolve, reject) => {
-    redisClient.HMSET(`viewer_descriptor:${newDesc.id}`, newDesc, (err, res) => {
-      if (err) {
-        logger.error(err);
-        reject(err);
-        return;
-      }
-      redisClient.expire(`viewer_descriptor:${newDesc.id}`, 5 * 60, (expireErr, expireRes) => {
-        if (expireErr) {
-          logger.error(expireErr);
-          reject(expireErr);
-          return;
-        }
-        resolve();
-      });
-    });
-  });
+  await redis.hmsetAsync(`viewer_descriptor:${newDesc.id}`, newDesc);
+
+  await redis.expireAsync(`viewer_descriptor:${newDesc.id}`, 5 * 60);
 
   return newDesc;
 }
