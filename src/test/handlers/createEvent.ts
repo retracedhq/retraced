@@ -60,6 +60,7 @@ import { Connection } from "./Connection";
             fakeUUID,
             authenticator.object,
             2,
+            1000,
         );
 
         const expected = new Error("A maximum of 2 events may be created at once, received 3");
@@ -123,6 +124,7 @@ import { Connection } from "./Connection";
             fakeUUID,
             authenticator.object,
             50,
+            1000,
         );
 
         try {
@@ -225,6 +227,7 @@ import { Connection } from "./Connection";
             fakeUUID,
             authenticator.object,
             50,
+            1000,
         );
 
         const created: CreateEventResponse = await creater.createEvent("token=some-token", "a-project", body);
@@ -292,6 +295,7 @@ import { Connection } from "./Connection";
             fakeUUID,
             authenticator.object,
             50,
+            1000,
         );
 
         const created: CreateEventResponse[] = await creater.createEventBulk("token=some-token", "a-project", body);
@@ -351,6 +355,7 @@ import { Connection } from "./Connection";
             fakeUUID,
             authenticator.object,
             50,
+            1000,
         );
 
         const expected = new Error("Postgres went away :(");
@@ -364,5 +369,118 @@ import { Connection } from "./Connection";
 
         // make sure we didn't send any nsq messages if the txn is ROLLBACK'd
         nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    }
+
+    @test public async "EventCreater.persistEvent()"() {
+        const projID = "proj1";
+        const envID = "env1";
+        const newEventID = "event1";
+        const received = Date.now();
+
+        const sleep = async (ms) => {
+            await new Promise((resolve) => {
+                setTimeout(resolve, ms);
+            });
+        };
+
+        const tests = [
+            {
+                description: "Only the first persister should be called",
+                succeeds: true,
+                persisters: [
+                    { delay: 0, takes: 20, called: true, fails: false },
+                    { delay: 50, takes: 20, called: false, fails: false },
+                ],
+            },
+            {
+                description: "The first two persisters should be called",
+                succeeds: true,
+                persisters: [
+                    { delay: 0, takes: 50, called: true, fails: false },
+                    { delay: 20, takes: 50, called: true, fails: false },
+                    { delay: 40, takes: 50, called: true, fails: false },
+                ],
+            },
+            {
+                description: "All persisters should be called",
+                succeeds: true,
+                persisters: [
+                    { delay: 0, takes: 40, called: true, fails: false },
+                    { delay: 10, takes: 30, called: true, fails: false },
+                    { delay: 20, takes: 20, called: true, fails: false },
+                ],
+            },
+            {
+                description: "All persisters called and first two fail",
+                succeeds: true,
+                persisters: [
+                    { delay: 0, takes: 5, called: true, fails: true  },
+                    { delay: 10, takes: 30, called: true, fails: true },
+                    { delay: 20, takes: 20, called: true, fails: false },
+                ],
+            },
+            {
+                description: "All persisters failing should fail the method",
+                succeeds: false,
+                persisters: [
+                    { delay: 0, takes: 5, called: true, fails: true  },
+                    { delay: 10, takes: 30, called: true, fails: true },
+                    { delay: 20, takes: 20, called: true, fails: true },
+                ],
+            },
+        ];
+
+        for (const test of tests) {
+            const creater = new EventCreater(
+                TypeMoq.Mock.ofType(pg.Pool).object,
+                TypeMoq.Mock.ofType(NSQClient).object,
+                (e) => "fake-hash",
+                () => "fake-uuid",
+                TypeMoq.Mock.ofType(Authenticator).object,
+                50,
+                1000,
+            );
+            const calls: boolean[] = [];
+            const persisters = test.persisters.map((p, i) => {
+                calls[i] = false;
+                return {
+                    delayMS: p.delay,
+                    persist: async (pID: string, eID: string, id: string, ts: number, e: CreateEventRequest) => {
+                        calls[i] = true;
+                        await sleep(p.takes);
+                        if (p.fails) {
+                            throw new Error("failed write");
+                        }
+                    },
+                };
+            });
+
+            try {
+                await creater.persistEvent(
+                    projID,
+                    envID,
+                    newEventID,
+                    received,
+                    {
+                        action: "largeTazoTea.purchase",
+                        crud: "c",
+                        actor: {
+                            id: "vicki@vickstelmo.music",
+                        },
+                    },
+                    persisters,
+                );
+            } catch (err) {
+                if (test.succeeds) {
+                    throw err;
+                }
+            }
+
+            test.persisters.forEach((p, i) => {
+              if (p.called !== calls[i]) {
+                throw new Error(`${test.description}: persister[${i}] ${p.called ? "should" : "should not"} have been called`);
+              }
+            });
+        }
     }
 }

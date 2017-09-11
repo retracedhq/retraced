@@ -105,6 +105,17 @@ export interface CreateEventResponse {
   hash: string;
 }
 
+export interface EventPersister {
+  delayMS: number;
+  persist: (
+      projId: string,
+      envId: string,
+      id: string,
+      received: number,
+      event: CreateEventRequest,
+    ) => Promise<void>;
+}
+
 export class EventCreater {
 
   public static readonly insertIntoIngestTask = `
@@ -113,7 +124,15 @@ export class EventCreater {
       ) values (
         $1, $2, $3, $4, $5,
         to_timestamp($6::double precision / 1000)
-      )`;
+      ) on conflict do nothing`;
+
+  public static readonly insertIntoBacklog = `
+    insert into backlog (
+      project_id, environment_id, new_event_id, received, original_event
+    ) values (
+      $1, $2, $3, to_timestamp($4::double precision / 1000), $5
+    )`;
+
   constructor(
     private readonly pgPool: pg.Pool,
     private readonly nsq: NSQClient,
@@ -121,13 +140,78 @@ export class EventCreater {
     private readonly idSource: () => string,
     private readonly authenticator: Authenticator,
     private readonly maxEvents: number,
+    private readonly timeoutMS: number,
   ) { }
 
   @instrumented
-  public async createEvent(authorization: string, projectId: string, event: CreateEventRequest): Promise<CreateEventResponse> {
+  public async createEvent(authorization: string, projectId: string, event: CreateEventRequest) {
     const apiToken = await this.authenticator.getApiTokenOr401(authorization, projectId);
-    this.validateEventInput(event);
-    return await this.saveRawEvent(apiToken.projectId, apiToken.environmentId, event);
+    const violations = this.validateEventInput(event);
+    if (!_.isEmpty(violations)) {
+      throw {
+        status: 400,
+        err: new Error(violations.map((i) => i.message).join("\n--")),
+      };
+    }
+
+    const id = this.idSource();
+    const projId = apiToken.projectId;
+    const envId = apiToken.environmentId;
+
+    const persisters = [{
+      delayMS: 0,
+      persist: this.appendEventToBacklog.bind(this),
+    }, {
+      delayMS: Math.floor(this.timeoutMS * 0.8),
+      persist: this.publishEventToQueue.bind(this),
+    }];
+
+    await this.persistEvent(projId, envId, id, moment().valueOf(), event, persisters);
+
+    // Coerce the input event into a proper Event object.
+    // Then, generate an authoritative hash from its contents.
+    const hash = this.hasher(fromCreateEventInput(event, id));
+
+    return { id, hash };
+  }
+
+  public async persistEvent(
+    projId: string,
+    envId: string,
+    id: string,
+    received: number,
+    event: CreateEventRequest,
+    persisters: EventPersister[],
+  ) {
+    return new Promise((resolve, reject) => {
+      const timeouts: any[] = [];
+      const success = _.once(() => {
+        timeouts.forEach(clearTimeout);
+
+        resolve();
+      });
+      let failures = 0;
+      const fail = () => {
+        failures++;
+        if (failures === persisters.length) {
+          reject(new Error("All attempts to persist event have failed"));
+        }
+      };
+
+      persisters.forEach((p, i) => {
+        const fn = () => {
+          p.persist(projId, envId, id, received, event)
+            .then(success)
+            .catch(fail);
+        };
+
+        if (p.delayMS) {
+          timeouts.push(setTimeout(fn, p.delayMS));
+        } else {
+          fn();
+        }
+      });
+    });
   }
 
   @instrumented
@@ -179,23 +263,33 @@ export class EventCreater {
   }
 
   /**
-   * Save an event to postgres, and publish to nsq
+   * This is used for audit logging within handlers. The TypeScript compiler
+   * validates the event request and the caller is presumed authorized.
    */
-  public async saveRawEvent(projectId: string, envId: string, eventInput: CreateEventRequest, querier?: Querier): Promise<CreateEventResponse> {
-    const { id, hash, taskId } = await this.saveEvent(projectId, envId, eventInput, querier);
-    this.nsqPublish({ taskId });
-    return { id, hash };
+  public async saveRawEvent(projectId: string, envId: string, eventInput: CreateEventRequest, querier?: Querier): Promise<void> {
+    await this.saveEvent(
+      projectId,
+      envId,
+      this.idSource(),
+      moment().valueOf(),
+      eventInput, querier,
+    );
   }
 
   /**
-   * Save an event to postgres, returning id, hash and the taskId to send to NSQ
+   * Save an event to postgres ingest_task and publish to NSQ for processing
    */
   @instrumented
-  public async saveEvent(projectId: string, envId: string, eventInput: CreateEventRequest, querier?: Querier): Promise<{ id: string, hash: string, taskId: string }> {
+  public async saveEvent(
+    projectId: string,
+    envId: string,
+    newEventId: string,
+    received: number,
+    eventInput: CreateEventRequest, querier?: Querier,
+  ): Promise<void> {
     const insertStmt = EventCreater.insertIntoIngestTask;
 
     const newTaskId = this.idSource();
-    const newEventId = this.idSource();
     const insertVals = [
       newTaskId,
       JSON.stringify(eventInput),
@@ -219,16 +313,61 @@ export class EventCreater {
       }
     }
 
-    // Coerce the input event into a proper Event object.
-    // Then, generate an authoritative hash from its contents.
-    // This will be returned to the caller.
-    const event = fromCreateEventInput(eventInput, newEventId);
+    this.nsqPublish({ taskId: newTaskId });
+  }
 
-    return {
-      id: newEventId,
-      hash: this.hasher(event),
-      taskId: newTaskId,
-    };
+  // Add a record to Postgres to be later moved to ingest_task.
+  @instrumented
+  public async appendEventToBacklog(
+    projectId: string,
+    envId: string,
+    newEventId: string,
+    received: number,
+    eventInput: CreateEventRequest,
+  ): Promise<void> {
+    const insertStmt = EventCreater.insertIntoBacklog;
+    const conn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
+    try {
+      await instrument("EventCreater.insertOneIntoBacklog", async () => {
+        return await conn.query(insertStmt, [
+          projectId,
+          envId,
+          newEventId,
+          received,
+          JSON.stringify(eventInput),
+        ]);
+      });
+    } finally {
+      conn.release();
+    }
+  }
+
+  // Publish an event to NSQ to be later moved to ingest_task.
+  @instrumented
+  public async publishEventToQueue(
+    projectId: string,
+    envId: string,
+    newEventId: string,
+    received: number,
+    eventInput: CreateEventRequest,
+  ): Promise<void> {
+    const job = JSON.stringify({
+      project_id: projectId,
+      environment_id: envId,
+      new_event_id: newEventId,
+      original_event: eventInput,
+      received,
+    });
+
+    return this.nsq.produce("unsaved_events", job)
+      .then(() => {
+        logger.info(`sent new event ${newEventId} to unsaved_events`);
+      })
+      .catch((err) => {
+        logger.error(`failed to send ${newEventId} to raw_events`);
+
+        throw err;
+      });
   }
 
   private async nsqPublish({ taskId }) {
@@ -384,4 +523,5 @@ export const defaultEventCreater = new EventCreater(
   uniqueId,
   Authenticator.default(),
   Number(process.env.PUBLISHER_BULK_CREATE_MAX_EVENTS || "50"),
+  Number(process.env.PUBLISHER_CREATE_EVENT_TIMEOUT || "1000"),
 );
