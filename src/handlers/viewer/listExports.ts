@@ -6,6 +6,7 @@ export default async function(req) {
   const list = await listSavedExports({
     project_id: req.params.projectId,
     environment_id: claims.environmentId,
+    group_id: claims.groupId,
     limit: req.query.limit,
   });
   return {
