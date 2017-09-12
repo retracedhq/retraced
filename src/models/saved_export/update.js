@@ -11,6 +11,7 @@ export default async function updateSavedExport(opts) {
       body: opts.body,
       project_id: opts.project_id,
       environment_id: opts.environment_id,
+      group_id: opts.group_id,
     };
     const updateStmt = `update saved_export
       set version = $1, body = $2

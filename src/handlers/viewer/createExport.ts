@@ -6,6 +6,7 @@ export default async function(req) {
   const newSavedExport = await createSavedExport({
     projectId: req.params.projectId,
     environmentId: claims.environmentId,
+    groupId: claims.groupId,
     body: req.body.exportBody,
     name: req.body.name,
   });
