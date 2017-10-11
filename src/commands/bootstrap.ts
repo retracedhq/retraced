@@ -1,6 +1,5 @@
 import { bootstrapProject } from "../headless";
 import * as util from "util";
-import { logger } from "../logger";
 
 exports.name = "bootstrap";
 exports.describe = "Bootstrap a retraced project with a specified projectId, environmentId, and apiKey";
@@ -26,7 +25,7 @@ exports.builder = {
 };
 
 exports.handler = async (argv) => {
-  const {projectId, apiKey, environmentId, projectName, environmentName, tokenName } = argv;
+  const { projectId, apiKey, environmentId, projectName, environmentName, tokenName } = argv;
   bootstrapProject({
     projectId,
     apiKey,
@@ -38,12 +37,12 @@ exports.handler = async (argv) => {
     projectVarRef: "projectId",
     envVarRef: "environmentId",
   })
-    .then(() => {
-      logger.info(`bootstrapped project ${argv.projectId}`);
-      process.exit(0);
-    })
-    .catch((err) => {
-      logger.error(util.inspect(err));
-      process.exit(1);
-    });
+      .then(() => {
+        console.log(`bootstrapped project ${argv.projectId}`);
+        process.exit(0);
+      })
+      .catch((err) => {
+        console.log(util.inspect(err));
+        process.exit(1);
+      });
 };
