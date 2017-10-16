@@ -19,6 +19,8 @@ import "./controllers/PublisherController";
 import "./controllers/AdminController";
 import "./controllers/EnterpriseController";
 import { logger } from "./logger";
+import * as fs from "fs";
+import * as https from "https";
 
 if (!process.env["BUGSNAG_TOKEN"]) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
@@ -95,9 +97,36 @@ function buildRoutes() {
 }
 
 function serve() {
+  const sslCertPath = process.env.SSL_SERVER_CERT_PATH;
+  const sslKeyPath = process.env.SSL_SERVER_KEY_PATH;
+  if  (!sslCertPath || !sslKeyPath) {
+    logger.info("SSL_SERVER_CERT_PATH or SSL_SERVER_KEY_PATH unset, serving HTTP");
+    serveHTTP();
+  } else {
+    logger.info("Found SSL parameters, serving with HTTPS");
+    serveHTTPS(sslCertPath, sslKeyPath);
+  }
+}
+
+function serveHTTP() {
   app.listen(3000, "0.0.0.0", () => {
     logger.info("Retraced API listening on port 3000...");
   });
+}
+
+function serveHTTPS(sslCertPath: string, sslKeyPath: string) {
+  // These will throw if either file isn't present or isn't readable
+  // The error stack is pretty good, don't think we need to catch/wrap here for now
+  const certificate = fs.readFileSync(sslCertPath);
+  const privateKey = fs.readFileSync(sslKeyPath);
+
+  https.createServer({
+    key: privateKey,
+    cert: certificate,
+  }, app).listen(3000, "0.0.0.0", () => {
+    logger.info("Retraced API listening on port 3000...");
+  });
+
 }
 
 ensureHeadlessProject();
