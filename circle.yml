@@ -11,9 +11,12 @@ machine:
     PUBLISHER_API_KEY:  5e13bc18ecad44e08bca82ab5fce0014
     QA_INTEGRATION_VERSION: 87fb921
     # semver tags
-    QUAY_MAJOR: "1"
-    QUAY_MINOR: "1.1"
-    QUAY_PATCH: "1.1.8"
+    SEMVER_MAJOR: "1"
+    SEMVER_MINOR: "1.1"
+    SEMVER_PATCH: "1.1.8"
+
+    QUAY_RELEASE_REPO: quay.io/retracedhq/api
+    REPLICATED_RELEASE_REPO: registry.replicated.com/library/retraced-api
   services:
     - docker
   pre:
@@ -41,22 +44,45 @@ deployment:
       - ./deploy/deploy_k8s_using_env.sh
       - sleep 20
       - ./deploy/integration_tests_using_env.sh
-      # push to on-prem
-      - sudo docker tag quay.io/retracedhq/api:${CIRCLE_SHA1:0:7} registry.replicated.com/retraced/api:${CIRCLE_SHA1:0:7}
-      - sudo docker login -e $DOCKER_EMAIL_REPLICATED -u $DOCKER_USER_REPLICATED -p $DOCKER_PASS_REPLICATED registry.replicated.com
-      - sudo docker push registry.replicated.com/retraced/api:${CIRCLE_SHA1:0:7}
+
   prem:
     branch: release
     owner: retracedhq
     commands:
-      - sudo docker build -f deploy/Dockerfile -t quay.io/retracedhq/api:${CIRCLE_SHA1:0:7} .
       - sudo docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
 
+      - sudo docker build -f deploy/Dockerfile -t ${QUAY_RELEASE_REPO}:${CIRCLE_SHA1:0:7} .
+      - sudo docker tag ${QUAY_RELEASE_REPO}:${CIRCLE_SHA1:0:7} ${QUAY_RELEASE_REPO}:${SEMVER_MAJOR}
+      - sudo docker tag ${QUAY_RELEASE_REPO}:${CIRCLE_SHA1:0:7} ${QUAY_RELEASE_REPO}:${SEMVER_MINOR}
+      - sudo docker tag ${QUAY_RELEASE_REPO}:${CIRCLE_SHA1:0:7} ${QUAY_RELEASE_REPO}:${SEMVER_PATCH}
+      - sudo docker push ${QUAY_RELEASE_REPO}:${SEMVER_MAJOR}
+      - sudo docker push ${QUAY_RELEASE_REPO}:${SEMVER_MINOR}
+      - sudo docker push ${QUAY_RELEASE_REPO}:${SEMVER_PATCH}
 
-      - sudo docker tag quay.io/retracedhq/api:${CIRCLE_SHA1:0:7} quay.io/retracedhq/api:${QUAY_MAJOR}
-      - sudo docker tag quay.io/retracedhq/api:${CIRCLE_SHA1:0:7} quay.io/retracedhq/api:${QUAY_MINOR}
-      - sudo docker tag quay.io/retracedhq/api:${CIRCLE_SHA1:0:7} quay.io/retracedhq/api:${QUAY_PATCH}
-      - sudo docker push quay.io/retracedhq/api:${QUAY_MAJOR}
-      - sudo docker push quay.io/retracedhq/api:${QUAY_MINOR}
-      - sudo docker push quay.io/retracedhq/api:${QUAY_PATCH}
+      - sudo docker build -f deploy/Dockerfile-alpine -t ${QUAY_RELEASE_REPO}:${CIRCLE_SHA1:0:7}-alpine .
+      - sudo docker tag ${QUAY_RELEASE_REPO}:${CIRCLE_SHA1:0:7}-alpine ${QUAY_RELEASE_REPO}:${SEMVER_MAJOR}-alpine
+      - sudo docker tag ${QUAY_RELEASE_REPO}:${CIRCLE_SHA1:0:7}-alpine ${QUAY_RELEASE_REPO}:${SEMVER_MINOR}-alpine
+      - sudo docker tag ${QUAY_RELEASE_REPO}:${CIRCLE_SHA1:0:7}-alpine ${QUAY_RELEASE_REPO}:${SEMVER_PATCH}-alpine
+      - sudo docker push ${QUAY_RELEASE_REPO}:${SEMVER_MAJOR}-alpine
+      - sudo docker push ${QUAY_RELEASE_REPO}:${SEMVER_MINOR}-alpine
+      - sudo docker push ${QUAY_RELEASE_REPO}:${SEMVER_PATCH}-alpine
+
+
+      - sudo docker login -e $REPLICATED_LIBRARY_EMAIL -u $REPLICATED_LIBRARY_USER -p $REPLICATED_LIBRARY_PASSWORD registry.replicated.com
+
+      - sudo docker tag ${QUAY_RELEASE_REPO}:${CIRCLE_SHA1:0:7} ${REPLICATED_RELEASE_REPO}:${CIRCLE_SHA1:0:7}
+      - sudo docker tag ${REPLICATED_RELEASE_REPO}:${CIRCLE_SHA1:0:7} ${REPLICATED_RELEASE_REPO}:${SEMVER_MAJOR}
+      - sudo docker tag ${REPLICATED_RELEASE_REPO}:${CIRCLE_SHA1:0:7} ${REPLICATED_RELEASE_REPO}:${SEMVER_MINOR}
+      - sudo docker tag ${REPLICATED_RELEASE_REPO}:${CIRCLE_SHA1:0:7} ${REPLICATED_RELEASE_REPO}:${SEMVER_PATCH}
+      - sudo docker push ${REPLICATED_RELEASE_REPO}:${SEMVER_MAJOR}
+      - sudo docker push ${REPLICATED_RELEASE_REPO}:${SEMVER_MINOR}
+      - sudo docker push ${REPLICATED_RELEASE_REPO}:${SEMVER_PATCH}
+
+      - sudo docker tag ${QUAY_RELEASE_REPO}:${CIRCLE_SHA1:0:7}-alpine ${REPLICATED_RELEASE_REPO}:${CIRCLE_SHA1:0:7}-alpine
+      - sudo docker tag ${REPLICATED_RELEASE_REPO}:${CIRCLE_SHA1:0:7}-alpine ${REPLICATED_RELEASE_REPO}:${SEMVER_MAJOR}-alpine
+      - sudo docker tag ${REPLICATED_RELEASE_REPO}:${CIRCLE_SHA1:0:7}-alpine ${REPLICATED_RELEASE_REPO}:${SEMVER_MINOR}-alpine
+      - sudo docker tag ${REPLICATED_RELEASE_REPO}:${CIRCLE_SHA1:0:7}-alpine ${REPLICATED_RELEASE_REPO}:${SEMVER_PATCH}-alpine
+      - sudo docker push ${REPLICATED_RELEASE_REPO}:${SEMVER_MAJOR}-alpine
+      - sudo docker push ${REPLICATED_RELEASE_REPO}:${SEMVER_MINOR}-alpine
+      - sudo docker push ${REPLICATED_RELEASE_REPO}:${SEMVER_PATCH}-alpine
 
