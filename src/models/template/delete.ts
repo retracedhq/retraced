@@ -30,7 +30,7 @@ export default async function(opts: Options): Promise<boolean> {
 }
 
 /**
- * delete all templates in env with the with the name. Returns number of rows deleted
+ * delete all templates in env with the name. Returns number of rows deleted
  */
 export async function byName(opts: ByNameOptions): Promise<number> {
   const q = `delete from display_template where name = $1 AND environment_id = $2`;
