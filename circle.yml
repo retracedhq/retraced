@@ -13,7 +13,7 @@ machine:
     # semver tags
     SEMVER_MAJOR: "1"
     SEMVER_MINOR: "1.1"
-    SEMVER_PATCH: "1.1.8"
+    SEMVER_PATCH: "1.1.9"
 
     QUAY_RELEASE_REPO: quay.io/retracedhq/api
     REPLICATED_RELEASE_REPO: registry.replicated.com/library/retraced-api
@@ -67,3 +67,4 @@ deployment:
       - sudo docker tag ${REPLICATED_RELEASE_REPO}:${CIRCLE_SHA1:0:7} ${REPLICATED_RELEASE_REPO}:${SEMVER_PATCH}
       - sudo docker push ${REPLICATED_RELEASE_REPO}:${SEMVER_MAJOR}
       - sudo docker push ${REPLICATED_RELEASE_REPO}:${SEMVER_MINOR}
+      - sudo docker push ${REPLICATED_RELEASE_REPO}:${SEMVER_PATCH}
