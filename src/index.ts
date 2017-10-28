@@ -6,6 +6,7 @@ import * as _ from "lodash";
 import * as bugsnag from "bugsnag";
 import * as Sigsci from "sigsci-module-nodejs";
 import * as swaggerUI from "swagger-ui-express";
+import * as Prometheus from "prom-client";
 
 import { register, wrapRoute } from "./router";
 import { LegacyRoutes } from "./routes";
@@ -86,6 +87,16 @@ function buildRoutes() {
     const route = { method: "post", path: "/admin/v1/user/_login" };
     const handler = wrapRoute({ handler: AdminUserBootstrap.default().handler() }, "_login");
     register(route, handler, app);
+  }
+
+  if (process.env.RETRACED_ENABLE_PROMETHEUS) {
+    const endpoint = process.env.RETRACED_PROMETHEUS_ENDPOINT || "/metrics";
+    logger.info(`Registering Prometheus Exporter at ${endpoint}`);
+    app.get("/metrics", (req, res) => {
+      res.set("Content-Type", Prometheus.register.contentType);
+      const mtx = Prometheus.register.metrics();
+      res.end(mtx);
+    });
   }
 
   app.use((req, res, next) => {

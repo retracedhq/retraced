@@ -1,5 +1,5 @@
 import * as pg from "pg";
-import { gauge } from "monkit";
+import { gauge } from "../metrics";
 
 let pgPool: pg.Pool;
 

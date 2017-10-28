@@ -1,6 +1,6 @@
 import "source-map-support/register";
 import * as nsq from "nsqjs";
-import { histogram, instrumented, meter, timer } from "monkit";
+import { histogram, instrumented, meter, timer } from "../metrics";
 import { logger } from "../logger";
 
 export class NSQClient {

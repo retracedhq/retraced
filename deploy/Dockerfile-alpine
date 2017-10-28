@@ -1,16 +1,17 @@
 FROM node:8.7-alpine
 
-ADD . /src
-WORKDIR /src
 
 RUN apk add --no-cache --virtual .gyp \
         python \
         make \
         g++ \
-        patch \
-    && yarn \
-    && make build \
-    && apk del .gyp
+        patch
+
+ADD . /src
+WORKDIR /src
+
+RUN yarn
+RUN make build
 
 RUN cp ./bin/retracedctl /usr/local/bin/retracedctl
 

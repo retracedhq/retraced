@@ -3,7 +3,7 @@ import * as moment from "moment";
 import * as pg from "pg";
 import * as pgFormat from "pg-format";
 import * as util from "util";
-import { instrument, instrumented } from "monkit";
+import { instrument, instrumented } from "../metrics";
 
 import createCanonicalHash from "../models/event/canonicalize";
 import Event, { crud, Fields } from "../models/event/";
@@ -475,7 +475,7 @@ export class EventCreater {
       }
     }
 
-    // created timestamp, if present, must be parseable
+    // created timestamp, if present, must be parse-able
     if (!_.isEmpty(maybeEvent["created"]) && !moment(maybeEvent["created"]).isValid()) {
       violations.push({
         message: `Unable to parse 'created' field as valid time: ${maybeEvent["created"]}`,
