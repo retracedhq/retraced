@@ -1,3 +1,4 @@
+*.snyk-patch
 build/
 lib/
 java/

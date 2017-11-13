@@ -1,6 +1,6 @@
 import "source-map-support/register";
 import * as _ from "underscore";
-import { instrument } from "monkit";
+import { instrument } from "../../metrics";
 import * as Elasticsearch from "elasticsearch";
 
 import { Scope } from "../../security/scope";
