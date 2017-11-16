@@ -10,6 +10,15 @@ import getGroupsTile from "../../dashboard/groups/top";
 export default async function(req) {
   await checkAdminAccess(req);
 
+  if (process.env.PG_SEARCH) {
+    return {
+      status: 200,
+      body: JSON.stringify({
+        tiles: [],
+      }),
+    };
+  }
+
   // This is hard coded for now.  TODO, we should consider making this
   // all stored in the db so that a user can customize
   // FUTURE VERSION!

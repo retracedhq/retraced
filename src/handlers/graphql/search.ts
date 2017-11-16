@@ -2,9 +2,13 @@ import "source-map-support/register";
 import * as _ from "lodash";
 
 import queryEvents, { Options } from "../../models/event/query";
+import filterEvents from "../../models/event/filter";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { Scope } from "../../security/scope";
 import getGroups from "../../models/group/gets";
+
+const PG_SEARCH = !!(process.env.PG_SEARCH);
+const searcher = PG_SEARCH ? filterEvents : queryEvents;
 
 export interface Args {
   query: string;
@@ -39,7 +43,7 @@ export default async function search(
     opts.cursor = decodeCursor(args.before);
   }
 
-  const results = await queryEvents(opts);
+  const results = await searcher(opts);
   const events = await addDisplayTitles({
     projectId: context.projectId,
     environmentId: context.environmentId,
@@ -95,13 +99,7 @@ export default async function search(
   });
 
   // If searching with a cursor run the search again without it to get the total.
-  let totalCount = results.totalHits;
-  if (args.after || args.before) {
-    delete opts.cursor;
-    opts.size = 0;
-    const { totalHits } = await queryEvents(opts);
-    totalCount = totalHits;
-  }
+  const totalCount = results.totalHits;
 
   return {
     totalCount,

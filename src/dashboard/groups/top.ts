@@ -82,6 +82,7 @@ export default async function(opts: DashboardOptions): Promise<any> {
     }
     return row;
   });
+
   const tile: DashboardTile = {
     title: "Groups",
     type: "groups",

@@ -1,4 +1,3 @@
-
 import listTemplates from "../template/list";
 import rulesCheck from "../event/rulesCheck";
 import renderEvent from "../event/render";
