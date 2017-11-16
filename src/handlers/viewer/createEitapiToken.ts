@@ -21,7 +21,7 @@ export default async function(req) {
     group: {
       id: claims.groupId,
     },
-    description: `${req.method} ${req.originalUrl}`,
+    description: `Created an Enterprise IT Integration API Token`,
     source_ip: claims.ip,
   };
   await defaultEventCreater.saveRawEvent(

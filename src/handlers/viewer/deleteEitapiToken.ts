@@ -25,7 +25,7 @@ export default async function(req) {
     target: {
       id: req.params.tokenId,
     },
-    description: `${req.method} ${req.originalUrl}`,
+    description: `Deleted an Enterprise IT Integration API Token`,
     source_ip: claims.ip,
   };
   await defaultEventCreater.saveRawEvent(

@@ -19,7 +19,7 @@ export default async function(req) {
     group: {
       id: claims.groupId,
     },
-    description: `${req.method} ${req.originalUrl}`,
+    description: `Listed Enterprise IT Integration API Tokens`,
     source_ip: claims.ip,
   };
   await defaultEventCreater.saveRawEvent(
