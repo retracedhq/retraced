@@ -16,7 +16,7 @@ export default async function(req) {
     group: {
       id: claims.groupId,
     },
-    description: `${req.method} ${req.originalUrl}`,
+    description: `Viewed the audit log`,
     source_ip: claims.ip,
   };
 

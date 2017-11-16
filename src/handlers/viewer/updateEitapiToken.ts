@@ -27,7 +27,7 @@ export default async function(req) {
     target: {
       id: req.params.tokenId,
     },
-    description: `${req.method} ${req.originalUrl}`,
+    description: `Created an Enterprise IT Integration API Token`,
     source_ip: claims.ip,
     fields: {
       displayName: req.body.displayName,
