@@ -66,7 +66,7 @@ export class PublisherAPI extends Controller {
         hash: "5b570bff4628b35262fb401d2f6c9bb38d29e212f6e0e8ea93445b4e5a253d50",
     }, {
       id: "aff053dc4a3042459818833276eec7af",
-      hash: "5b570bff4628b35262fb40ffas9bb38d29e212f6e0e8ea93445b4e5a253d50",
+      hash: "b5570bff4628b35262fb40ffas9b29e212ddf6e0e8ea93445b4e5a253d50dd",
     }])
     public async createEventsBulk(
         @Header("Authorization") auth: string,
