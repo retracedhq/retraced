@@ -19,8 +19,19 @@ export interface EventsConn {
 }
 
 export interface GraphQLSearchVars {
+  /**
+   * Structured search query. For example,
+   *
+   * `edit` -- free text search
+   * `action:users.list` -- search by action
+   * `action:document.* location:Germany` -- search by action and location
+   * `actor.id:john.doe@mycompany.com` -- search by actor id
+   *
+   */
   query?: string;
+  /** The number of events to return */
   last?: number;
+  /** An opaque cursor that represents the offset to query since. Should be empty for an initial request to the API. Responses from GraphQL endpoints will include the cursor value to use to fetch the next page of data. */
   before?: string;
 }
 
@@ -46,7 +57,13 @@ export interface GraphQLResp {
 }
 
 export interface GraphQLRequest {
-    query: string;
-    variables?: GraphQLSearchVars;
-    operationName?: string;
+  /**
+   * Graphql Search query string. See https://preview.retraced.io/documentation/apis/graphql/#search
+   * for an example query
+   */
+  query: string;
+  /** Search parameters for filtering, limit and offset */
+  variables?: GraphQLSearchVars;
+  /** The GraphQL operation name. Optional, defaults to standard event search. */
+  operationName?: string;
 }
