@@ -1,5 +1,8 @@
 import { Get, Post, Put, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Example } from "tsoa";
-import { defaultEventCreater, EventCreater, CreateEventRequest, CreateEventResponse } from "../handlers/createEvent";
+import {
+  defaultEventCreater, EventCreater, CreateEventRequest, CreateEventResponse,
+  CreateEventBulkResponse, CreateEventBulkRequest,
+} from "../handlers/createEvent";
 import { ViewerToken, createViewerDescriptor } from "../handlers/createViewerDescriptor";
 import { createEnterpriseToken, CreateEnterpriseTokenRequest, EnterpriseTokenResponse } from "../handlers/createEnterpriseToken";
 import { deleteEnterpriseToken } from "../handlers/deleteEnterpriseToken";
@@ -48,26 +51,29 @@ export class PublisherAPI extends Controller {
     }
 
     /**
-     * Create an event. Returns the id of the created event, and
-     * a cryptographic hash of the received event, as described at
+     * Create one or more events. Returns a list of the ids of the created event and
+     * a cryptographic hash of each received events, as described at
      * https://preview.retraced.io/documentation/architecture/hashing-formula/
      *
      * @param auth      auth header of the form token=...
      * @param projectId the project id
-     * @param event     An array of events to log
+     * @param events    An array of events to log
      */
     @Post("project/{projectId}/event/bulk")
     @SuccessResponse("201", "Created")
-    @Example<CreateEventResponse[]>([{
+    @Example<CreateEventBulkResponse>([{
         id: "abf053dc4a3042459818833276eec717",
         hash: "5b570bff4628b35262fb401d2f6c9bb38d29e212f6e0e8ea93445b4e5a253d50",
+    }, {
+      id: "aff053dc4a3042459818833276eec7af",
+      hash: "5b570bff4628b35262fb40ffas9bb38d29e212f6e0e8ea93445b4e5a253d50",
     }])
     public async createEventsBulk(
         @Header("Authorization") auth: string,
         @Path("projectId") projectId: string,
-        @Body() events: CreateEventRequest[],
-    ): Promise<CreateEventResponse[]> {
-        const result: CreateEventResponse[] = await this.eventCreater.createEventBulk(auth, projectId, events);
+        @Body() events: CreateEventBulkRequest,
+    ): Promise<CreateEventBulkResponse> {
+        const result: CreateEventBulkResponse = await this.eventCreater.createEventBulk(auth, projectId, events);
 
         this.setStatus(201);
         return result;
@@ -292,7 +298,7 @@ export class PublisherAPI extends Controller {
     /**
      * Query events with GraphQL
      *
-     * https://preview.staging.retraced.io/documentation/apis/graphql/
+     * https://preview.retraced.io/documentation/apis/graphql/
      *
      * @param auth            auth header of the form Token token=...
      * @param projectId       the project id

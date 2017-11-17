@@ -251,16 +251,22 @@ export default {
   //
   // enterprise
   //
-  enterpriseCreateActiveSearch: {
-    path: "/enterprise/v1/search/active",
-    method: "post",
-    handler: enterpriseCreateActiveSearch,
-  },
-  enterpriseCreateSavedSearch: {
-    path: "/enterprise/v1/search/saved",
-    method: "post",
-    handler: enterpriseCreateSavedSearch,
-  },
+  // Commented routes have been moved to TSOA
+  // enterpriseCreateActiveSearch: {
+  //   path: "/enterprise/v1/search/active",
+  //   method: "post",
+  //   handler: enterpriseCreateActiveSearch,
+  // },
+  // enterpriseCreateSavedSearch: {
+  //   path: "/enterprise/v1/search/saved",
+  //   method: "post",
+  //   handler: enterpriseCreateSavedSearch,
+  // },
+  // enterpriseGraphQLPost: {
+  //   path: "/enterprise/v1/graphql",
+  //   method: "post",
+  //   handler: enterpriseGraphQL,
+  // },
   enterpriseDeleteActiveSearch: {
     path: "/enterprise/v1/search/active/:activeSearchId",
     method: "delete",
@@ -269,11 +275,6 @@ export default {
   enterpriseGraphQLGet: {
     path: "/enterprise/v1/graphql",
     method: "get",
-    handler: enterpriseGraphQL,
-  },
-  enterpriseGraphQLPost: {
-    path: "/enterprise/v1/graphql",
-    method: "post",
     handler: enterpriseGraphQL,
   },
   enterprisePumpActiveSearch: {

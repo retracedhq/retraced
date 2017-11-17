@@ -1,8 +1,21 @@
+import {Body, Controller, Example, Header, Post, Route, SuccessResponse} from "tsoa";
 
-import { Post, Route, Body, Header, SuccessResponse, Controller, Example } from "tsoa";
-
-import { enterpriseCreateActiveSearch } from "../handlers/enterprise/createActiveSearch";
-import { ActiveSearchId, CreateActiveSearchRequest } from "../handlers/enterprise/createActiveSearch";
+import {
+  ActiveSearchId,
+  CreateActiveSearchRequest,
+  enterpriseCreateActiveSearch,
+} from "../handlers/enterprise/createActiveSearch";
+import {
+  createSavedSearchHandler,
+  CreateSavedSearchRequest,
+  SavedSearch,
+} from "../handlers/enterprise/createSavedSearch";
+import {GraphQLRequest, GraphQLResp} from "../handlers/graphql/";
+import {Scope} from "../security/scope";
+import {checkEitapiAccessUnwrapped} from "../security/helpers";
+import {graphql} from "graphql";
+import schema from "../handlers/graphql/schema";
+import {EnterpriseToken} from "../models/eitapi_token";
 /*
 import enterpriseCreateSavedSearch from "../handlers/enterprise/createSavedSearch";
 import enterpriseDeleteActiveSearch from "../handlers/enterprise/deleteActiveSearch";
@@ -10,12 +23,8 @@ import enterpriseGraphQL from "../handlers/enterprise/graphql";
 import enterprisePumpActiveSearch from "../handlers/enterprise/pumpActiveSearch";
 import enterpriseSearchAdHoc from "../handlers/enterprise/searchAdHoc";
 */
+
 /*
-  enterpriseCreateSavedSearch: {
-    path: "/enterprise/v1/search/saved",
-    method: "post",
-    handler: enterpriseCreateSavedSearch,
-  },
   enterpriseDeleteActiveSearch: {
     path: "/enterprise/v1/search/active/:activeSearchId",
     method: "delete",
@@ -46,31 +55,96 @@ import enterpriseSearchAdHoc from "../handlers/enterprise/searchAdHoc";
 @Route("enterprise/v1")
 export class EnterpriseAPI extends Controller {
 
-    /**
-     * Initiate an active search. An active search will maintain
-     * a persistent cursor that can be used at a later date to
-     * retrieve additional events from the search.
-     *
-     *
-     * Authenticate with an Enterprise API token.
-     *
-     * @param auth      header of the form token=...
-     * @param request     The search params
-     */
-    @Post("search/active")
-    @SuccessResponse("201", "Created")
-    @Example<ActiveSearchId>({
-        id: "abf053dc4a3042459818833276eec717",
-    })
-    public async createEvent(
-        @Header("Authorization") auth: string,
-        @Body() request: CreateActiveSearchRequest,
-    ): Promise<ActiveSearchId> {
+  /**
+   * Query events with GraphQL
+   *
+   * https://preview.retraced.io/documentation/apis/graphql/
+   *
+   * @param auth            auth header of the form Token token=...
+   * @param projectId       the project id
+   * @param graphQLRequest  graphQL query, variables, and operationName
+   */
+  @Post("graphql")
+  @SuccessResponse("200", "OK")
+  public async graphqlPost(
+    @Header("Authorization") auth: string,
+    @Body() graphQLRequest: GraphQLRequest,
+  ): Promise<GraphQLResp> {
 
-        const result: ActiveSearchId = await enterpriseCreateActiveSearch(auth, request);
+    const token: EnterpriseToken = await checkEitapiAccessUnwrapped(auth);
 
-        this.setStatus(201);
-        return result;
+    const context: Scope = {
+      projectId: token.project_id,
+      environmentId: token.environment_id,
+      groupId: token.group_id,
+    };
 
-    }
+    // http://graphql.org/graphql-js/graphql/#graphql
+    const result: GraphQLResp = await graphql(
+      schema,
+      graphQLRequest.query,
+      null,
+      context,
+      graphQLRequest.variables,
+      graphQLRequest.operationName,
+    );
+
+    this.setStatus(result.errors ? 400 : 200);
+
+    return result;
+  }
+
+  /**
+   * Initiate an active search. An active search will maintain
+   * a persistent cursor that can be used at a later date to
+   * retrieve additional events from the search.
+   *
+   *
+   * Authenticate with an Enterprise API token.
+   *
+   * @param auth      header of the form token=...
+   * @param request     The search params
+   */
+  @Post("search/active")
+  @SuccessResponse("201", "Created")
+  @Example<ActiveSearchId>({
+    id: "abf053dc4a3042459818833276eec717",
+  })
+  public async createActiveSearch(
+    @Header("Authorization") auth: string,
+    @Body() request: CreateActiveSearchRequest,
+  ): Promise<ActiveSearchId> {
+
+    const result: ActiveSearchId = await enterpriseCreateActiveSearch(auth, request);
+
+    this.setStatus(201);
+    return result;
+
+  }
+
+  /**
+   * Create a saved search.
+   * Saved searches have an ID that can be used to initiate an active search.
+   *
+   * Authenticate with an Enterprise API token.
+   *
+   * @param auth      header of the form token=...
+   * @param request   The search parameters
+   */
+  @Post("search/saved")
+  @SuccessResponse("201", "Created")
+  @Example<SavedSearch>({
+    id: "05abf3dc4a30bf45981883327c7176ee",
+  })
+  public async createSavedSearch(
+    @Header("Authorization") auth: string,
+    @Body() request: CreateSavedSearchRequest,
+  ): Promise<SavedSearch> {
+
+    const result: SavedSearch = await createSavedSearchHandler(auth, request);
+
+    this.setStatus(201);
+    return result;
+
+  }
 }

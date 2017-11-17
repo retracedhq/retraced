@@ -70,6 +70,8 @@ export interface RequestTarget {
   type?: string;
 }
 
+export type CreateEventBulkRequest = CreateEventRequest[];
+
 export interface CreateEventRequest {
   /** The action that occured e.g. `user.login` or `spreadsheet.create` */
   action: string;
@@ -100,6 +102,7 @@ export interface CreateEventRequest {
   version?: string;
 }
 
+export type CreateEventBulkResponse = CreateEventResponse[];
 export interface CreateEventResponse {
   id: string;
   hash: string;
