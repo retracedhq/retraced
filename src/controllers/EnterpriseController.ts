@@ -1,4 +1,5 @@
-import {Body, Controller, Example, Header, Post, Route, SuccessResponse} from "tsoa";
+import {Body, Controller, Request, Example, Header, Post, Route, SuccessResponse} from "tsoa";
+import {Request as Req} from "express";
 
 import {
   ActiveSearchId,
@@ -16,6 +17,7 @@ import {checkEitapiAccessUnwrapped} from "../security/helpers";
 import {graphql} from "graphql";
 import schema from "../handlers/graphql/schema";
 import {EnterpriseToken} from "../models/eitapi_token";
+import {CreateEventRequest, defaultEventCreater} from "../handlers/createEvent";
 /*
 import enterpriseCreateSavedSearch from "../handlers/enterprise/createSavedSearch";
 import enterpriseDeleteActiveSearch from "../handlers/enterprise/deleteActiveSearch";
@@ -69,6 +71,7 @@ export class EnterpriseAPI extends Controller {
   public async graphqlPost(
     @Header("Authorization") auth: string,
     @Body() graphQLRequest: GraphQLRequest,
+    @Request() req: Req,
   ): Promise<GraphQLResp> {
 
     const token: EnterpriseToken = await checkEitapiAccessUnwrapped(auth);
@@ -87,6 +90,25 @@ export class EnterpriseAPI extends Controller {
       context,
       graphQLRequest.variables,
       graphQLRequest.operationName,
+    );
+
+    const thisViewEvent: CreateEventRequest = {
+      action: token.view_log_action,
+      crud: "r",
+      actor: {
+        id: `enterprise:${token.id.substring(0, 7)}`,
+        name: token.display_name,
+      },
+      group: {
+        id: token.group_id,
+      },
+      description: `Exported audit log events`,
+      source_ip: req.ip,
+    };
+    defaultEventCreater.saveRawEvent(
+      token.project_id,
+      token.environment_id,
+      thisViewEvent,
     );
 
     this.setStatus(result.errors ? 400 : 200);
