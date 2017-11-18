@@ -1,11 +1,11 @@
 import "source-map-support/register";
 import * as uuid from "uuid";
-
-import getPgPool from "../../persistence/pg";
 import getEs from "../../persistence/elasticsearch";
+import getPgPool from "../../persistence/pg";
 import { Environment } from "./index";
 
 const pgPool = getPgPool();
+
 const es = getEs();
 
 interface Opts {
@@ -22,21 +22,23 @@ export default async function createEnvironment(opts: Opts): Promise<Environment
     projectId: opts.projectId,
   };
 
-  // Create the ES index
-  const searchAlias = `retraced.${environment.projectId}.${environment.id}`;
-  const writeAlias = `retraced.${environment.projectId}.${environment.id}.current`;
-  const newIndex = `retraced.api.${uuid.v4().replace(/-/g, "")}`;
-  const aliases = {};
-  aliases[searchAlias] = {};
-  aliases[writeAlias] = {};
-  const params = {
-    index: newIndex,
-    body: {
-      aliases,
-    },
-  };
+  if (!process.env.PG_SEARCH) {
+      // Create the ES index
+      const searchAlias = `retraced.${environment.projectId}.${environment.id}`;
+      const writeAlias = `retraced.${environment.projectId}.${environment.id}.current`;
+      const newIndex = `retraced.api.${uuid.v4().replace(/-/g, "")}`;
+      const aliases = {};
+      aliases[searchAlias] = {};
+      aliases[writeAlias] = {};
+      const params = {
+        index: newIndex,
+        body: {
+          aliases,
+        },
+      };
 
-  await es.indices.create(params);
+      await es.indices.create(params);
+  }
 
   const q = `insert into environment (
     id, name, project_id

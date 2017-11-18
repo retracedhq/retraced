@@ -26,7 +26,33 @@ export interface Result {
   events: any[];
 }
 
+export interface ParsedQuery {
+    action: string | string[];
+    crud: string | string[];
+    received: string | string[];
+    created: string | string[];
+    "actor.id": string | string[];
+    "actor.name": string | string[];
+    description: string | string[];
+    location: string | string[];
+    text?: string | string[];
+}
+
 export default async function query(opts: Options): Promise<Result> {
+    const result = await doQuery(opts);
+
+    delete opts.cursor;
+    opts.size = 0;
+
+    const total = await doQuery(opts);
+
+    return {
+        totalHits: total.totalHits,
+        events: result.events,
+    };
+}
+
+async function doQuery(opts: Options): Promise<Result> {
   const params = searchParams(opts);
 
   polyfillSearchAfter(params);
