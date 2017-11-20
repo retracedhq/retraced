@@ -68,10 +68,6 @@ export default async function filter(opts: Options): Promise<Result> {
     const count = await pgPool.query(countQ, valsForCountQ);
     const totalHits = parseInt(count.rows[0].count, 10);
 
-    // DEBUG ONLY
-    const explain = await pgPool.query("EXPLAIN ANALYZE " + q, vals);
-    console.log(explain.rows);
-
     return {
         events,
         totalHits,
