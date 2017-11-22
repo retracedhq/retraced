@@ -6,7 +6,7 @@ import { Scope } from "../../security/scope";
 import { parseQuery, ParsedQuery, ActionQuery } from "./";
 
 export interface Options {
-  query: string;
+  query: string | ParsedQuery;
   scope: Scope;
   sort: "asc" | "desc";
   size?: number;
@@ -27,7 +27,7 @@ const pgPool = getPgPool();
 const defaultSize = 20;
 
 export default async function filter(opts: Options): Promise<Result> {
-    const query = parseQuery(opts.query);
+    const query = _.isString(opts.query) ? parseQuery(opts.query) : opts.query;
     const filters = getFilters(query, opts.scope);
     const size = opts.size || defaultSize;
     const wheres = filters.map(({ where }) => where);
@@ -151,7 +151,7 @@ export function getFilters(query: ParsedQuery, scope: Scope): Filter[] {
     if (query.actor_name) {
         const some = _.map(query.actor_name, (name) => {
             return {
-                where: `to_tsvector('english', (doc -> 'actor' -> 'name')) @@ to_tsquery(${nextParam()})`,
+                where: `to_tsvector('english', (doc -> 'actor' -> 'name')) @@ plainto_tsquery('english', ${nextParam()})`,
                 values: [name],
             };
         });
@@ -161,7 +161,7 @@ export function getFilters(query: ParsedQuery, scope: Scope): Filter[] {
 
     if (query.description) {
         filters.push({
-            where: `to_tsvector('english', (doc -> 'description')) @@ to_tsquery(${nextParam()})`,
+            where: `to_tsvector('english', (doc -> 'description')) @@ plainto_tsquery('english', ${nextParam()})`,
             values: [query.description.join(" & ")],
         });
     }
@@ -177,7 +177,7 @@ export function getFilters(query: ParsedQuery, scope: Scope): Filter[] {
     if (query.text) {
         filters.push({
             // this only searches values in "fields", not keys
-            where: `to_tsvector('english', doc) @@ to_tsquery(${nextParam()})`,
+            where: `to_tsvector('english', doc) @@ plainto_tsquery('english', ${nextParam()})`,
             // all terms must appear in the document
             values: [query.text],
         });

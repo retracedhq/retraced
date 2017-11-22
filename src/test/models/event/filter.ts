@@ -159,7 +159,7 @@ const tests = [
         scope: minScope,
         filters: [
             {
-                where: `(to_tsvector('english', (doc -> 'actor' -> 'name')) @@ to_tsquery($1) OR to_tsvector('english', (doc -> 'actor' -> 'name')) @@ to_tsquery($2))`,
+                where: `(to_tsvector('english', (doc -> 'actor' -> 'name')) @@ plainto_tsquery('english', $1) OR to_tsvector('english', (doc -> 'actor' -> 'name')) @@ plainto_tsquery('english', $2))`,
                 values: ["Reese", "Tracy"],
             },
             { where: "project_id = $3", values: ["proj1"] },
@@ -174,7 +174,7 @@ const tests = [
         scope: minScope,
         filters: [
             {
-                where: "to_tsvector('english', (doc -> 'description')) @@ to_tsquery($1)",
+                where: "to_tsvector('english', (doc -> 'description')) @@ plainto_tsquery('english', $1)",
                 values: ["download secret"],
             },
             { where: "project_id = $2", values: ["proj1"] },
@@ -189,7 +189,7 @@ const tests = [
         scope: minScope,
         filters: [
             {
-                where: "to_tsvector('english', doc) @@ to_tsquery($1)",
+                where: "to_tsvector('english', doc) @@ plainto_tsquery('english', $1)",
                 values: ["some free text"],
             },
             { where: "project_id = $2", values: ["proj1"] },
