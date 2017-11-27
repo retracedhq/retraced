@@ -1,4 +1,7 @@
-*.snyk-patch
+
+retracedctl
+api
+*.snykepatch
 build/
 lib/
 java/
