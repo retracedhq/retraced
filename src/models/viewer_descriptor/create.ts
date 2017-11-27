@@ -4,8 +4,6 @@ import * as moment from "moment";
 import ViewerDescriptor from "./def";
 import getRedis from "../../persistence/redis";
 
-const redis = getRedis(process.env.REDIS_URI);
-
 export interface Options {
   projectId: string;
   environmentId: string;
@@ -17,6 +15,7 @@ export interface Options {
 }
 
 export default async function createViewerDescriptor(opts: Options): Promise<ViewerDescriptor> {
+  const redis = getRedis();
   const newDesc: ViewerDescriptor = {
     id: uuid.v4().replace(/-/g, ""),
     projectId: opts.projectId,
