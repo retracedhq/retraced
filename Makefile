@@ -6,8 +6,6 @@ prebuild:
 	mkdir -p build
 
 deps:
-	# https://github.com/yarnpkg/yarn/issues/2266
-	yarn global add node-gyp
 	yarn install --force
 
 lint:

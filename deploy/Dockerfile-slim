@@ -3,7 +3,6 @@ FROM node:8.7
 ADD . /src
 WORKDIR /src
 
-RUN yarn
 RUN make deps build pkg
 
 
@@ -17,7 +16,6 @@ EXPOSE 3000
 
 copy --from=0 /src/api /src/api
 copy --from=0 /src/retracedctl /src/bin/retracedctl
-COPY --from=0 /src/node_modules/hiredis/build/Release/hiredis.node /src/node_modules/hiredis/build/Release/hiredis.node
 COPY --from=0 /src/node_modules/snappy/build/Release/binding.node /src/node_modules/snappy/build/Release/binding.node
 COPY --from=0 /src/node_modules/sse4_crc32/build/Release/sse4_crc32.node /src/node_modules/sse4_crc32/build/Release/sse4_crc32.node
 WORKDIR /src
