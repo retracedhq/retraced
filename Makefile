@@ -21,6 +21,8 @@ routes:
 
 build: prebuild lint swagger routes
 	`yarn bin`/tsc
+	mkdir -p bin && cp build/retracedctl.js bin/retracedctl && chmod +x bin/retracedctl
+
 
 # Bundle into two standalone binaries so we can obfuscate the source code
 #
