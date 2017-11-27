@@ -1,15 +1,16 @@
 import * as util from "util";
 import getPgPool from "../persistence/pg";
 
-exports.name = "list-projects";
-exports.describe = "list the current projects";
+export const name = "list-projects";
+export const describe = "list the current projects";
+export const builder = {};
 
 function listProject(): Promise<any> {
   const pgPool = getPgPool();
   return pgPool.query(`select * from project`);
 }
 
-exports.handler = async (argv) => {
+export const handler = async (argv) => {
   listProject()
       .then((res) => {
         console.log(`rows: ${util.inspect(res.rows)}`);

@@ -1,15 +1,16 @@
 import * as util from "util";
 import getPgPool from "../persistence/pg";
 
-exports.name = "list-environments";
-exports.describe = "list the current environments";
+export const name = "list-environments";
+export const describe = "list the current environments";
+export const builder = {};
 
 function list(): Promise<any> {
   const pgPool = getPgPool();
   return pgPool.query(`select * from environment`);
 }
 
-exports.handler = async (argv) => {
+export const handler = async (argv) => {
   list()
       .then((res) => {
         console.log(`rows: ${util.inspect(res.rows)}`);

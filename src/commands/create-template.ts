@@ -3,9 +3,9 @@ import createTemplate from "../models/template/create";
 import {byName as deleteAllByName} from "../models/template/delete";
 import {Template} from "../models/template/index";
 
-exports.name = "create-template";
-exports.describe = "Create a retraced logs-viewer display template in a project";
-exports.builder = {
+export const name = "create-template";
+export const describe = "";
+export const builder = {
   projectId: {
     demand: true,
   },
@@ -23,28 +23,24 @@ exports.builder = {
   },
 };
 
-/*
-[{"comparator": "eq", "path": "actor.id", "value": "null"}]
-**{{ action }}:**  {{ description }}
- */
+export async function main(argv): Promise<Template> {
+  const {projectId, environmentId, rule, template} = argv;
+  const templateName = argv.name;
 
-async function main(argv): Promise<Template> {
-  const {projectId, environmentId, name, rule, template} = argv;
+  const affected = await deleteAllByName({name: templateName, environmentId});
 
-  const affected = await deleteAllByName({name, environmentId});
-
-  console.log(`Removed ${affected} existing templates with name ${name} in env ${environmentId}`);
+  console.log(`Removed ${affected} existing templates with name ${templateName} in env ${environmentId}`);
 
   return createTemplate({
     project_id: projectId,
     environment_id: environmentId,
-    name,
+    name: templateName,
     rule,
     template,
   });
 }
 
-exports.handler = async (argv) => {
+export const handler = async (argv) => {
   main(argv)
     .then((t) => {
       console.log(`created template ${util.inspect(t)}`);
