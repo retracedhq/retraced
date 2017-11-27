@@ -1,7 +1,7 @@
 
 retracedctl
 api
-*.snykepatch
+*.snyk-patch
 build/
 lib/
 java/
