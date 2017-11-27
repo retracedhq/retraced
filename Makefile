@@ -1,3 +1,6 @@
+clean:
+	rm *.snyk-patch
+
 prebuild:
 	rm -rf build
 	mkdir -p build
@@ -18,7 +21,16 @@ routes:
 
 build: prebuild lint swagger routes
 	`yarn bin`/tsc
-	mkdir -p bin && mv build/retracedctl.js bin/retracedctl && chmod +x bin/retracedctl
+
+# Bundle into two standalone binaries so we can obfuscate the source code
+#
+# the sed command is because pg-format uses a bizarre import that does `require(__dirname + '/some-module')`
+# and we need to change it to `require('./some-module')` to make `pkg` work, because pkg can't currently
+# handle imports that are not string literals.
+pkg:
+	sed -i.bak "s/__dirname + '/'.\//g" node_modules/pg-format/lib/index.js
+	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output api ./build/index.js
+	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output retracedctl ./build/retracedctl.js
 
 run:
 	node --no-deprecation ./build/index.js
@@ -41,19 +53,4 @@ k8s-ingress:
 
 k8s: k8s-pre k8s-deployment k8s-service k8s-ingress
 	: "Templated k8s yamls"
-
-
-# mostly stolen from replicatedcom/vendor-api and replicatedhq/docs
-# thanks martin!
-markup-deps:
-	mkdir -p java/
-	curl -o java/swagger2markup-cli-1.0.0.jar http://central.maven.org/maven2/io/github/swagger2markup/swagger2markup-cli/1.0.0/swagger2markup-cli-1.0.0.jar
-	curl -o java/swagger2markup-1.0.0.jar http://central.maven.org/maven2/io/github/swagger2markup/swagger2markup/1.0.0/swagger2markup-1.0.0.jar
-	sudo gem install asciidoctor
-
-markup-docs: swagger
-	java -cp java/swagger2markup-1.0.0.jar -jar java/swagger2markup-cli-1.0.0.jar convert -i build/swagger.json -f build/swagger
-	asciidoctor build/swagger.adoc
-	echo docs available at file://${PWD}/build/swagger.html
-
 

@@ -1,9 +1,9 @@
 import { bootstrapProject } from "../headless";
 import * as util from "util";
 
-exports.name = "bootstrap";
-exports.describe = "Bootstrap a retraced project with a specified projectId, environmentId, and apiKey";
-exports.builder = {
+export const name = "bootstrap";
+export const describe = "Bootstrap a retraced project with a specified projectId, environmentId, and apiKey";
+export const builder = {
   projectId: {
     demand: true,
   },
@@ -24,7 +24,7 @@ exports.builder = {
   },
 };
 
-exports.handler = async (argv) => {
+export const handler = async (argv) => {
   const { projectId, apiKey, environmentId, projectName, environmentName, tokenName } = argv;
   bootstrapProject({
     projectId,
