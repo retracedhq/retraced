@@ -13,7 +13,7 @@ machine:
     # semver tags
     SEMVER_MAJOR: "1"
     SEMVER_MINOR: "1.1"
-    SEMVER_PATCH: "1.1.10"
+    SEMVER_PATCH: "1.1.11"
 
     QUAY_RELEASE_REPO: quay.io/retracedhq/api
     REPLICATED_RELEASE_REPO: registry.replicated.com/library/retraced-api
