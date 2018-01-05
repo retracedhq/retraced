@@ -66,6 +66,6 @@ which will build `build/swagger.adoc`, convert to `build/swagger.html`, and open
 ## Building library images for on-prem
 
 ```sh
-docker build -t registry.replicated.com/library/retraced-api:1.1.10-slim -f deploy/Dockerfile-slim .
-docker push registry.replicated.com/library/retraced-api:1.1.10-slim
+docker build --pull -t registry.replicated.com/library/retraced-api:${SEMVER_PATCH}-slim -f deploy/Dockerfile-slim .
+docker push registry.replicated.com/library/retraced-api:${SEMVER_PATCH}-slim
 ```
