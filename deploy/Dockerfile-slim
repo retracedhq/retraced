@@ -9,7 +9,7 @@ RUN make deps build pkg
 FROM debian:stretch-slim
 
 RUN apt-get update -y && \
-    apt-get install -y --no-install-recommends ca-certificates && \
+    apt-get install -y --no-install-recommends sensible-utils ca-certificates && \
 	rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000
