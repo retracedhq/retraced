@@ -10,6 +10,7 @@ import verifyEnvironmentAccess from "./verifyEnvironmentAccess";
 import getEitapiToken from "../models/eitapi_token/get";
 import ViewerDescriptor from "../models/viewer_descriptor/def";
 import { EnterpriseToken } from "../models/eitapi_token";
+import { logger } from "../logger";
 
 // Authorization: Token token=abcdef
 export function apiTokenFromAuthHeader(authHeader?: string): string {
@@ -36,14 +37,17 @@ export function apiTokenFromAuthHeader(authHeader?: string): string {
 
 export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: string, environmentId?: string): Promise<AdminClaims> {
 
+  logger.debug("checking admin access");
   if (_.isEmpty(authHeader)) {
     throw { status: 401, err: new Error("Missing Authorization header") };
   }
 
+  logger.debug("validating voucher");
   const claims = await validateAdminVoucher(authHeader);
 
   // Some endpoints don't reference a project (such as list projects)
   if (!projectId) {
+    logger.debug("no project");
     return claims;
   }
 

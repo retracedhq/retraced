@@ -24,6 +24,7 @@ import createApiToken from "../handlers/admin/createApiToken";
 import deleteApiToken from "../handlers/admin/deleteApiToken";
 import { ApiTokenResponse, ApiTokenValues } from "../models/api_token";
 import { audit } from "../headless";
+import { BotAccount } from "../models/bot/types";
 
 @Route("admin/v1")
 export class AdminAPI extends Controller {
@@ -466,4 +467,22 @@ export class AdminAPI extends Controller {
 
         this.setStatus(204);
     }
+
+  /**
+   * Create an invite. Sends an invitation email to the user.
+   *
+   * @param auth          Base64 encoded JWT
+   * @param projectId     The project id
+   * @param body          The invite resource with the invitee's email
+   */
+  @Post("bot")
+  @SuccessResponse("201", "Created")
+  public async createBotAccount(
+    @Header("Authorization") auth: string,
+    @Path("projectId") projectId: string,
+    @Body() body: ApiTokenValues,
+    @Request() req: express.Request,
+  ): Promise<BotAccount> {
+    await audit(req, "bot_account.create", "c");
+  }
 }
