@@ -3,8 +3,9 @@ FROM node:8.7
 ADD . /src
 WORKDIR /src
 
+RUN make deps
 RUN npm run snyk-protect
-RUN make deps build pkg
+RUN make build pkg
 
 
 FROM debian:stretch-slim
