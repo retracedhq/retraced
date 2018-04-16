@@ -10,6 +10,7 @@
     "analytics-node": "^2.1.0",
     "auth0-js": "^8.0.4",
     "aws-sdk": "^2.6.12",
+    "bcrypt": "^2.0.0",
     "bluebird": "^3.5.0",
     "body-parser": "^1.15.2",
     "bugsnag": "^1.9.1",
@@ -82,8 +83,7 @@
     "cover-xml": "yarn run pretest && istanbul cover _mocha --include-all-sources true --report lcovonly -- --recursive --reporter mocha-junit-reporter build/test/",
     "mintest": "yarn run pretest && mocha --recursive --reporter 'min' build/test/",
     "report-coverage": "coveralls < ./coverage/lcov.info && codeclimate-test-reporter < ./coverage/lcov.info",
-    "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "snyk-protect": "snyk protect"
   },
   "author": "",
   "nyc": {

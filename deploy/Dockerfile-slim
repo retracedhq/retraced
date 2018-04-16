@@ -3,6 +3,7 @@ FROM node:8.7
 ADD . /src
 WORKDIR /src
 
+RUN npm run snyk-protect
 RUN make deps build pkg
 
 
