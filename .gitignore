@@ -1,4 +1,5 @@
 
+src/swagger.json
 retracedctl
 api
 *.snyk-patch

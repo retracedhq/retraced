@@ -39,7 +39,7 @@
     "node-localstorage": "^1.3.0",
     "node-statsd-client": "^1.0.3",
     "nsqjs": "^0.8.4",
-    "nyc": "^9.0.1",
+    "nyc": "^11.6.0",
     "pg": "^7.0.2",
     "pg-format": "^1.0.4",
     "pino": "^4.7.1",
@@ -71,6 +71,7 @@
     "gaze-run-interrupt": "^1.0.1",
     "handlebars-cmd": "^0.1.4",
     "istanbul": "1.1.0-alpha.1",
+    "mocha-jenkins-reporter": "^0.3.12",
     "mocha-junit-reporter": "^1.13.0",
     "pkg": "^4.3.0-beta.1",
     "tslint": "^4.5.1",
@@ -80,30 +81,26 @@
   "scripts": {
     "pretest": "tslint --project ./tsconfig.json",
     "test": "mocha --recursive -r ts-node/register src/test/**/*.ts",
-    "cover": "yarn run pretest && istanbul cover _mocha --include-all-sources true --report lcovonly -- --recursive build/test/",
-    "cover-xml": "yarn run pretest && istanbul cover _mocha --include-all-sources true --report lcovonly -- --recursive --reporter mocha-junit-reporter build/test/",
+    "cover": "nyc mocha",
     "mintest": "mocha --recursive -r ts-node/register --reporter 'min' src/test/**/*.ts",
     "report-coverage": "coveralls < ./coverage/lcov.info && codeclimate-test-reporter < ./coverage/lcov.info",
     "snyk-protect": "snyk protect"
   },
   "author": "",
+  "snyk": true,
   "nyc": {
-    "include": [
-      "lib/**/*.js"
-    ],
-    "exclude": [
-      "node_modules/",
-      "lib/test/*.js"
-    ],
     "extension": [
+      ".ts",
       ".js"
     ],
-    "reporter": [
-      "text-summary",
-      "html"
+    "exclude": [
+      "**/*.d.ts",
+      "node_modules/**/*"
     ],
-    "sourceMap": true,
-    "instrument": true
-  },
-  "snyk": true
+    "reporter": [
+      "text",
+      "lcov"
+    ],
+    "all": true
+  }
 }
