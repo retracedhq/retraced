@@ -1,9 +1,12 @@
+import * as _ from "lodash";
 import * as pg from "pg";
 import * as bcrypt from "bcrypt";
 import { instrument, instrumented } from "../../metrics";
 import { AdminToken } from "./types";
 import getPgPool from "../../persistence/pg";
 import uuidNoDashes from "../uniqueId";
+import { AdminClaims } from "../../security/vouchers";
+import { logger } from "../../logger";
 
 export class AdminTokenStore {
 
@@ -20,10 +23,12 @@ export class AdminTokenStore {
   }
 
   private static instance: AdminTokenStore;
+
   constructor(
     private readonly idSource: () => string,
     private readonly pool: pg.Pool,
-  ) {}
+  ) {
+  }
 
   @instrumented
   public async createAdminToken(userId: string): Promise<AdminToken> {
@@ -47,7 +52,7 @@ INSERT INTO admin_token (
     const v = [
       id,
       userId,
-      token,
+      tokenBcrypt,
       created,
     ];
 
@@ -60,6 +65,33 @@ INSERT INTO admin_token (
       token,
       disabled: false,
       createdAt: created,
+    };
+  }
+
+  @instrumented
+  public async verifyTokenOr401(id: string, plaintextToken: string): Promise<AdminClaims> {
+
+    const q = `SELECT * FROM admin_token WHERE id = $1 AND disabled = FALSE`;
+
+    const v = [
+      id,
+    ];
+
+    const res = await this.pool.query(q, v);
+    if (_.isEmpty(res.rows)) {
+      throw { status: 401, err: new Error("Invalid ID or token") };
+    }
+
+    const { user_id, token_bcrypt } = res.rows[0];
+
+    const valid = await bcrypt.compare(plaintextToken, token_bcrypt);
+    if (!valid) {
+      logger.info(`token failed bcrypt compare; result was ${valid}`);
+      throw { status: 401, err: new Error("Invalid ID or token") };
+    }
+
+    return {
+      userId: user_id,
     };
   }
 }

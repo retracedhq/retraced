@@ -11,6 +11,7 @@ import getEitapiToken from "../models/eitapi_token/get";
 import ViewerDescriptor from "../models/viewer_descriptor/def";
 import { EnterpriseToken } from "../models/eitapi_token";
 import { logger } from "../logger";
+import { AdminTokenStore } from "../models/admin_token/store";
 
 // Authorization: Token token=abcdef
 export function apiTokenFromAuthHeader(authHeader?: string): string {
@@ -35,33 +36,52 @@ export function apiTokenFromAuthHeader(authHeader?: string): string {
   return parts[1];
 }
 
+async function parseClaims(authHeader: string) {
+  let claims;
+  const tokenParts = authHeader.match(/id=(.+) token=(.+)/);
+
+  if (tokenParts && tokenParts.length === 3) {
+    logger.debug("validating admin against token");
+    // tslint:disable-next-line
+    const [__, id, token] = tokenParts;
+    claims = await AdminTokenStore.default().verifyTokenOr401(id, token);
+  } else {
+    logger.debug("validating jwt voucher");
+    claims = await validateAdminVoucher(authHeader);
+  }
+  return claims;
+}
+
+async function checkEnvAccess(environmentId: string, claims: AdminClaims) {
+  if (!await verifyEnvironmentAccess({ environmentId, ...claims })) {
+    logger.child({ environmentId, ...claims }).debug("checking project access");
+    throw { status: 404, err: new Error("Not found") };
+  }
+}
+
+async function checkProjectAccess(projectId: string, claims) {
+  if (!await verifyProjectAccess({ projectId, ...claims })) {
+    logger.child({ projectId, ...claims }).debug("checking project access");
+    throw { status: 404, err: new Error("Not found") };
+  }
+}
+
 export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: string, environmentId?: string): Promise<AdminClaims> {
 
   logger.debug("checking admin access");
   if (_.isEmpty(authHeader)) {
     throw { status: 401, err: new Error("Missing Authorization header") };
   }
-
-  logger.debug("validating voucher");
-  const claims = await validateAdminVoucher(authHeader);
+  let claims = await parseClaims(authHeader);
 
   // Some endpoints don't reference a project (such as list projects)
-  if (!projectId) {
-    logger.debug("no project");
-    return claims;
-  }
-
-  if (!await verifyProjectAccess({ projectId, userId: claims.userId })) {
-    throw { status: 404, err: new Error("Not found") };
+  if (projectId) {
+    await checkProjectAccess(projectId, claims);
   }
 
   // some endpoints don't reference an environment, or don't validate against it
-  if (!environmentId) {
-    return claims;
-  }
-
-  if (!await verifyEnvironmentAccess({ environmentId, userId: claims.userId })) {
-    throw { status: 404, err: new Error("Not found") };
+  if (environmentId) {
+    await checkEnvAccess(environmentId, claims);
   }
 
   return claims;

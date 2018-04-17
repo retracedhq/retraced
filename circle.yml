@@ -30,7 +30,8 @@ dependencies:
 
 test:
   override:
-    - yarn cover-xml
+    - make swagger
+    - yarn cover
     - yarn report-coverage
 
 deployment:

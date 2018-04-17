@@ -35,6 +35,10 @@ pkg:
 run:
 	node --no-deprecation ./build/index.js
 
+run-debug:
+	node --no-deprecation ./build/index.js
+# `yarn bin`/ts-node --inspect=0.0.0.0 --no-deprecation ./src/index.ts
+
 test: build
 	yarn test
 

@@ -5,8 +5,8 @@ import * as cors from "cors";
 import * as _ from "lodash";
 import * as bugsnag from "bugsnag";
 import * as Sigsci from "sigsci-module-nodejs";
-import * as swaggerUI from "swagger-ui-express";
 import * as Prometheus from "prom-client";
+import * as swaggerUI from "swagger-ui-express";
 
 import { register, wrapRoute } from "./router";
 import { LegacyRoutes } from "./routes";
@@ -110,7 +110,7 @@ function buildRoutes() {
 function serve() {
   const sslCertPath = process.env.SSL_SERVER_CERT_PATH;
   const sslKeyPath = process.env.SSL_SERVER_KEY_PATH;
-  if  (!sslCertPath || !sslKeyPath) {
+  if (!sslCertPath || !sslKeyPath) {
     logger.info("SSL_SERVER_CERT_PATH or SSL_SERVER_KEY_PATH unset, serving HTTP");
     serveHTTP();
   } else {
