@@ -5,7 +5,6 @@ import * as cors from "cors";
 import * as _ from "lodash";
 import * as bugsnag from "bugsnag";
 import * as Sigsci from "sigsci-module-nodejs";
-import * as swaggerUI from "swagger-ui-express";
 import * as Prometheus from "prom-client";
 
 import { register, wrapRoute } from "./router";
@@ -14,7 +13,7 @@ import { RegisterRoutes } from "./gen/routes";
 import { AdminUserBootstrap } from "./handlers/admin/AdminUserBootstrap";
 import { ensureHeadlessProject } from "./headless";
 import * as metrics from "./metrics";
-import swaggerSpecs from "./swagger";
+// import swaggerSpecs from "./swagger";
 
 import "./controllers/PublisherController";
 import "./controllers/AdminController";
@@ -66,15 +65,15 @@ function buildRoutes() {
     setTimeout(() => res.send(""), 200);
   });
 
-  swaggerSpecs.forEach((spec) => {
-    logger.debug(`GET    '${spec.path}/swagger.json'`);
-    logger.debug(`GET    '${spec.path}/swagger'`);
-    app.get(`${spec.path}/swagger.json`, (req, res) => {
-      res.setHeader("ContentType", "application/json");
-      res.send(spec.swagger);
-    });
-    app.use(`${spec.path}/swagger`, swaggerUI.serve, swaggerUI.setup(spec.swagger));
-  });
+  // swaggerSpecs.forEach((spec) => {
+  //   logger.debug(`GET    '${spec.path}/swagger.json'`);
+  //   logger.debug(`GET    '${spec.path}/swagger'`);
+  //   app.get(`${spec.path}/swagger.json`, (req, res) => {
+  //     res.setHeader("ContentType", "application/json");
+  //     res.send(spec.swagger);
+  //   });
+  //   app.use(`${spec.path}/swagger`, swaggerUI.serve, swaggerUI.setup(spec.swagger));
+  // });
 
   RegisterRoutes(app);
 

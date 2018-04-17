@@ -9,6 +9,10 @@
     component-type "^1.2.1"
     join-component "^1.1.0"
 
+"@types/bcrypt@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/bcrypt/-/bcrypt-1.0.0.tgz#2c523da191db7d41c06d17de235335c985effe9b"
+
 "@types/elasticsearch@^5.0.13":
   version "5.0.13"
   resolved "https://registry.yarnpkg.com/@types/elasticsearch/-/elasticsearch-5.0.13.tgz#ebc418c2a84ab312f49e67bcbe4f710f919f6caa"

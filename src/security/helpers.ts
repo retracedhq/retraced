@@ -11,6 +11,7 @@ import getEitapiToken from "../models/eitapi_token/get";
 import ViewerDescriptor from "../models/viewer_descriptor/def";
 import { EnterpriseToken } from "../models/eitapi_token";
 import { logger } from "../logger";
+import { AdminTokenStore } from "../models/admin_token/store";
 
 // Authorization: Token token=abcdef
 export function apiTokenFromAuthHeader(authHeader?: string): string {
@@ -42,8 +43,18 @@ export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: 
     throw { status: 401, err: new Error("Missing Authorization header") };
   }
 
-  logger.debug("validating voucher");
-  const claims = await validateAdminVoucher(authHeader);
+  let claims;
+  const tokenParts = authHeader.match(/id=(.+) token=(.+)/);
+
+  if (tokenParts && tokenParts.length === 3) {
+    logger.debug("validating admin against token");
+    // tslint:disable-next-line
+    const [ __, id, token] = tokenParts;
+    claims = await AdminTokenStore.default().verifyTokenOr401(id, token);
+  } else {
+    logger.debug("validating jwt voucher");
+    claims = await validateAdminVoucher(authHeader);
+  }
 
   // Some endpoints don't reference a project (such as list projects)
   if (!projectId) {
@@ -51,7 +62,8 @@ export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: 
     return claims;
   }
 
-  if (!await verifyProjectAccess({ projectId, userId: claims.userId })) {
+  if (!await verifyProjectAccess({ projectId, ...claims })) {
+    logger.child({ projectId, ...claims }).debug("checking project access");
     throw { status: 404, err: new Error("Not found") };
   }
 
@@ -60,7 +72,8 @@ export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: 
     return claims;
   }
 
-  if (!await verifyEnvironmentAccess({ environmentId, userId: claims.userId })) {
+  if (!await verifyEnvironmentAccess({ environmentId, ...claims })) {
+    logger.child({ environmentId, ...claims }).debug("checking project access");
     throw { status: 404, err: new Error("Not found") };
   }
 
