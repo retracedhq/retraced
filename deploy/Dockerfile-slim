@@ -23,6 +23,8 @@ copy --from=0 /src/api /src/api
 copy --from=0 /src/retracedctl /src/bin/retracedctl
 COPY --from=0 /src/node_modules/snappy/build/Release/binding.node /src/node_modules/snappy/build/Release/binding.node
 COPY --from=0 /src/node_modules/sse4_crc32/build/Release/sse4_crc32.node /src/node_modules/sse4_crc32/build/Release/sse4_crc32.node
+COPY --from=0 /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node
+
 WORKDIR /src
 
 CMD ["/src/api"]
