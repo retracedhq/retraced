@@ -231,7 +231,7 @@ export function gauge(name: string, help?: string, labels?: string[]) {
 /**
  * Run the given function, recording throughput, latency and errors
  *
- * @param name     a name for the method
+ * @param  name     a name for the method
  * @param delegate the function to run
  */
 export async function instrument(

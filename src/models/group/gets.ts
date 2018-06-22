@@ -7,7 +7,7 @@ const pgPool = getPgPool();
 /**
  * Asynchronously fetch >=1 group(s) from the database.
  *
- * @param {string} [group_ids] The unique group id(s) to fetch
+ * @param  {string} [group_ids] The unique group id(s) to fetch
  */
 export default async function(opts) {
   if (opts.group_ids.length === 0) {

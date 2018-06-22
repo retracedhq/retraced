@@ -47,7 +47,7 @@ deployment:
       - ./deploy/integration_tests_using_env.sh
 
   prem:
-    branch: release
+    branch: releas
     owner: retracedhq
     commands:
       - sudo docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io

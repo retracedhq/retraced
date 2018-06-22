@@ -17,7 +17,7 @@ swagger:
 routes:
 	`yarn bin`/tsoa routes
 
-build: prebuild lint swagger routes
+build: swagger routes
 	`yarn bin`/tsc
 	mkdir -p bin && cp build/retracedctl.js bin/retracedctl && chmod +x bin/retracedctl
 
@@ -31,6 +31,7 @@ pkg:
 	sed -i.bak "s/__dirname + '/'.\//g" node_modules/pg-format/lib/index.js
 	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output api ./build/index.js
 	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output retracedctl ./build/retracedctl.js
+	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output processor ./build/_processor/index.js
 
 run:
 	node --no-deprecation ./build/index.js
