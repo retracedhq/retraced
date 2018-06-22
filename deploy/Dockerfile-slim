@@ -22,12 +22,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 EXPOSE 3000
 
-copy --from=0 /src/api /src/api
-copy --from=0 /src/retracedctl /src/bin/retracedctl
+COPY --from=0 /src/api /src/api
+COPY --from=0 /src/retracedctl /src/bin/retracedctl
 COPY --from=0 /src/node_modules/snappy/build/Release/binding.node /src/node_modules/snappy/build/Release/binding.node
 COPY --from=0 /src/node_modules/sse4_crc32/build/Release/sse4_crc32.node /src/node_modules/sse4_crc32/build/Release/sse4_crc32.node
 COPY --from=0 /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node
 
+RUN cp /src/api /src/replicated-auditlog-api
+RUN cp /src/retracedctl /src/replicated-auditlog-retracedctl
+
 WORKDIR /src
 
-CMD ["/src/api"]
+CMD ["/src/replicated-auditlog-api"]
