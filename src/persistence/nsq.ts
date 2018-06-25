@@ -16,7 +16,7 @@ export class NSQClient {
   private writer?: Promise<any>;
 
   /**
-   * @param host                    nsqd hostname
+   * @param  host                    nsqd hostname
    * @param port                    nsqd tcp port
    * @param circuitBreakerThreshold optional error threshold. If the percent of errors is higher than this value,
    *                                the connection will be destroyed and reconnected.

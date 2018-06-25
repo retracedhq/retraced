@@ -12,7 +12,7 @@ const pgPool = getPgPool();
 /**
  * Asynchronously create a new project with the given options
  *
- * @param {Object} [opts] The request options.
+ * @param  {Object} [opts] The request options.
  */
 export default function createProject(opts) {
   return new Promise((resolve, reject) => {
