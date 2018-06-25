@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nsqd
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: retraced
+        tier: nsq
+    spec:
+      containers:
+        - name: nsqd
+          image: nsqio/nsq:v1.0.0-compat
+          command:
+            - /bin/sh 
+          args:
+            - -c
+            - nsqd
+              -statsd-address
+              ${KUBERNETES_SERVICE_HOST}:8125
+              -statsd-prefix
+              "NSQD#nsqd.stat="
+          ports:
+            - containerPort: 4150
+            - containerPort: 4151

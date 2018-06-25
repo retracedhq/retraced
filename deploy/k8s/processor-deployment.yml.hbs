@@ -1,45 +1,41 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: api
+  name: processor
 spec:
   replicas: 1
   template:
     metadata:
       labels:
         app: retraced
-        tier: api
+        tier: processor
     spec:
       volumes:
-        - name: var-run
-          hostPath:
-            path: /var/run/retraced/
-      imagePullSecrets:
-        - name: quayio
+        - name: tmpdir
+          emptyDir: {}
       containers:
-        - name: api
+        - name: processor
           image: quay.io/retracedhq/retraced:{{ tag }}
           command:
-            - /src/api
-          ports:
-            - containerPort: 3000
+            - /src/processor
           volumeMounts:
-            - mountPath: /var/run/retraced/
-              name: var-run
-              readOnly: true
+            - mountPath: /tmp
+              name: tmpdir
           env:
-            - name: STATSD_USE_SYSDIG_NAME_REWRITER
+            - name: TMPDIR
+              value: /tmp
+            - name: STATSD_USE_SYSDIG_NAME_REWRITER 
               value: "1"
-            - name: SIGSCI_RPC_ADDRESS
-              valueFrom:
-                secretKeyRef:
-                  name: sigsci
-                  key: SIGSCI_RPC_ADDRESS
             - name: REDIS_URI
               valueFrom:
                 secretKeyRef:
                   name: redis
                   key: REDIS_URI
+            - name: WARP_PIPE_REDIS_DB
+              valueFrom:
+                secretKeyRef:
+                  name: warp-pipe
+                  key: WARP_PIPE_REDIS_DB
             - name: POSTGRES_POOL_SIZE
               valueFrom:
                 secretKeyRef:
@@ -70,6 +66,26 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: POSTGRES_DATABASE
+            - name: SCYLLA_HOSTS
+              valueFrom:
+                secretKeyRef:
+                  name: scylla
+                  key: SCYLLA_HOSTS
+            - name: SCYLLA_KEYSPACE
+              valueFrom:
+                secretKeyRef:
+                  name: scylla
+                  key: SCYLLA_KEYSPACE
+            - name: SCYLLA_USER
+              valueFrom:
+                secretKeyRef:
+                  name: scylla
+                  key: SCYLLA_USER
+            - name: SCYLLA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: scylla
+                  key: SCYLLA_PASSWORD
             - name: HMAC_SECRET_ADMIN
               valueFrom:
                 secretKeyRef:
@@ -90,46 +106,31 @@ spec:
                 secretKeyRef:
                   name: retraced
                   key: RETRACED_API_BASE
-            - name: RETRACED_API_SCHEMES
+            - name: MANDRILL_KEY
               valueFrom:
                 secretKeyRef:
-                  name: retraced
-                  key: RETRACED_API_SCHEMES
+                  name: mandrill
+                  key: MANDRILL_KEY
             - name: ELASTICSEARCH_NODES
               valueFrom:
                 secretKeyRef:
                   name: elasticsearch
                   key: ELASTICSEARCH_NODES
-            - name: AUTH0_CLIENT_DOMAIN
-              valueFrom:
-                secretKeyRef:
-                  name: auth0
-                  key: AUTH0_CLIENT_DOMAIN
-            - name: AUTH0_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: auth0
-                  key: AUTH0_CLIENT_ID
-            - name: RETRACED_PUBLIC_SITE
-              valueFrom:
-                secretKeyRef:
-                  name: retraced
-                  key: RETRACED_PUBLIC_SITE
-            - name: STATUSPAGEIO_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: statuspageio
-                  key: token
             - name: BUGSNAG_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: bugsnag
-                  key: API_TOKEN
+                  key: PROCESSOR_TOKEN
             - name: BUGSNAG_STAGE
               valueFrom:
                 secretKeyRef:
                   name: bugsnag
                   key: STAGE
+            - name: STATUSPAGEIO_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: statuspageio
+                  key: token
             - name: NSQD_HOST
               valueFrom:
                 secretKeyRef:
@@ -145,3 +146,6 @@ spec:
                 secretKeyRef:
                   name: nsq
                   key: NSQD_HTTP_PORT
+
+      imagePullSecrets:
+        - name: quayio

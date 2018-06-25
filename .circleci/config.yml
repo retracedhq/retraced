@@ -1,0 +1,186 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+
+experimental:
+  notify:
+    branches:
+      only:
+        - master
+
+jobs:
+  test:
+    docker:
+      - image: circleci/node:8.7
+    environment:
+      MOCHA_FILE: results/my-test-output.xml
+      JUNIT_REPORT_PATH: results/my-test-output.xml
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+      - run: make deps swagger cover report-coverage
+      - store_test_results:
+          path: results
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+  build_docker:
+    docker:
+      - image: circleci/node:8.7
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker pull debian:stretch-slim
+      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
+      - run: docker build -f deploy/Dockerfile-slim -t quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} .
+      - run: docker push quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
+
+  deploy_unstable:
+    docker:
+      - image: circleci/node:8.7
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker pull debian:stretch-slim
+      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
+      - run: docker pull quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
+      - run: docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:unstable
+      - deploy:
+          command: docker push quay.io/retracedhq/retraced:unstable
+
+  deploy_saas_staging:
+    environment:
+      PROJECT_NAME: retraced-staging
+      CLUSTER_NAME: retraced-staging
+      CLOUDSDK_COMPUTE_ZONE: us-east1-b
+    docker:
+      - image: circleci/node:8.7
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: ./deploy/deploy_k8s_using_env.sh
+
+
+  integration_test_sass_staging:
+    environment:
+      PUBLISHER_API_ENDPOINT: https://api.staging.retraced.io
+      PROJECT_ID: ada4383fc84948caac138f28b131f713
+      ENVIRONMENT_ID: 406e148996444214b9b5912acacb8c63
+      PUBLISHER_API_KEY:  5e13bc18ecad44e08bca82ab5fce0014
+      QA_INTEGRATION_VERSION: latest
+    docker:
+      - image: circleci/node:8.7
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: sleep 20 # todo check health or something
+      - run: ./deploy/integration_tests_using_env.sh
+
+  # this isn't used yet, coming soon
+  deploy_stable:
+    docker:
+      - image: circleci/node:8.7
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker pull debian:stretch-slim
+      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
+      # don't build, just pull. This ensures we're releasing the SHA that we just built and tested
+      - run: docker pull quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
+      - run: docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:stable
+      - run: docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:latest
+      - run: docker push quay.io/retracedhq/retraced:stable
+      - run: docker push quay.io/retracedhq/retraced:latest
+      - run: |
+            function semverParseInto() {
+                local RE='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z-]*\)'
+                eval $2=`echo $1 | sed -e "s#$RE#\1#"`
+                eval $3=`echo $1 | sed -e "s#$RE#\2#"`
+                eval $4=`echo $1 | sed -e "s#$RE#\3#"`
+                eval $5=`echo $1 | sed -e "s#$RE#\4#"`
+            }
+            semverParseInto "$CIRCLE_TAG" MAJOR MINOR PATCH SPECIAL
+
+            if [ -n "$SPECIAL" ]; then
+               echo "pre-release != release, so just push the tag and exit"
+               docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${CIRCLE_TAG}
+               docker push quay.io/retracedhq/retraced:${CIRCLE_TAG}
+               exit 0
+            fi
+
+            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${CIRCLE_TAG}
+            docker push quay.io/retracedhq/retraced:${CIRCLE_TAG}
+            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${MAJOR}
+            docker push quay.io/retracedhq/retraced:${MAJOR}
+            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${MAJOR}.${MINOR}
+            docker push quay.io/retracedhq/retraced:${MAJOR}.${MINOR}
+            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${MAJOR}.${MINOR}.${PATCH}
+            docker push quay.io/retracedhq/retraced:${MAJOR}.${MINOR}.${PATCH}
+
+  # this isn't used yet, coming soon
+  deploy_saas_production:
+    environment:
+      PROJECT_NAME: retraced-production
+      CLUSTER_NAME: retraced-production
+      CLOUDSDK_COMPUTE_ZONE: us-east1-b
+    docker:
+      - image: circleci/node:8.7
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker pull debian:stretch-slim
+      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
+      - run: docker build -f deploy/Dockerfile-slim -t quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} .
+      - run: docker push quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
+      - run: |
+          GCLOUD_ACCOUNT_JSON=GCLOUD_ACCOUNT_JSON_PRODUCTION \
+            ./deploy/deploy_k8s_using_env.sh
+  is_upstream:
+    docker:
+      - image: circleci/node:8.7
+    steps:
+      - run: |
+          if [ "${CIRCLE_PROJECT_USERNAME}" != "retracedhq" ]; then
+            echo nope nope nope
+            exit 1
+          fi
+
+
+workflows:
+  version: 2
+  unstable:
+    jobs:
+      - test
+      - is_upstream:
+          filters:
+            branches:
+              only: /master/
+      - build_docker:
+          requires:
+            - test
+            - is_upstream
+          filters:
+            branches:
+              only: /master/
+      - deploy_saas_staging:
+          requires:
+            - build_docker
+          filters:
+            branches:
+              only: /master/
+      - integration_test_saas_staging:
+          requires:
+            - deploy_saas_staging
+          filters:
+            branches:
+              only: /master/
+      - deploy_unstable:
+          requires:
+            - integration_test_saas_staging
+
