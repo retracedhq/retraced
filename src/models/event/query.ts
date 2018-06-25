@@ -81,7 +81,7 @@ function scrubDatetimeRange(input: string | string[]): [number, number] {
     }
   });
 
-  return range.map((m) => m.valueOf());
+  return range.map((m) => m.valueOf()) as [number, number];
 }
 
 // exported for testing

@@ -6,6 +6,7 @@ import * as TypeMoq from "typemoq";
 import * as pg from "pg";
 import Authenticator from "../../security/Authenticator";
 import { getApiTokenQuery } from "../../models/api_token/get";
+import { QueryResult } from "pg";
 
 @suite class AuthenticatorTest {
     @test public async "Authenticator#getApiTokenOr401() with valid token"() {
@@ -15,7 +16,7 @@ import { getApiTokenQuery } from "../../models/api_token/get";
         const tokenRows = { rowCount: 1, rows: [{ token: "some-token", project_id: "a-project", environment_id: "an-environment" }] };
 
         pool.setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
-            .returns((args) => Promise.resolve(tokenRows))
+            .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
             .verifiable(TypeMoq.Times.once());
 
         const authenticator = new Authenticator(pool.object);
@@ -32,7 +33,7 @@ import { getApiTokenQuery } from "../../models/api_token/get";
         const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "bad-token");
         const tokenRows = { rowCount: 0, rows: [] as any[] };
         pool.setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
-            .returns((args) => Promise.resolve(tokenRows))
+            .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
             .verifiable(TypeMoq.Times.once());
 
         const authenticator = new Authenticator(pool.object);
@@ -53,7 +54,7 @@ import { getApiTokenQuery } from "../../models/api_token/get";
         const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "bad-token");
         const tokenRows = { rowCount: 1, rows: [{ token: "some-token", project_id: "a-project", environment_id: "an-environment" }] };
         pool.setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
-            .returns((args) => Promise.resolve(tokenRows))
+            .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
             .verifiable(TypeMoq.Times.once());
 
         const authenticator = new Authenticator(pool.object);

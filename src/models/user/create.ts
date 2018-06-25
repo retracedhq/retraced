@@ -19,7 +19,7 @@ export default async function createUser(opts: Options, pg: Querier = pgPool): P
 
   // Check for dupe e-mail
   let q = "select count(1) from retraceduser where email = $1";
-  let v = [opts.email];
+  let v: Array<string | number> = [opts.email];
   const dupeCheckResult = await pgPool.query(q, v);
   if (dupeCheckResult.rows[0].count > 0) {
     throw ERR_DUPLICATE_EMAIL;
@@ -42,12 +42,12 @@ export default async function createUser(opts: Options, pg: Querier = pgPool): P
   await pgPool.query(q, v);
 
   return {
-    id: v[0],
-    email: v[1],
+    id: v[0] as string,
+    email: v[1] as string,
     created: now,
     lastLogin: now,
-    externalAuthId: v[4],
-    timezone: v[5],
+    externalAuthId: v[4] as string,
+    timezone: v[5] as string,
     txEmailsRecipient: true,
   };
 }

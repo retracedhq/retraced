@@ -1,5 +1,14 @@
-import {Body, Controller, Request, Example, Header, Post, Route, SuccessResponse} from "tsoa";
-import {Request as Req} from "express";
+import {
+  Body,
+  Controller,
+  Request,
+  Example,
+  Header,
+  Post,
+  Route,
+  SuccessResponse,
+} from "tsoa";
+import { Request as Req } from "express";
 
 import {
   ActiveSearchId,
@@ -11,13 +20,13 @@ import {
   CreateSavedSearchRequest,
   SavedSearch,
 } from "../handlers/enterprise/createSavedSearch";
-import {GraphQLRequest, GraphQLResp} from "../handlers/graphql/";
-import {Scope} from "../security/scope";
-import {checkEitapiAccessUnwrapped} from "../security/helpers";
-import {graphql} from "graphql";
+import { GraphQLRequest, GraphQLResp } from "../handlers/graphql/";
+import { Scope } from "../security/scope";
+import { checkEitapiAccessUnwrapped } from "../security/helpers";
+import { graphql } from "graphql";
 import schema from "../handlers/graphql/schema";
-import {EnterpriseToken} from "../models/eitapi_token";
-import {CreateEventRequest, defaultEventCreater} from "../handlers/createEvent";
+import { EnterpriseToken } from "../models/eitapi_token";
+import { CreateEventRequest, defaultEventCreater } from "../handlers/createEvent";
 /*
 import enterpriseCreateSavedSearch from "../handlers/enterprise/createSavedSearch";
 import enterpriseDeleteActiveSearch from "../handlers/enterprise/deleteActiveSearch";
@@ -62,7 +71,7 @@ export class EnterpriseAPI extends Controller {
    *
    * https://preview.retraced.io/documentation/apis/graphql/
    *
-   * @param auth            auth header of the form Token token=...
+   * @param auth            auth header of the form Token token= ...
    * @param projectId       the project id
    * @param graphQLRequest  graphQL query, variables, and operationName
    */
@@ -124,7 +133,7 @@ export class EnterpriseAPI extends Controller {
    *
    * Authenticate with an Enterprise API token.
    *
-   * @param auth      header of the form token=...
+   * @param auth      header of the form token= ...
    * @param request     The search params
    */
   @Post("search/active")
@@ -150,7 +159,7 @@ export class EnterpriseAPI extends Controller {
    *
    * Authenticate with an Enterprise API token.
    *
-   * @param auth      header of the form token=...
+   * @param auth      header of the form token= ...
    * @param request   The search parameters
    */
   @Post("search/saved")

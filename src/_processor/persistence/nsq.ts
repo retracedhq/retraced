@@ -36,7 +36,7 @@ export interface NSQ {
 }
 
 export class NSQClient {
-  public static fromEnv() {
+  public static fromEnv(): NSQClient {
     return new NSQClient(process.env.NSQD_HOST, process.env.NSQD_TCP_PORT, process.env.NSQD_HTTP_PORT);
   }
 
@@ -51,7 +51,7 @@ export class NSQClient {
     this.nsqdTCPAddresses = [`${host}:${tcpPort}`];
   }
 
-  public connect() {
+  public connect(): Promise<any> {
     this.writer = new Promise((resolve, reject) => {
       const w = new nsq.Writer(this.host, this.tcpPort);
 
@@ -105,11 +105,11 @@ export class NSQClient {
     reader.on("message", handle);
   }
 
-  public produce(topic: string, body: string) {
+  public produce(topic: string, body: string): Promise<void> {
     const writer = this.writer || this.connect();
 
-    return writer.then((w) => {
-      return new Promise((resolve, reject) => {
+    return writer.then((w: any) => {
+      return new Promise<void>((resolve, reject) => {
         w.publish(topic, body, (err) => {
           if (err) {
             delete this.writer;
@@ -122,7 +122,7 @@ export class NSQClient {
     });
   }
 
-  public deleteTopic(topic: string) {
+  public deleteTopic(topic: string): Promise<void> {
     return new Promise((resolve, reject) => {
       request({
         method: "POST",
@@ -146,11 +146,11 @@ export class NSQClient {
 let client;
 
 export default {
-  produce: (topic: string, body: string) => {
+  produce(topic: string, body: string): Promise<void> {
     if (!client) {
       client = NSQClient.fromEnv();
     }
-    return client.produce(topic, body);
+    return client.produce(topic, body) as Promise<void>;
   },
   consume: (
     topic: string,

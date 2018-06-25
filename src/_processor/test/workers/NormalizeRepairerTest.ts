@@ -8,6 +8,7 @@ import * as monkit from "monkit";
 
 import { NSQClient } from "../../persistence/nsq";
 import NormalizeRepairer from "../../workers/NormalizeRepairer";
+import { QueryResult } from "pg";
 
 const isAny = TypeMoq.It.isAny;
 
@@ -24,7 +25,7 @@ const isAny = TypeMoq.It.isAny;
             .returns((q, v) => {
                 expect(v[0]).to.equal(minAgeMs);
                 expect(v[1]).to.equal(maxEvents);
-                return Promise.resolve({ command: "", rowCount: 10, oid: 12345, rows: [] as any[]});
+                return Promise.resolve({ command: "", rowCount: 10, oid: 12345, rows: [] as any[]}) as Promise<QueryResult>;
             })
             .verifiable(TypeMoq.Times.once());
 
@@ -58,7 +59,7 @@ const isAny = TypeMoq.It.isAny;
             .returns((q, v) => {
                 expect(v[0]).to.equal(minAgeMs);
                 expect(v[1]).to.equal(maxEvents);
-                return Promise.resolve({ command: "", rowCount: 10, oid: 12345, rows});
+                return Promise.resolve({ command: "", rowCount: 10, oid: 12345, rows: rows as any[]}) as Promise<QueryResult>;
             })
             .verifiable(TypeMoq.Times.once());
 
