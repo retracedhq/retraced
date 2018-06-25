@@ -102,6 +102,7 @@
     ],
     "exclude": [
       "**/*.d.ts",
+      "**/services/templates/**/*",
       "node_modules/**/*"
     ],
     "reporter": [
