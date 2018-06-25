@@ -7,6 +7,7 @@ import createApiToken from "../api_token/create";
 import createEnvironment from "../environment/create";
 import addUserToProject from "./addUser";
 import { Environment } from "../environment";
+import { ApiToken } from "../api_token";
 
 const pgPool = getPgPool();
 
@@ -26,7 +27,7 @@ export default function createProject(opts) {
         name: opts.name,
         created: moment().unix(),
         environments: getDefaultEnvironments(),
-        tokens: [],
+        tokens: [] as ApiToken[],
       };
 
       const q = `insert into project (
@@ -68,9 +69,9 @@ export default function createProject(opts) {
 
         Promise.all(createEnvPromises)
           .then((envs) => {
-            const createTokenPromises = [];
+            const createTokenPromises = [] as Array<Promise<ApiToken>>;
             project.environments = envs;
-            project.environments.forEach((environment) => {
+            project.environments.forEach((environment: Environment) => {
               const newApiToken = {
                 name: `Default ${environment.name} Token`,
                 disabled: false,

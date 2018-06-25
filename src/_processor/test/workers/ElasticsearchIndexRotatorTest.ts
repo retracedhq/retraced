@@ -7,6 +7,7 @@ import * as moment from "moment";
 import * as elasticsearch from "elasticsearch";
 import * as pg from "pg";
 import { ElasticsearchIndexRotator } from "../../workers/ElasticsearchIndexRotator";
+import { QueryResult } from "pg";
 
 @suite class ElasticsearchIndexRotatorTest {
     @test public async "worker(moment.Moment)"() {
@@ -36,7 +37,7 @@ import { ElasticsearchIndexRotator } from "../../workers/ElasticsearchIndexRotat
         ).verifiable(TypeMoq.Times.once());
 
         pool.setup((x) => x.query("SELECT * FROM environment"))
-            .returns((x) => Promise.resolve({ rowCount: 1, rows: [{ id: environmentId, projectId }] }))
+            .returns((x) => Promise.resolve({ rowCount: 1, rows: [{ id: environmentId, projectId }] }) as Promise<QueryResult>)
             .verifiable(TypeMoq.Times.once());
 
         const rotator = new ElasticsearchIndexRotator(

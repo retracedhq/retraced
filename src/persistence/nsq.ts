@@ -31,11 +31,11 @@ export class NSQClient {
   }
 
   @instrumented
-  public produce(topic: string, body: string) {
+  public produce(topic: string, body: string): Promise<void> {
     const writer = this.writer || this.connect();
 
-    return writer.then((w) => {
-      return new Promise((resolve, reject) => {
+    return writer.then((w: any) => {
+      return new Promise<void>((resolve, reject) => {
         w.publish(topic, body, (err) => {
           if (err) {
             reject(err);

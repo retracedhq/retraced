@@ -99,10 +99,14 @@ export function bootstrapFromEnv() {
 
 }
 
-export function instrumented(target: any, key: string, descriptor: PropertyDescriptor) {
+export function instrumented(target: any, key: string, descriptor?: PropertyDescriptor) {
   if (descriptor === undefined) {
     descriptor = Object.getOwnPropertyDescriptor(target, key);
   }
+  if (descriptor === undefined) {
+    return descriptor;
+  }
+
   let originalMethod = descriptor.value;
   const klass = target.constructor.name;
 

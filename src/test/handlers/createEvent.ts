@@ -115,7 +115,7 @@ import { Connection } from "./Connection";
                 environmentId: "an-environment",
             }));
 
-        pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object)).verifiable(TypeMoq.Times.once());
+        pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());
 
         const creater = new EventCreater(
             pool.object,
@@ -212,13 +212,13 @@ import { Connection } from "./Connection";
         conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
         conn.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())) // Still need to validate args
             .verifiable(TypeMoq.Times.once());
-        pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object));
+        pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());
 
         // set up nsq
         const jobBody = JSON.stringify({ taskId: "kfbr392" });
         nsq
             .setup((x) => x.produce("raw_events", jobBody))
-            .returns((args) => Promise.resolve({}));
+            .returns((args) => Promise.resolve());
 
         const creater = new EventCreater(
             pool.object,
@@ -278,14 +278,14 @@ import { Connection } from "./Connection";
                 environmentId: "an-environment",
             }));
 
-        pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object)).verifiable(TypeMoq.Times.once());
+        pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());
 
         conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
         conn.setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).verifiable(TypeMoq.Times.once());
 
         // set up nsq
         nsq.setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
-            .returns((args) => Promise.resolve({}))
+            .returns((args) => Promise.resolve())
             .verifiable(TypeMoq.Times.exactly(3));
 
         const creater = new EventCreater(
@@ -338,14 +338,14 @@ import { Connection } from "./Connection";
                 environmentId: "an-environment",
             }));
 
-        pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object)).verifiable(TypeMoq.Times.once());
+        pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());
         // conn.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())).returns(() => Promise.resolve({ rowCount: 1 }));
         conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
         conn.setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).throws(new Error("Postgres went away :("));
 
         // set up nsq
         nsq.setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
-            .returns((args) => Promise.resolve({}))
+            .returns((args) => Promise.resolve())
             .verifiable(TypeMoq.Times.exactly(1));
 
         const creater = new EventCreater(
