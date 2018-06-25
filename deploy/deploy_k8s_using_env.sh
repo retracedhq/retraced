@@ -33,8 +33,7 @@ function template_yamls() {
 }
 
 function chown_home() {
-    sudo chown -R $USER /home/ubuntu/.config
-    sudo chown -R $USER /home/ubuntu/.kube
+    sudo chown -R $USER $HOME
 }
 
 function ship_it() {

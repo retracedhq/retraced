@@ -11,6 +11,7 @@ deps:
 lint:
 	`yarn bin`/tslint --project ./tsconfig.json --fix
 
+
 swagger:
 	`yarn bin`/tsoa swagger
 
@@ -21,6 +22,14 @@ build: swagger routes
 	`yarn bin`/tsc
 	mkdir -p bin && cp build/retracedctl.js bin/retracedctl && chmod +x bin/retracedctl
 
+cover:
+	yarn cover
+
+test:
+	yarn test
+
+report-coverage:
+	yarn report-coverage
 
 # Bundle into two standalone binaries so we can obfuscate the source code
 #
@@ -40,18 +49,19 @@ run-debug:
 	node --no-deprecation ./build/index.js
 # `yarn bin`/ts-node --inspect=0.0.0.0 --no-deprecation ./src/index.ts
 
-test: build
-	yarn test
-
 k8s-pre:
 	rm -rf build/k8s
 	mkdir -p build/k8s
 
 k8s-deployment:
 	`yarn bin`/handlebars --tag '"$(tag)"'       < deploy/k8s/api-deployment.yml.hbs > build/k8s/api-deployment.yml
+	`yarn bin`/handlebars --tag '"$(tag)"'       < deploy/k8s/processor-deployment.yml.hbs > build/k8s/processor-deployment.yml
+	`yarn bin`/handlebars --tag '"$(tag)"'       < deploy/k8s/cron-deployment.yml.hbs > build/k8s/cron-deployment.yml
+	`yarn bin`/handlebars --tag '"$(tag)"'       < deploy/k8s/nsqd-deployment.yml.hbs > build/k8s/nsqd-deployment.yml
 
 k8s-service:
 	`yarn bin`/handlebars                          < deploy/k8s/api-service.yml.hbs    > build/k8s/api-service.yml
+	`yarn bin`/handlebars                          < deploy/k8s/nsqd-service.yml.hbs    > build/k8s/nsqd-service.yml
 
 k8s-ingress:
 	`yarn bin`/handlebars                          < deploy/k8s/api-ingress.yml.hbs    > build/k8s/api-ingress.yml

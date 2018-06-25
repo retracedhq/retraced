@@ -1,0 +1,6 @@
+19 * * * * 		curl -d "{}" http://${NSQD_HOST}:${NSQD_HTTP_PORT}/pub?topic=nineteen_past_hour
+*/10 * * * *		curl -d "{}" http://${NSQD_HOST}:${NSQD_HTTP_PORT}/pub?topic=every_ten_minutes
+49 23 * * *		curl -d "{}" http://${NSQD_HOST}:${NSQD_HTTP_PORT}/pub?toic=eleven_minutes_to_midnight
+* * * * *		curl -d "{}" http://${NSQD_HOST}:${NSQD_HTTP_PORT}/pub?topic=every_minute
+0 12 1-8 * *		test -z "$RETRACED_DISABLE_GEOSYNC" && test $(date +\%u) -eq 3 && curl -d "{}" http://${NSQD_HOST}:${NSQD_HTTP_PORT}/pub?topic=first_wed_of_month
+* * * * * * *		curl -d "{}" http://${NSQD_HOST}:${NSQD_HTTP_PORT}/pub?topic=every_second

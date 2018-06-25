@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: cron
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: retraced
+        tier: cron
+        dest: nsq
+        source: cron
+    spec:
+      containers:
+        - name: cron
+          image: quay.io/retracedhq/retraced:{{ tag }}
+          command:
+            - /bin/bash
+            - -c
+            - /usr/local/bin/replicated-auditlog-cron /crontab &> /dev/null
+          env:
+            - name: NSQD_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: nsq
+                  key: NSQD_HOST
+            - name: NSQD_HTTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: nsq
+                  key: NSQD_HTTP_PORT
+            - name: RETRACED_DISABLE_GEOSYNC
+              value: "1"
+      imagePullSecrets:
+        - name: quayio

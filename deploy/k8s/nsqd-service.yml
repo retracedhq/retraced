@@ -1,0 +1,19 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: nsqd
+  labels:
+    app: retraced
+    tier: nsq
+spec:
+  type: ClusterIP
+  ports:
+    - name: tcp
+      port: 4150
+      targetPort: 4150
+    - name: http
+      port: 4151
+      targetPort: 4151
+  selector:
+    app: retraced
+    tier: nsq
