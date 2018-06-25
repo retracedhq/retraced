@@ -83,7 +83,7 @@
     "pkg": "^4.3.0-beta.1",
     "tslint": "^4.5.1",
     "typemoq": "^1.4.1",
-    "typescript": "^2.2.1"
+    "typescript": "2.9"
   },
   "scripts": {
     "pretest": "tslint --project ./tsconfig.json",

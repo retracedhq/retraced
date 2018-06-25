@@ -11,7 +11,7 @@ import {
   SysdigNameRewriter,
   timer as monkitTimer,
 } from "monkit";
-import {logger} from "./logger";
+import { logger } from "./logger";
 
 export function startStatsdReporter(
   statsdHost: string,
@@ -26,7 +26,7 @@ export function startStatsdReporter(
   const reporter = new StatsdReporter(
     getRegistry(),
     prefix,
-    new StatsdClient({host: statsdHost, port: statsdPort}),
+    new StatsdClient({ host: statsdHost, port: statsdPort }),
     rewrite ? rewriter.rewriteName.bind(rewriter) : (s) => s,
   );
   logger.info("created");
@@ -130,7 +130,7 @@ export function histogram(name: string, help?: string, labels?: string[]) {
       "summaries",
       help || name,
       labels || ["class", "method", "metric"],
-      {percentiles: [.5, .75, .95, .98, .99, .999]},
+      { percentiles: [.5, .75, .95, .98, .99, .999] },
     );
 
   return {
@@ -155,7 +155,7 @@ export function timer(name: string, help?: string, labels?: string[]) {
       "summaries",
       help || name,
       labels || ["class", "method", "metric"],
-      {percentiles: [.5, .75, .95, .98, .99, .999]},
+      { percentiles: [.5, .75, .95, .98, .99, .999] },
     );
 
   const throughput = Prometheus.register.getSingleMetric("counters") as Prometheus.Counter ||
@@ -230,9 +230,6 @@ export function gauge(name: string, help?: string, labels?: string[]) {
 
 /**
  * Run the given function, recording throughput, latency and errors
- *
- * @param  name     a name for the method
- * @param delegate the function to run
  */
 export async function instrument(
   name: string,

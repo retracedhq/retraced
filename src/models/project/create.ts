@@ -6,13 +6,12 @@ import getPgPool from "../../persistence/pg";
 import createApiToken from "../api_token/create";
 import createEnvironment from "../environment/create";
 import addUserToProject from "./addUser";
+import { Environment } from "../environment";
 
 const pgPool = getPgPool();
 
 /**
  * Asynchronously create a new project with the given options
- *
- * @param  {Object} [opts] The request options.
  */
 export default function createProject(opts) {
   return new Promise((resolve, reject) => {
@@ -54,12 +53,12 @@ export default function createProject(opts) {
             userId: project.id,
             traits: {
               name: project.name,
-              createdAt: project.create,
+              createdAt: project.created,
             },
           });
         }
 
-        const createEnvPromises = [];
+        const createEnvPromises = [] as Array<Promise<Environment>>;
         project.environments.forEach((environment) => {
           createEnvPromises.push(createEnvironment({
             name: environment.name,
@@ -68,33 +67,33 @@ export default function createProject(opts) {
         });
 
         Promise.all(createEnvPromises)
-        .then((envs) => {
-          const createTokenPromises = [];
-          project.environments = envs;
-          project.environments.forEach((environment) => {
-            const newApiToken = {
-              name: `Default ${environment.name} Token`,
-              disabled: false,
-            };
-            createTokenPromises.push(createApiToken(project.id, environment.id, newApiToken));
-          });
-          return Promise.all(createTokenPromises);
-        })
-        .then((newApiTokens) => {
-          for (const t of newApiTokens) {
-            project.tokens.push(t);
-          }
-          if (opts.user_id) {
-            return addUserToProject({
-              projectId: project.id,
-              userId: opts.user_id,
+          .then((envs) => {
+            const createTokenPromises = [];
+            project.environments = envs;
+            project.environments.forEach((environment) => {
+              const newApiToken = {
+                name: `Default ${environment.name} Token`,
+                disabled: false,
+              };
+              createTokenPromises.push(createApiToken(project.id, environment.id, newApiToken));
             });
-          }
-        })
-        .then(() => {
-          resolve(project);
-        })
-        .catch(reject);
+            return Promise.all(createTokenPromises);
+          })
+          .then((newApiTokens) => {
+            for (const t of newApiTokens) {
+              project.tokens.push(t);
+            }
+            if (opts.user_id) {
+              return addUserToProject({
+                projectId: project.id,
+                userId: opts.user_id,
+              });
+            }
+          })
+          .then(() => {
+            resolve(project);
+          })
+          .catch(reject);
       });
     });
   });

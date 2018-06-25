@@ -16,11 +16,11 @@ export class NSQClient {
   private writer?: Promise<any>;
 
   /**
-   * @param  host                    nsqd hostname
-   * @param port                    nsqd tcp port
-   * @param circuitBreakerThreshold optional error threshold. If the percent of errors is higher than this value,
-   *                                the connection will be destroyed and reconnected.
-   *                                values outside the range [0, 1] will be ignored
+   * host                    nsqd hostname
+   * port                    nsqd tcp port
+   * circuitBreakerThreshold optional error threshold. If the percent of errors is higher than this value,
+   * the connection will be destroyed and reconnected.
+   * values outside the range [0, 1] will be ignored
    */
   constructor(
     private readonly host: string,
@@ -51,8 +51,8 @@ export class NSQClient {
   // but it seems a little heavy for what we need at this point.
   private checkCircuitBreaker() {
     const shouldCheck =
-        this.circuitBreakerThreshold >= 0 &&
-        this.circuitBreakerThreshold <= 1;
+      this.circuitBreakerThreshold >= 0 &&
+      this.circuitBreakerThreshold <= 1;
 
     if (!shouldCheck) {
       return;
@@ -68,21 +68,21 @@ export class NSQClient {
 
   private computeErrorPercentage() {
     const errorRate = meter("NSQClient.produce.errors").fifteenMinuteRate();
-    const callRate  = timer("NSQClient.produce.timer").fifteenMinuteRate();
+    const callRate = timer("NSQClient.produce.timer").fifteenMinuteRate();
     const errorPct = callRate ? (errorRate / callRate) : 0;
     return errorPct;
   }
 
   // Destroy the writer, forcing a reconnect on the next produce operation.
   private forceReconnect(errorPct: number) {
-      logger.warn(`Error Percentage ${errorPct} is greater than threshold` +
-                  `${this.circuitBreakerThreshold}, reconnecting to nsq at` +
-                  `${this.host}:${this.port}`);
-      if (this.writer) {
-        this.writer.then((w) => w.close());
-        delete this.writer;
-      }
-      meter("NSQClient.forceReconnect.destroy").mark();
+    logger.warn(`Error Percentage ${errorPct} is greater than threshold` +
+      `${this.circuitBreakerThreshold}, reconnecting to nsq at` +
+      `${this.host}:${this.port}`);
+    if (this.writer) {
+      this.writer.then((w) => w.close());
+      delete this.writer;
+    }
+    meter("NSQClient.forceReconnect.destroy").mark();
   }
 
   private connect() {

@@ -4,8 +4,6 @@ const pgPool = getPgPool();
 
 /**
  * Asynchronously fetch a project from the database.
- *
- * @param  {string} [projectId] The project ID
  */
 export default function getProject(projectId) {
   return new Promise((resolve, reject) => {

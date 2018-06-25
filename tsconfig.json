@@ -8,6 +8,7 @@
         "preserveConstEnums": true,
         "experimentalDecorators": true,
         "strictNullChecks": true,
+        "skipLibCheck": true,
         "allowJs": true,
         "outDir": "build",
         "pretty": true
