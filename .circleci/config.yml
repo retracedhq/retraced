@@ -60,7 +60,7 @@ jobs:
       CLUSTER_NAME: retraced-staging
       CLOUDSDK_COMPUTE_ZONE: us-east1-b
     docker:
-      - image: circleci/node:8.7
+      - image: google/cloud-sdk
     steps:
       - checkout
       - setup_remote_docker
