@@ -45,6 +45,7 @@ jobs:
           - v1-dependencies-
       - run: docker pull debian:stretch-slim
       - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
+      - run: docker pull quay.io/retracedhq/retraced:unstable # hoping this speeds the build
       - run: docker build -f deploy/Dockerfile-slim -t quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} .
       - run: docker push quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
 
