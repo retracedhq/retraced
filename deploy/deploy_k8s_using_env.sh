@@ -15,8 +15,6 @@ echo CIRCLE_SHA1=$CIRCLE_SHA1
 echo IMAGE_TAG=${IMAGE_TAG}
 
 function gcloud_cli() {
-    gcloud --quiet components update --version 153.0.0
-    gcloud --quiet components update --version 153.0.0 kubectl
 
     echo $GCLOUD_ACCOUNT_JSON | base64 --decode -i > ${HOME}/account.json
     gcloud auth activate-service-account --key-file ${HOME}/account.json
