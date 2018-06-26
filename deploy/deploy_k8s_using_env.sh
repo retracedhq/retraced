@@ -15,16 +15,16 @@ echo CIRCLE_SHA1=$CIRCLE_SHA1
 echo IMAGE_TAG=${IMAGE_TAG}
 
 function gcloud_cli() {
-    sudo gcloud --quiet components update --version 153.0.0
-    sudo gcloud --quiet components update --version 153.0.0 kubectl
+    gcloud --quiet components update --version 153.0.0
+    gcloud --quiet components update --version 153.0.0 kubectl
 
     echo $GCLOUD_ACCOUNT_JSON | base64 --decode -i > ${HOME}/account.json
-    sudo gcloud auth activate-service-account --key-file ${HOME}/account.json
+    gcloud auth activate-service-account --key-file ${HOME}/account.json
 
-    sudo gcloud config set project $PROJECT_NAME
-    sudo gcloud --quiet config set container/cluster $CLUSTER_NAME
-    sudo gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
-    sudo gcloud --quiet container clusters get-credentials $CLUSTER_NAME
+    gcloud config set project $PROJECT_NAME
+    gcloud --quiet config set container/cluster $CLUSTER_NAME
+    gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
+    gcloud --quiet container clusters get-credentials $CLUSTER_NAME
 }
 
 
