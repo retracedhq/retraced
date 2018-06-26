@@ -36,6 +36,10 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
       - run: docker pull debian:stretch-slim
       - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
       - run: docker build -f deploy/Dockerfile-slim -t quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} .
@@ -79,6 +83,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
       - run: sleep 20 # todo check health or something
       - run: ./deploy/integration_tests_using_env.sh
 
@@ -89,6 +94,10 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
       - run: docker pull debian:stretch-slim
       - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
       # don't build, just pull. This ensures we're releasing the SHA that we just built and tested
@@ -133,13 +142,8 @@ jobs:
       - image: circleci/node:8.7
     steps:
       - checkout
-      - setup_remote_docker
-      - run: docker pull debian:stretch-slim
-      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
-      - run: docker build -f deploy/Dockerfile-slim -t quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} .
-      - run: docker push quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
       - run: |
-          GCLOUD_ACCOUNT_JSON=GCLOUD_ACCOUNT_JSON_PRODUCTION \
+          GCLOUD_ACCOUNT_JSON=$GCLOUD_ACCOUNT_JSON_PRODUCTION \
             ./deploy/deploy_k8s_using_env.sh
   is_upstream:
     docker:
