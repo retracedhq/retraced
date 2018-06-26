@@ -73,6 +73,7 @@ jobs:
           root: ~/repo
           paths:
             - build/k8s
+            - deploy/
 
   deploy_saas_staging:
     docker:
@@ -83,7 +84,6 @@ jobs:
       CLUSTER_NAME: retraced-staging
       CLOUDSDK_COMPUTE_ZONE: us-east1-b
     steps:
-      - checkout
       - attach_workspace:
           at: ~/repo
       - run: ./deploy/deploy_k8s_using_env.sh
