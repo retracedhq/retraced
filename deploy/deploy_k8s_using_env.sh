@@ -25,11 +25,6 @@ function gcloud_cli() {
     gcloud --quiet container clusters get-credentials $CLUSTER_NAME
 }
 
-
-function template_yamls() {
-    make k8s tag=${IMAGE_TAG}
-}
-
 function chown_home() {
     sudo chown -R $USER $HOME
 }
@@ -41,7 +36,6 @@ function ship_it() {
 }
 
 gcloud_cli
-template_yamls
 chown_home
 ship_it 
 
