@@ -89,7 +89,7 @@ jobs:
       - run: ./deploy/deploy_k8s_using_env.sh
 
 
-  integration_test_sass_staging:
+  integration_test_saas_staging:
     <<: *defaults
     environment:
       PUBLISHER_API_ENDPOINT: https://api.staging.retraced.io
@@ -189,14 +189,13 @@ workflows:
               only: /master/
 
       - prepare_deploy_saas_staging:
-          requires:
-            - build_docker
           filters:
             branches:
               only: /master/
       - deploy_saas_staging:
           requires:
             - prepare_deploy_saas_staging
+            - build_docker
           filters:
             branches:
               only: /master/
