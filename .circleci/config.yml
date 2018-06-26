@@ -77,13 +77,15 @@ jobs:
   deploy_saas_staging:
     docker:
       - image: google/cloud-sdk
+    working_directory: ~/repo
     environment:
       PROJECT_NAME: retraced-staging
       CLUSTER_NAME: retraced-staging
       CLOUDSDK_COMPUTE_ZONE: us-east1-b
     steps:
       - checkout
-      - attach_workspace
+      - attach_workspace:
+          at: ~/repo
       - run: ./deploy/deploy_k8s_using_env.sh
 
 
