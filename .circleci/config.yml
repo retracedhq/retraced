@@ -58,6 +58,20 @@ jobs:
       - deploy:
           command: docker push quay.io/retracedhq/retraced:unstable
 
+  prepare_deploy_saas_staging:
+    docker:
+      - image: circleci/node:8.7
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+      - run: make deps k8s tag=${CIRCLE_SHA1:0:7}
+      - persist_to_workspace:
+          paths:
+            - build/k8s
+
   deploy_saas_staging:
     environment:
       PROJECT_NAME: retraced-staging
@@ -67,11 +81,7 @@ jobs:
       - image: google/cloud-sdk
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
-      - run: apt-get update && apt-get install make
+      - attach_workspace
       - run: ./deploy/deploy_k8s_using_env.sh
 
 
@@ -176,9 +186,16 @@ workflows:
           filters:
             branches:
               only: /master/
-      - deploy_saas_staging:
+
+      - prepare_deploy_saas_staging:
           requires:
             - build_docker
+          filters:
+            branches:
+              only: /master/
+      - deploy_saas_staging:
+          requires:
+            - prepare_deploy_saas_staging
           filters:
             branches:
               only: /master/
