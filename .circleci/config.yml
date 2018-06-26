@@ -67,7 +67,11 @@ jobs:
       - image: google/cloud-sdk
     steps:
       - checkout
-      - setup_remote_docker
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+      - run: apt-get update && apt-get install make
       - run: ./deploy/deploy_k8s_using_env.sh
 
 
