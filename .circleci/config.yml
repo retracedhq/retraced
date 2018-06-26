@@ -9,10 +9,14 @@ experimental:
       only:
         - master
 
+defaults: &defaults
+  docker:
+    - image: circleci/node:8.7
+  working_directory: ~/repo
+
 jobs:
   test:
-    docker:
-      - image: circleci/node:8.7
+    <<: *defaults
     environment:
       MOCHA_FILE: results/my-test-output.xml
       JUNIT_REPORT_PATH: results/my-test-output.xml
@@ -31,8 +35,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
   build_docker:
-    docker:
-      - image: circleci/node:8.7
+    <<: *defaults
     steps:
       - checkout
       - setup_remote_docker
@@ -46,8 +49,7 @@ jobs:
       - run: docker push quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
 
   deploy_unstable:
-    docker:
-      - image: circleci/node:8.7
+    <<: *defaults
     steps:
       - checkout
       - setup_remote_docker
@@ -59,8 +61,7 @@ jobs:
           command: docker push quay.io/retracedhq/retraced:unstable
 
   prepare_deploy_saas_staging:
-    docker:
-      - image: circleci/node:8.7
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
@@ -69,16 +70,17 @@ jobs:
           - v1-dependencies-
       - run: make deps k8s tag=${CIRCLE_SHA1:0:7}
       - persist_to_workspace:
+          root: ~/repo
           paths:
             - build/k8s
 
   deploy_saas_staging:
+    docker:
+      - image: google/cloud-sdk
     environment:
       PROJECT_NAME: retraced-staging
       CLUSTER_NAME: retraced-staging
       CLOUDSDK_COMPUTE_ZONE: us-east1-b
-    docker:
-      - image: google/cloud-sdk
     steps:
       - checkout
       - attach_workspace
@@ -86,14 +88,13 @@ jobs:
 
 
   integration_test_sass_staging:
+    <<: *defaults
     environment:
       PUBLISHER_API_ENDPOINT: https://api.staging.retraced.io
       PROJECT_ID: ada4383fc84948caac138f28b131f713
       ENVIRONMENT_ID: 406e148996444214b9b5912acacb8c63
       PUBLISHER_API_KEY:  5e13bc18ecad44e08bca82ab5fce0014
       QA_INTEGRATION_VERSION: latest
-    docker:
-      - image: circleci/node:8.7
     steps:
       - checkout
       - setup_remote_docker
@@ -103,8 +104,7 @@ jobs:
 
   # this isn't used yet, coming soon
   deploy_stable:
-    docker:
-      - image: circleci/node:8.7
+    <<: *defaults
     steps:
       - checkout
       - setup_remote_docker
@@ -148,20 +148,19 @@ jobs:
 
   # this isn't used yet, coming soon
   deploy_saas_production:
+    <<: *defaults
     environment:
       PROJECT_NAME: retraced-production
       CLUSTER_NAME: retraced-production
       CLOUDSDK_COMPUTE_ZONE: us-east1-b
-    docker:
-      - image: circleci/node:8.7
     steps:
       - checkout
       - run: |
           GCLOUD_ACCOUNT_JSON=$GCLOUD_ACCOUNT_JSON_PRODUCTION \
             ./deploy/deploy_k8s_using_env.sh
+
   is_upstream:
-    docker:
-      - image: circleci/node:8.7
+    <<: *defaults
     steps:
       - run: |
           if [ "${CIRCLE_PROJECT_USERNAME}" != "retracedhq" ]; then
