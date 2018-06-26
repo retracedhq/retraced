@@ -25,10 +25,6 @@ function gcloud_cli() {
     gcloud --quiet container clusters get-credentials $CLUSTER_NAME
 }
 
-function chown_home() {
-    sudo chown -R $USER $HOME
-}
-
 function ship_it() {
     echo "Applying yamls to $CLUSTER_NAME"
     cat build/k8s/*
@@ -36,6 +32,5 @@ function ship_it() {
 }
 
 gcloud_cli
-chown_home
-ship_it 
+ship_it
 
