@@ -185,7 +185,7 @@ jobs:
 
 workflows:
   version: 2
-  unstable/staging:
+  unstable_staging:
     jobs:
       - test
       - is_retracedhq:
@@ -220,7 +220,7 @@ workflows:
           requires:
             - integration_test_saas_staging
 
-  stable/prod:
+  stable_prod:
     jobs:
       - test:
           filters:
