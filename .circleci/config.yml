@@ -61,7 +61,15 @@ jobs:
       - deploy:
           command: docker push quay.io/retracedhq/retraced:unstable
 
-  prepare_deploy_saas_staging:
+  ensure_image_exists:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:  |
+          docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
+          docker pull quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
+  prepare_deploy_saas:
     <<: *defaults
     steps:
       - checkout
@@ -105,7 +113,6 @@ jobs:
       - run: sleep 20 # todo check health or something
       - run: ./deploy/integration_tests_using_env.sh
 
-  # this isn't used yet, coming soon
   deploy_stable:
     <<: *defaults
     steps:
@@ -117,6 +124,7 @@ jobs:
           - v1-dependencies-
       - run: docker pull debian:stretch-slim
       - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
+      - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASS" registry.replicated.com
       # don't build, just pull. This ensures we're releasing the SHA that we just built and tested
       - run: docker pull quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
       - run: docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:stable
@@ -124,7 +132,7 @@ jobs:
       - run: docker push quay.io/retracedhq/retraced:stable
       - run: docker push quay.io/retracedhq/retraced:latest
       - run: |
-            function semverParseInto() {
+            function semverParseInto() { # thanks cloudflare
                 local RE='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z-]*\)'
                 eval $2=`echo $1 | sed -e "s#$RE#\1#"`
                 eval $3=`echo $1 | sed -e "s#$RE#\2#"`
@@ -149,6 +157,9 @@ jobs:
             docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${MAJOR}.${MINOR}.${PATCH}
             docker push quay.io/retracedhq/retraced:${MAJOR}.${MINOR}.${PATCH}
 
+            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
+            docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
+
   # this isn't used yet, coming soon
   deploy_saas_production:
     <<: *defaults
@@ -162,7 +173,7 @@ jobs:
           GCLOUD_ACCOUNT_JSON=$GCLOUD_ACCOUNT_JSON_PRODUCTION \
             ./deploy/deploy_k8s_using_env.sh
 
-  is_upstream:
+  is_retracedhq:
     <<: *defaults
     steps:
       - run: |
@@ -174,28 +185,27 @@ jobs:
 
 workflows:
   version: 2
-  unstable:
+  unstable/staging:
     jobs:
       - test
-      - is_upstream:
+      - is_retracedhq:
           filters:
             branches:
               only: /master/
       - build_docker:
           requires:
             - test
-            - is_upstream
+            - is_retracedhq
           filters:
             branches:
               only: /master/
-
-      - prepare_deploy_saas_staging:
+      - prepare_deploy_saas:
           filters:
             branches:
               only: /master/
       - deploy_saas_staging:
           requires:
-            - prepare_deploy_saas_staging
+            - prepare_deploy_saas
             - build_docker
           filters:
             branches:
@@ -209,4 +219,68 @@ workflows:
       - deploy_unstable:
           requires:
             - integration_test_saas_staging
+
+  stable/prod:
+    jobs:
+      - test:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              ignore: /.*/
+      - is_retracedhq:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              ignore: /.*/
+      - ensure_image_exists:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              ignore: /.*/
+      - prepare_deploy_saas:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              ignore: /.*/
+      - deploy_saas_staging:
+          requires:
+            - ensure_image_exists
+            - prepare_deploy_saas
+            - test
+            - is_upstream
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              ignore: /.*/
+      - integration_test_saas_staging:
+          requires:
+            - deploy_saas_staging
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              ignore: /.*/
+      - deploy_saas_production:
+          requires:
+            - integration_test_saas_staging
+            - prepare_deploy_saas
+            - ensure_image_exists
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              ignore: /.*/
+      - deploy_stable:
+          requires:
+            - integration_test_saas_staging
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              ignore: /.*/
 
