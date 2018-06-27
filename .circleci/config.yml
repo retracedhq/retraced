@@ -251,7 +251,7 @@ workflows:
             - ensure_image_exists
             - prepare_deploy_saas
             - test
-            - is_upstream
+            - is_retracedhq
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
