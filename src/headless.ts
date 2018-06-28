@@ -16,9 +16,9 @@ import { logger } from "./logger";
 const enabled = !!(process.env.HEADLESS_API_KEY && process.env.HEADLESS_PROJECT_ID && process.env.HEADLESS_ENV_ID);
 
 const retraced = new Client({
-    apiKey: process.env.HEADLESS_API_KEY,
-    projectId: process.env.HEADLESS_PROJECT_ID,
-    endpoint: process.env.RETRACED_API_BASE,
+    apiKey: process.env.HEADLESS_API_KEY || "",
+    projectId: process.env.HEADLESS_PROJECT_ID || "",
+    endpoint: process.env.RETRACED_API_BASE || "",
 });
 
 export async function reportEvents(events: Event[]) {
@@ -135,9 +135,9 @@ export async function ensureHeadlessProject() {
         return;
     }
     await bootstrapProject({
-        projectId: process.env.HEADLESS_PROJECT_ID,
-        apiKey: process.env.HEADLESS_API_KEY,
-        environmentId: process.env.HEADLESS_PROJECT_ENV,
+        projectId: process.env.HEADLESS_PROJECT_ID || "",
+        apiKey: process.env.HEADLESS_API_KEY || "",
+        environmentId: process.env.HEADLESS_PROJECT_ENV || "",
         projectName: "Headless Retraced",
         environmentName: "HEADLESS_PROJECT_ENV",
         tokenName: "HEADLESS_API_KEY",

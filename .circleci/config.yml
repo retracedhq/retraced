@@ -145,11 +145,16 @@ jobs:
                echo "pre-release != release, so just push the tag and exit"
                docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${CIRCLE_TAG}
                docker push quay.io/retracedhq/retraced:${CIRCLE_TAG}
+               docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${CIRCLE_TAG}
+               docker push registry.replicated.com/library/retraced:${CIRCLE_TAG}
+
+               docker login -u="$REPLICATED_SHIPRETRACED_USER" -p="$REPLICATED_SHIPRETRACED_PASSWORD" registry.replicated.com
+               docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:${CIRCLE_TAG}
+               docker push registry.replicated.com/shipretraced/retraced:${CIRCLE_TAG}
+
                exit 0
             fi
 
-            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${CIRCLE_TAG}
-            docker push quay.io/retracedhq/retraced:${CIRCLE_TAG}
             docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${MAJOR}
             docker push quay.io/retracedhq/retraced:${MAJOR}
             docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${MAJOR}.${MINOR}
@@ -159,6 +164,11 @@ jobs:
 
             docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
             docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
+
+            docker login -u="$REPLICATED_SHIPRETRACED_USER" -p="$REPLICATED_SHIPRETRACED_PASSWORD" registry.replicated.com
+
+            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:${MAJOR}.${MINOR}.${PATCH}
+            docker push registry.replicated.com/shipretraced/retraced:${MAJOR}.${MINOR}.${PATCH}
 
   # this isn't used yet, coming soon
   deploy_saas_production:

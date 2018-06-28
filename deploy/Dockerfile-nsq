@@ -1,0 +1,12 @@
+FROM nsqio/nsq:v1.0.0-compat
+
+FROM alpine:latest
+
+EXPOSE 4150 4151 4160 4161 4170 4171
+
+VOLUME /data
+VOLUME /etc/ssl/certs
+
+COPY --from=0 /usr/local/bin/ /usr/local/bin/
+RUN ln -s /usr/local/bin/*nsq* / \
+    && ln -s /usr/local/bin/*nsq* /bin/

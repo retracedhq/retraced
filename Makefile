@@ -31,7 +31,7 @@ test:
 report-coverage:
 	yarn report-coverage
 
-# Bundle into two standalone binaries so we can obfuscate the source code
+# Bundle into four standalone binaries so we can obfuscate the source code
 #
 # the sed command is because pg-format uses a bizarre import that does `require(__dirname + '/some-module')`
 # and we need to change it to `require('./some-module')` to make `pkg` work, because pkg can't currently
@@ -41,6 +41,7 @@ pkg:
 	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output api ./build/index.js
 	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output retracedctl ./build/retracedctl.js
 	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output processor ./build/_processor/index.js
+	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output retraceddb ./build/_db/runner-lite.js
 
 run:
 	node --no-deprecation ./build/index.js

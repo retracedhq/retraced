@@ -11,7 +11,7 @@ export class AdminUserBootstrap {
   }
 
   constructor(
-    private readonly sharedSecret: string,
+    private readonly sharedSecret?: string,
   ) { }
 
   public async handle(auth: string, claims: ExternalAuth) {

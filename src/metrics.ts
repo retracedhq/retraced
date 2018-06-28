@@ -63,10 +63,10 @@ export function startStatusPageReporter(
 
 export function bootstrapFromEnv() {
   const statsdHost = process.env.STATSD_HOST || process.env.KUBERNETES_SERVICE_HOST;
-  const statsdPort = process.env.STATSD_PORT || 8125;
-  const statsdIntervalMillis = process.env.STATSD_INTERVAL_MILLIS || 30000;
+  const statsdPort = Number(process.env.STATSD_PORT) || 8125;
+  const statsdIntervalMillis = Number(process.env.STATSD_INTERVAL_MILLIS) || 30000;
   const statsdPrefix = process.env.STATSD_PREFIX || "";
-  const sysdigRewriter = process.env.STATSD_USE_SYSDIG_NAME_REWRITER || false;
+  const sysdigRewriter = Boolean(process.env.STATSD_USE_SYSDIG_NAME_REWRITER) || false;
 
   if (!statsdHost) {
     logger.error("neither KUBERNETES_SERVICE_HOST nor STATSD_HOST is set, metrics will not be reported to statsd or sysdig");
@@ -77,7 +77,7 @@ export function bootstrapFromEnv() {
   const statusPageToken = process.env.STATUSPAGEIO_TOKEN;
   const statusPagePageId = process.env.STATUSPAGEIO_PAGE_ID || "2d8w7krf3x52"; // Retraced API
   const statusPageUrl = process.env.STATUSPAGEIO_URL || "api.statuspage.io";
-  const intervalMs = process.env.STATUSPAGEIO_INTERVAL_MILLIS || 30000;
+  const intervalMs = Number(process.env.STATUSPAGEIO_INTERVAL_MILLIS) || 30000;
   const metricIds = {
     "EventCreater.createEvent.timer.p50": "whb4rfgv5fzv",
     "EventCreater.createEvent.timer.p98": "stkhk01nkb4f",

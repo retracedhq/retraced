@@ -7,8 +7,8 @@ export class NSQClient {
   public static fromEnv() {
     const circuitBreakerThreshold = process.env.NSQ_CIRCUIT_BREAKER_THRESHOLD;
     return new NSQClient(
-      process.env.NSQD_HOST,
-      process.env.NSQD_TCP_PORT,
+      process.env.NSQD_HOST || "",
+      Number(process.env.NSQD_TCP_PORT),
       Number(circuitBreakerThreshold),
     );
   }

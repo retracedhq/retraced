@@ -1,0 +1,166 @@
+module.exports = () => {
+  return {
+    category: 'indices',
+    op: 'putTemplate',
+    params: {
+      name: 'retraced_main',
+      body: {
+        template: 'retraced*',
+        settings: {
+          analysis: {
+            filter: {
+              autocomplete_filter: {
+                type: 'edge_ngram',
+                min_gram: 1,
+                max_gram: 20,
+              },
+            },
+            analyzer: {
+              autocomplete: {
+                type: 'custom',
+                tokenizer: 'standard',
+                filter: [
+                  'lowercase',
+                  'autocomplete_filter',
+                ],
+              },
+            },
+          },
+        },
+        mappings: {
+          event: {
+            dynamic_templates: [
+              { object_fields: {
+                match: 'object.fields.*',
+                match_mapping_type: 'string',
+                mapping: {
+                  type: 'string',
+                  analyzer: 'autocomplete',
+                  search_analyzer: 'standard',
+                },
+              } },
+              { actor_fields: {
+                match: 'actor.fields.*',
+                match_mapping_type: 'string',
+                mapping: {
+                  type: 'string',
+                  analyzer: 'autocomplete',
+                  search_analyzer: 'standard',
+                },
+              } },
+              { event_fields: {
+                match: 'event.fields.*',
+                match_mapping_type: 'string',
+                mapping: {
+                  type: 'string',
+                  analyzer: 'autocomplete',
+                  search_analyzer: 'standard',
+                },
+              } },
+            ],
+            _source: {
+              enabled: true,
+            },
+            properties: {
+              id: {
+                type: 'string',
+                index: 'not_analyzed',
+                store: true,
+              },
+              description: {
+                type: 'string',
+                analyzer: 'autocomplete',
+                search_analyzer: 'standard',
+              },
+              action: {
+                type: 'string',
+                analyzer: 'autocomplete',
+                search_analyzer: 'standard',
+              },
+              created: {
+                type: 'date',
+                format: 'epoch_millis',
+              },
+              received: {
+                type: 'date',
+                format: 'epoch_millis',
+              },
+              source_ip: {
+                type: 'ip',
+              },
+              team_id: {
+                type: 'string',
+                index: 'not_analyzed',
+              },
+              raw: {
+                type: 'string',
+                index: 'not_analyzed',
+              },
+              fields: {
+                type: 'object',
+              },
+              actor: {
+                properties: {
+                  id: {
+                    type: 'string',
+                    index: 'not_analyzed',
+                  },
+                  name: {
+                    type: 'string',
+                    analyzer: 'autocomplete',
+                    search_analyzer: 'standard',
+                  },
+                  type: {
+                    type: 'string',
+                    index: 'not_analyzed',
+                  },
+                  last_active: {
+                    type: 'date',
+                    format: 'epoch_millis',
+                  },
+                  country: {
+                    type: 'string',
+                    analyzer: 'autocomplete',
+                    search_analyzer: 'standard',
+                  },
+                  loc_subdiv1: {
+                    type: 'string',
+                    analyzer: 'autocomplete',
+                    search_analyzer: 'standard',
+                  },
+                  loc_subdiv2: {
+                    type: 'string',
+                    analyzer: 'autocomplete',
+                    search_analyzer: 'standard',
+                  },
+                  fields: {
+                    type: 'object',
+                  },
+                },
+              },
+              object: {
+                properties: {
+                  id: {
+                    type: 'string',
+                    index: 'not_analyzed',
+                  },
+                  name: {
+                    type: 'string',
+                    analyzer: 'autocomplete',
+                    search_analyzer: 'standard',
+                  },
+                  type: {
+                    type: 'string',
+                  },
+                  fields: {
+                    type: 'object',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+};
