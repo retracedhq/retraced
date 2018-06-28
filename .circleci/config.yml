@@ -124,7 +124,7 @@ jobs:
           - v1-dependencies-
       - run: docker pull debian:stretch-slim
       - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
-      - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASS" registry.replicated.com
+      - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
       # don't build, just pull. This ensures we're releasing the SHA that we just built and tested
       - run: docker pull quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
       - run: docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:stable
