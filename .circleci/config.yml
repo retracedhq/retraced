@@ -240,44 +240,9 @@ workflows:
               only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
             branches:
               ignore: /.*/
-      - prepare_deploy_saas:
-          filters:
-            tags:
-              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
-            branches:
-              ignore: /.*/
-      - deploy_saas_staging:
-          requires:
-            - ensure_image_exists
-            - prepare_deploy_saas
-            - test
-            - is_retracedhq
-          filters:
-            tags:
-              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
-            branches:
-              ignore: /.*/
-      - integration_test_saas_staging:
-          requires:
-            - deploy_saas_staging
-          filters:
-            tags:
-              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
-            branches:
-              ignore: /.*/
-      - deploy_saas_production:
-          requires:
-            - integration_test_saas_staging
-            - prepare_deploy_saas
-            - ensure_image_exists
-          filters:
-            tags:
-              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
-            branches:
-              ignore: /.*/
       - deploy_stable:
           requires:
-            - integration_test_saas_staging
+            - ensure_image_exists
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
