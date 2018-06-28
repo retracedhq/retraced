@@ -243,6 +243,8 @@ workflows:
       - deploy_stable:
           requires:
             - ensure_image_exists
+            - test
+            - is_retracedhq
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
