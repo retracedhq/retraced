@@ -240,15 +240,9 @@ workflows:
               only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
             branches:
               ignore: /.*/
-      - prepare_deploy_saas:
-          filters:
-            tags:
-              only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
-            branches:
-              ignore: /.*/
       - deploy_stable:
           requires:
-            - integration_test_saas_staging
+            - ensure_image_exists
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
