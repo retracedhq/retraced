@@ -1,0 +1,61 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate-pg-{{ tag }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: retraced
+        tier: db
+        target: pg
+        type: migrate
+        sha: "{{ tag }}"
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db
+          image: quay.io/retracedhq/db:{{ tag }}
+          command:
+            - bin/retraceddb
+            - up
+            - pg
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: POSTGRES_HOST
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: POSTGRES_PORT
+            - name: POSTGRES_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: POSTGRES_DATABASE
+            - name: BUGSNAG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bugsnag
+                  key: DB_TOKEN
+            - name: BUGSNAG_STAGE
+              valueFrom:
+                secretKeyRef:
+                  name: bugsnag
+                  key: STAGE
+
+      imagePullSecrets:
+        - name: quayio
