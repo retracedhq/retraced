@@ -9,6 +9,7 @@ import { setupBugsnag } from "../../common";
 setupBugsnag();
 
 import getPgPool from "../../persistence/pg";
+import { logger } from "../../../logger";
 
 getPgPool();
 
@@ -38,14 +39,15 @@ export const builder = {
 
 export const handler = (argv) => {
   const cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`;
-  // *sighs in defeat*
-  (postgrator as any).setConfig({
+  logger.info("initializing migrator");
+  postgrator.setConfig({
     migrationDirectory: argv.schemaPath,
     driver: "pg",
     connectionString: cs,
   });
 
-  (postgrator as any).migrate("max", (err, migrations) => {
+  logger.info("executing migration");
+  postgrator.migrate("max", (err, migrations) => {
     if (err) {
       bugsnag.notify(err);
       console.log(chalk.red(err));
@@ -58,8 +60,3 @@ export const handler = (argv) => {
     process.exit(0);
   });
 };
-
-exports.command = command;
-exports.describe = describe;
-exports.builder = builder;
-exports.handler = handler;

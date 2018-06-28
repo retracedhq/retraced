@@ -53,7 +53,7 @@
     "pg": "^7.0.2",
     "pg-format": "^1.0.4",
     "pino": "^4.7.1",
-    "postgrator": "^3.6.0",
+    "postgrator": "2.8.2",
     "progress": "^1.1.8",
     "prom-client": "^10.2.1",
     "redis": "^2.8.0",
