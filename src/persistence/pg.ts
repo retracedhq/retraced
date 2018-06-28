@@ -1,10 +1,12 @@
 import * as pg from "pg";
 import { gauge } from "../metrics";
+import { logger } from "../logger";
 
 let pgPool: pg.Pool;
 
 export default function getPgPool(): pg.Pool {
   if (!pgPool) {
+    logger.info("initializing pg pool");
     pgPool = new pg.Pool({
       user: process.env.POSTGRES_USER,
       database: process.env.POSTGRES_DATABASE,
