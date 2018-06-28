@@ -40,11 +40,11 @@ export default class NormalizeRepairer {
     private readonly maxEvents: number;
 
     constructor(minAgeMs?: number, nsqClient?: NSQClient, pgPool?: pg.Pool, registry?: monkit.Registry, maxEvents?: number) {
-        this.minAgeMs = minAgeMs || process.env.PROCESSOR_NORMALIZE_REPAIRER_MIN_AGE_MS || TWO_MINUTES_IN_MILLIS;
+        this.minAgeMs = minAgeMs || Number(process.env.PROCESSOR_NORMALIZE_REPAIRER_MIN_AGE_MS) || TWO_MINUTES_IN_MILLIS;
         this.nsq = nsqClient || nsq;
         this.pgPool = pgPool || getPgPool();
         this.metricRegistry = registry || monkit.getRegistry();
-        this.maxEvents = maxEvents || process.env.PROCESSOR_NORMALIZE_REPAIRER_MAX_EVENTS || 10000;
+        this.maxEvents = maxEvents || Number(process.env.PROCESSOR_NORMALIZE_REPAIRER_MAX_EVENTS) || 10000;
 
         // intialize the metrics so they report zeroes
         this.metricRegistry.meter("NormalizeRepairer.repairOldEvents.hits");

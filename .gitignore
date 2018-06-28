@@ -3,6 +3,8 @@
 src/swagger.json
 retracedctl
 api
+retraceddb
+processor
 *.snyk-patch
 build/
 lib/

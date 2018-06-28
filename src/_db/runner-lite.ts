@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+// lightweight version of runner.ts that is designed for on-prem pkg/slim builds,
+// which package `db` as a standalone executable with obfuscated source code
+//
+// - designed not to use the yargs commandDir discovery
+// - only includes the commands/geoip and commands/up/pg
+// - included as bin/retraceddb in the pkg/slim builds instead of
+//   the more heavyweight runner.ts
+//
+
+import "source-map-support/register";
+import * as yargs from "yargs";
+import * as upPG from "./commands/up/pg";
+import * as geoIP from "./commands/geoip";
+
+yargs
+  .command(upPG.command, upPG.describe, upPG.builder, upPG.handler)
+  .command(geoIP.command, geoIP.describe, geoIP.builder, geoIP.handler)
+  .env()
+  .help()
+  .argv;

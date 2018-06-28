@@ -37,7 +37,7 @@ export interface NSQ {
 
 export class NSQClient {
   public static fromEnv(): NSQClient {
-    return new NSQClient(process.env.NSQD_HOST, process.env.NSQD_TCP_PORT, process.env.NSQD_HTTP_PORT);
+    return new NSQClient(process.env.NSQD_HOST || "", Number(process.env.NSQD_TCP_PORT) || 4150, Number(process.env.NSQD_HTTP_PORT) || 4151);
   }
 
   private readonly nsqdTCPAddresses: string[];

@@ -1,0 +1,2 @@
+-- SQL goes here
+-- DROP INDEX normalizer_repairer_index;

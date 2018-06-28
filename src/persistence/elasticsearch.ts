@@ -47,7 +47,7 @@ function intFromEnv(key, defaultN) {
 
 export default function getElasticsearch() {
   if (!es) {
-    const hosts = _.split(process.env.ELASTICSEARCH_NODES, ",");
+    const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
     es = new elasticsearch.Client({
       hosts,
       requestTimeout,

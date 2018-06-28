@@ -57,6 +57,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 EXPOSE 3000
 
+COPY --from=node /src/retraceddb /src/retraceddb
+copy --from=node /src/migrations/pg /src/migrations/pg
+copy --from=node /src/migrations/pg10 /src/migrations/pg10
+copy --from=node /src/migrations/pg /src/migrations/pg10
 COPY --from=node /src/api /src/api
 COPY --from=node /src/retracedctl /src/bin/retracedctl
 COPY --from=node /src/processor /src/processor
@@ -67,9 +71,11 @@ COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercron
 COPY --from=cron /usr/local/bin/replicated-auditlog-cron /usr/local/bin/replicated-auditlog-cron
 COPY --from=cron /crontab /crontab
 
-RUN cp /src/api /src/replicated-auditlog-api
-RUN cp /src/bin/retracedctl /src/replicated-auditlog-retracedctl
-RUN cp /src/processor /src/replicated-auditlog-processor
+
+RUN ln -s /src/api /src/replicated-auditlog-api
+RUN ln -s /src/processor /src/replicated-auditlog-processor
+RUN ln -s /src/bin/retracedctl /src/replicated-auditlog-retracedctl
+RUN ln -s /src/retraceddb /src/replicated-auditlog-migrations
 
 WORKDIR /src
 

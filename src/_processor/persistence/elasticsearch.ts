@@ -20,7 +20,10 @@ function intFromEnv(key, defaultN) {
 
 export default function getElasticsearch(): elasticsearch.Client {
   if (!es) {
-    const hosts = _.split(process.env.ELASTICSEARCH_NODES, ",");
+    const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
+    if (hosts.length < 1 || !hosts[0]) {
+      throw new Error("Need at least one item in ELASTICSEARCH_NODES");
+    }
     es = new elasticsearch.Client({
       hosts,
       requestTimeout,
@@ -86,7 +89,10 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]): Pro
     ],
   };
 
-  const hosts = _.split(process.env.ELASTICSEARCH_NODES, ",");
+  const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
+  if (hosts.length < 1 || !hosts[0]) {
+    throw new Error("Need at least one item in ELASTICSEARCH_NODES");
+  }
   const uri = `${hosts[0]}/_aliases`;
   const params = {
     json: true,
