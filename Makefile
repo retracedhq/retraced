@@ -67,6 +67,10 @@ k8s-service:
 k8s-ingress:
 	`yarn bin`/handlebars                          < deploy/k8s/api-ingress.yml.hbs    > build/k8s/api-ingress.yml
 
-k8s: k8s-pre k8s-deployment k8s-service k8s-ingress
+k8s-migrate:
+	`yarn bin`/handlebars --tag '"$(tag)"' < ./deploy/k8s/migratepg-job.yml.hbs > ./build/k8s/migratepg-job.yml
+	`yarn bin`/handlebars --tag '"$(tag)"' < ./deploy/k8s/migratees-job.yml.hbs > ./build/k8s/migratees-job.yml
+
+k8s: k8s-pre k8s-deployment k8s-service k8s-ingress k8s-migrate
 	: "Templated k8s yamls"
 
