@@ -192,6 +192,6 @@ export class ElasticsearchIndexRotator {
 
 }
 
-export const rotator = ElasticsearchIndexRotator.default();
-export const worker = () => rotator.worker(moment.utc().add(1, "days"));
-export const repair = () => rotator.repairAliases();
+export const rotator = process.env.PG_SEARCH ? null : ElasticsearchIndexRotator.default();
+export const worker = () => rotator ? rotator.worker(moment.utc().add(1, "days")) : () => {/* nope */};
+export const repair = () => rotator ? rotator.repairAliases() : () => {/* nope */};
