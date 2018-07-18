@@ -47,6 +47,7 @@ FROM debian:stretch-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
+    curl \
     libicu57 \
     libssl1.1 \
     openssl \
