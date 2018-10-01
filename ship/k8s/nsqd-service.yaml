@@ -2,6 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: nsqd
+  namespace: '{{repl ConfigOption "namespace"}}'
   labels:
     app: retraced
     tier: nsq

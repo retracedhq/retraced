@@ -1,45 +1,45 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: processor
+  namespace: '{{repl ConfigOption "namespace"}}'
 spec:
+  selector:
+    matchLabels:
+      tier: processor
   replicas: 2
   template:
     metadata:
       labels:
         app: retraced
-        tier: api
+        tier: processor
     spec:
       volumes:
-        - name: var-run
-          hostPath:
-            path: /var/run/retraced/
-      imagePullSecrets:
-        - name: quayio
+        - name: tmpdir
+          emptyDir: {}
       containers:
-        - name: api
-          image: quay.io/retracedhq/retraced:{{ tag }}
+        - name: processor
+          image: quay.io/retracedhq/retraced:f5cd431
           command:
-            - /src/api
-          ports:
-            - containerPort: 3000
+            - /src/processor
           volumeMounts:
-            - mountPath: /var/run/retraced/
-              name: var-run
-              readOnly: true
+            - mountPath: /tmp
+              name: tmpdir
           env:
-            - name: STATSD_USE_SYSDIG_NAME_REWRITER
+            - name: TMPDIR
+              value: /tmp
+            - name: NO_WARP_PIPE
               value: "1"
-            - name: SIGSCI_RPC_ADDRESS
+            - name: STATSD_HOST
               valueFrom:
                 secretKeyRef:
-                  name: sigsci
-                  key: SIGSCI_RPC_ADDRESS
-            - name: REDIS_URI
+                  name: statsd
+                  key: HOST
+            - name: STATSD_PORT
               valueFrom:
                 secretKeyRef:
-                  name: redis
-                  key: REDIS_URI
+                  name: statsd
+                  key: PORT
             - name: POSTGRES_POOL_SIZE
               valueFrom:
                 secretKeyRef:
@@ -81,67 +81,43 @@ spec:
                   name: jwt
                   key: HMAC_SECRET_VIEWER
             - name: RETRACED_APP_BASE
-              valueFrom:
-                secretKeyRef:
-                  name: retraced
-                  key: RETRACED_APP_BASE
+              value: ""
             - name: RETRACED_API_BASE
               valueFrom:
                 secretKeyRef:
                   name: retraced
                   key: RETRACED_API_BASE
-            - name: RETRACED_API_SCHEMES
+            - name: MANDRILL_KEY
               valueFrom:
                 secretKeyRef:
-                  name: retraced
-                  key: RETRACED_API_SCHEMES
+                  name: mandrill
+                  key: MANDRILL_KEY
             - name: ELASTICSEARCH_NODES
               valueFrom:
                 secretKeyRef:
                   name: elasticsearch
                   key: ELASTICSEARCH_NODES
-            - name: AUTH0_CLIENT_DOMAIN
-              valueFrom:
-                secretKeyRef:
-                  name: auth0
-                  key: AUTH0_CLIENT_DOMAIN
-            - name: AUTH0_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: auth0
-                  key: AUTH0_CLIENT_ID
-            - name: RETRACED_PUBLIC_SITE
-              valueFrom:
-                secretKeyRef:
-                  name: retraced
-                  key: RETRACED_PUBLIC_SITE
-            - name: STATUSPAGEIO_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: statuspageio
-                  key: token
             - name: BUGSNAG_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: bugsnag
-                  key: API_TOKEN
+                  key: PROCESSOR_TOKEN
             - name: BUGSNAG_STAGE
               valueFrom:
                 secretKeyRef:
                   name: bugsnag
                   key: STAGE
+            - name: STATUSPAGEIO_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: statuspageio
+                  key: token
             - name: NSQD_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: nsq
-                  key: NSQD_HOST
+              value: "nsqd"
             - name: NSQD_TCP_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: nsq
-                  key: NSQD_TCP_PORT
+              value: "4150"
             - name: NSQD_HTTP_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: nsq
-                  key: NSQD_HTTP_PORT
+              value: "4151"
+
+      imagePullSecrets:
+        - name: quayio

@@ -1,8 +1,12 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cron
+  namespace: '{{repl ConfigOption "namespace"}}'
 spec:
+  selector:
+    matchLabels:
+      tier: cron
   replicas: 1
   template:
     metadata:
@@ -14,7 +18,7 @@ spec:
     spec:
       containers:
         - name: cron
-          image: quay.io/retracedhq/retraced:{{ tag }}
+          image: quay.io/retracedhq/retraced:f5cd431
           command:
             - /bin/bash
             - -c

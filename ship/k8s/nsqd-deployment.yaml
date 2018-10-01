@@ -1,8 +1,12 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nsqd
+  namespace: '{{repl ConfigOption "namespace"}}'
 spec:
+  selector:
+    matchLabels:
+      tier: nsq
   replicas: 1
   template:
     metadata:
@@ -19,9 +23,20 @@ spec:
             - -c
             - nsqd
               -statsd-address
-              ${KUBERNETES_SERVICE_HOST}:8125
+              ${STATSD_HOST}:${STATSD_PORT}
               -statsd-prefix
               "NSQD#nsqd.stat="
+          env:
+            - name: STATSD_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: statsd
+                  key: HOST
+            - name: STATSD_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: statsd
+                  key: PORT
           ports:
             - containerPort: 4150
             - containerPort: 4151
