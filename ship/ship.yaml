@@ -99,7 +99,7 @@ config:
         help_text: "The hostname that you will use to communicate with the retraced API"
         required: true
         default: 'http://api.{{repl ConfigOption "namespace"}}.svc.cluster.local'
-      - name: docker registry
+      - name: docker_registry
         title: Docker Registry
         type: text
         help_text: "A docker registry that you will store the audit log docker images in. You will need to ensure the repository /retraced exists in the target registry."
