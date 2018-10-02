@@ -33,6 +33,15 @@ assets:
 
 lifecycle:
   v1:
+    - message:
+        contents: |
+          Audit Log
+          =========
+
+          This tool will walk you through several steps to
+          allow you to customize the installation and deploy Audit Log
+          to your kubernetes cluster.
+
     - config: {}
     - render: {}
     - kustomize:
@@ -44,14 +53,13 @@ lifecycle:
 
               ./installer/ship/templates/secrets.yaml
 
-          and then deploy that to your cluster.
+          and then deploy that to your cluster separately.
 
-          Then, you can use
+          Then, you can run
 
-              kubectl create namespace {{repl ConfigOption "namespace"}}
-              kustomize build installer/overlays/ship | kubectl apply -f -
+              ./scripts/install.sh
 
-          To deploy retraced to your cluster.
+          To deploy the audit log to your cluster.
 
 config:
   v1:
@@ -69,40 +77,3 @@ config:
         help_text: "The hostname that you will use to communicate with the retraced API"
         default: 'http://api.{{repl ConfigOption "namespace"}}.svc.cluster.local'
 
-    - title: Elasticsearch
-      name: elasticsearch
-      items:
-      - name: elasticsearch_nodes
-        title: Elasticsearch Nodes
-        help_text: "A comma-separated list of one or more Elasticsearch connection strings"
-        type: text
-        default: 'https://some-user:s3cr3t@ealsticsearch.internal.somebigbank.com'
-
-    - title: Postgres
-      name: postgres
-      items:
-      - name: postgres_host
-        title: Host
-        type: text
-        help_text: "The host of a postgres server to use"
-        default: 'postgres.internal.somebigbank.com'
-      - name: postgres_port
-        title: Port
-        type: text
-        help_text: "The port of a postgres server to use"
-        default: '5432'
-      - name: postgres_database
-        title: Database
-        type: text
-        help_text: "The name of the database to use"
-        default: 'retraced'
-      - name: postgres_user
-        title: User
-        type: text
-        help_text: "The user to connect as"
-        default: 'retraced'
-      - name: postgres_password
-        title: Password
-        type: text
-        help_text: "The password to use"
-        default: 'shhhsecret'
