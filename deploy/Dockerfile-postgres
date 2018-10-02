@@ -2,9 +2,9 @@ FROM postgres:10.3
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
-    libicu57 \
-    libssl1.1 \
-    openssl \
+    \
+    libpython-dev \
+    python3.5 \
     perl-base \
     libgcrypt20 \
     dirmngr \
