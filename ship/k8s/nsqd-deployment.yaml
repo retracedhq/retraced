@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
         - name: nsqd
-          image: nsqio/nsq:v1.0.0-compat
+          image: {{repl ConfigOption "docker_registry"}}/retraced:nsq-v1.0.0-compat
+          {{repl end}}
           command:
             - /bin/sh 
           args:
@@ -25,7 +26,7 @@ spec:
               -statsd-address
               ${STATSD_HOST}:${STATSD_PORT}
               -statsd-prefix
-              "NSQD#nsqd.stat="
+              "nsqd."
           env:
             - name: STATSD_HOST
               valueFrom:
