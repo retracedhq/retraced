@@ -2,13 +2,13 @@
 assets:
   v1:
     - github:
-        repo: dexhorthy/api
+        repo: retracedhq/api
         path: ship/k8s
         dest: ./
         source: private
         ref: a7e63bb9b7c9e57fa3b448c5fdaac68a7d5d4b52
     - github:
-        repo: dexhorthy/api
+        repo: retracedhq/api
         path: ship/templates
         dest: ./
         source: private
