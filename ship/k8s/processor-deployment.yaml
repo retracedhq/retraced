@@ -120,4 +120,5 @@ spec:
               value: "4151"
 
       imagePullSecrets:
-        - name: quayio
+      - name: retraced-imagepull-secret
+

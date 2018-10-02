@@ -14,7 +14,7 @@ spec:
         sha: "f5cd431"
     spec:
       imagePullSecrets:
-        - name: quayio
+      - name: retraced-imagepull-secret
       restartPolicy: Never
       containers:
         - name: db

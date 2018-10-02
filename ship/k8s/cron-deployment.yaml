@@ -37,4 +37,5 @@ spec:
             - name: RETRACED_DISABLE_GEOSYNC
               value: "1"
       imagePullSecrets:
-        - name: quayio
+      - name: retraced-imagepull-secret
+

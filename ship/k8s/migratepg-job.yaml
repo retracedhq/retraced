@@ -59,4 +59,5 @@ spec:
                   key: STAGE
 
       imagePullSecrets:
-        - name: quayio
+      - name: retraced-imagepull-secret
+
