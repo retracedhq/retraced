@@ -1,6 +1,3 @@
-# Golang CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
 
 experimental:
@@ -45,7 +42,6 @@ jobs:
           - v1-dependencies-
       - run: docker pull debian:stretch-slim
       - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
-#      - run: docker pull quay.io/retracedhq/retraced:unstable # hoping this speeds the build
       - run: docker build -f deploy/Dockerfile-slim -t quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} .
       - run: docker push quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
 
@@ -57,9 +53,9 @@ jobs:
       - run: docker pull debian:stretch-slim
       - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
       - run: docker pull quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
-      - run: docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:unstable
+      - run: docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:alpha
       - deploy:
-          command: docker push quay.io/retracedhq/retraced:unstable
+          command: docker push quay.io/retracedhq/retraced:alpha
 
   ensure_image_exists:
     <<: *defaults
@@ -69,49 +65,6 @@ jobs:
       - run:  |
           docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
           docker pull quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
-  prepare_deploy_saas:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
-      - run: make deps k8s tag=${CIRCLE_SHA1:0:7}
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - build/k8s
-            - deploy/
-
-  deploy_saas_staging:
-    docker:
-      - image: google/cloud-sdk
-    working_directory: ~/repo
-    environment:
-      PROJECT_NAME: retraced-staging
-      CLUSTER_NAME: retraced-staging
-      CLOUDSDK_COMPUTE_ZONE: us-east1-b
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - run: ./deploy/deploy_k8s_using_env.sh
-
-
-  integration_test_saas_staging:
-    <<: *defaults
-    environment:
-      PUBLISHER_API_ENDPOINT: https://api.staging.retraced.io
-      PROJECT_ID: ada4383fc84948caac138f28b131f713
-      ENVIRONMENT_ID: 406e148996444214b9b5912acacb8c63
-      PUBLISHER_API_KEY:  5e13bc18ecad44e08bca82ab5fce0014
-      QA_INTEGRATION_VERSION: latest
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
-      - run: sleep 20 # todo check health or something
-      - run: ./deploy/integration_tests_using_env.sh
 
   deploy_stable:
     <<: *defaults
@@ -170,19 +123,6 @@ jobs:
             docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:${MAJOR}.${MINOR}.${PATCH}
             docker push registry.replicated.com/shipretraced/retraced:${MAJOR}.${MINOR}.${PATCH}
 
-  # this isn't used yet, coming soon
-  deploy_saas_production:
-    <<: *defaults
-    environment:
-      PROJECT_NAME: retraced-production
-      CLUSTER_NAME: retraced-production
-      CLOUDSDK_COMPUTE_ZONE: us-east1-b
-    steps:
-      - checkout
-      - run: |
-          GCLOUD_ACCOUNT_JSON=$GCLOUD_ACCOUNT_JSON_PRODUCTION \
-            ./deploy/deploy_k8s_using_env.sh
-
   is_retracedhq:
     <<: *defaults
     steps:
@@ -209,26 +149,9 @@ workflows:
           filters:
             branches:
               only: /master/
-      - prepare_deploy_saas:
-          filters:
-            branches:
-              only: /master/
-      - deploy_saas_staging:
-          requires:
-            - prepare_deploy_saas
-            - build_docker
-          filters:
-            branches:
-              only: /master/
-      - integration_test_saas_staging:
-          requires:
-            - deploy_saas_staging
-          filters:
-            branches:
-              only: /master/
       - deploy_unstable:
           requires:
-            - integration_test_saas_staging
+            - build_docker
 
   stable_prod:
     jobs:
