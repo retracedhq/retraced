@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nsqd
-          image: {{repl ConfigOption "docker_registry"}}/retraced:nsq-v1.0.0-compat
+          image: nsqio/nsq:v1.0.0-compat
           command:
             - /bin/sh 
           args:

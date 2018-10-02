@@ -16,7 +16,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: db
-          image: {{repl ConfigOption "docker_registry"}}/retraced:f5cd431
+          image: registry.replicated.com/shipretraced/retraced:1.2.2
           command:
             - bin/retraceddb
             - up
