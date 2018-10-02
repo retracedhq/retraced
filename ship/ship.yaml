@@ -6,13 +6,13 @@ assets:
         path: ship/k8s
         dest: ./
         source: private
-        ref: a7e63bb9b7c9e57fa3b448c5fdaac68a7d5d4b52
+        ref: 41c3b685d3f3f47d5843f2e8df9ae3af4a686a9e
     - github:
         repo: retracedhq/api
         path: ship/templates
         dest: ./
         source: private
-        ref: a7e63bb9b7c9e57fa3b448c5fdaac68a7d5d4b52
+        ref: 41c3b685d3f3f47d5843f2e8df9ae3af4a686a9e
     - inline:
         dest: scripts/install.sh
         mode: 755
