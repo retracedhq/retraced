@@ -16,7 +16,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: db
-          image: quay.io/retracedhq/db:{{ tag }}
+          image: quay.io/retracedhq/db:f5cd431
           command:
             - bin/retraceddb
             - up
