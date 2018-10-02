@@ -6,15 +6,13 @@ assets:
         path: ship/k8s
         dest: ./
         source: private
-        # todo version me
-        ref: ship
+        ref: a7e63bb9b7c9e57fa3b448c5fdaac68a7d5d4b52
     - github:
         repo: dexhorthy/api
         path: ship/templates
         dest: ./
         source: private
-        # todo version me
-        ref: ship
+        ref: a7e63bb9b7c9e57fa3b448c5fdaac68a7d5d4b52
     - inline:
         dest: scripts/install.sh
         mode: 755
@@ -27,7 +25,7 @@ assets:
         mode: 755
         contents: |
           #!/bin/sh
-          echo "tested nothing"
+          echo "tests coming soon"
 
 
 
