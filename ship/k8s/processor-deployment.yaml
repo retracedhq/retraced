@@ -19,7 +19,7 @@ spec:
           emptyDir: {}
       containers:
         - name: processor
-          image: {{repl ConfigOption "docker_registry"}}/retraced:f5cd431
+          image: registry.replicated.com/shipretraced/retraced:1.2.2
           command:
             - /src/processor
           volumeMounts:
@@ -120,4 +120,5 @@ spec:
               value: "4151"
 
       imagePullSecrets:
-        - name: quayio
+      - name: retraced-imagepull-secret
+

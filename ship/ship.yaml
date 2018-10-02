@@ -18,39 +18,24 @@ assets:
         mode: 755
         contents: |
           #!/bin/sh
+          set -euo pipefail
           kubectl create namespace {{repl ConfigOption "namespace"}}
+
+          kubectl create secret docker-registry retraced-imagepull-secret \
+              --namespace {{repl ConfigOption "namespace"}} \
+              --docker-server registry.replicated.com \
+              --docker-username {{repl Installation "customer_id"}} \
+              --docker-password {{repl Installation "installation_id"}}
+
           kustomize build installer/overlays/ship | kubectl apply -f -
+
     - inline:
         dest: scripts/test.sh
         mode: 755
         contents: |
           #!/bin/sh
+          set -euo pipefail
           echo "tests coming soon"
-    - inline:
-        dest: scripts/push-images.sh
-        mode: 755
-        contents: |
-          #!/bin/sh
-          echo "loading images -- ensure your docker client is configured for authenticating to {{repl ConfigOption "docker_registry"}} and the repo '/retraced' exists"
-          docker load < installer/images/retraced.tar
-          docker tag quay.io/retracedhq/retraced:f5cd431 {{repl ConfigOption "docker_registry"}}/retraced:f5cd431
-          docker push {{repl ConfigOption "docker_registry"}}/retraced:f5cd431
-
-          docker load < installer/images/nsq.tar
-          docker tag nsqio/nsq:v1.0.0-compat {{repl ConfigOption "docker_registry"}}/retraced:nsq-v1.0.0-compat
-          docker push {{repl ConfigOption "docker_registry"}}/retraced:nsq-v1.0.0-compat
-
-    - docker:
-        dest: images/retraced.tar
-        source: quay
-        image: quay.io/retracedhq/retraced:f5cd431
-
-    - docker:
-        dest: images/nsq.tar
-        source: public
-        image: nsqio/nsq:v1.0.0-compat
-
-
 
 lifecycle:
   v1:
@@ -99,10 +84,4 @@ config:
         help_text: "The hostname that you will use to communicate with the retraced API"
         required: true
         default: 'http://api.{{repl ConfigOption "namespace"}}.svc.cluster.local'
-      - name: docker_registry
-        title: Docker Registry
-        type: text
-        help_text: "A docker registry that you will store the audit log docker images in. You will need to ensure the repository /retraced exists in the target registry."
-        required: true
-        default: 'quay.io/somebigbank'
 
