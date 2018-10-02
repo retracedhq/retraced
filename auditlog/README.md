@@ -1,0 +1,1 @@
+Folder for ship assets
