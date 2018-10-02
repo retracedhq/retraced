@@ -22,7 +22,7 @@ spec:
         - name: quayio
       containers:
         - name: api
-          image: quay.io/retracedhq/retraced:f5cd431
+          image: {{repl ConfigOption "docker_registry"}}/retraced:f5cd431
           command:
             - /src/api
           ports:

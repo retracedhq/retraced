@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: cron
-          image: quay.io/retracedhq/retraced:f5cd431
+          image: {{repl ConfigOption "docker_registry"}}/retraced:f5cd431
           command:
             - /bin/bash
             - -c

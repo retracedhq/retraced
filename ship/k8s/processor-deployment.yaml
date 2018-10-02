@@ -19,7 +19,7 @@ spec:
           emptyDir: {}
       containers:
         - name: processor
-          image: quay.io/retracedhq/retraced:f5cd431
+          image: {{repl ConfigOption "docker_registry"}}/retraced:f5cd431
           command:
             - /src/processor
           volumeMounts:
