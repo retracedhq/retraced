@@ -1,17 +1,20 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrate-pg-{{ tag }}
+  name: migrate-es-f5cd431
+  namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   template:
     metadata:
       labels:
         app: retraced
         tier: db
-        target: pg
+        target: es
         type: migrate
-        sha: "{{ tag }}"
+        sha: "f5cd431"
     spec:
+      imagePullSecrets:
+        - name: quayio
       restartPolicy: Never
       containers:
         - name: db
@@ -19,7 +22,7 @@ spec:
           command:
             - bin/retraceddb
             - up
-            - pg
+            - es
           env:
             - name: POSTGRES_USER
               valueFrom:
@@ -46,6 +49,11 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: POSTGRES_DATABASE
+            - name: ELASTICSEARCH_NODES
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch
+                  key: ELASTICSEARCH_NODES
             - name: BUGSNAG_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -57,5 +65,3 @@ spec:
                   name: bugsnag
                   key: STAGE
 
-      imagePullSecrets:
-        - name: quayio

@@ -1,0 +1,79 @@
+---
+assets:
+  v1:
+    - github:
+        repo: dexhorthy/api
+        path: ship/k8s
+        dest: ./
+        source: private
+        # todo version me
+        ref: ship
+    - github:
+        repo: dexhorthy/api
+        path: ship/templates
+        dest: ./
+        source: private
+        # todo version me
+        ref: ship
+    - inline:
+        dest: scripts/install.sh
+        mode: 755
+        contents: |
+          #!/bin/sh
+          kubectl create namespace {{repl ConfigOption "namespace"}}
+          kustomize build installer/overlays/ship | kubectl apply -f -
+    - inline:
+        dest: scripts/test.sh
+        mode: 755
+        contents: |
+          #!/bin/sh
+          echo "tested nothing"
+
+
+
+lifecycle:
+  v1:
+    - message:
+        contents: |
+          Audit Log
+          =========
+
+          This tool will walk you through several steps to
+          allow you to customize the installation and deploy Audit Log
+          to your kubernetes cluster.
+
+    - config: {}
+    - render: {}
+    - kustomize:
+        base_path: "installer/ship/k8s"
+        dest: installer/overlays/ship
+    - message:
+        contents: |
+          Assets are almost ready. Fill out the file at
+
+              ./installer/ship/templates/secrets.yaml
+
+          and then deploy that to your cluster separately.
+
+          Then, you can run
+
+              ./scripts/install.sh
+
+          To deploy the audit log to your cluster.
+
+config:
+  v1:
+    - title: Basics
+      name: basics
+      items:
+      - name: namespace
+        title: Kubernetes Namespace
+        help_text: "The Namespace that you'll deploy retraced into"
+        type: text
+        default: 'retraced'
+      - name: hostname
+        title: Hostname
+        type: text
+        help_text: "The hostname that you will use to communicate with the retraced API"
+        default: 'http://api.{{repl ConfigOption "namespace"}}.svc.cluster.local'
+
