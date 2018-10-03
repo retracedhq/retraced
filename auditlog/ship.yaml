@@ -50,7 +50,7 @@ lifecycle:
 
     - config: {}
     - render:
-        root: ./
+        root: .
     - kustomize:
         base: ship/k8s
         overlay: overlays/ship
