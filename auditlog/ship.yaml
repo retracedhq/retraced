@@ -52,8 +52,8 @@ lifecycle:
     - render:
         root: .
     - kustomize:
-        base: ship/k8s
-        overlay: overlays/ship
+        base: auditlog/base
+        overlay: auditlog/overlays/ship
         dest: auditlog.yaml
     - message:
         contents: |
