@@ -1,0 +1,11 @@
+kind: ""
+apiversion: ""
+resources:
+- api-deployment.yaml
+- api-service.yaml
+- cron-deployment.yaml
+- migratees-job.yaml
+- migratepg-job.yaml
+- nsqd-deployment.yaml
+- nsqd-service.yaml
+- processor-deployment.yaml
