@@ -3,7 +3,7 @@ assets:
   v1:
     - github:
         repo: retracedhq/api
-        path: auditlog/base
+        path: base
         dest: ./
         source: private
         ref: master
