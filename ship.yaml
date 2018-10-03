@@ -9,12 +9,12 @@ assets:
         ref: master
     - github:
         repo: retracedhq/api
-        path: auditlog/templates
+        path: templates
         dest: ./
         source: private
         ref: master
     - inline:
-        dest: auditlog/scripts/install.sh
+        dest: scripts/install.sh
         mode: 755
         contents: |
           #!/bin/sh
@@ -30,7 +30,7 @@ assets:
           kustomize build overlays/ship | kubectl apply -f -
 
     - inline:
-        dest: auditlog/scripts/install.sh
+        dest: scripts/install.sh
         mode: 755
         contents: |
           #!/bin/sh
@@ -59,13 +59,13 @@ lifecycle:
         contents: |
           Assets are almost ready. Fill out the file at
 
-              ./auditlog/templates/secrets.yaml
+              ./templates/secrets.yaml
 
           and then deploy that to your cluster separately.
 
           Then, you can run
 
-              ./auditlog/scripts/install.sh
+              ./scripts/install.sh
 
           To deploy the audit log to your cluster.
 
