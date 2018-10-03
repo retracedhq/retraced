@@ -3,7 +3,7 @@ assets:
   v1:
     - github:
         repo: retracedhq/api
-        path: auditlog/base
+        path: base
         dest: ./
         source: private
         ref: master
@@ -52,8 +52,8 @@ lifecycle:
     - render:
         root: .
     - kustomize:
-        base: auditlog/base
-        overlay: auditlog/overlays/ship
+        base: base
+        overlay: overlays/ship
         dest: auditlog.yaml
     - message:
         contents: |
