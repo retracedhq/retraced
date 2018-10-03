@@ -3,18 +3,18 @@ assets:
   v1:
     - github:
         repo: retracedhq/api
-        path: ship/k8s
+        path: auditlog/base
         dest: ./
         source: private
         ref: master
     - github:
         repo: retracedhq/api
-        path: ship/templates
+        path: auditlog/templates
         dest: ./
         source: private
         ref: master
     - inline:
-        dest: scripts/install.sh
+        dest: auditlog/scripts/install.sh
         mode: 755
         contents: |
           #!/bin/sh
@@ -27,10 +27,10 @@ assets:
               --docker-username {{repl Installation "customer_id"}} \
               --docker-password {{repl Installation "installation_id"}}
 
-          kustomize build installer/overlays/ship | kubectl apply -f -
+          kustomize build overlays/ship | kubectl apply -f -
 
     - inline:
-        dest: scripts/test.sh
+        dest: auditlog/scripts/install.sh
         mode: 755
         contents: |
           #!/bin/sh
@@ -49,21 +49,23 @@ lifecycle:
           to your kubernetes cluster.
 
     - config: {}
-    - render: {}
+    - render:
+        root: ./
     - kustomize:
-        base_path: "installer/ship/k8s"
-        dest: installer/overlays/ship
+        base: ship/k8s
+        overlay: overlays/ship
+        dest: auditlog.yaml
     - message:
         contents: |
           Assets are almost ready. Fill out the file at
 
-              ./installer/ship/templates/secrets.yaml
+              ./auditlog/templates/secrets.yaml
 
           and then deploy that to your cluster separately.
 
           Then, you can run
 
-              ./scripts/install.sh
+              ./auditlog/scripts/install.sh
 
           To deploy the audit log to your cluster.
 
