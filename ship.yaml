@@ -27,7 +27,7 @@ assets:
               --docker-username {{repl Installation "customer_id"}} \
               --docker-password {{repl Installation "installation_id"}}
 
-          kustomize build overlays/ship | kubectl apply -f -
+          kubectl apply -f rendered.yaml
 
     - inline:
         dest: scripts/install.sh
@@ -54,7 +54,7 @@ lifecycle:
     - kustomize:
         base: base
         overlay: overlays/ship
-        dest: auditlog.yaml
+        dest: rendered.yaml
     - message:
         contents: |
           Assets are almost ready. Fill out the file at
