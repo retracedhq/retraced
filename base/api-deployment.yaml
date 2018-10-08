@@ -109,11 +109,6 @@ spec:
               secretKeyRef:
                 name: auditlog
                 key: RETRACED_PUBLIC_SITE
-          - name: STATUSPAGEIO_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: statuspageio
-                key: token
           - name: BUGSNAG_TOKEN
             valueFrom:
               secretKeyRef:
