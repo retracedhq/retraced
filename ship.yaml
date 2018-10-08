@@ -26,6 +26,7 @@ assets:
               --docker-server registry.replicated.com \
               --docker-username {{repl Installation "customer_id"}} \
               --docker-password {{repl Installation "installation_id"}}
+              --docker-email deprecated@example.com
 
           kubectl apply -f rendered.yaml
 
