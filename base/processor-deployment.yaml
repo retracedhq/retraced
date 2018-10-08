@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels:
-        app: auditlog
+        app: auditlog 
         tier: processor
     spec:
       volumes:
