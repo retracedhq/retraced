@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels:
-        app: retraced
+        app: auditlog
         tier: cron
         dest: nsq
         source: cron
@@ -37,5 +37,5 @@ spec:
             - name: RETRACED_DISABLE_GEOSYNC
               value: "1"
       imagePullSecrets:
-      - name: retraced-imagepull-secret
+      - name: auditlog-imagepull-secret
 

@@ -11,15 +11,11 @@ spec:
   template:
     metadata:
       labels:
-        app: retraced
+        app: auditlog
         tier: api
     spec:
-      volumes:
-        - name: var-run
-          hostPath:
-            path: /var/run/retraced/
       imagePullSecrets:
-        - name: retraced-imagepull-secret
+        - name: auditlog-imagepull-secret
       containers:
         - name: api
           image: registry.replicated.com/shipretraced/retraced:1.2.2
@@ -27,13 +23,7 @@ spec:
             - /src/api
           ports:
             - containerPort: 3000
-          volumeMounts:
-            - mountPath: /var/run/retraced/
-              name: var-run
-              readOnly: true
           env:
-          - name: SIGSCI_RPC_ADDRESS
-            value: /var/run/retraced/sigsci.sock
           - name: STATSD_HOST
             valueFrom:
               secretKeyRef:
@@ -87,17 +77,17 @@ spec:
           - name: RETRACED_APP_BASE
             valueFrom:
               secretKeyRef:
-                name: retraced
+                name: auditlog
                 key: RETRACED_APP_BASE
           - name: RETRACED_API_BASE
             valueFrom:
               secretKeyRef:
-                name: retraced
+                name: auditlog
                 key: RETRACED_API_BASE
           - name: RETRACED_API_SCHEMES
             valueFrom:
               secretKeyRef:
-                name: retraced
+                name: auditlog
                 key: RETRACED_API_SCHEMES
           - name: ELASTICSEARCH_NODES
             valueFrom:
@@ -117,7 +107,7 @@ spec:
           - name: RETRACED_PUBLIC_SITE
             valueFrom:
               secretKeyRef:
-                name: retraced
+                name: auditlog
                 key: RETRACED_PUBLIC_SITE
           - name: STATUSPAGEIO_TOKEN
             valueFrom:

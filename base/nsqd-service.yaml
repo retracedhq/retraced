@@ -4,7 +4,7 @@ metadata:
   name: nsqd
   namespace: '{{repl ConfigOption "namespace"}}'
   labels:
-    app: retraced
+    app: auditlog
     tier: nsq
 spec:
   type: ClusterIP
@@ -16,5 +16,5 @@ spec:
       port: 4151
       targetPort: 4151
   selector:
-    app: retraced
+    app: auditlog
     tier: nsq
