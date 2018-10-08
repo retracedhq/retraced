@@ -21,7 +21,7 @@ assets:
           set -euo pipefail
           kubectl create namespace {{repl ConfigOption "namespace"}}
 
-          kubectl create secret docker-registry retraced-imagepull-secret \
+          kubectl create secret docker-registry auditlog-imagepull-secret \
               --namespace {{repl ConfigOption "namespace"}} \
               --docker-server registry.replicated.com \
               --docker-username {{repl Installation "customer_id"}} \
@@ -76,14 +76,14 @@ config:
       items:
       - name: namespace
         title: Kubernetes Namespace
-        help_text: "The Namespace that you'll deploy retraced into"
+        help_text: "The Namespace that you'll deploy the auditlog into"
         type: text
         required: true
-        default: 'retraced'
+        default: 'auditlog'
       - name: hostname
         title: Hostname
         type: text
-        help_text: "The hostname that you will use to communicate with the retraced API"
+        help_text: "The hostname that you will use to communicate with the auditlog API"
         required: true
         default: 'http://api.{{repl ConfigOption "namespace"}}.svc.cluster.local'
 

@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels:
-        app: retraced
+        app: auditlog
         tier: nsq
     spec:
       containers:

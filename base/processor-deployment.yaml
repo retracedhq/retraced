@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels:
-        app: retraced
+        app: auditlog
         tier: processor
     spec:
       volumes:
@@ -85,7 +85,7 @@ spec:
             - name: RETRACED_API_BASE
               valueFrom:
                 secretKeyRef:
-                  name: retraced
+                  name: auditlog
                   key: RETRACED_API_BASE
             - name: MANDRILL_KEY
               valueFrom:
@@ -120,5 +120,5 @@ spec:
               value: "4151"
 
       imagePullSecrets:
-      - name: retraced-imagepull-secret
+      - name: auditlog-imagepull-secret
 

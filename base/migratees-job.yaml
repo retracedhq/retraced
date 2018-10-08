@@ -7,14 +7,14 @@ spec:
   template:
     metadata:
       labels:
-        app: retraced
+        app: auditlog
         tier: db
         target: es
         type: migrate
         sha: "f5cd431"
     spec:
       imagePullSecrets:
-      - name: retraced-imagepull-secret
+      - name: auditlog-imagepull-secret
       restartPolicy: Never
       containers:
         - name: db

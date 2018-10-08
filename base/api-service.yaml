@@ -4,7 +4,7 @@ metadata:
   name: api
   namespace: '{{repl ConfigOption "namespace"}}'
   labels:
-    app: retraced
+    app: auditlog
     tier: api
 spec:
   type: NodePort
@@ -13,5 +13,5 @@ spec:
     port: 80
     targetPort: 3000
   selector:
-    app: retraced
+    app: auditlog
     tier: api
