@@ -107,11 +107,6 @@ spec:
                 secretKeyRef:
                   name: bugsnag
                   key: STAGE
-            - name: STATUSPAGEIO_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: statuspageio
-                  key: token
             - name: NSQD_HOST
               value: "nsqd"
             - name: NSQD_TCP_PORT
