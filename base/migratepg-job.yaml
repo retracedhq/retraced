@@ -18,7 +18,7 @@ spec:
         - name: db
           image: registry.replicated.com/shipretraced/retraced:1.2.2
           command:
-            - bin/retraceddb
+            - /src/retraceddb
             - up
             - pg
           env:
