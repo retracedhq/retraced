@@ -74,21 +74,11 @@ spec:
               secretKeyRef:
                 name: jwt
                 key: HMAC_SECRET_VIEWER
-          - name: RETRACED_APP_BASE
-            valueFrom:
-              secretKeyRef:
-                name: auditlog
-                key: RETRACED_APP_BASE
           - name: RETRACED_API_BASE
             valueFrom:
               secretKeyRef:
                 name: auditlog
                 key: RETRACED_API_BASE
-          - name: RETRACED_API_SCHEMES
-            valueFrom:
-              secretKeyRef:
-                name: auditlog
-                key: RETRACED_API_SCHEMES
           - name: ELASTICSEARCH_NODES
             valueFrom:
               secretKeyRef:
