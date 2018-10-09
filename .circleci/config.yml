@@ -41,9 +41,9 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
       - run: docker pull debian:stretch-slim
-      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
-      - run: docker build -f deploy/Dockerfile-slim -t quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} .
-      - run: docker push quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
+      - run: docker login -u="$REPLICATED_SHIPRETRACED_USER" -p="$REPLICATED_SHIPRETRACED_PASSWORD" registry.replicated.com
+      - run: docker build -f deploy/Dockerfile-slim -t registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} .
+      - run: docker push registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7}
 
   deploy_unstable:
     <<: *defaults
@@ -51,20 +51,20 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: docker pull debian:stretch-slim
-      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
-      - run: docker pull quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
-      - run: docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:alpha
+      - run: docker login -u="$REPLICATED_SHIPRETRACED_USER" -p="$REPLICATED_SHIPRETRACED_PASSWORD" registry.replicated.com
+      - run: docker pull registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7}
+      - run: docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:alpha
       - deploy:
-          command: docker push quay.io/retracedhq/retraced:alpha
+          command: docker push registry.replicated.com/shipretraced/retraced:alpha
 
   ensure_image_exists:
     <<: *defaults
     steps:
       - checkout
       - setup_remote_docker
+      - run: docker login -u="$REPLICATED_SHIPRETRACED_USER" -p="$REPLICATED_SHIPRETRACED_PASSWORD" registry.replicated.com
       - run:  |
-          docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
-          docker pull quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
+          docker pull registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7}
 
   deploy_stable:
     <<: *defaults
@@ -76,14 +76,10 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
       - run: docker pull debian:stretch-slim
-      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS" quay.io
       - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
+      - run: docker login -u="$REPLICATED_SHIPRETRACED_USER" -p="$REPLICATED_SHIPRETRACED_PASSWORD" registry.replicated.com
       # don't build, just pull. This ensures we're releasing the SHA that we just built and tested
-      - run: docker pull quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7}
-      - run: docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:stable
-      - run: docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:latest
-      - run: docker push quay.io/retracedhq/retraced:stable
-      - run: docker push quay.io/retracedhq/retraced:latest
+      - run: docker pull registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7}
       - run: |
             function semverParseInto() { # thanks cloudflare
                 local RE='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z-]*\)'
@@ -96,32 +92,29 @@ jobs:
 
             if [ -n "$SPECIAL" ]; then
                echo "pre-release != release, so just push the tag and exit"
-               docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${CIRCLE_TAG}
-               docker push quay.io/retracedhq/retraced:${CIRCLE_TAG}
-               docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${CIRCLE_TAG}
-               docker push registry.replicated.com/library/retraced:${CIRCLE_TAG}
 
-               docker login -u="$REPLICATED_SHIPRETRACED_USER" -p="$REPLICATED_SHIPRETRACED_PASSWORD" registry.replicated.com
-               docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:${CIRCLE_TAG}
+               docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:${CIRCLE_TAG}
                docker push registry.replicated.com/shipretraced/retraced:${CIRCLE_TAG}
 
+               docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${CIRCLE_TAG}
+               docker push registry.replicated.com/library/retraced:${CIRCLE_TAG}
                exit 0
             fi
 
-            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${MAJOR}
-            docker push quay.io/retracedhq/retraced:${MAJOR}
-            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${MAJOR}.${MINOR}
-            docker push quay.io/retracedhq/retraced:${MAJOR}.${MINOR}
-            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} quay.io/retracedhq/retraced:${MAJOR}.${MINOR}.${PATCH}
-            docker push quay.io/retracedhq/retraced:${MAJOR}.${MINOR}.${PATCH}
+            docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:stable
+            docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:latest
+            docker push registry.replicated.com/shipretraced/retraced:stable
+            docker push registry.replicated.com/shipretraced/retraced:latest
 
-            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
-            docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
-
-            docker login -u="$REPLICATED_SHIPRETRACED_USER" -p="$REPLICATED_SHIPRETRACED_PASSWORD" registry.replicated.com
-
-            docker tag quay.io/retracedhq/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:${MAJOR}.${MINOR}.${PATCH}
+            docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:${MAJOR}
+            docker push registry.replicated.com/shipretraced/retraced:${MAJOR}
+            docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:${MAJOR}.${MINOR}
+            docker push registry.replicated.com/shipretraced/retraced:${MAJOR}.${MINOR}
+            docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:${MAJOR}.${MINOR}.${PATCH}
             docker push registry.replicated.com/shipretraced/retraced:${MAJOR}.${MINOR}.${PATCH}
+
+            docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
+            docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
 
   is_retracedhq:
     <<: *defaults

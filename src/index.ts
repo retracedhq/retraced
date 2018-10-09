@@ -60,11 +60,7 @@ metrics.bootstrapFromEnv();
 
 function buildRoutes() {
 
-  // Needed for Kubernetes health checks
-  app.get("/", (req, res) => {
-    // trying a slight delay to keep sigsci from freaking out
-    setTimeout(() => res.send(""), 200);
-  });
+  registerHealthchecks();
 
   swaggerSpecs.forEach((spec) => {
     logger.debug(`GET    '${spec.path}/swagger.json'`);
@@ -103,6 +99,26 @@ function buildRoutes() {
     const errMsg = `Route not found for ${req.method} ${req.originalUrl}`;
     logger.error(`[${req.ip}] ${errMsg}`);
     res.status(404).send(errMsg);
+  });
+
+}
+
+function registerHealthchecks() {
+  // Needed for Kubernetes health checks
+  app.get("/", (req, res) => {
+    // trying a slight delay to keep sigsci from freaking out
+    setTimeout(() => res.send(""), 200);
+  });
+
+  // Needed for Kubernetes health checks
+  app.get("/healthz", (req, res) => {
+    // trying a slight delay to keep sigsci from freaking out
+    setTimeout(() => res.send(""), 200);
+  });
+
+  // Needed for Kubernetes health checks
+  app.get("/metricz", (req, res) => {
+    res.send("{}");
   });
 
 }

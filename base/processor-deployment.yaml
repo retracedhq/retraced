@@ -19,7 +19,8 @@ spec:
           emptyDir: {}
       containers:
         - name: processor
-          image: registry.replicated.com/shipretraced/retraced:1.2.2
+          image: registry.replicated.com/shipretraced/retraced:alpha
+          imagePullPolicy: always
           command:
             - /src/processor
           volumeMounts:

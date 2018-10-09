@@ -18,7 +18,8 @@ spec:
         - name: auditlog-imagepull-secret
       containers:
         - name: api
-          image: registry.replicated.com/shipretraced/retraced:1.2.2
+          image: registry.replicated.com/shipretraced/retraced:alpha
+          imagePullPolicy: always
           command:
             - /src/api
           ports:
