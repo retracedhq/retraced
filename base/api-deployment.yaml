@@ -18,6 +18,10 @@ spec:
         - name: auditlog-imagepull-secret
       containers:
         - name: api
+          readinessProbe:
+            httpGet:
+              port: 3000
+              path: /healthz
           image: registry.replicated.com/shipretraced/retraced:alpha
           imagePullPolicy: always
           command:

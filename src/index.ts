@@ -103,7 +103,7 @@ function buildRoutes() {
 
 }
 
-function registerHealthchecks() {
+export function registerHealthchecks() {
   // Needed for Kubernetes health checks
   app.get("/", (req, res) => {
     // trying a slight delay to keep sigsci from freaking out
@@ -118,7 +118,7 @@ function registerHealthchecks() {
 
   // Needed for Kubernetes health checks
   app.get("/metricz", (req, res) => {
-    res.send("{}");
+    setTimeout(() => res.send("{}"), 200);
   });
 
 }
