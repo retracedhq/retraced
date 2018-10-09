@@ -1,14 +1,8 @@
-FROM postgres:10.3
+FROM postgres:10.5
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     \
     libpython-dev \
     python3.5 \
-    perl-base \
-    libgcrypt20 \
-    dirmngr \
-    gnupg \
-    gnupg-agent \
-    gpgv \
   && rm -rf /var/lib/apt/lists/*
