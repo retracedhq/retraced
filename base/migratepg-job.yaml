@@ -17,7 +17,7 @@ spec:
       containers:
         - name: db
           image: registry.replicated.com/shipretraced/retraced:alpha
-          imagePullPolicy: always
+          imagePullPolicy: Always
           command:
             - /src/retraceddb
             - up

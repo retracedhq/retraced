@@ -20,7 +20,7 @@ spec:
       containers:
         - name: processor
           image: registry.replicated.com/shipretraced/retraced:alpha
-          imagePullPolicy: always
+          imagePullPolicy: Always
           command:
             - /src/processor
           volumeMounts:
