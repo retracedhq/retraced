@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrate-es-f5cd431
+  name: migrate-es-1-3-0-1
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   template:
@@ -18,7 +18,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: db
-          image: registry.replicated.com/shipretraced/retraced:1.2.2
+          image: registry.replicated.com/shipretraced/retraced:alpha
           command:
             - /src/retraceddb
             - up
