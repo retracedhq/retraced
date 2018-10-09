@@ -33,6 +33,7 @@ if (!process.env["BUGSNAG_TOKEN"]) {
 }
 
 const app = express();
+const router = express.Router();
 
 // Sigsci middleware has to be installed before routes and other middleware
 if (!process.env["SIGSCI_RPC_ADDRESS"]) {
@@ -65,24 +66,24 @@ function buildRoutes() {
   swaggerSpecs.forEach((spec) => {
     logger.debug(`GET    '${spec.path}/swagger.json'`);
     logger.debug(`GET    '${spec.path}/swagger'`);
-    app.get(`${spec.path}/swagger.json`, (req, res) => {
+    router.get(`${spec.path}/swagger.json`, (req, res) => {
       res.setHeader("ContentType", "application/json");
       res.send(spec.swagger);
     });
-    app.use(`${spec.path}/swagger`, swaggerUI.serve, swaggerUI.setup(spec.swagger));
+    router.use(`${spec.path}/swagger`, swaggerUI.serve, swaggerUI.setup(spec.swagger));
   });
 
-  RegisterRoutes(app);
+  RegisterRoutes(router);
 
   _.forOwn(LegacyRoutes(), (route, handlerName: string) => {
     const handler = wrapRoute(route, handlerName);
-    register(route, handler, app);
+    register(route, handler, router);
   });
 
   if (process.env.ADMIN_ROOT_TOKEN) {
     const route = { method: "post", path: "/admin/v1/user/_login" };
     const handler = wrapRoute({ handler: AdminUserBootstrap.default().handler() }, "_login");
-    register(route, handler, app);
+    register(route, handler, router);
   }
 
   if (process.env.RETRACED_ENABLE_PROMETHEUS) {
@@ -94,6 +95,7 @@ function buildRoutes() {
       res.end(mtx);
     });
   }
+  app.use(process.env.API_BASE_URL_PATH || "", router);
 
   app.use((req, res, next) => {
     const errMsg = `Route not found for ${req.method} ${req.originalUrl}`;

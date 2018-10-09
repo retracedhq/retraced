@@ -19,7 +19,7 @@ spec:
       containers:
         - name: cron
           image: registry.replicated.com/shipretraced/retraced:alpha
-          imagePullPolicy: always
+          imagePullPolicy: Always
           command:
             - /bin/bash
             - -c
