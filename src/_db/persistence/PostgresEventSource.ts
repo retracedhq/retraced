@@ -1,48 +1,76 @@
 import * as chalk from "chalk";
 import * as pg from "pg";
+import * as Cursor from "pg-cursor";
 
-import { EventSource, Event, EventConsumer } from "./EventSource";
+import { Event, EventConsumer, EventSource } from "./EventSource";
+import { logger } from "../../logger";
 
 export default class PostgresEventSource implements EventSource {
     private readonly pageSize: number;
-    private readonly pgPool: pg.Pool;
 
-    constructor(pgPool: pg.Pool, pageSize?: number) {
-        this.pgPool = pgPool;
+    constructor(
+      private readonly pgPool: pg.Pool,
+      private readonly startDate?: string,
+      private readonly endDate?: string,
+      pageSize?: number,
+    ) {
         this.pageSize = pageSize || 5000;
+
     }
 
-    public async iteratePaged(callback: EventConsumer): Promise<Event[]> {
+    public async iteratePaged(callback: EventConsumer): Promise<void> {
+        logger.info({msg: "connecting"});
         const pg = await this.pgPool.connect();
 
-        let buffer: Event[] = [];
-        return new Promise<Event[]>((resolve, reject) => {
-            try {
-                const q: any = pg.query("SELECT * FROM ingest_task");
+        try {
+            logger.info({msg: "building stream query"});
+            const query: Cursor = this.getQuery();
+            logger.info({msg: "executing query"});
+            const q: any = pg.query(query);
 
-                q.on("row", (task) => {
-                    if (!task.normalized_event) {
-                        console.log(chalk.yellow(`WARN Skipping task ${task.id}, it is missing 'normalized_event'`));
-                        return;
-                    }
-                    buffer.push(this.buildEvent(task));
-                });
-
-                q.on("end", () => {
-                    resolve(buffer);
-                });
-
-                q.on("err", (err) => {
+            while (true) {
+              const rows = await new Promise<any[]>((resolve, reject) => {
+                q.read(this.pageSize, (err, result) => {
+                  if (err)  {
                     reject(err);
+                  }
+                  resolve(result);
                 });
-            } finally {
-                pg.release();
+              });
+              if (rows.length === 0) {
+                return;
+              }
+
+              let events = rows.filter((r) => {
+                if (!r.normalized_event) {
+                  console.log(chalk.yellow(`WARN Skipping task ${r.id}, it is missing 'normalized_event'`));
+                  return false;
+                }
+                return true;
+              }).map((r) => this.buildEvent(r));
+
+              await callback(events);
             }
-        });
+        } finally {
+            pg.release();
+        }
 
     }
 
-    private buildEvent(task: any): Event {
+  private getQuery(): Cursor {
+    if (this.startDate && this.endDate) {
+      return new Cursor("SELECT * FROM ingest_task WHERE received > $1 AND received < $2 ", [this.startDate, this.endDate]);
+    } else if (this.startDate && (!this.endDate)) {
+      return new Cursor("SELECT * FROM ingest_task WHERE received > $1 ", [this.startDate]);
+    } else if ((!this.startDate) && this.endDate) {
+      return new Cursor("SELECT * FROM ingest_task WHERE received < $1 ", [this.endDate]);
+    } else {
+      return new Cursor("SELECT * FROM ingest_task ");
+
+    }
+  }
+
+  private buildEvent(task: any): Event {
         const event = JSON.parse(task.normalized_event);
 
         const {

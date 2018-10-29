@@ -1,3 +1,5 @@
+.PHONY: clean prebuild deps lint swagger routes build cover test report-coverage pkg build run run-processor run-debug
+SKIP :=
 clean:
 	rm *.snyk-patch
 
@@ -33,18 +35,23 @@ report-coverage:
 
 # Bundle into four standalone binaries so we can obfuscate the source code
 #
-# the sed command is because pg-format uses a bizarre import that does `require(__dirname + '/some-module')`
+# the sed command is because ug-format uses a bizarre import that does `require(__dirname + '/some-module')`
 # and we need to change it to `require('./some-module')` to make `pkg` work, because pkg can't currently
 # handle imports that are not string literals.
 pkg:
-	sed -i.bak "s/__dirname + '/'.\//g" node_modules/pg-format/lib/index.js
-	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output api ./build/index.js
-	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output retracedctl ./build/retracedctl.js
-	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output processor ./build/_processor/index.js
-	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output retraceddb ./build/_db/runner-lite.js
+	if [ -n "$(SKIP)" ]; then exit 0; else \
+	sed -i.bak "s/__dirname + '/'.\//g" node_modules/pg-format/lib/index.js && \
+	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output api ./build/index.js && \
+	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output retracedctl ./build/retracedctl.js && \
+	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output processor ./build/_processor/index.js && \
+	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output retraceddb ./build/_db/runner-lite.js; \
+	 fi
 
 run:
 	node --no-deprecation ./build/index.js
+
+run-processor:
+	node --no-deprecation ./build/_processor/index.js
 
 run-debug:
 	node --no-deprecation ./build/index.js

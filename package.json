@@ -50,6 +50,7 @@
     "nyc": "^11.6.0",
     "path-exists": "^3.0.0",
     "pg": "^7.0.2",
+    "pg-cursor": "^1.3.0",
     "pg-format": "^1.0.4",
     "pino": "^4.7.1",
     "postgrator": "2.8.2",

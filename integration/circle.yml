@@ -1,0 +1,14 @@
+machine:
+  services:
+    - docker
+test:
+    override:
+        - echo I heard you like tests so I put some tests in your tests
+deployment:
+  docker:
+    branch: master
+    owner: retracedhq
+    commands:
+      - sudo docker build -t quay.io/retracedhq/qa-integration .
+      - sudo docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
+      - sudo docker push quay.io/retracedhq/qa-integration

@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "module": "commonjs",
+        "noImplicitAny": false,
+        "noEmitOnError": true,
+        "sourceMap": true,
+        "preserveConstEnums": true,
+        "experimentalDecorators": true,
+        "strictNullChecks": true,
+        "allowJs": true,
+        "outDir": "build",
+        "pretty": true
+    },
+    "include": [
+        "test/**/*.js",
+        "test/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

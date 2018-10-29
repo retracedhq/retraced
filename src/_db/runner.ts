@@ -4,7 +4,7 @@ import "source-map-support/register";
 import * as yargs from "yargs";
 
 yargs
-  .commandDir("../build/commands")
+  .commandDir("../../build/_db/commands")
   .env()
   .help()
   .argv;

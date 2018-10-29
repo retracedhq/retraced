@@ -1,16 +1,3 @@
-
-# # #
-# Node build
-#
-FROM node:8.7 as node
-
-ADD . /src
-WORKDIR /src
-
-RUN make deps
-RUN npm run snyk-protect
-RUN make build pkg
-
 # # #
 # Cron build
 #
@@ -38,6 +25,27 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/replicated-auditlog-cron
 COPY deploy/crontab /crontab
 
+# # #
+# Node build
+#
+FROM node:8.7 as node
+
+WORKDIR /src
+ADD package.json /src
+ADD yarn.lock /src
+ADD Makefile /src
+RUN yarn install --force
+ADD .snyk /src
+RUN npm run snyk-protect
+
+ADD . /src
+
+RUN make build
+
+# this one is a little janky, mostly for local dev
+ARG skip_pkg
+
+RUN make pkg SKIP=${skip_pkg}
 
 
 # # #

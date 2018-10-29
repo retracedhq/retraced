@@ -33,11 +33,13 @@ export const builder = {
     demand: true,
   },
   schemaPath: {
-    default: path.join(__dirname, "..", "..", "..", "migrations", "pg"),
+    default: path.join(__dirname, "..", "..", "..", "..", "migrations", "pg"),
   },
 };
 
+logger.info("registering handler");
 export const handler = (argv) => {
+  logger.child({up: "pg", schemaPath: argv.schemaPath}).info("beginning handler");
   const cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`;
   logger.info("initializing migrator");
   postgrator.setConfig({
