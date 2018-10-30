@@ -4,6 +4,7 @@ src/swagger.json
 retracedctl
 api
 retraceddb
+retraceddb4G
 processor
 *.snyk-patch
 build/
