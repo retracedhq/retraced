@@ -1,0 +1,9 @@
+export const Endpoint = process.env.PUBLISHER_API_ENDPOINT||"http://35.185.223.19:3000";
+export const ProjectID = process.env.PROJECT_ID||"6af8eba87b05456488c5d6600cf8b40b";
+export const EnvironmentID = process.env.ENVIRONMENT_ID||"e706cd181a574034a4d157c42431be1d";
+export const ApiKey = process.env.PUBLISHER_API_KEY||"3a13964750b94861bcc1d6935d5c0801";
+export const EsIndexWaitMs = Number(process.env.ES_INDEX_WAIT_MS || "2000");
+export const Debug = process.env.QA_INTEGRATION_DEBUG;
+export const AdminRootToken = process.env.ADMIN_ROOT_TOKEN;
+export const HeadlessApiKey = process.env.HEADLESS_API_KEY;
+export const HeadlessProjectID = process.env.HEADLESS_PROJECT_ID;

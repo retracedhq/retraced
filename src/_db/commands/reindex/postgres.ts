@@ -11,14 +11,15 @@ import { Event } from "../../persistence/EventSource";
 import PostgresEventSource from "../../persistence/PostgresEventSource";
 import getPgPool from "../../persistence/pg";
 import common from "../../common";
+import { logger } from "../../../logger";
 
 const pgPool = getPgPool();
 const es = getElasticsearch();
 
-exports.command = "postgres";
-exports.desc = "reindex all events from postgres into elasticsearch";
+export const command = "postgres";
+export const desc = "reindex all events from postgres into elasticsearch";
 
-exports.builder = {
+export const builder: any = {
   projectId: {
     alias: "p",
     demand: true,
@@ -48,16 +49,28 @@ exports.builder = {
   pageSize: {
     default: 5000,
   },
+  startDate: {
+  },
+  endDate: {
+  },
+  dryRun: {
+    default: false,
+  },
 };
 
-exports.handler = (argv) => handler(argv).catch((err) => console.log(chalk.red(util.inspect(err))));
-
-const handler = async (argv) => {
-  let eventSource = new PostgresEventSource(pgPool, argv.pageSize);
+export const main = async (argv) => {
+  logger.info({msg: "starting handler"});
+  let eventSource = new PostgresEventSource(pgPool, argv.startDate, argv.endDate, argv.pageSize);
 
   const esTempIndex = `retraced.reindex.${uuid.v4()}`;
   const esTargetIndex = `retraced.${argv.projectId}.${argv.environmentId}`;
   const esTargetWriteIndex = `retraced.${argv.projectId}.${argv.environmentId}.current`;
+
+  logger.info({msg: "computed new index names",
+    esTempIndex,
+    esTargetIndex,
+    esTargetWriteIndex,
+  });
 
   const aliasesBlob = await es.cat.aliases({ name: esTargetIndex });
   let currentIndices: any = [];
@@ -66,6 +79,9 @@ const handler = async (argv) => {
     if (parts.length >= 2) {
       currentIndices.push(parts[1]);
     }
+  });
+  logger.info({msg: "found current read indices",
+    count: currentIndices.length,
   });
 
   const aliasesBlobWrite = await es.cat.aliases({ name: esTargetWriteIndex });
@@ -77,18 +93,25 @@ const handler = async (argv) => {
     }
   });
 
+  logger.info({msg: "found current write indices",
+    count: currentIndicesWrite.length,
+  });
+
   await es.indices.create({ index: esTempIndex });
+
+  logger.info({msg: "created temp index",
+    esTempIndex,
+  });
 
   let badCount = 0;
 
   const eachPage = async (result: Event[]) => {
-    console.log(`processing page with count ${result.length}`);
+    logger.info(`processing page with count ${result.length}`);
     const pbar = new ProgressBar("[:bar] :percent :etas", {
       incomplete: " ",
       width: 40,
       total: result.length,
     });
-
     const promises = result.map(async (row: Event) => {
       let actor;
       if (row.actor_id) {
@@ -173,7 +196,6 @@ const handler = async (argv) => {
       return;
     }
 
-    console.log("running bulk index...");
     const body: any[] = [];
     for (const eventToIndex of toBeIndexed) {
       if (!eventToIndex) {
@@ -195,40 +217,39 @@ const handler = async (argv) => {
       body.push(eventToIndex);
     }
 
-    es.bulk({ body }, (errr, resp, status) => {
-      if (errr) {
-        console.log(chalk.red(errr.stack));
-        process.exit(1);
-      }
+    logger.info(`indexing page with size ${result.length}`);
+    await new Promise<void>((resolve, reject) => {
+      es.bulk({ body }, (errr, resp, status) => {
+        if (errr) {
+          console.log(chalk.red(errr.stack));
+          process.exit(1);
+        }
 
-      if (resp.errors) {
-        _.forEach(resp.items, (item) => {
-          _.forIn(item, (innerItem) => {
-            if (innerItem.error) {
-              console.log(chalk.red(util.inspect(innerItem.error)));
-              console.log(util.inspect(innerItem.error, false, 100, true));
-            }
+        if (resp.errors) {
+          _.forEach(resp.items, (item) => {
+            _.forIn(item, (innerItem) => {
+              if (innerItem.error) {
+                console.log(chalk.red(util.inspect(innerItem.error)));
+                console.log(util.inspect(innerItem.error, false, 100, true));
+              }
+            });
           });
-        });
-        console.log(chalk.red("Errors returned by bulk op, unable to continue"));
-        process.exit(1);
-      }
+          console.log(chalk.red("Errors returned by bulk op, unable to continue"));
+          process.exit(1);
+        }
 
-      const isLastPage = result.length !== argv.pageSize;
-      if (isLastPage) {
-        finalize({ esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite, badCount});
-      }
+        logger.info(`finished index`);
+        resolve();
+      });
     });
   };
 
-  const events: Event[] = await eventSource.iteratePaged(eachPage);
-  for (let chunk of _.chunk(events, argv.pageSize)) {
-    await eachPage(chunk);
-  }
-  finalize({ esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite, badCount });
+  await eventSource.iteratePaged(eachPage);
+  logger.info({msg: "finished", esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite, badCount });
+  finalize({ dryRun: argv.dryRun, esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite, badCount });
 };
 
-function finalize({ esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite, badCount}) {
+function finalize({ dryRun, esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite, badCount}) {
 
   const toAdd = [{
     index: esTempIndex,
@@ -247,6 +268,21 @@ function finalize({ esTempIndex, esTargetIndex, currentIndices, esTargetWriteInd
     index: a,
     alias: esTargetWriteIndex,
   }));
+  logger.info({toAdd, toRemove});
+
+  if (dryRun) {
+    console.log(chalk.yellow(`
+    
+    --dryRun was set, skipping final index rotation.
+    
+    Index changes for completing the reindex manually are shown above. If you'd like to use these indices, you should:
+    
+        - remove aliases from the indices listed in toRemove, 
+        - add aliases to the indices listed in toAdd`,
+
+    ));
+    process.exit(0);
+  }
 
   putAliases(toAdd, toRemove)
     .then(() => {

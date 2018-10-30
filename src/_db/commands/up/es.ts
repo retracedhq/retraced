@@ -14,10 +14,10 @@ setupBugsnag();
 const es = getElasticsearch();
 const pgPool = getPgPool();
 
-exports.command = "es";
-exports.describe = "migrate the elasticsearch database to the current schema";
+export const command = "es";
+export const describe = "migrate the elasticsearch database to the current schema";
 
-exports.builder = {
+export const builder = {
   elasticsearchNodes: {
     demand: true,
   },
@@ -39,10 +39,10 @@ exports.builder = {
 };
 
 function getSchemaPath() {
-  return path.join(__dirname, "..", "..", "..", "migrations", "es");
+  return path.join(__dirname, "..", "..", "..", "..", "migrations", "es");
 }
 
-exports.handler = (argv) => {
+export const handler = (argv) => {
   pgPool.connect((err, pg, done) => {
     if (err) {
       bugsnag.notify(err);
