@@ -4,6 +4,7 @@ import * as bugsnag from "bugsnag";
 
 const pgPool = getPgPool();
 
+const useCache = !process.env.RETRACED_DB_NO_CACHE;
 const actorCache = {};
 const targetCache = {};
 const groupCache = {};
@@ -31,7 +32,9 @@ const common = {
             reject(qerr);
           } else if (result.rowCount > 0) {
             const actor = result.rows[0];
-            actorCache[id] = actor;
+            if (useCache) {
+              actorCache[id] = actor;
+            }
             resolve(actor);
           } else {
             resolve(undefined);
@@ -63,7 +66,9 @@ const common = {
             reject(qerr);
           } else if (result.rowCount > 0) {
             const object = result.rows[0];
-            targetCache[id] = object;
+            if (useCache) {
+              targetCache[id] = object;
+            }
             resolve(object);
           } else {
             resolve(undefined);
@@ -95,7 +100,9 @@ const common = {
             reject(qerr);
           } else if (result.rowCount > 0) {
             const group = result.rows[0];
-            groupCache[id] = group;
+            if (useCache) {
+              groupCache[id] = group;
+            }
             resolve(group);
           } else {
             resolve(undefined);
