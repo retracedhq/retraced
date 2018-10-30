@@ -26,7 +26,7 @@ services:
         env_file:
             - env/common
         volumes:
-            - ../api/migrations:/src/migrations
+            - ./:/src
         depends_on:
             - postgres
 
