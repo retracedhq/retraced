@@ -75,10 +75,13 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
-      - run: docker pull debian:stretch-slim
-      - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
       - run: docker login -u="$REPLICATED_SHIPRETRACED_USER" -p="$REPLICATED_SHIPRETRACED_PASSWORD" registry.replicated.com
-      # don't build, just pull. This ensures we're releasing the SHA that we just built and tested
+      # the original idea here was:
+      #
+      #    don't build, just pull. This ensures we're releasing the SHA that we just built and tested
+      #
+      # but since we don't really have a SaaS env to test this in right now, we're going to need
+      # to come up with some other way to integration test this, ideally as part of tagged build
       - run: docker pull registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7}
       - run: |
             function semverParseInto() { # thanks cloudflare
@@ -97,6 +100,7 @@ jobs:
                docker push registry.replicated.com/shipretraced/retraced:${CIRCLE_TAG}
 
                docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${CIRCLE_TAG}
+               docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
                docker push registry.replicated.com/library/retraced:${CIRCLE_TAG}
                exit 0
             fi
@@ -113,6 +117,7 @@ jobs:
             docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:${MAJOR}.${MINOR}.${PATCH}
             docker push registry.replicated.com/shipretraced/retraced:${MAJOR}.${MINOR}.${PATCH}
 
+            docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
             docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
             docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
 
