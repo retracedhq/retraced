@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: bootstrap-api-project
+          image: registry.replicated.com/shipretraced/retraced
+      containers:
+        - name: api
+          image: registry.replicated.com/shipretraced/retraced

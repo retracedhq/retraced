@@ -1,0 +1,37 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+spec:
+  serviceName: elasticearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: elasticsearch:5.4.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: estransport
+              containerPort: 9200
+          volumeMounts:
+            - name: esdatadir
+              mountPath: /usr/share/elasticsearch/data
+
+      volumes:
+        - name: esdatadir
+          persistentVolumeClaim:
+            claimName: esdatadir
+
+  volumeClaimTemplates:
+    - metadata:
+        name: esdatadir
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 1Gi
+

@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch
+  labels:
+    app: elasticsearch
+data:
+  elasticsearch.yml: |-
+    http.host: 0.0.0.0
+
+    http.port: 9200
+    http.cors.allow-origin: "chrome-extension://jopjeaiilkcibeohjdmejhoifenbnmlh"
+    http.cors.enabled: true
+    http.cors.allow-headers : X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
+    http.cors.allow-credentials: true
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+spec:
+  serviceName: elasticearch
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: elasticsearch:5.4.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: estransport
+              containerPort: 9200
+          volumeMounts:
+            - name: esdatadir
+              mountPath: /usr/share/elasticsearch/data
+
+      volumes:
+        - name: esdatadir
+          persistentVolumeClaim:
+            claimName: esdatadir
+
+  volumeClaimTemplates:
+    - metadata:
+        name: esdatadir
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: elasticsearch
+  name: elasticsearch
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9200
+      targetPort: estransport
+  selector:
+    app: elasticsearch

@@ -30,13 +30,13 @@ spec:
             - name: STATSD_HOST
               valueFrom:
                 secretKeyRef:
-                  name: statsd
-                  key: HOST
+                  name: auditlog
+                  key: STATSD_HOST
             - name: STATSD_PORT
               valueFrom:
                 secretKeyRef:
-                  name: statsd
-                  key: PORT
+                  name: auditlog
+                  key: STATSD_PORT
           ports:
             - containerPort: 4150
             - containerPort: 4151

@@ -1,9 +1,7 @@
 ---
 bases:
-  - ../../base
-resources:
-  - ./secrets.yaml
-  - ./integrationtest.yaml
+  - ../dev
+  - ../dbs
 
 patchesStrategicMerge:
   - ./api-deployment.yaml
