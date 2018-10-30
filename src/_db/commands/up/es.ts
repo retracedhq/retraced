@@ -39,7 +39,7 @@ export const builder = {
 };
 
 function getSchemaPath() {
-  return path.join(__dirname, "..", "..", "..", "migrations", "es");
+  return path.join(__dirname, "..", "..", "..", "..", "migrations", "es");
 }
 
 export const handler = (argv) => {

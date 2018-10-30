@@ -127,5 +127,10 @@
       "lcov"
     ],
     "all": true
+  },
+  "pkg": {
+    "scripts": [
+      "migrations/es/**/*"
+    ]
   }
 }

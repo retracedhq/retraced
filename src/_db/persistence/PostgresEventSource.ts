@@ -33,6 +33,7 @@ export default class PostgresEventSource implements EventSource {
                 q.read(this.pageSize, (err, result) => {
                   if (err)  {
                     reject(err);
+                    return;
                   }
                   resolve(result);
                 });
