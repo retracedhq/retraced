@@ -1,14 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: dbutil
 spec:
   template:
     spec:
-      initContainers:
-        - name: bootstrap
-          image: registry.replicated.com/shipretraced/retraced
       containers:
-        - name: api
+        - name: dbutil
           image: registry.replicated.com/shipretraced/retraced
-

@@ -288,3 +288,7 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
 };
 
 logger.info("retraced-processor");
+process.on("SIGTERM", () => {
+  logger.info("Got SIGTERM. Graceful shutdown start", new Date().toISOString());
+  process.exit(137);
+});

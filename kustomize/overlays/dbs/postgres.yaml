@@ -6,7 +6,7 @@ metadata:
   labels:
     app: postgres
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - name: postgres
     port: 5432
@@ -40,7 +40,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: password
         - name: POSTGRES_DB
-          value: password
+          value: retraced
         ports:
         - name: postgres
           containerPort: 5432

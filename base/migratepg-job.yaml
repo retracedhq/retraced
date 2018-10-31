@@ -28,7 +28,7 @@ spec:
           - name: BUGSNAG_TOKEN
             valueFrom:
               secretKeyRef:
-                name: bugsnag
+                name: auditlog
                 key: DB_TOKEN
 
 

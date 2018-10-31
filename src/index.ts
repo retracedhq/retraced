@@ -159,3 +159,8 @@ function serveHTTPS(sslCertPath: string, sslKeyPath: string) {
 }
 
 ensureHeadlessProject();
+
+process.on("SIGTERM", () => {
+  logger.info("Got SIGTERM. Graceful shutdown start", new Date().toISOString());
+  process.exit(137);
+});
