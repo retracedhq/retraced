@@ -10,7 +10,7 @@ import {
     @test public "helpers.apiTokenFromAuthHeader(undefined)"() {
         expect(apiTokenFromAuthHeader)
         .to
-        .throw({ status: 401, err: new Error("Missing Authorization header")});
+        .throw({ status: 401, err: new Error("Missing Authorization header")} as any);
     }
     @test public "helpers.apiTokenFromAuthHeader(token=abcdef)"() {
         const token = apiTokenFromAuthHeader("token=abcdef");
