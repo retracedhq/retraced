@@ -7,7 +7,9 @@ const pgPool = getPgPool();
 export default async function ingestFromBacklog() {
     const q = `
         WITH deleted AS (
-            DELETE FROM backlog
+            DELETE FROM backlog WHERE ctid IN (
+                SELECT ctid FROM backlog LIMIT 10000
+            )
             RETURNING
                 new_event_id,
                 project_id,
