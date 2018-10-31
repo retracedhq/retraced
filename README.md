@@ -30,6 +30,9 @@ in your pull request.
 
 > `docker-compose -f ../composer/docker-compose.yml up api`
 
+#### Running with Skaffold
+
+> `skaffold dev -f skaffold.yaml`
 
 ## Swagger Documentation
 
