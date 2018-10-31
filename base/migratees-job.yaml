@@ -1,35 +1,25 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: v1
+kind: Pod
 metadata:
   name: migrate-es-1-3-1
-  namespace: '{{repl ConfigOption "namespace"}}'
 spec:
-  template:
-    metadata:
-      labels:
-        app: auditlog
-        tier: db
-        target: es
-        type: migrate
-        sha: "f5cd431"
-    spec:
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
-      restartPolicy: Never
-      containers:
-        - name: db
-          image: registry.replicated.com/shipretraced/retraced:1.3.1
-          command:
-            - /src/retraceddb
-            - up
-            - es
-          envFrom:
-          - secretRef:
-              name: auditlog
-          env:
-            - name: BUGSNAG_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: auditlog
-                  key: DB_TOKEN
+  imagePullSecrets:
+  - name: auditlog-imagepull-secret
+  restartPolicy: Never
+  containers:
+  - name: db
+    image: registry.replicated.com/shipretraced/retraced:1.3.1
+    command:
+    - /src/retraceddb
+    - up
+    - es
+    envFrom:
+    - secretRef:
+        name: auditlog
+    env:
+    - name: BUGSNAG_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: auditlog
+          key: DB_TOKEN
 

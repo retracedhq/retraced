@@ -13,3 +13,14 @@ spec:
         - -r
         - ts-node/register
         - integration/test/**/*.ts
+      env:
+        - name: PUBLISHER_API_ENDPOINT
+          value: http://api:3000
+        - name: PROJECT_ID
+          value: dev
+        - name: ENVIRONMENT_ID
+          value: dev
+        - name: PUBLISHER_API_KEY
+          value: dev
+
+
