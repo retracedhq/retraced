@@ -1,67 +1,25 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: v1
+kind: Pod
 metadata:
-  name: migrate-es-1-3-0-1
-  namespace: '{{repl ConfigOption "namespace"}}'
+  name: migrate-es-1-3-1
 spec:
-  template:
-    metadata:
-      labels:
-        app: auditlog
-        tier: db
-        target: es
-        type: migrate
-        sha: "f5cd431"
-    spec:
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
-      restartPolicy: Never
-      containers:
-        - name: db
-          image: registry.replicated.com/shipretraced/retraced:alpha
-          command:
-            - /src/retraceddb
-            - up
-            - es
-          env:
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: POSTGRES_PASSWORD
-            - name: POSTGRES_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: POSTGRES_HOST
-            - name: POSTGRES_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: POSTGRES_PORT
-            - name: POSTGRES_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: POSTGRES_DATABASE
-            - name: ELASTICSEARCH_NODES
-              valueFrom:
-                secretKeyRef:
-                  name: elasticsearch
-                  key: ELASTICSEARCH_NODES
-            - name: BUGSNAG_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: bugsnag
-                  key: DB_TOKEN
-            - name: BUGSNAG_STAGE
-              valueFrom:
-                secretKeyRef:
-                  name: bugsnag
-                  key: STAGE
+  imagePullSecrets:
+  - name: auditlog-imagepull-secret
+  restartPolicy: Never
+  containers:
+  - name: db
+    image: registry.replicated.com/shipretraced/retraced:1.3.1
+    command:
+    - /src/retraceddb
+    - up
+    - es
+    envFrom:
+    - secretRef:
+        name: auditlog
+    env:
+    - name: BUGSNAG_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: auditlog
+          key: DB_TOKEN
 

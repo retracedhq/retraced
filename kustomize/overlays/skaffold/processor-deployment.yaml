@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: processor
+spec:
+  template:
+    spec:
+      containers:
+        - name: processor
+          image: registry.replicated.com/shipretraced/retraced

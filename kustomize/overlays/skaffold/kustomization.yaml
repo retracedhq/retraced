@@ -1,16 +1,13 @@
 ---
 bases:
-  - ../../base
-resources:
-  - ./secrets.yaml
-  - ./integrationtest.yaml
-commonLabels:
-  retraceddev: "1"
+  - ../dev
+  - ../dbs
 
 patchesStrategicMerge:
   - ./api-deployment.yaml
-  - ./api-service.yaml
   - ./cron-deployment.yaml
+  - ./dbutil-deployment.yaml
+  - ./integrationtest.yaml
   - ./migratees-job.yaml
   - ./migratepg-job.yaml
   - ./processor-deployment.yaml

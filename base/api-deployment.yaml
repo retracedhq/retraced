@@ -22,86 +22,18 @@ spec:
             httpGet:
               port: 3000
               path: /healthz
-          image: registry.replicated.com/shipretraced/retraced:alpha
-          imagePullPolicy: always
+          image: registry.replicated.com/shipretraced/retraced:1.3.1
+          imagePullPolicy: IfNotPresent
           command:
             - /src/api
           ports:
             - containerPort: 3000
-          env:
-          - name: STATSD_HOST
-            valueFrom:
-              secretKeyRef:
-                name: statsd
-                key: HOST
-          - name: STATSD_PORT
-            valueFrom:
-              secretKeyRef:
-                name: statsd
-                key: PORT
-          - name: POSTGRES_POOL_SIZE
-            valueFrom:
-              secretKeyRef:
-                name: postgres
-                key: POSTGRES_POOL_SIZE
-          - name: POSTGRES_USER
-            valueFrom:
-              secretKeyRef:
-                name: postgres
-                key: POSTGRES_USER
-          - name: POSTGRES_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: postgres
-                key: POSTGRES_PASSWORD
-          - name: POSTGRES_HOST
-            valueFrom:
-              secretKeyRef:
-                name: postgres
-                key: POSTGRES_HOST
-          - name: POSTGRES_PORT
-            valueFrom:
-              secretKeyRef:
-                name: postgres
-                key: POSTGRES_PORT
-          - name: POSTGRES_DATABASE
-            valueFrom:
-              secretKeyRef:
-                name: postgres
-                key: POSTGRES_DATABASE
-          - name: HMAC_SECRET_ADMIN
-            valueFrom:
-              secretKeyRef:
-                name: jwt
-                key: HMAC_SECRET_ADMIN
-          - name: HMAC_SECRET_VIEWER
-            valueFrom:
-              secretKeyRef:
-                name: jwt
-                key: HMAC_SECRET_VIEWER
-          - name: RETRACED_API_BASE
-            valueFrom:
-              secretKeyRef:
+          envFrom:
+            - secretRef:
                 name: auditlog
-                key: RETRACED_API_BASE
-          - name: ELASTICSEARCH_NODES
-            valueFrom:
-              secretKeyRef:
-                name: elasticsearch
-                key: ELASTICSEARCH_NODES
-          - name: BUGSNAG_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: bugsnag
-                key: API_TOKEN
-          - name: BUGSNAG_STAGE
-            valueFrom:
-              secretKeyRef:
-                name: bugsnag
-                key: STAGE
-          - name: NSQD_HOST
-            value: nsqd
-          - name: NSQD_TCP_PORT
-            value: "4150"
-          - name: NSQD_HTTP_PORT
-            value: "4151"
+          env:
+            - name: BUGSNAG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: API_TOKEN
+                  name: auditlog

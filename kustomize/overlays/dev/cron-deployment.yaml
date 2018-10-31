@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cron
+spec:
+  replicas: 1
+  template:
+    spec:
+      imagePullSecrets:
+        - $patch: delete
+          name: auditlog-imagepull-secret
+      containers:
+        - name: cron
+          command:
+            - /bin/sh
+            - -c
+            - /usr/local/bin/replicated-auditlog-cron /crontab 2>&1 | grep ERRO

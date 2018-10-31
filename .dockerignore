@@ -2,3 +2,4 @@ config
 deploy
 !deploy/crontab
 node_modules
+.idea/workspace.xml

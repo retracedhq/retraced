@@ -1,0 +1,11 @@
+apiVersion: skaffold/v1alpha5
+kind: Config
+build:
+  artifacts:
+    - image: registry.replicated.com/shipretraced/retraced
+      context: "./"
+      docker:
+        dockerfile: "./Dockerfile.skaffold"
+deploy:
+  kustomize:
+    path: "./kustomize/overlays/skaffold"

@@ -7,10 +7,10 @@ metadata:
     app: auditlog
     tier: api
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
-  - name: svcmain
-    port: 80
+  - name: http
+    port: 3000
     targetPort: 3000
   selector:
     app: auditlog

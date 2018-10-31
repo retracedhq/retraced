@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cron
+spec:
+  template:
+    spec:
+      containers:
+        - name: cron
+          image: registry.replicated.com/shipretraced/retraced
+
