@@ -8,7 +8,7 @@ export default async function ingestFromBacklog() {
     const q = `
         WITH deleted AS (
             DELETE FROM backlog WHERE ctid IN (
-                SELECT ctid FROM backlog LIMIT 10000
+                SELECT ctid FROM backlog LIMIT 1000
             )
             RETURNING
                 new_event_id,
