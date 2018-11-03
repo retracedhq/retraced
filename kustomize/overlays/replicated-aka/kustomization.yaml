@@ -1,0 +1,13 @@
+---
+namespace:
+bases:
+  - ../../base
+  - ../dbs
+resources:
+  - secret.yaml
+patchesStrategicMerge:
+  - ./api-deployment.yaml
+  - ./cron-deployment.yaml
+  - ./migratees-job.yaml
+  - ./migratepg-job.yaml
+  - ./processor-deployment.yaml

@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: processor
+spec:
+  template:
+    spec:
+      imagePullSecrets:
+        - name: replicatedregistrykey
+        - $patch: delete
+          name: auditlog-imagepull-secret
