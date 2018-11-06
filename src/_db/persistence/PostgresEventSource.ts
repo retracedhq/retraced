@@ -60,9 +60,9 @@ export default class PostgresEventSource implements EventSource {
 
   private getQuery(): Cursor {
     if (this.startDate && this.endDate) {
-      return new Cursor("SELECT * FROM ingest_task WHERE received > $1 AND received < $2 ", [this.startDate, this.endDate]);
+      return new Cursor("SELECT * FROM ingest_task WHERE received >= $1 AND received < $2 ", [this.startDate, this.endDate]);
     } else if (this.startDate && (!this.endDate)) {
-      return new Cursor("SELECT * FROM ingest_task WHERE received > $1 ", [this.startDate]);
+      return new Cursor("SELECT * FROM ingest_task WHERE received >= $1 ", [this.startDate]);
     } else if ((!this.startDate) && this.endDate) {
       return new Cursor("SELECT * FROM ingest_task WHERE received < $1 ", [this.endDate]);
     } else {
