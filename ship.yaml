@@ -81,10 +81,3 @@ config:
         type: text
         required: true
         default: 'auditlog'
-      - name: hostname
-        title: Hostname
-        type: text
-        help_text: "The hostname that you will use to communicate with the auditlog API"
-        required: true
-        default: 'http://api.{{repl ConfigOption "namespace"}}.svc.cluster.local'
-
