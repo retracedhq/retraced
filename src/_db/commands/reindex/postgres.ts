@@ -12,7 +12,7 @@ import PostgresEventSource from "../../persistence/PostgresEventSource";
 import getPgPool from "../../persistence/pg";
 import common from "../../common";
 import { logger } from "../../../logger";
-import { makePageIndexer } from "./lib/page";
+import { makePageIndexer } from "./shared/page";
 
 const pgPool = getPgPool();
 const es = getElasticsearch();
