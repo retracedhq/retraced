@@ -75,8 +75,17 @@ export const handler = async (argv) => {
     ElasticSearch destination events in range: ${esPreResults.totalHits} (approximate)
   `));
 
+  logger.info({
+    msg: "reindexing time range",
+    startTime: argv.startTime,
+    endTime: argv.endTime,
+    postgresCount: pgPreResults.rows[0].count,
+    elasticsearchCount: esPreResults.totalHits,
+  });
+
   if (argv.dryRun) {
-    console.log(chalk.yellow("--dryRun was set, skipping range reindex"));
+    console.log(chalk.yellow(`
+    --dryRun was set, skipping range reindex`));
     process.exit(0);
   }
 
