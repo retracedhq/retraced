@@ -13,8 +13,8 @@ spec:
         imagePullPolicy: IfNotPresent
         command:
         - /src/retraceddb
-        - up
         - pg
+        - up
         envFrom:
         - secretRef:
             name: auditlog
