@@ -132,7 +132,8 @@
   },
   "pkg": {
     "scripts": [
-      "migrations/es/**/*"
+      "migrations/es/**/*",
+      "migrations/pg/**/*"
     ]
   }
 }
