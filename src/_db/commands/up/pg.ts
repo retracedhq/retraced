@@ -33,7 +33,7 @@ export const builder = {
     demand: true,
   },
   schemaPath: {
-    default: path.join(__dirname, "../../../../migrations/pg"),
+    default: "/src/migrations/pg",
   },
 };
 
