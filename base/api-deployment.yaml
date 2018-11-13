@@ -16,6 +16,22 @@ spec:
     spec:
       imagePullSecrets:
         - name: auditlog-imagepull-secret
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - auditlog
+                - key: tier
+                  operator: In
+                  values:
+                  - api
+              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: api
           readinessProbe:
@@ -28,6 +44,8 @@ spec:
             - /src/api
           ports:
             - containerPort: 3000
+              name: http
+              protocol: TCP
           envFrom:
             - secretRef:
                 name: auditlog
