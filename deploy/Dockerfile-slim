@@ -6,12 +6,6 @@ FROM debian:stretch-slim as cron
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
-    libicu57 \
-    libssl1.1 \
-    openssl \
-    perl-base \
-    gpgv \
-    libgcrypt20 \
   && rm -rf /var/lib/apt/lists/*
 
 
@@ -56,12 +50,11 @@ FROM debian:stretch-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
-    libicu57 \
-    libssl1.1 \
-    openssl \
-    perl-base \
-    gpgv \
-    libgcrypt20 \
+    \
+    \
+    libgnutls30 \
+    libsystemd0 \
+    libudev1 \
   && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000
