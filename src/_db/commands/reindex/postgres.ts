@@ -14,9 +14,6 @@ import common from "../../common";
 import { logger } from "../../../logger";
 import { makePageIndexer } from "./shared/page";
 
-const pgPool = getPgPool();
-const es = getElasticsearch();
-
 export const command = "postgres";
 export const desc = "reindex all events from postgres into elasticsearch";
 
@@ -61,6 +58,8 @@ export const builder: any = {
 
 export const handler = async (argv) => {
   logger.info({msg: "starting handler"});
+  const pgPool = getPgPool();
+  const es = getElasticsearch();
   let eventSource = new PostgresEventSource(pgPool, argv.startDate, argv.endDate, argv.pageSize);
 
   const esTempIndex = `retraced.reindex.${uuid.v4()}`;

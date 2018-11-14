@@ -8,10 +8,7 @@ import { setupBugsnag } from "../../common";
 
 setupBugsnag();
 
-import getPgPool from "../../persistence/pg";
 import { logger } from "../../../logger";
-
-getPgPool();
 
 export const command = "pg";
 export const describe = "migrate postgres database to the current schema";
