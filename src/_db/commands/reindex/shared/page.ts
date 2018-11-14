@@ -10,10 +10,9 @@ import { Event } from "../../../persistence/EventSource";
 import common from "../../../common";
 import { logger } from "../../../../logger";
 
-const es = getElasticsearch();
-
 export const makePageIndexer = (writeIndex: string) => async (result: Event[]) => {
   logger.info(`processing page with count ${result.length}`);
+  const es = getElasticsearch();
   const pbar = new ProgressBar("[:bar] :percent :etas", {
     incomplete: " ",
     width: 40,

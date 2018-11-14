@@ -11,9 +11,6 @@ import { setupBugsnag } from "../../common";
 
 setupBugsnag();
 
-const es = getElasticsearch();
-const pgPool = getPgPool();
-
 export const command = "es";
 export const describe = "migrate the elasticsearch database to the current schema";
 
@@ -43,6 +40,9 @@ function getSchemaPath() {
 }
 
 export const handler = (argv) => {
+  const es = getElasticsearch();
+  const pgPool = getPgPool();
+
   pgPool.connect((err, pg, done) => {
     if (err) {
       bugsnag.notify(err);

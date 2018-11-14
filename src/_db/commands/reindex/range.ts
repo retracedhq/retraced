@@ -51,7 +51,7 @@ export const builder = {
 };
 
 export const handler = async (argv) => {
-  const pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE received >= $1 AND received < $2 ", [argv.startTime, argv.endTime]);
+  const pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received", [`[${argv.startTime}, ${argv.endTime})`]);
 
   const esSearchOpts: Options  = {
     index: `retraced.${argv.projectId}.${argv.environmentId}`,
