@@ -23,7 +23,7 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
-      - run: make deps swagger cover report-coverage
+      - run: make deps swagger cover report-coverage ship-lint
       - store_test_results:
           path: results
       - save_cache:
