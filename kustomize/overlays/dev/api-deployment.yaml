@@ -33,6 +33,10 @@ spec:
           value: dev
       containers:
         - name: api
+          readinessProbe:
+            httpGet:
+              port: 3000
+              path: /auditlog/healthz
           command:
             - node
             - --inspect=0.0.0.0

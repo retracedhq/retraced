@@ -15,7 +15,7 @@ spec:
         - integration/test/**/*.ts
       env:
         - name: PUBLISHER_API_ENDPOINT
-          value: http://api:3000
+          value: http://api:3000/auditlog
         - name: PROJECT_ID
           value: dev
         - name: ENVIRONMENT_ID

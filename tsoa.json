@@ -3,12 +3,13 @@
         "outputDirectory": "./build",
         "entryFile": "./src/index.ts",
         "host": "localhost:3000",
-        "basePath": ""
+        "basePath": "/auditlog"
     },
     "routes": {
-	    "entryFile": "./src/index.ts",
-	    "middleware": "express",
-	    "routesDir": "./src/gen",
-	    "middlewareTemplate": "./src/gen/express.tstmpl"
+      "entryFile": "./src/index.ts",
+      "middleware": "express",
+      "routesDir": "./src/gen",
+      "basePath": "/auditlog",
+      "middlewareTemplate": "./src/gen/express.tstmpl"
     }
 }
