@@ -6,13 +6,13 @@ assets:
       path: /base
       dest: ./
       source: private
-      ref: master
+      ref: "v1.3.4"
   - github:
       repo: retracedhq/api
       path: /templates
       dest: ./
       source: private
-      ref: master
+      ref: "v1.3.4"
   - inline:
       dest: scripts/install.sh
       mode: 755
@@ -38,6 +38,7 @@ assets:
         set -euo pipefail
         echo "tests coming soon"
   - google_gke:
+      when: '{{repl and (ConfigOptionEquals "k8s_target_value" "k8s_target_provision_k8s") (ConfigOptionEquals "provision_k8s" "provision_k8s_gcp")}}'
       dest: tf/new_vpc.tf
       credentials: '{{repl ConfigOption "credentials" | Base64Encode}}'
       project: '{{repl ConfigOption "gcp_project" }}'
@@ -46,6 +47,11 @@ assets:
       zone: '{{repl ConfigOption "gcp_zone" }}'
       initial_node_count: '{{repl ConfigOption "gcp_cluster_size" }}'
       machine_type: '{{repl ConfigOption "gcp_machine_type" }}'
+  - inline:
+      dest: tf/empty.tf
+      mode: 755
+      contents: |
+        #an empty terraform file
 
 lifecycle:
   v1:
