@@ -73,11 +73,11 @@ lifecycle:
       base: base
       overlay: overlays/ship
       dest: rendered.yaml
-  - terraform:
-      path: tf/
-  - kubectlApply:
-      path: rendered.yaml
-      kubeconfig: '{{repl GoogleGKE "auditlog"}}'
+  # - terraform:
+  #     path: tf/
+  # - kubectlApply:
+  #     path: rendered.yaml
+  #     kubeconfig: '{{repl GoogleGKE "auditlog"}}'
   - message:
       contents: |
         Assets are almost ready. Fill out the file at
