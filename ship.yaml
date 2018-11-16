@@ -31,12 +31,19 @@ assets:
         kubectl apply -f rendered.yaml
 
   - inline:
-      dest: scripts/install.sh
+      dest: scripts/test.sh
       mode: 755
       contents: |
         #!/bin/sh
         set -euo pipefail
         echo "tests coming soon"
+
+  - inline:
+      dest: tf/empty.tf
+      mode: 755
+      contents: |
+        #an empty terraform file
+
   - google_gke:
       when: '{{repl and (ConfigOptionEquals "k8s_target_value" "k8s_target_provision_k8s") (ConfigOptionEquals "provision_k8s" "provision_k8s_gcp")}}'
       dest: tf/new_vpc.tf
@@ -47,11 +54,6 @@ assets:
       zone: '{{repl ConfigOption "gcp_zone" }}'
       initial_node_count: '{{repl ConfigOption "gcp_cluster_size" }}'
       machine_type: '{{repl ConfigOption "gcp_machine_type" }}'
-  - inline:
-      dest: tf/empty.tf
-      mode: 755
-      contents: |
-        #an empty terraform file
 
 lifecycle:
   v1:
