@@ -27,7 +27,7 @@ import * as https from "https";
 if (!process.env["BUGSNAG_TOKEN"]) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
 } else {
-  bugsnag.register(process.env["BUGSNAG_TOKEN"], {
+  bugsnag.register(process.env["BUGSNAG_TOKEN"] || "", {
     releaseStage: process.env["BUGSNAG_STAGE"],
     notifyReleaseStages: ["production", "staging"],
   });
@@ -40,6 +40,7 @@ let basePath = "";
 if (process.env["RETRACED_API_BASE"]) {
   basePath = url.parse(process.env["RETRACED_API_BASE"] || "").pathname || "";
 }
+logger.info(`listening on basePath ${basePath}`);
 
 // Sigsci middleware has to be installed before routes and other middleware
 if (!process.env["SIGSCI_RPC_ADDRESS"]) {
