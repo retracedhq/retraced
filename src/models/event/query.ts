@@ -222,6 +222,8 @@ export function polyfillSearchAfter(params: any) {
     const [timestamp, id] = params.search_after;
     const isAsc = /asc/.test(params.sort[0]);
 
+    delete params.search_after;
+
     params.body.query.bool.filter.push({
       bool: {
         must_not: {

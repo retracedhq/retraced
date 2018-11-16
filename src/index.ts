@@ -1,4 +1,5 @@
 import "source-map-support/register";
+import * as url from "url";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
@@ -35,6 +36,11 @@ if (!process.env["BUGSNAG_TOKEN"]) {
 const app = express();
 const router = express.Router();
 
+let basePath = "";
+if (process.env["RETRACED_API_BASE"]) {
+  basePath = url.parse(process.env["RETRACED_API_BASE"] || "").pathname || "";
+}
+
 // Sigsci middleware has to be installed before routes and other middleware
 if (!process.env["SIGSCI_RPC_ADDRESS"]) {
   logger.error("SIGSCI_RPC_ADDRESS not set, Signal Sciences module will not be installed");
@@ -66,24 +72,24 @@ function buildRoutes() {
   swaggerSpecs.forEach((spec) => {
     logger.debug(`GET    '${spec.path}/swagger.json'`);
     logger.debug(`GET    '${spec.path}/swagger'`);
-    router.get(`${spec.path}/swagger.json`, (req, res) => {
+    router.get(`${basePath}${spec.path}/swagger.json`, (req, res) => {
       res.setHeader("ContentType", "application/json");
       res.send(spec.swagger);
     });
-    router.use(`${spec.path}/swagger`, swaggerUI.serve, swaggerUI.setup(spec.swagger));
+    router.use(`${basePath}${spec.path}/swagger`, swaggerUI.serve, swaggerUI.setup(spec.swagger));
   });
 
   RegisterRoutes(router);
 
   _.forOwn(LegacyRoutes(), (route, handlerName: string) => {
     const handler = wrapRoute(route, handlerName);
-    register(route, handler, router);
+    register(route, handler, router, basePath);
   });
 
   if (process.env.ADMIN_ROOT_TOKEN) {
     const route = { method: "post", path: "/admin/v1/user/_login" };
     const handler = wrapRoute({ handler: AdminUserBootstrap.default().handler() }, "_login");
-    register(route, handler, router);
+    register(route, handler, router, basePath);
   }
 
   if (process.env.RETRACED_ENABLE_PROMETHEUS) {
@@ -108,6 +114,10 @@ function buildRoutes() {
 export function registerHealthchecks() {
   // Needed for Kubernetes health checks
   app.get("/", (req, res) => {
+    // trying a slight delay to keep sigsci from freaking out
+    setTimeout(() => res.send(""), 200);
+  });
+  app.get(`${basePath}/`, (req, res) => {
     // trying a slight delay to keep sigsci from freaking out
     setTimeout(() => res.send(""), 200);
   });
