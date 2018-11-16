@@ -36,7 +36,7 @@ spec:
           readinessProbe:
             httpGet:
               port: 3000
-              path: /auditlog/healthz
+              path: /healthz
           command:
             - node
             - --inspect=0.0.0.0

@@ -95,7 +95,7 @@ function buildRoutes() {
   if (process.env.RETRACED_ENABLE_PROMETHEUS) {
     const endpoint = process.env.RETRACED_PROMETHEUS_ENDPOINT || "/metrics";
     logger.info(`Registering Prometheus Exporter at ${endpoint}`);
-    app.get(`${basePath}/metrics`, (req, res) => {
+    app.get("/metrics", (req, res) => {
       res.set("Content-Type", Prometheus.register.contentType);
       const mtx = Prometheus.register.metrics();
       res.end(mtx);
@@ -113,19 +113,23 @@ function buildRoutes() {
 
 export function registerHealthchecks() {
   // Needed for Kubernetes health checks
+  app.get("/", (req, res) => {
+    // trying a slight delay to keep sigsci from freaking out
+    setTimeout(() => res.send(""), 200);
+  });
   app.get(`${basePath}/`, (req, res) => {
     // trying a slight delay to keep sigsci from freaking out
     setTimeout(() => res.send(""), 200);
   });
 
   // Needed for Kubernetes health checks
-  app.get(`${basePath}/healthz`, (req, res) => {
+  app.get("/healthz", (req, res) => {
     // trying a slight delay to keep sigsci from freaking out
     setTimeout(() => res.send(""), 200);
   });
 
   // Needed for Kubernetes health checks
-  app.get(`${basePath}/metricz`, (req, res) => {
+  app.get("/metricz", (req, res) => {
     setTimeout(() => res.send("{}"), 200);
   });
 
