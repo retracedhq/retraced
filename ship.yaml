@@ -6,13 +6,13 @@ assets:
       path: /base
       dest: ./
       source: private
-      ref: "v1.3.6"
+      ref: "v1.3.7"
   - github:
       repo: retracedhq/api
       path: /templates
       dest: ./
       source: private
-      ref: "v1.3.6"
+      ref: "v1.3.7"
   - inline:
       dest: scripts/install.sh
       mode: 755

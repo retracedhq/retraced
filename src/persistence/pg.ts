@@ -1,5 +1,5 @@
 import * as pg from "pg";
-import { gauge } from "../metrics";
+import { gauge, meter } from "../metrics";
 import { logger } from "../logger";
 
 let pgPool: pg.Pool;
@@ -15,6 +15,12 @@ export default function getPgPool(): pg.Pool {
       port: Number(process.env.POSTGRES_PORT),
       max: Number(process.env.POSTGRES_POOL_SIZE) || 10,
       idleTimeoutMillis: Number(process.env.PUBLISHER_CREATE_EVENT_TIMEOUT) || 2000, // how long a client is allowed to remain idle before being closed
+    });
+
+    pgPool.on("error", (err: Error) => {
+      logger.info("postgres client connection error");
+      console.log(err);
+      meter("PgPool.connection.error").mark();
     });
   }
 

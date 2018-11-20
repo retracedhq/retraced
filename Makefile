@@ -94,8 +94,8 @@ ship-local: clean-ship-outputs
 	mkdir -p tmp && cd tmp && \
 	$(SHIP) app \
 	    --runbook $(PATH)/ship.yaml  \
-	    --set-github-contents $(REPO):/base:v1.3.6:$(PATH) \
-	    --set-github-contents $(REPO):/templates:v1.3.6:$(PATH) \
+	    --set-github-contents $(REPO):/base:v1.3.7:$(PATH) \
+	    --set-github-contents $(REPO):/templates:v1.3.7:$(PATH) \
 	    --set-channel-icon $(ICON) \
 	    --set-channel-name $(APP_NAME) \
 	    --log-level=off
@@ -104,8 +104,8 @@ ship-local-headless: clean-ship-outputs
 	mkdir -p tmp && cd tmp && \
 	$(SHIP) app \
 	    --runbook $(PATH)/ship.yaml  \
-	    --set-github-contents $(REPO):/base:v1.3.6:$(PATH) \
-	    --set-github-contents $(REPO):/templates:v1.3.6:$(PATH) \
+	    --set-github-contents $(REPO):/base:v1.3.7:$(PATH) \
+	    --set-github-contents $(REPO):/templates:v1.3.7:$(PATH) \
 	    --headless \
 	    --log-level=error
 
