@@ -16,6 +16,7 @@ import { AdminUserBootstrap } from "./handlers/admin/AdminUserBootstrap";
 import { ensureHeadlessProject } from "./headless";
 import * as metrics from "./metrics";
 import swaggerSpecs from "./swagger";
+import getPgPool from "./persistence/pg";
 
 import "./controllers/PublisherController";
 import "./controllers/AdminController";
@@ -171,7 +172,10 @@ function serveHTTPS(sslCertPath: string, sslKeyPath: string) {
 
 ensureHeadlessProject();
 
-process.on("SIGTERM", () => {
+process.on("SIGTERM", async () => {
   logger.info("Got SIGTERM. Graceful shutdown start", new Date().toISOString());
+  logger.info("draining postgres pool");
+  await getPgPool().end();
+  logger.info("postgres pool drained");
   process.exit(137);
 });
