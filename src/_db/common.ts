@@ -117,8 +117,8 @@ function setupBugsnag() {
   if (!process.env["BUGSNAG_TOKEN"]) {
     // console.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
   } else {
-    bugsnag.register(process.env["BUGSNAG_TOKEN"], {
-      releaseStage: process.env["BUGSNAG_STAGE"],
+    bugsnag.register(process.env["BUGSNAG_TOKEN"] || "", {
+      releaseStage: process.env["STAGE"],
       notifyReleaseStages: ["production", "staging"],
     });
   }
