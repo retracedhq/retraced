@@ -27,6 +27,7 @@ import {
 } from "./workers/ElasticsearchIndexRotator";
 import * as metrics from "./metrics";
 import { logger } from "./logger";
+import getPgPool from "../persistence/pg";
 
 if (!process.env["BUGSNAG_TOKEN"]) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
@@ -288,7 +289,10 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
 };
 
 logger.info("retraced-processor");
-process.on("SIGTERM", () => {
+process.on("SIGTERM", async () => {
   logger.info("Got SIGTERM. Graceful shutdown start", new Date().toISOString());
+  logger.info("draining postgres pool");
+  await getPgPool().end();
+  logger.info("postgres pool drained");
   process.exit(137);
 });
