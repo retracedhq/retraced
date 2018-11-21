@@ -28,7 +28,7 @@ if (!process.env["BUGSNAG_TOKEN"]) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
 } else {
   bugsnag.register(process.env["BUGSNAG_TOKEN"] || "", {
-    releaseStage: process.env["BUGSNAG_STAGE"],
+    releaseStage: process.env["STAGE"],
     notifyReleaseStages: ["production", "staging"],
   });
 }

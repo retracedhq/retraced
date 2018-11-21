@@ -23,7 +23,7 @@ ELASTICSEARCH_NODES=http://retraced:AAAAAAAAAAAAAAAA@elasticsearch:9200
 REDIS_URI=redis://redis:6379
 
 # bugsnag
-BUGSNAG_STAGE=dev
+STAGE=dev
 
 STATSD_HOST=statsd
 
