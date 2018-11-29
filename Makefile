@@ -92,8 +92,7 @@ ship-lint:
 
 ship-local: clean-ship-outputs
 	mkdir -p tmp && cd tmp && \
-	$(SHIP) app \
-	    --runbook $(PATH)/ship.yaml  \
+	$(SHIP) init $(PATH)/ship.yaml  \
 	    --set-github-contents $(REPO):/base:v1.3.8:$(PATH) \
 	    --set-github-contents $(REPO):/templates:v1.3.8:$(PATH) \
 	    --set-channel-icon $(ICON) \
@@ -102,8 +101,7 @@ ship-local: clean-ship-outputs
 
 ship-local-headless: clean-ship-outputs
 	mkdir -p tmp && cd tmp && \
-	$(SHIP) app \
-	    --runbook $(PATH)/ship.yaml  \
+	$(SHIP) init $(PATH)/ship.yaml  \
 	    --set-github-contents $(REPO):/base:v1.3.8:$(PATH) \
 	    --set-github-contents $(REPO):/templates:v1.3.8:$(PATH) \
 	    --headless \
