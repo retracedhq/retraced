@@ -14,6 +14,21 @@ spec:
   selector:
     app: postgres
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-lb
+  labels:
+    app: postgres
+spec:
+  type: LoadBalancer
+  ports:
+    - name: postgres
+      port: 5433
+      targetPort: postgres
+  selector:
+    app: postgres
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

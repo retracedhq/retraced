@@ -3,13 +3,13 @@ bases:
   - ../../base
 resources:
   - ./secrets.yaml
+  - ./loadbalancer.yaml
   - ./integrationtest.yaml
 commonLabels:
   retraceddev: "1"
 
 patchesStrategicMerge:
   - ./api-deployment.yaml
-  - ./api-service.yaml
   - ./cron-deployment.yaml
   - ./migratees-job.yaml
   - ./migratepg-job.yaml

@@ -3,6 +3,8 @@ bases:
   - ../dev
   - ../dbs
 
+namespace: retraced
+
 patchesStrategicMerge:
   - ./api-deployment.yaml
   - ./cron-deployment.yaml

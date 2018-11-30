@@ -1,5 +1,0 @@
-def db():
-	run("kustomize build ./kustomize/overlays/dbs | kubectl apply -f -")
-	server = start("kubectl logs -f postgres-0")
-        return service(server, "localhost", 5432)
-register("db", "local", db)
