@@ -14,6 +14,22 @@ spec:
         app: auditlog 
         tier: processor
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 2
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - auditlog
+                - key: tier
+                  operator: In
+                   values:
+                   - processor
+              topologyKey: "kubernetes.io/hostname"
       volumes:
         - name: tmpdir
           emptyDir: {}
