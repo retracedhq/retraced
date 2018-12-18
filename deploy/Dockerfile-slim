@@ -55,6 +55,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgnutls30 \
     libsystemd0 \
     libudev1 \
+    libssl1.1 \
+    openssl \
+    perl-base \
   && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000
