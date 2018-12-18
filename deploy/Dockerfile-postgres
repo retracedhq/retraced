@@ -2,9 +2,11 @@ FROM postgres:10.6
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
-    \
     libgnutls30 \
     libsystemd0 \
     libudev1 \
     libmariadbclient18 \
+    libssl1.1 \
+    openssl \
+    perl-base \
   && rm -rf /var/lib/apt/lists/*
