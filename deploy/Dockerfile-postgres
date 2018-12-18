@@ -7,4 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsystemd0 \
     libudev1 \
     libmariadbclient18 \
+    libssl1.1 \
+    openssl \
+    perl-base \
   && rm -rf /var/lib/apt/lists/*
