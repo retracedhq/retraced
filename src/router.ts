@@ -128,7 +128,7 @@ export const requestId = (req: express.Request, handlerName: string) => {
 
   const clientID = req.headers["x-request-uuid"];
 
-  if (clientID) {
+  if (clientID && _.isString(clientID)) {
     return `${id}.${clientID.substring(0, 8)}`;
   }
 
@@ -144,20 +144,20 @@ export const wrapRoute = (route, handlerName) =>
       .catch(onError(res, reqId));
   };
 
-export function register(route, handler, app, basePath: string) {
+export function register(route, handler, app) {
   // Register this route and callback with express.
   if (route.method === "get") {
     logger.debug(`GET    '${route.path}'`);
-    app.get(`${basePath}${route.path}`, handler);
+    app.get(route.path, handler);
   } else if (route.method === "post") {
     logger.debug(`POST   '${route.path}'`);
-    app.post(`${basePath}${route.path}`, handler);
+    app.post(route.path, handler);
   } else if (route.method === "put") {
     logger.debug(`PUT    '${route.path}'`);
-    app.put(`${basePath}${route.path}`, handler);
+    app.put(route.path, handler);
   } else if (route.method === "delete") {
     logger.debug(`DELETE '${route.path}'`);
-    app.delete(`${basePath}${route.path}`, handler);
+    app.delete(route.path, handler);
   } else {
     logger.debug(`Unhandled HTTP method: '${route.method}'`);
   }
