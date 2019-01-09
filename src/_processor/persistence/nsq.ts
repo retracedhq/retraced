@@ -101,6 +101,8 @@ export class NSQClient {
     });
     reader.on("nsqd_closed", () => {
       logger.warn(`NSQ consumer ${topic}:${channel} disconnected from ${this.host}:${this.tcpPort}`);
+      // The closed event is limited by the heartbeat of 30s, so no need for backoff
+      this.consume(topic, channel, handle, opts);
     });
     reader.on("message", handle);
   }
