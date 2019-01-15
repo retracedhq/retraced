@@ -8,5 +8,15 @@ VOLUME /data
 VOLUME /etc/ssl/certs
 
 COPY --from=0 /usr/local/bin/ /usr/local/bin/
+
+RUN apk add --no-cache --upgrade shadow
+
 RUN ln -s /usr/local/bin/*nsq* / \
     && ln -s /usr/local/bin/*nsq* /bin/
+
+# group id 999 already exists in /etc/group: ping:x:999:
+RUN useradd -r -u 999 -g 999 retraced
+RUN mkdir -p /home/retraced
+RUN chown -R 999:999 /data /tmp /run /var /home/retraced
+USER retraced
+WORKDIR /home/retraced
