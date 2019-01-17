@@ -8,5 +8,11 @@ VOLUME /data
 VOLUME /etc/ssl/certs
 
 COPY --from=0 /usr/local/bin/ /usr/local/bin/
+
+RUN apk add --no-cache --upgrade shadow
+
 RUN ln -s /usr/local/bin/*nsq* / \
     && ln -s /usr/local/bin/*nsq* /bin/
+
+RUN chmod a+rwx /data /tmp /home /run /var
+WORKDIR /home

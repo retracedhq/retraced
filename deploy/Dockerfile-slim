@@ -84,4 +84,6 @@ RUN ln -s /src/retraceddb /src/replicated-auditlog-migrations
 
 WORKDIR /src
 
+RUN chmod a+rwx /src # auth0 writes to pwd
+
 CMD ["/src/replicated-auditlog-api"]
