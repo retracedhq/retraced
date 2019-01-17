@@ -26,8 +26,6 @@ ADD . /src
 RUN make routes
 RUN make swagger
 
-RUN groupadd -g 999 retraced && useradd -r -u 999 -g retraced retraced
-RUN chown -R retraced:retraced /src
-USER retraced
+RUN chmod a+rwx /src
 
 CMD ["node", "--inspect=0.0.0.0", "--require", "ts-node/register", "src/index.ts"]

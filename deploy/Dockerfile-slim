@@ -84,8 +84,6 @@ RUN ln -s /src/retraceddb /src/replicated-auditlog-migrations
 
 WORKDIR /src
 
-RUN groupadd -g 999 retraced && useradd -r -u 999 -g retraced retraced
-RUN chown -R retraced:retraced /src
-USER retraced
+RUN chmod a+rwx /src # auth0 writes to pwd
 
 CMD ["/src/replicated-auditlog-api"]
