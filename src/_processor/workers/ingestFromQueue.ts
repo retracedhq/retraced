@@ -31,10 +31,11 @@ export default async function ingestFromQueue(job: any) {
             $4,
             to_timestamp($5::double precision / 1000),
             $6
-        ) ON CONFLICT DO NOTHING`;
+        ) ON CONFLICT DO NOTHING
+        RETURNING id`;
 
     try {
-        await pgPool.query(q, [
+        const results = await pgPool.query(q, [
             taskId,
             task.new_event_id,
             task.project_id,
@@ -42,6 +43,10 @@ export default async function ingestFromQueue(job: any) {
             task.received,
             JSON.stringify(task.original_event),
         ]);
+        if (results.rows.length == 0) {
+          // conflict, already ingested
+          return;
+        }
     } catch (err) {
         err.retry = true;
         throw err;
