@@ -93,8 +93,8 @@ ship-lint:
 ship-local: clean-ship-outputs
 	mkdir -p tmp && cd tmp && \
 	$(SHIP) init $(PATH)/ship.yaml  \
-	    --set-github-contents $(REPO):/base:v1.3.13$(PATH) \
-	    --set-github-contents $(REPO):/templates:v1.3.13:$(PATH) \
+	    --set-github-contents $(REPO):/base:v1.3.14$(PATH) \
+	    --set-github-contents $(REPO):/templates:v1.3.14:$(PATH) \
 	    --set-channel-icon $(ICON) \
 	    --set-channel-name $(APP_NAME) \
 	    --log-level=off
@@ -102,8 +102,8 @@ ship-local: clean-ship-outputs
 ship-local-headless: clean-ship-outputs
 	mkdir -p tmp && cd tmp && \
 	$(SHIP) init $(PATH)/ship.yaml  \
-	    --set-github-contents $(REPO):/base:v1.3.13:$(PATH) \
-	    --set-github-contents $(REPO):/templates:v1.3.13:$(PATH) \
+	    --set-github-contents $(REPO):/base:v1.3.14:$(PATH) \
+	    --set-github-contents $(REPO):/templates:v1.3.14:$(PATH) \
 	    --headless \
 	    --log-level=error
 
