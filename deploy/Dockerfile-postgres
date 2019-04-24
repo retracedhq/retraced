@@ -1,16 +1,8 @@
 FROM postgres:10.7
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     \
-    libgnutls30 \
-    libsystemd0 \
-    libudev1 \
-    libmariadbclient18 \
-    libssl1.1 \
-    openssl \
-    perl-base \
+    systemd \
+    udev \
   && rm -rf /var/lib/apt/lists/*
-
-# https://github.com/docker-library/postgres/issues/415
-RUN localedef -i en_US -f UTF-8 en_US.UTF-8
