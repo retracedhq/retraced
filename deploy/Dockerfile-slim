@@ -52,6 +52,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     \
     \
+    systemd \
+    udev \
   && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000
