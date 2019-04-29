@@ -5,4 +5,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     \
     systemd \
     udev \
+    libmariadbclient18 \
   && rm -rf /var/lib/apt/lists/*
