@@ -24,6 +24,7 @@ import "./controllers/EnterpriseController";
 import { logger } from "./logger";
 import * as fs from "fs";
 import * as https from "https";
+import * as sslConf from "ssl-config";
 
 if (!process.env["BUGSNAG_TOKEN"]) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
@@ -161,9 +162,14 @@ function serveHTTPS(sslCertPath: string, sslKeyPath: string) {
   const certificate = fs.readFileSync(sslCertPath);
   const privateKey = fs.readFileSync(sslKeyPath);
 
+  const sslConfig = sslConf("modern");
+
   https.createServer({
     key: privateKey,
     cert: certificate,
+    ciphers: sslConfig.ciphers,
+    honorCipherOrder: true,
+    secureOptions: sslConfig.minimumTLSVersion,
   }, app).listen(3000, "0.0.0.0", () => {
     logger.info("Retraced API listening on port 3000...");
   });

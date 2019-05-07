@@ -41,11 +41,18 @@ export default async function(req) {
 
   const reqOpts = req.body.query;
 
-  let targetIds;
+  let targetIds: string[] = [];
   if (claims.scope) {
     const scope = querystring.parse(claims.scope);
-    targetIds = [scope.target_id];
-    thisViewEvent.target = { id: scope.target_id };
+    if (typeof scope.target_id === "string") {
+      targetIds = [scope.target_id];
+      thisViewEvent.target = { id: scope.target_id };
+    } else if (scope.target_id instanceof Array) {
+      targetIds = scope.target_id;
+      if (scope.target_id.length > 0) {
+        thisViewEvent.target = { id: scope.target_id[0] };
+      }
+    }
   }
 
   const opts: Options = {

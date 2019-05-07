@@ -22,7 +22,7 @@ COPY deploy/crontab /crontab
 # # #
 # Node build
 #
-FROM node:8.7 as node
+FROM node:8 as node
 
 WORKDIR /src
 ADD package.json /src
