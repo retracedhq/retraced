@@ -8,7 +8,7 @@ experimental:
 
 defaults: &defaults
   docker:
-    - image: circleci/node:8.7
+    - image: circleci/node:8
   working_directory: ~/repo
 
 jobs:
