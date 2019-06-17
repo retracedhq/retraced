@@ -3,7 +3,7 @@ FROM postgres:10.7
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     \
-    systemd \
-    udev \
-    libmariadbclient18 \
+    exim4 \
+    exim4-config \
+    exim4-daemon-light \
   && rm -rf /var/lib/apt/lists/*
