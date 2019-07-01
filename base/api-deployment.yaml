@@ -55,3 +55,5 @@ spec:
                 secretKeyRef:
                   key: API_TOKEN
                   name: auditlog
+            - name: PG_SEARCH
+              value: "1"
