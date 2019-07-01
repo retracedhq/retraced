@@ -57,6 +57,8 @@ spec:
                 secretKeyRef:
                   name: auditlog
                   key: PROCESSOR_TOKEN
+            - name: PG_SEARCH
+              value: "1"
       imagePullSecrets:
       - name: auditlog-imagepull-secret
 
