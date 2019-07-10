@@ -49,11 +49,7 @@ FROM debian:stretch-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
-    curl \
     \
-    \
-    systemd \
-    udev \
   && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000
