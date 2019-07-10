@@ -1,9 +1,6 @@
-FROM postgres:10.7
+FROM postgres:10.9
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     \
-    exim4 \
-    exim4-config \
-    exim4-daemon-light \
   && rm -rf /var/lib/apt/lists/*
