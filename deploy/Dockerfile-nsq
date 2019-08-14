@@ -9,10 +9,15 @@ VOLUME /etc/ssl/certs
 
 COPY --from=0 /usr/local/bin/ /usr/local/bin/
 
-RUN apk add --no-cache --upgrade shadow
+# musl packages for http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14697
+
+RUN apk add --no-cache --upgrade \
+  shadow \
+  musl \
+  musl-utils
 
 RUN ln -s /usr/local/bin/*nsq* / \
     && ln -s /usr/local/bin/*nsq* /bin/
 
-RUN chmod a+rwx /data /tmp /home /run /var
+RUN chmod a+rwx /tmp /home /run /var
 WORKDIR /home
