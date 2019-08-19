@@ -3,7 +3,7 @@ assets:
   v1:
   - github:
       repo: retracedhq/api
-      path: /base
+      path: /kustomize/base
       dest: ./
       source: private
       ref: "v1.3.20"

@@ -40,6 +40,25 @@ spec:
 
           command:
             - /src/processor
+          ports:
+            - containerPort: 3000
+              name: http
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              port: 3000
+              path: /healthz
+            initialDelaySeconds: 3
+            periodSeconds: 1
+            failureThreshold: 2
+            successThreshold: 2
+          livenessProbe:
+            httpGet:
+              port: 3000
+              path: /livez
+            initialDelaySeconds: 3
+            periodSeconds: 1
+
           volumeMounts:
             - mountPath: /tmp
               name: tmpdir
