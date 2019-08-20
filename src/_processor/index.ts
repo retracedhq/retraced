@@ -27,6 +27,7 @@ import {
 } from "./workers/ElasticsearchIndexRotator";
 import * as metrics from "./metrics";
 import { logger } from "./logger";
+import { startHealthz, updateLastNSQ } from "./healthz";
 import getPgPool from "../persistence/pg";
 
 if (!process.env["BUGSNAG_TOKEN"]) {
@@ -57,6 +58,7 @@ const leftPad = (s, n) => n > s.length ? " ".repeat(n - s.length) + s : s;
 const registry = monkit.getRegistry();
 
 metrics.bootstrapFromEnv();
+startHealthz();
 
 const slowElapsedThreshold = 250.0; // ms
 
@@ -266,6 +268,7 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
     if (elapsed >= slowElapsedThreshold) {
       logger.warn(`[${jobDesc(job)}] completed (slowly) in ${elapsed.toFixed(3)}ms`);
     }
+    updateLastNSQ();
 
   } catch (err) {
     registry.meter("processor.waitForJobs.errors").mark();
