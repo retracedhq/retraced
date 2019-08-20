@@ -4,7 +4,8 @@ assets:
   - github:
       repo: retracedhq/api
       path: /kustomize/base
-      dest: ./
+      dest: ./base
+      strip_path: '{{repl ParseBool "true"}}'
       source: private
       ref: "v1.3.20"
   - github:
