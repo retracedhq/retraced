@@ -7,13 +7,13 @@ assets:
       dest: ./base
       strip_path: '{{repl ParseBool "true"}}'
       source: private
-      ref: "v1.3.20"
+      ref: "v1.3.21"
   - github:
       repo: retracedhq/api
       path: /templates
       dest: ./
       source: private
-      ref: "v1.3.20"
+      ref: "v1.3.21"
   - inline:
       dest: scripts/install.sh
       mode: 755
