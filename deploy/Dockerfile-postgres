@@ -3,4 +3,6 @@ FROM postgres:10.10
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     \
+    \
+    libexpat1 \
   && rm -rf /var/lib/apt/lists/*
