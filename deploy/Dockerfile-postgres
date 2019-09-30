@@ -5,4 +5,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     \
     \
     libexpat1 \
+    e2fslibs \
+    libcomerr2 \
+    e2fsprogs \
+    libss2 \
   && rm -rf /var/lib/apt/lists/*

@@ -52,6 +52,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     \
+    \
+    e2fslibs \
+    libcomerr2 \
+    e2fsprogs \
+    libss2 \
   && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000
