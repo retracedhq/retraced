@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "1.3.22",
+  "version": "1.3.23",
   "description": "Retraced API",
   "main": "./build/index.js",
   "license": "UNLICENSED",
