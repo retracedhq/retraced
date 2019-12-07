@@ -60,7 +60,7 @@ app.set("etag", false); // we're doing our own etag thing I guess
 app.set("trust proxy", "uniquelocal");
 
 app.use(bugsnag.requestHandler);
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "10mb" }));
 app.use(cors());
 app.use(bugsnag.errorHandler);
 
