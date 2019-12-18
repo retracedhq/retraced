@@ -4,7 +4,7 @@ import * as pg from "pg";
 import * as pgFormat from "pg-format";
 import * as util from "util";
 import * as monkit from "monkit";
-import { instrument, instrumented, meter } from "../metrics";
+import { instrument, instrumented } from "../metrics";
 
 import createCanonicalHash from "../models/event/canonicalize";
 import Event, { crud, Fields } from "../models/event/";
