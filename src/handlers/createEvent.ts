@@ -3,6 +3,7 @@ import * as moment from "moment";
 import * as pg from "pg";
 import * as pgFormat from "pg-format";
 import * as util from "util";
+import * as monkit from "monkit";
 import { instrument, instrumented } from "../metrics";
 
 import createCanonicalHash from "../models/event/canonicalize";
@@ -136,6 +137,8 @@ export class EventCreater {
       $1, $2, $3, to_timestamp($4::double precision / 1000), $5
     )`;
 
+  private registry: monkit.Registry;
+
   constructor(
     private readonly pgPool: pg.Pool,
     private readonly nsq: NSQClient,
@@ -144,7 +147,9 @@ export class EventCreater {
     private readonly authenticator: Authenticator,
     private readonly maxEvents: number,
     private readonly timeoutMS: number,
-  ) { }
+  ) {
+    this.registry = monkit.getRegistry();
+  }
 
   @instrumented
   public async createEvent(authorization: string, projectId: string, event: CreateEventRequest) {
@@ -174,6 +179,8 @@ export class EventCreater {
     // Coerce the input event into a proper Event object.
     // Then, generate an authoritative hash from its contents.
     const hash = this.hasher(fromCreateEventInput(event, id));
+
+    this.registry.meter("EventCreater.handled.events").mark();
 
     return { id, hash };
   }
@@ -261,6 +268,10 @@ export class EventCreater {
     }
 
     events.forEach(this.nsqPublish.bind(this));
+    events.forEach((e) => {
+      this.nsqPublish(e);
+      this.registry.meter("EventCreater.handled.events").mark();
+    });
 
     return events.map(({ id, hash }) => ({ id, hash }));
   }
