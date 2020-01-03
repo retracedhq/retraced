@@ -4,4 +4,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     \
     \
+    libsasl2-dev \
   && rm -rf /var/lib/apt/lists/*
