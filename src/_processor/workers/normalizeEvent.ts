@@ -67,7 +67,7 @@ export default async function normalizeEvent(job) {
         projectId: task.project_id,
         environmentId: task.environment_id,
         updateOnConflict: processingNewEvent,
-      });
+      }, pg);
     }
 
     let actor;
@@ -77,7 +77,7 @@ export default async function normalizeEvent(job) {
         projectId: task.project_id,
         environmentId: task.environment_id,
         updateOnConflict: processingNewEvent,
-      });
+      }, pg);
     }
 
     let target;
@@ -87,7 +87,7 @@ export default async function normalizeEvent(job) {
         projectId: task.project_id,
         environmentId: task.environment_id,
         updateOnConflict: processingNewEvent === true,
-      });
+      }, pg);
     }
 
     await upsertAction({
@@ -95,7 +95,7 @@ export default async function normalizeEvent(job) {
       projectId: task.project_id,
       environmentId: task.environment_id,
       updateOnConflict: processingNewEvent === true,
-    });
+    }, pg);
 
     let locInfo;
     if (origEvent.source_ip) {
