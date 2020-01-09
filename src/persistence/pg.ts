@@ -13,7 +13,7 @@ export default function getPgPool(): pg.Pool {
       password: process.env.POSTGRES_PASSWORD,
       host: process.env.POSTGRES_HOST,
       port: Number(process.env.POSTGRES_PORT),
-      max: Number(process.env.POSTGRES_POOL_SIZE) || 10,
+      max: Number(process.env.POSTGRES_POOL_SIZE) || 20,
       idleTimeoutMillis: Number(process.env.PUBLISHER_CREATE_EVENT_TIMEOUT) || 2000, // how long a client is allowed to remain idle before being closed
     });
 
