@@ -5,4 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     \
     \
     libsasl2-dev \
+    libxslt1.1 \
+    libidn11 \
+    libmariadbclient18 \
   && rm -rf /var/lib/apt/lists/*
