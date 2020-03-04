@@ -40,3 +40,8 @@ spec:
           ports:
             - containerPort: 4150
             - containerPort: 4151
+          resources:
+            requests:
+              cpu: 100m
+            limits:
+              cpu: 500m

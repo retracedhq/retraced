@@ -57,3 +57,8 @@ spec:
                   name: auditlog
             - name: PG_SEARCH
               value: "1"
+          resources:
+            requests:
+              cpu: 100m
+            limits:
+              cpu: 500m

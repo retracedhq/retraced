@@ -37,6 +37,11 @@ spec:
                   name: auditlog
             - name: RETRACED_DISABLE_GEOSYNC
               value: "1"
+          resources:
+            requests:
+              cpu: 10m
+            limits:
+              cpu: 100m
       imagePullSecrets:
       - name: auditlog-imagepull-secret
 
