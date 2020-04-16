@@ -1,11 +1,7 @@
-FROM postgres:10.10
+FROM postgres:10.12
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     \
     \
-    libsasl2-dev \
-    libxslt1.1 \
-    libidn11 \
-    libmariadbclient18 \
   && rm -rf /var/lib/apt/lists/*
