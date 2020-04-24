@@ -1,6 +1,6 @@
 FROM nsqio/nsq:v1.0.0-compat
 
-FROM alpine:latest
+FROM debian:stretch-slim
 
 EXPOSE 4150 4151 4160 4161 4170 4171
 
@@ -8,13 +8,6 @@ VOLUME /data
 VOLUME /etc/ssl/certs
 
 COPY --from=0 /usr/local/bin/ /usr/local/bin/
-
-# musl packages for http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14697
-
-RUN apk add --no-cache --upgrade \
-  shadow \
-  musl \
-  musl-utils
 
 RUN ln -s /usr/local/bin/*nsq* / \
     && ln -s /usr/local/bin/*nsq* /bin/
