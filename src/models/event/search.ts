@@ -103,12 +103,12 @@ export default async function(opts: Options): Promise<Result> {
 
   if (opts.startTime) {
     filters.push({
-      range: { canonical_time: { gte: opts.startTime } },
+      range: { received: { gte: opts.startTime } },
     });
   }
   if (opts.endTime) {
     filters.push({
-      range: { canonical_time: { lte: opts.endTime } },
+      range: { received: { lt: opts.endTime } },
     });
   }
 
