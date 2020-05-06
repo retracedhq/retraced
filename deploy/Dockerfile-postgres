@@ -4,4 +4,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     \
     \
+    libldap-2.4-2 \
   && rm -rf /var/lib/apt/lists/*
