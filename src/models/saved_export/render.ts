@@ -5,7 +5,7 @@ import * as sanitizefn from "sanitize-filename";
 
 import getPgPool from "../../persistence/pg";
 import { Scope } from "../../security/scope";
-import searchEvents, { Options } from "../event/search";
+import query, { Options } from "../event/query";
 import filterEvents, { Options as FilterOptions } from "../event/filter";
 import { parseQuery, ParsedQuery } from "../event";
 import QueryDescriptor from "../query_desc/def";
@@ -40,37 +40,45 @@ export default async function renderSavedExport(opts) {
         const filterOpts = filterOptions(scope, queryDesc);
         results = await filterEvents(filterOpts);
     } else {
-        const deepOpts: Options = {
-          index: `retraced.${projectId}.${environmentId}`,
-          sort: "desc",
-          groupId,
-          fetchAll: true,
-        };
+      const scope: Scope = {
+        projectId,
+        environmentId,
+        groupId,
+      };
+      const deepOpts: Options = {
+        scope,
+        query: "",
+        size: 1000000,
+        sort: "desc",
+      };
 
-        switch (queryDesc.version) {
-          case 1:
-            deepOpts.crud = {
-              create: queryDesc.showCreate || false,
-              read: queryDesc.showRead || false,
-              update: queryDesc.showUpdate || false,
-              delete: queryDesc.showDelete || false,
-            };
-            if (queryDesc.searchQuery) {
-              deepOpts.searchText = queryDesc.searchQuery;
-            }
-            if (queryDesc.startTime) {
-              deepOpts.startTime = queryDesc.startTime;
-            }
-            if (queryDesc.endTime) {
-              deepOpts.endTime = queryDesc.endTime;
-            }
-            break;
+      switch (queryDesc.version) {
+        case 1:
+          let cruds = _.compact([
+            queryDesc.showCreate && "c",
+            queryDesc.showRead && "r",
+            queryDesc.showUpdate && "u",
+            queryDesc.showDelete && "d"
+          ]);
+          deepOpts.query = `crud:${cruds.join(",")}`;
 
-          default:
-            throw new Error(`Unknown query descriptor version: ${queryDesc.version}`);
-        }
+          if (queryDesc.startTime || queryDesc.endTime) {
+            const start = moment(queryDesc.startTime || 0);
+            const end = moment(queryDesc.endTime || Date.now());
 
-        results = await searchEvents(deepOpts);
+            deepOpts.query += ` received:"${start.format()},${end.format()}"`
+          }
+
+          if (queryDesc.searchQuery) {
+            deepOpts.query += " " + queryDesc.searchQuery;
+          }
+          break;
+
+        default:
+          throw new Error(`Unknown query descriptor version: ${queryDesc.version}`);
+      }
+
+      results = await query(deepOpts);
     }
 
     if (!results.totalHits) {
