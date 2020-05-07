@@ -89,7 +89,7 @@ describe("Enterprise Search Group Scoping", function () {
                         .end(function (err, res) {
                             responseBody = JSON.parse(res.text);
                             expect(err).to.be.null;
-                            expect(res).to.have.status(201);
+                            expect(res).to.have.property("status", 201);
                             expect(responseBody.token).to.exist;
                             otherToken = responseBody.token;
                             done();
@@ -107,7 +107,7 @@ describe("Enterprise Search Group Scoping", function () {
                                 .end(function (err, res) {
                                     responseBody = JSON.parse(res.text);
                                     expect(err).to.be.null;
-                                    expect(res).to.have.status(200);
+                                    expect(res).to.have.property("status", 200);
                                     done();
                                 });
                         });

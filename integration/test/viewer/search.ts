@@ -108,7 +108,7 @@ describe("Viewer API", function () {
                             .end(function (err, res) {
                                 viewerSession = JSON.parse(res.text).token;
                                 expect(err).to.be.null;
-                                expect(res).to.have.status(200);
+                                expect(res).to.have.property("status", 200);
                                 done();
                             });
                     });
@@ -125,7 +125,7 @@ describe("Viewer API", function () {
                                     .end(function (err, res) {
                                         responseBody = JSON.parse(res.text);
                                         expect(err).to.be.null;
-                                        expect(res).to.have.status(200);
+                                        expect(res).to.have.property("status", 200);
                                         done();
                                     });
                             });
@@ -158,7 +158,7 @@ describe("Viewer API", function () {
                             .end(function (err, res) {
                                 viewerSession = JSON.parse(res.text).token;
                                 expect(err).to.be.null;
-                                expect(res).to.have.status(200);
+                                expect(res).to.have.property("status", 200);
                                 done();
                             });
                     });
@@ -175,7 +175,7 @@ describe("Viewer API", function () {
                                     .end(function (err, res) {
                                         responseBody = JSON.parse(res.text);
                                         expect(err).to.be.null;
-                                        expect(res).to.have.status(200);
+                                        expect(res).to.have.property("status", 200);
                                         done();
                                     });
                             });
@@ -211,7 +211,7 @@ describe("Viewer API", function () {
                                     .end(function (err, res) {
                                         responseBody = JSON.parse(res.text);
                                         expect(err).to.be.null;
-                                        expect(res).to.have.status(200);
+                                        expect(res).to.have.property("status", 200);
                                         done();
                                     });
                             });

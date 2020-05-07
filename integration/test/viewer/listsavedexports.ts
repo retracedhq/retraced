@@ -72,7 +72,7 @@ describe("Viewer API", function () {
                         .end(function (err, res) {
                             viewerSession1 = JSON.parse(res.text).token;
                             expect(err).to.be.null;
-                            expect(res).to.have.status(200);
+                            expect(res).to.have.property("status", 200);
                             done();
                         });
                 });
@@ -84,7 +84,7 @@ describe("Viewer API", function () {
                         .end(function (err, res) {
                             viewerSession2 = JSON.parse(res.text).token;
                             expect(err).to.be.null;
-                            expect(res).to.have.status(200);
+                            expect(res).to.have.property("status", 200);
                             done();
                         });
                 });
@@ -103,7 +103,7 @@ describe("Viewer API", function () {
                             })
                             .end((err, res) => {
                                 expect(err).to.be.null;
-                                expect(res).to.have.status(201);
+                                expect(res).to.have.property("status", 201);
                                 savedExport1 = JSON.parse(res.text);
                                 done();
                             });
@@ -119,7 +119,7 @@ describe("Viewer API", function () {
                             })
                             .end((err, res) => {
                                 expect(err).to.be.null;
-                                expect(res).to.have.status(201);
+                                expect(res).to.have.property("status", 201);
                                 savedExport2 = JSON.parse(res.text);
                                 done();
                             });
@@ -134,7 +134,7 @@ describe("Viewer API", function () {
                                 .set("Authorization", viewerSession1)
                                 .end((err, res) => {
                                     expect(err).to.be.null;
-                                    expect(res).to.have.status(200);
+                                    expect(res).to.have.property("status", 200);
                                     responseBody = JSON.parse(res.text);
                                     done();
                                 });

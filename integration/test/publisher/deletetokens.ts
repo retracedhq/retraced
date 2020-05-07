@@ -88,7 +88,7 @@ describe("Deleting Enterprise Tokens", function () {
                         .end(function (err, res) {
                             responseBody = JSON.parse(res.text);
                             expect(err).to.be.null;
-                            expect(res).to.have.status(201);
+                            expect(res).to.have.property("status", 201);
                             expect(responseBody.token).to.exist;
                             token = responseBody.token;
                             done();
@@ -103,7 +103,7 @@ describe("Deleting Enterprise Tokens", function () {
                             .send({ display_name: "QA" + randomNumber.toString() })
                             .end(function (err, res) {
                                 expect(err).to.be.null;
-                                expect(res).to.have.status(204);
+                                expect(res).to.have.property("status", 204);
                                 expect(responseBody.token).to.exist;
                                 token = responseBody.token;
                                 done();
@@ -123,7 +123,7 @@ describe("Deleting Enterprise Tokens", function () {
                         });
 
                         specify("Then the response should be a 401", function () {
-                            expect(response).to.have.status(401);
+                            expect(response).to.have.property("status", 401);
                         });
                     });
                 });

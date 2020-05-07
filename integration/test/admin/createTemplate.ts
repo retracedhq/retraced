@@ -61,7 +61,7 @@ describe("Admin create template", function() {
                     const now = Date.now();
                     const template = resp.body;
 
-                    expect(resp).to.have.status(201);
+                    expect(resp).to.have.property("status", 201);
 
                     expect(template.id).to.be.ok;
                     expect(template).to.have.property("name", reqBody.name);

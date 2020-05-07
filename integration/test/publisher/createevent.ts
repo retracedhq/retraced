@@ -90,7 +90,7 @@ describe("Create Events", function () {
                                     console.log(util.inspect(res.body, false, 100, true));
                                 }
                                 expect(err).to.be.null;
-                                expect(res).to.have.status(200);
+                                expect(res).to.have.property("status", 200);
 
                                 done();
                             });
@@ -153,7 +153,7 @@ describe("Create Events", function () {
                             .end(function (err, res) {
                                 responseBody = JSON.parse(res.text);
                                 expect(err).to.be.null;
-                                expect(res).to.have.status(200);
+                                expect(res).to.have.property("status", 200);
                                 done();
                             });
                     });
