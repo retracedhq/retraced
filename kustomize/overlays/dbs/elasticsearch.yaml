@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
         - name: elasticsearch
-          image: elasticsearch:5.4.0
+          image: elasticsearch:2.4.4
           imagePullPolicy: IfNotPresent
           ports:
             - name: estransport

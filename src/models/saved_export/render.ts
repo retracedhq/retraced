@@ -12,6 +12,8 @@ import QueryDescriptor from "../query_desc/def";
 
 const pgPool = getPgPool();
 
+const pageSize = process.env.EXPORT_PAGE_SIZE_INTERNAL ? parseInt(process.env.EXPORT_PAGE_SIZE_INTERNAL, 10) : 10000;
+
 export default async function renderSavedExport(opts) {
   const { environmentId, projectId, groupId, savedExportId, format } = opts;
 
@@ -48,7 +50,7 @@ export default async function renderSavedExport(opts) {
       const deepOpts: Options = {
         scope,
         query: "",
-        size: 1000000,
+        size: pageSize,
         sort: "desc",
       };
 
@@ -79,6 +81,23 @@ export default async function renderSavedExport(opts) {
       }
 
       results = await query(deepOpts);
+      if (!results.totalHits) {
+        return undefined;
+      }
+
+      if (results.totalHits > pageSize) {
+        let pagesLeft = Math.ceil(results.totalHits - pageSize) / pageSize;
+
+        for (let i = pagesLeft; i > 0; i--) {
+          const last: any = _.last(results.events);
+          const nextPageOpts = _.cloneDeep(deepOpts);
+          nextPageOpts.size = pageSize; // removed in the query() function
+          nextPageOpts.cursor = [last.canonical_time, last.id];
+
+          const pageResults = await query(nextPageOpts);
+          results.events = _.concat(results.events, pageResults.events);
+        }
+      }
     }
 
     if (!results.totalHits) {
