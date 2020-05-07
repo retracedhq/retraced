@@ -45,3 +45,6 @@ spec:
             - src/index.ts
           ports:
           - containerPort: 9229
+          env:
+          - name: EXPORT_PAGE_SIZE_INTERNAL
+            value: "2"

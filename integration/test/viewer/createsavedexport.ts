@@ -7,6 +7,7 @@ import { retracedUp } from "../pkg/retracedUp";
 import * as Env from "../env";
 import * as jwt from "jsonwebtoken";
 import { sleep } from "../pkg/util";
+import * as _ from "lodash";
 
 // tslint:disable-next-line
 const chai = require("chai"), chaiHttp = require("chai-http");
@@ -90,22 +91,29 @@ describe.only("Viewer API", function () {
                         expect(responseBody.id).to.be.ok;
                     });
 
+                    // This test only runs in dev where we know the JWT signing secret. Dev should
+                    // also set env EXPORT_PAGE_SIZE_INTERNAL low enough to exercise the cursor and
+                    // accumulation logic in saved_export/render.ts.
                     if (process.env.HMAC_SECRET_VIEWER) {
+                      const eventCount = 5;
+                      let ids: string[] = [];
+
                       context("When the export is rendered", function() {
                         beforeEach(async function() {
+                           this.timeout(Env.EsIndexWaitMs * 3);
+
                            const retraced = new Retraced.Client({
                                apiKey: Env.ApiKey,
                                projectId: Env.ProjectID,
                                endpoint: Env.Endpoint,
                            });
  
-                           const event = {
+                           const events = _.map(_.range(eventCount), () => ({
                                action: "integration" + randomNumber.toString(),
                                group: {
                                    id: groupID,
                                    name: "RetracedQA",
-                               }
-                               ,
+                               },
                                created: new Date(),
                                crud: "c",
                                sourceIp: "192.168.0.1",
@@ -113,9 +121,11 @@ describe.only("Viewer API", function () {
                                    id: "qa@retraced.io",
                                },
                                description: "Automated integration testing...",
-                           };
-                           this.timeout(Env.EsIndexWaitMs * 3);
-                           await retraced.reportEvent(event)
+                           }));
+
+                           ids = await Promise.all(events.map((event) => {
+                             return retraced.reportEvent(event)
+                           }));
                            await sleep(Env.EsIndexWaitMs * 2);
                         });
 
@@ -131,8 +141,10 @@ describe.only("Viewer API", function () {
                              .end((err, res) => {
                                expect(err).to.be.null;
                                expect(res).to.have.property("status", 200);
-                               expect(res.text).to.match(new RegExp("integration" + randomNumber.toString()));
-                               console.log(res.text);
+                               expect(res.text.split("\n")).to.have.length(eventCount + 2);
+                               _.each(ids, function(id) {
+                                 expect(res.text).to.match(new RegExp(id));
+                                });
                                done();
                              });
                          });
