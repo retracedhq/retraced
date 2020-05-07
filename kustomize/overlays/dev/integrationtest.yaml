@@ -22,5 +22,8 @@ spec:
           value: dev
         - name: PUBLISHER_API_KEY
           value: dev
-
-
+        - name: restart
+          value: v7
+      envFrom:
+        - secretRef:
+            name: auditlog

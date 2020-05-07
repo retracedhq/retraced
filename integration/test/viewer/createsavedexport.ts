@@ -5,6 +5,8 @@ import "mocha";
 import "chai-http";
 import { retracedUp } from "../pkg/retracedUp";
 import * as Env from "../env";
+import * as jwt from "jsonwebtoken";
+import { sleep } from "../pkg/util";
 
 // tslint:disable-next-line
 const chai = require("chai"), chaiHttp = require("chai-http");
@@ -12,7 +14,7 @@ chai.use(chaiHttp);
 
 const randomNumber = Math.floor(Math.random() * (99999)) + 1;
 
-describe("Viewer API", function () {
+describe.only("Viewer API", function () {
 
     describe("Given the Retraced API is up and running", function () {
         const groupID = "rtrcdqa" + randomNumber.toString();
@@ -48,10 +50,10 @@ describe("Viewer API", function () {
                     chai.request(Env.Endpoint)
                         .post("/viewer/v1/viewersession")
                         .send({ token })
-                        .end(function (err, res) {
+                        .end(function (err, res: any) {
                             viewerSession = JSON.parse(res.text).token;
                             expect(err).to.be.null;
-                            expect(res).to.have.status(200);
+                            expect(res).to.have.property("status", 200);
                             done();
                         });
                 });
@@ -65,12 +67,21 @@ describe("Viewer API", function () {
                             .set("Authorization", viewerSession)
                             .send({
                                 name: "Test Name",
-                                exportBody: "Export Test Body",
+                                exportBody: JSON.stringify({
+                                  searchQuery: "",
+                                  showCreate: true,
+                                  showDelete: true,
+                                  showRead: true,
+                                  showUpdate: true,
+                                  version: 1,
+                                  startTime: Date.now() - 60000,
+                                  endTime: Date.now() + 60000,
+                                }),
                             })
                             .end((err, res) => {
                                 responseBody = JSON.parse(res.text);
                                 expect(err).to.be.null;
-                                expect(res).to.have.status(201);
+                                expect(res).to.have.property("status", 201);
                                 done();
                             });
                     });
@@ -78,6 +89,55 @@ describe("Viewer API", function () {
                     specify("Then the response should contain the new saved export.", function() {
                         expect(responseBody.id).to.be.ok;
                     });
+
+                    if (process.env.HMAC_SECRET_VIEWER) {
+                      context("When the export is rendered", function() {
+                        beforeEach(async function() {
+                           const retraced = new Retraced.Client({
+                               apiKey: Env.ApiKey,
+                               projectId: Env.ProjectID,
+                               endpoint: Env.Endpoint,
+                           });
+ 
+                           const event = {
+                               action: "integration" + randomNumber.toString(),
+                               group: {
+                                   id: groupID,
+                                   name: "RetracedQA",
+                               }
+                               ,
+                               created: new Date(),
+                               crud: "c",
+                               sourceIp: "192.168.0.1",
+                               actor: {
+                                   id: "qa@retraced.io",
+                               },
+                               description: "Automated integration testing...",
+                           };
+                           this.timeout(Env.EsIndexWaitMs * 3);
+                           await retraced.reportEvent(event)
+                           await sleep(Env.EsIndexWaitMs * 2);
+                        });
+
+                         specify("Then the response should contain matching events.", function(done) {
+                           this.timeout(Env.EsIndexWaitMs * 3);
+                           const desc = {
+                             environmentId: Env.EnvironmentID,
+                             groupId: groupID,
+                           };
+                           const tkn = jwt.sign(desc, process.env.HMAC_SECRET_VIEWER);
+                           chai.request(Env.Endpoint)
+                             .get(`/viewer/v1/project/${Env.ProjectID}/export/${responseBody.id}/rendered?jwt=${tkn}`)
+                             .end((err, res) => {
+                               expect(err).to.be.null;
+                               expect(res).to.have.property("status", 200);
+                               expect(res.text).to.match(new RegExp("integration" + randomNumber.toString()));
+                               console.log(res.text);
+                               done();
+                             });
+                         });
+                      });
+                    }
                 });
             });
         });

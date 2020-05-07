@@ -56,7 +56,7 @@ spec:
                   key: API_TOKEN
                   name: auditlog
             - name: PG_SEARCH
-              value: "1"
+              value: ""
           resources:
             requests:
               cpu: 100m

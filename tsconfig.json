@@ -11,11 +11,14 @@
         "skipLibCheck": true,
         "allowJs": true,
         "outDir": "build",
-        "pretty": true
+        "pretty": true,
+				"lib": ["es6"]
     },
     "include": [
         "src/**/*.js",
-        "src/**/*.ts"
+        "src/**/*.ts",
+				"integration/**/*.js",
+				"integration/**/*.ts"
     ],
     "exclude": [
         "node_modules"

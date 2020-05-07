@@ -48,7 +48,7 @@ export default async function renderSavedExport(opts) {
       const deepOpts: Options = {
         scope,
         query: "",
-        size: 1000000,
+        size: 10000,
         sort: "desc",
       };
 

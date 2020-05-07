@@ -82,7 +82,7 @@ spec:
                   name: auditlog
                   key: PROCESSOR_TOKEN
             - name: PG_SEARCH
-              value: "1"
+              value: ""
       imagePullSecrets:
       - name: auditlog-imagepull-secret
 
