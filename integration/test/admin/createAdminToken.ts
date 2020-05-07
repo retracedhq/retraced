@@ -76,7 +76,7 @@ describe("Admin create admin token", function () {
           });
 
           specify("Then the response should have a 2xx status", () => {
-            expect(templateResponse).to.have.status(201);
+            expect(templateResponse).to.have.property("status", 201);
           });
         });
       });

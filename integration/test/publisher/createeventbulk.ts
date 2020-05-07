@@ -101,7 +101,7 @@ describe("Bulk Create Events", function () {
                                     console.log(util.inspect(res.body, false, 100, true));
                                 }
                                 expect(err).to.be.null;
-                                expect(res).to.have.status(200);
+                                expect(res).to.have.property("status", 200);
 
                                 done();
                             });

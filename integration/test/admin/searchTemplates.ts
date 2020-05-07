@@ -53,7 +53,7 @@ describe("Admin search templates", function() {
                     });
 
                     specify("The API should return an empty set of results with status 200", function() {
-                        expect(resp).to.have.status(200);
+                        expect(resp).to.have.property("status", 200);
 
                         expect(resp.body).to.deep.equal({
                             total_hits: 0,

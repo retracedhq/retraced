@@ -51,7 +51,7 @@ describe("Admin delete API token", function() {
                 });
 
                 specify("The response succeeds with status 204.", function() {
-                    expect(resp).to.have.status(204);
+                    expect(resp).to.have.property("status", 204);
                     expect(resp.body).to.deep.equal({});
                 });
 

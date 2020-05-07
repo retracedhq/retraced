@@ -58,7 +58,7 @@ describe("Admin create API token", function() {
                     const token = resp.body;
                     const tenMinutes = 1000 * 60 * 10;
 
-                    expect(resp).to.have.status(201);
+                    expect(resp).to.have.property("status", 201);
                     expect(token.token).to.be.ok;
                     expect(token.created).to.be.ok;
                     expect(new Date(token.created)).to.be.within(Date.now() - tenMinutes, Date.now() + tenMinutes);

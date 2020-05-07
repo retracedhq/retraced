@@ -84,7 +84,7 @@ describe("Listing Enterprise Tokens", function () {
                         .end(function (err, res) {
                             responseBody = JSON.parse(res.text);
                             expect(err).to.be.null;
-                            expect(res).to.have.status(201);
+                            expect(res).to.have.property("status", 201);
                             expect(responseBody.token).to.exist;
                             token = responseBody.token;
                             done();
@@ -99,7 +99,7 @@ describe("Listing Enterprise Tokens", function () {
                             .end(function (err, res) {
                                 tokens = JSON.parse(res.text);
                                 expect(err).to.be.null;
-                                expect(res).to.have.status(200);
+                                expect(res).to.have.property("status", 200);
                                 done();
                             });
                     });
@@ -119,7 +119,7 @@ describe("Listing Enterprise Tokens", function () {
                                     .send(search("integration" + randomNumber.toString()))
                                     .end(function (err, res) {
                                         responseBody = JSON.parse(res.text);
-                                        expect(res).to.have.status(200);
+                                        expect(res).to.have.property("status", 200);
                                         expect(err).to.be.null;
                                         done();
                                     });
