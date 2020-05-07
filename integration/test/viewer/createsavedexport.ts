@@ -15,7 +15,7 @@ chai.use(chaiHttp);
 
 const randomNumber = Math.floor(Math.random() * (99999)) + 1;
 
-describe.only("Viewer API", function () {
+describe("Viewer API", function () {
 
     describe("Given the Retraced API is up and running", function () {
         const groupID = "rtrcdqa" + randomNumber.toString();

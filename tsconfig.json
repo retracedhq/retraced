@@ -11,8 +11,7 @@
         "skipLibCheck": true,
         "allowJs": true,
         "outDir": "build",
-        "pretty": true,
-				"lib": ["es6"]
+        "pretty": true
     },
     "include": [
         "src/**/*.js",
