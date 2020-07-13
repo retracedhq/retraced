@@ -40,7 +40,7 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
-      - run: docker pull debian:stretch-slim
+      - run: docker pull debian:buster-slim
       - run: docker login -u="$REPLICATED_SHIPRETRACED_USER" -p="$REPLICATED_SHIPRETRACED_PASSWORD" registry.replicated.com
       - run: docker build -f deploy/Dockerfile-slim -t registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} .
       - run: docker push registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7}
@@ -50,7 +50,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker pull debian:stretch-slim
+      - run: docker pull debian:buster-slim
       - run: docker login -u="$REPLICATED_SHIPRETRACED_USER" -p="$REPLICATED_SHIPRETRACED_PASSWORD" registry.replicated.com
       - run: docker pull registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7}
       - run: docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/shipretraced/retraced:alpha

@@ -1,6 +1,6 @@
 FROM nsqio/nsq:v1.0.0-compat
 
-FROM debian:stretch-slim
+FROM debian:buster-slim
 
 EXPOSE 4150 4151 4160 4161 4170 4171
 
