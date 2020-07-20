@@ -65,17 +65,17 @@ spec:
           timeoutSeconds: 1
           periodSeconds: 10
         volumeMounts:
-        - name: datadir
+        - name: retraced-datadir
           mountPath: /var/lib/postgresql/data
 
       volumes:
-      - name: datadir
+      - name: retraced-datadir
         persistentVolumeClaim:
-          claimName: datadir
+          claimName: retraced-datadir
 
   volumeClaimTemplates:
   - metadata:
-      name: datadir
+      name: retraced-datadir
     spec:
       accessModes:
       - "ReadWriteOnce"
