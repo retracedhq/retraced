@@ -1,10 +1,12 @@
-FROM postgres:10.12
+FROM postgres:10.13
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     \
     \
-    apt \
-    libapt-pkg5.0 \
-    libldap-2.4-2 \
+    libgnutls30 \
+    libperl5.24 \
+    perl \
+    perl-base \
+    perl-modules-5.24 \
   && rm -rf /var/lib/apt/lists/*
