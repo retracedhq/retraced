@@ -99,14 +99,14 @@ export default async function search(
   });
 
   // If searching with a cursor run the search again without it to get the total.
-  const totalCount = results.totalHits;
+  const totalCount = results.totalHits.value;
 
   return {
     totalCount,
     edges,
     pageInfo: {
-      hasNextPage: opts.sort === "asc" && results.totalHits > results.events.length,
-      hasPreviousPage: opts.sort === "desc" && results.totalHits > results.events.length,
+      hasNextPage: opts.sort === "asc" && totalCount > results.events.length,
+      hasPreviousPage: opts.sort === "desc" && totalCount > results.events.length,
     },
   };
 }

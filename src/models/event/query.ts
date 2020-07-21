@@ -55,9 +55,13 @@ export default async function query(opts: Options): Promise<Result> {
 async function doQuery(opts: Options): Promise<Result> {
   const params = searchParams(opts);
 
-  polyfillSearchAfter(params);
+  // polyfillSearchAfter(params);
+
+  console.log(`raw params: ${JSON.stringify(params)}\n`)
 
   const resp = await es.search(params);
+
+  console.log(`raw resp: ${JSON.stringify(resp)}\n`)
 
   return {
     totalHits: resp.hits.total,
@@ -189,9 +193,9 @@ export function parse(query: string): any {
 
   if ((_.isString(keywords) && keywords) || keywords.text) {
     q.bool.filter.push({
-      multi_match: {
+      query_string: {
         query: _.isString(keywords) ? keywords : keywords.text,
-        fields: [ "_all" ],
+        // fields: [ "_all" ],
       },
     });
   }
@@ -209,8 +213,8 @@ export function searchParams(opts: Options): any {
     index,
     type: "event",
     _source: true,
-    size: opts.size,
-    sort: [`canonical_time:${opts.sort}`, `id:${opts.sort}`],
+    size: opts.size != 0 ? opts.size : undefined,
+    sort: [`canonical_time:{"order" : "${opts.sort}" , "missing" : "_last"}`, `id:{"order" : "${opts.sort}" , "missing" : "_last"}`],
     search_after: opts.cursor,
     body: { query },
   };

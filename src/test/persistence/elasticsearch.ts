@@ -15,7 +15,7 @@ import {
       groupId: "g1",
       targetId: "t1",
     });
-    expect(index).to.equal("retraced.p1.e1");
+    expect(index).to.equal("retraced.p1.e1.current");
     expect(filters).to.have.length(2);
     expect(filters[0]).to.deep.equal({
       bool: {
@@ -36,7 +36,7 @@ import {
       environmentId: "e1",
     });
 
-    expect(index).to.equal("retraced.p1.e1");
+    expect(index).to.equal("retraced.p1.e1.current");
     expect(filters).to.deep.equal([]);
   }
 }

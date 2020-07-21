@@ -7,9 +7,10 @@ metadata:
     app: elasticsearch
   name: elasticsearch
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 9200
+    nodePort: 30920
     targetPort: estransport
   selector:
     app: elasticsearch
@@ -25,9 +26,9 @@ data:
     http.host: 0.0.0.0
 
     http.port: 9200
-    http.cors.allow-origin: "chrome-extension://jopjeaiilkcibeohjdmejhoifenbnmlh"
+    http.cors.allow-origin: "/.*/"
     http.cors.enabled: true
-    http.cors.allow-headers : X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
+    http.cors.allow-headers: X-Requested-With,X-Auth-Token,Content-Type, Content-Length, Authorization
     http.cors.allow-credentials: true
 
     discovery.type: single-node

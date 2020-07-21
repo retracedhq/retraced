@@ -186,7 +186,7 @@ export default async function(opts: Options): Promise<Result> {
     from: opts.offset || 0,
     size: opts.fetchAll ? 5000 : opts.length,
     scroll: opts.newScroll ? opts.scrollLifetime : undefined,
-    sort: [`canonical_time:${opts.sort}`],
+    sort: [`canonical_time: {"order" : "${opts.sort}" , "missing" : "_last"}`],
     body: {
       query,
     },

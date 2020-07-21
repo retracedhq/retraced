@@ -132,9 +132,8 @@ import {
       bool: {
         filter: [
           {
-            multi_match: {
+            query_string: {
               query: "some free text",
-              fields: ["_all"],
             },
           },
         ],
@@ -148,9 +147,8 @@ import {
         filter: [
           {term: {action: "login"}},
           {
-            multi_match: {
+            query_string: {
               query: "plus some free text",
-              fields: ["_all"],
             },
           },
         ],
@@ -173,11 +171,11 @@ import {
     };
     const output = searchParams(input);
     const answer = {
-      index: "retraced.p1.e1",
+      index: "retraced.p1.e1.current",
       type: "event",
       _source: true,
       size: 10,
-      sort: ["canonical_time:asc", "id:asc"],
+      sort: ["canonical_time:{\"order\" : \"asc\" , \"missing\" : \"_last\"}", "id:{\"order\" : \"asc\" , \"missing\" : \"_last\"}"],
       search_after: [1492060162148, "abc123"],
       body: {
         query: {

@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import * as moment from "moment";
 import { Scope } from "../security/scope";
 
-let es;
+let es: elasticsearch.Client;
 
 /*
  * The Elasticsearch client library does not retry requests that failed due to
@@ -106,7 +106,7 @@ function shouldRetry(err) {
 // Get the index string for a projectId and environmentId and any filters
 // needed to restrict viewer and enterprise clients to authorized data.
 export function scope(scope: Scope): [string, any[]] {
-  const index = `retraced.${scope.projectId}.${scope.environmentId}`;
+  const index = `retraced.${scope.projectId}.${scope.environmentId}.current`;
   const filters: any[] = [];
 
   if (scope.groupId) {
