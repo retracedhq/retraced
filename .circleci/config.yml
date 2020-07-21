@@ -121,6 +121,12 @@ jobs:
             docker tag registry.replicated.com/shipretraced/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
             docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
 
+            docker build -t registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH} -f deploy/Dockerfile-postgres .
+            docker push registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
+
+            docker build -t registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH} -f deploy/Dockerfile-nsq .
+            docker push registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
+
   is_retracedhq:
     <<: *defaults
     steps:
