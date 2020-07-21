@@ -1,7 +1,6 @@
-.PHONY: clean prebuild deps lint swagger routes build cover test report-coverage pkg build run run-processor run-debug ship-local ship-local-headless clean-ship-outputs
+.PHONY: clean prebuild deps lint swagger routes build cover test report-coverage pkg build run run-processor run-debug
 SKIP :=
 REPO := retracedhq/api
-SHIP := $(shell which ship)
 PATH := $(shell pwd)
 SHELL := /bin/bash -lo pipefail
 
@@ -85,27 +84,3 @@ k8s-migrate:
 
 k8s: k8s-pre k8s-deployment k8s-service k8s-ingress k8s-migrate
 	: "Templated k8s yamls"
-
-ship-lint:
-	[ -x `npm bin`/replicated-lint ] || npm install replicated-lint --no-save
-	`npm bin`/replicated-lint validate --project replicatedShip -f ship.yaml --reporter console
-
-ship-local: clean-ship-outputs
-	mkdir -p tmp && cd tmp && \
-	$(SHIP) init $(PATH)/ship.yaml  \
-	    --set-github-contents $(REPO):/base:v1.3.36$(PATH) \
-	    --set-github-contents $(REPO):/templates:v1.3.36:$(PATH) \
-	    --set-channel-icon $(ICON) \
-	    --set-channel-name $(APP_NAME) \
-	    --log-level=off
-
-ship-local-headless: clean-ship-outputs
-	mkdir -p tmp && cd tmp && \
-	$(SHIP) init $(PATH)/ship.yaml  \
-	    --set-github-contents $(REPO):/base:v1.3.36:$(PATH) \
-	    --set-github-contents $(REPO):/templates:v1.3.36:$(PATH) \
-	    --headless \
-	    --log-level=error
-
-clean-ship-outputs:
-	rm -rf tmp/base tmp/overlays tmp/*.yaml tmp/scripts tmp/templates
