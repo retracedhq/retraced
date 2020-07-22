@@ -73,7 +73,7 @@ describe("Publisher Search", function() {
             })));
 
             context(`When searching the publisher GraphQL endpoint for actor_id:${uniqueActorId} with pageSize 3 and fields "action" and "actor.id"`, function() {
-              let connection;
+              let connection: Retraced.EventsConnection;
 
               beforeEach(async function () {
                     this.timeout(Env.EsIndexWaitMs * 3);
