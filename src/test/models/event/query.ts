@@ -180,7 +180,7 @@ import {
     const output = searchParams(input);
     const answer = {
       index: "retraced.p1.e1.current",
-      type: "event",
+      type: "_doc",
       _source: true,
       size: 10,
       sort: ["canonical_time:{\"order\" : \"asc\" , \"missing\" : \"_last\"}", "id:{\"order\" : \"asc\" , \"missing\" : \"_last\"}"],

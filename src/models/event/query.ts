@@ -211,7 +211,7 @@ export function searchParams(opts: Options): any {
 
   return {
     index,
-    type: "event",
+    type: "_doc",
     _source: true,
     size: opts.size != 0 ? opts.size : undefined,
     sort: [`canonical_time:{"order" : "${opts.sort}" , "missing" : "_last"}`, `id:{"order" : "${opts.sort}" , "missing" : "_last"}`],

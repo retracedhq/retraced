@@ -184,7 +184,7 @@ export default async function(opts: Options): Promise<Result> {
 
   const params: any = {
     index: opts.index,
-    type: "event",
+    type: "_doc",
     _source: true,
     from: opts.offset || 0,
     size: opts.fetchAll ? 5000 : opts.length,
