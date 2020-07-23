@@ -113,8 +113,8 @@ export function scope(scope: Scope): [string, any[]] {
     filters.push({
       bool: {
         should: [
-          { term: { "group.id": scope.groupId }},
-          { term: { team_id: scope.groupId }},
+          { match: { "group.id": { query: scope.groupId, operator: "and" } }},
+          { match: { team_id: { query: scope.groupId, operator: "and" } }},
         ],
       },
     });
@@ -122,7 +122,7 @@ export function scope(scope: Scope): [string, any[]] {
 
   if (scope.targetId) {
     filters.push({
-      term: { "target.id": scope.targetId },
+      match: { "target.id": { query: scope.targetId, operator: "and" } },
     });
   }
 

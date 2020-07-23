@@ -55,7 +55,7 @@ export default async function query(opts: Options): Promise<Result> {
 async function doQuery(opts: Options): Promise<Result> {
   const params = searchParams(opts);
 
-  // polyfillSearchAfter(params);
+  polyfillSearchAfter(params);
 
   console.log(`raw params: ${JSON.stringify(params)}\n`)
 
@@ -116,7 +116,7 @@ export function parse(query: string): any {
       });
     } else {
       q.bool.filter.push({
-        term: {action: _.trimEnd(keywords.action, "*")},
+        match: {action: { query: _.trimEnd(keywords.action, "*"), operator: "and" } },
       });
     }
   }
@@ -127,13 +127,13 @@ export function parse(query: string): any {
       q.bool.filter.push({
         bool: {
           should: keywords.crud.map((letter) => ({
-            term: { crud: letter },
+            match: { crud: letter },
           })),
         },
       });
     } else {
       q.bool.filter.push({
-        term: { crud: keywords.crud },
+        match: { crud: keywords.crud },
       });
     }
   }
@@ -166,7 +166,7 @@ export function parse(query: string): any {
 
   if (keywords["actor.id"]) {
     q.bool.filter.push({
-      term: { "actor.id": keywords["actor.id"] },
+      match: { "actor.id": { query: keywords["actor.id"], operator: "and" }  },
     });
   }
 
@@ -195,7 +195,7 @@ export function parse(query: string): any {
     q.bool.filter.push({
       query_string: {
         query: _.isString(keywords) ? keywords : keywords.text,
-        // fields: [ "_all" ],
+        default_operator: "and",
       },
     });
   }

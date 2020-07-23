@@ -33,7 +33,7 @@ export async function countBy(es: Elasticsearch.Client, opts: Options): Promise<
   filters.push({
     bool: {
       should: opts.crud.map((letter) => ({
-        term: { crud: letter },
+        match: { crud: letter },
       })),
     },
   });

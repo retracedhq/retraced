@@ -14,7 +14,7 @@ import {
     expect(parse("action:user.get")).to.deep.equal({
       bool: {
         filter: [
-          {term: {action: "user.get"}},
+          {match: {action: { query: "user.get", operator: "and" }}},
         ],
       },
     });
@@ -28,8 +28,8 @@ import {
           {
             bool: {
               should: [
-                {term: {crud: "c"}},
-                {term: {crud: "d"}},
+                {match: {crud: "c"}},
+                {match: {crud: "d"}},
               ],
             },
           },
@@ -42,7 +42,7 @@ import {
     expect(parse("crud:r")).to.deep.equal({
       bool: {
         filter: [
-          { term: { crud: "r" }},
+          { match: { crud: "r" }},
         ],
       },
     });
@@ -86,7 +86,13 @@ import {
     expect(parse("actor.id:b82c4cfa428342ac822c42c1f6b89200")).to.deep.equal({
       bool: {
         filter: [
-          { term: { "actor.id": "b82c4cfa428342ac822c42c1f6b89200" }},
+          { match: { 
+            "actor.id": { 
+              query: "b82c4cfa428342ac822c42c1f6b89200",
+              operator: "and",
+              }
+            },
+          }
         ],
       },
     });
@@ -134,6 +140,7 @@ import {
           {
             query_string: {
               query: "some free text",
+              default_operator: "and",
             },
           },
         ],
@@ -145,10 +152,11 @@ import {
     expect(parse("action:login plus some free text")).to.deep.equal({
       bool: {
         filter: [
-          {term: {action: "login"}},
+          {match: {action: { query: "login", operator: "and" }}},
           {
             query_string: {
               query: "plus some free text",
+              default_operator: "and",
             },
           },
         ],
@@ -182,18 +190,18 @@ import {
           bool: {
             filter: [
               // user's query filters
-              {term: {action: "user.get"}},
+              {match: {action: { query: "user.get", operator: "and" }}},
               // group scope filters
               {
                 bool: {
                   should: [
-                    { term: {"group.id": "g1"}},
-                    { term: {team_id: "g1"}},
+                    { match: {"group.id": { query: "g1", operator: "and" }}},
+                    { match: {team_id: { query: "g1", operator: "and" }}},
                   ],
                 },
               },
               {
-                term: {"target.id": "t1"},
+                match: {"target.id": { query: "t1", operator: "and" }},
               },
               // target scope filters
             ],

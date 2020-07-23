@@ -29,9 +29,9 @@ import { countBy } from "../../../models/event/countBy";
                     {
                         bool: {
                             should: [
-                                { term: { crud: "c" } },
-                                { term: { crud: "u" } },
-                                { term: { crud: "d" } },
+                                { match: { crud: "c" } },
+                                { match: { crud: "u" } },
+                                { match: { crud: "d" } },
                             ],
                         },
                     },
