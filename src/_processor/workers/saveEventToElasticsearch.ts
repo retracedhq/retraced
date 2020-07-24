@@ -74,6 +74,7 @@ export class ElasticsearchSaver {
       index: alias,
       type: "_doc",
       body: event,
+      id: event.id ? event.canonical_time.toString() + "-" + event.id : undefined,
     });
 
     if (resp.errors === true) {
