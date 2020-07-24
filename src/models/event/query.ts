@@ -5,6 +5,7 @@ import * as moment from "moment";
 
 import { Scope } from "../../security/scope";
 import getEs, { scope } from "../../persistence/elasticsearch";
+import { logger } from "../../logger";
 
 const es = getEs();
 
@@ -57,11 +58,11 @@ async function doQuery(opts: Options): Promise<Result> {
 
   polyfillSearchAfter(params);
 
-  console.log(`raw params: ${JSON.stringify(params)}\n`)
+  logger.debug(`raw params: ${JSON.stringify(params)}\n`)
 
   const resp = await es.search(params);
 
-  console.log(`raw resp: ${JSON.stringify(resp)}\n`)
+  logger.debug(`raw resp: ${JSON.stringify(resp)}\n`)
 
   return {
     totalHits: resp.hits.total,
