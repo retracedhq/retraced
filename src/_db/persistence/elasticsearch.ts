@@ -11,7 +11,12 @@ export default function getElasticsearch() {
     if (hosts.length < 1 || !hosts[0]) {
       throw new Error("Need at least one item in ELASTICSEARCH_NODES");
     }
-    es = new elasticsearch.Client({ hosts });
+    es = new elasticsearch.Client(
+      {
+        hosts,
+        apiVersion: "7.x",
+      },
+    );
   }
 
   return es;

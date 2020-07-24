@@ -14,7 +14,7 @@ export interface Options {
 }
 
 export interface Result {
-  totalHits: number;
+  totalHits: any;
   events: any[];
 }
 

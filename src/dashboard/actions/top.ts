@@ -23,7 +23,7 @@ export default async function(opts: DashboardOptions): Promise<any> {
   filters.push({
     bool: {
       should: opts.crud.map((letter) => ({
-        term: { crud: letter },
+        match: { crud: letter },
       })),
     },
   });

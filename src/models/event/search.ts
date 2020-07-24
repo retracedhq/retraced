@@ -93,8 +93,11 @@ export default async function(opts: Options): Promise<Result> {
     };
     for (const targetId of opts.targetIds) {
       clause.bool.should.push({
-        term: {
-          "target.id": targetId,
+        match: {
+          "target.id": { 
+            query: targetId,
+            operator: "and",
+          }
         },
       });
       filters.push(clause);
@@ -118,8 +121,8 @@ export default async function(opts: Options): Promise<Result> {
     filters.push({
       bool: {
         should: [
-          { term: { "group.id": opts.groupId } },
-          { term: { team_id: opts.groupId } },
+          { match: { "group.id": { query: opts.groupId, operator: "and" } } },
+          { match: { team_id: { query: opts.groupId, operator: "and" } } },
         ],
       },
     });
@@ -133,8 +136,8 @@ export default async function(opts: Options): Promise<Result> {
     };
     for (const actorId of opts.actorIds) {
       clause.bool.should.push({
-        term: {
-          "actor.id": actorId,
+        match: {
+          "actor.id": { query: actorId, operator: "and" },
         },
       });
     }
@@ -181,12 +184,12 @@ export default async function(opts: Options): Promise<Result> {
 
   const params: any = {
     index: opts.index,
-    type: "event",
+    type: "_doc",
     _source: true,
     from: opts.offset || 0,
     size: opts.fetchAll ? 5000 : opts.length,
     scroll: opts.newScroll ? opts.scrollLifetime : undefined,
-    sort: [`canonical_time:${opts.sort}`],
+    sort: [`canonical_time: {"order" : "${opts.sort}" , "missing" : "_last"}`],
     body: {
       query,
     },

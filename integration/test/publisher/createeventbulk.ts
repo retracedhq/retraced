@@ -110,25 +110,25 @@ describe("Bulk Create Events", function () {
                 specify("Then the response should contain all three events", function () {
                     expect(responseBody.data.search.edges.length).to.equal(3);
                     expect(responseBody).to.have.deep.property("data.search.edges[0].node.action", "integrationbulk" + randomNumber.toString());
+                    expect(responseBody).to.have.deep.property("data.search.edges[0].node.actor.id", "LATER@retraced.io");
                     expect(responseBody).to.have.deep.property("data.search.edges[0].node.created", isoDate(later));
                     expect(responseBody).to.have.deep.property("data.search.edges[0].node.group.id", "rtrcdqa1234");
                     expect(responseBody).to.have.deep.property("data.search.edges[0].node.crud", "c");
                     expect(responseBody).to.have.deep.property("data.search.edges[0].node.source_ip", "192.168.0.1");
-                    expect(responseBody).to.have.deep.property("data.search.edges[0].node.actor.id", "LATER@retraced.io");
 
                     expect(responseBody).to.have.deep.property("data.search.edges[1].node.action", "integrationbulk" + randomNumber.toString());
+                    expect(responseBody).to.have.deep.property("data.search.edges[1].node.actor.id", "NEXT@retraced.io");
                     expect(responseBody).to.have.deep.property("data.search.edges[1].node.created", isoDate(next));
                     expect(responseBody).to.have.deep.property("data.search.edges[1].node.group.id", "rtrcdqa1234");
                     expect(responseBody).to.have.deep.property("data.search.edges[1].node.crud", "c");
                     expect(responseBody).to.have.deep.property("data.search.edges[1].node.source_ip", "192.168.0.1");
-                    expect(responseBody).to.have.deep.property("data.search.edges[1].node.actor.id", "NEXT@retraced.io");
 
                     expect(responseBody).to.have.deep.property("data.search.edges[2].node.action", "integrationbulk" + randomNumber.toString());
+                    expect(responseBody).to.have.deep.property("data.search.edges[2].node.actor.id", "NOW@retraced.io");
                     expect(responseBody).to.have.deep.property("data.search.edges[2].node.created", isoDate(now));
                     expect(responseBody).to.have.deep.property("data.search.edges[2].node.group.id", "rtrcdqa1234");
                     expect(responseBody).to.have.deep.property("data.search.edges[2].node.crud", "c");
                     expect(responseBody).to.have.deep.property("data.search.edges[2].node.source_ip", "192.168.0.1");
-                    expect(responseBody).to.have.deep.property("data.search.edges[2].node.actor.id", "NOW@retraced.io");
                 });
             });
         });

@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import * as moment from "moment";
 import { Scope } from "../security/scope";
 
-let es;
+let es: elasticsearch.Client;
 
 /*
  * The Elasticsearch client library does not retry requests that failed due to
@@ -106,15 +106,15 @@ function shouldRetry(err) {
 // Get the index string for a projectId and environmentId and any filters
 // needed to restrict viewer and enterprise clients to authorized data.
 export function scope(scope: Scope): [string, any[]] {
-  const index = `retraced.${scope.projectId}.${scope.environmentId}`;
+  const index = `retraced.${scope.projectId}.${scope.environmentId}.current`;
   const filters: any[] = [];
 
   if (scope.groupId) {
     filters.push({
       bool: {
         should: [
-          { term: { "group.id": scope.groupId }},
-          { term: { team_id: scope.groupId }},
+          { match: { "group.id": { query: scope.groupId, operator: "and" } }},
+          { match: { team_id: { query: scope.groupId, operator: "and" } }},
         ],
       },
     });
@@ -122,7 +122,7 @@ export function scope(scope: Scope): [string, any[]] {
 
   if (scope.targetId) {
     filters.push({
-      term: { "target.id": scope.targetId },
+      match: { "target.id": { query: scope.targetId, operator: "and" } },
     });
   }
 

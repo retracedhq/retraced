@@ -5,6 +5,7 @@ import * as moment from "moment";
 
 import { Scope } from "../../security/scope";
 import getEs, { scope } from "../../persistence/elasticsearch";
+import { logger } from "../../logger";
 
 const es = getEs();
 
@@ -57,7 +58,11 @@ async function doQuery(opts: Options): Promise<Result> {
 
   polyfillSearchAfter(params);
 
+  logger.debug(`raw params: ${JSON.stringify(params)}\n`)
+
   const resp = await es.search(params);
+
+  logger.debug(`raw resp: ${JSON.stringify(resp)}\n`)
 
   return {
     totalHits: resp.hits.total,
@@ -112,7 +117,7 @@ export function parse(query: string): any {
       });
     } else {
       q.bool.filter.push({
-        term: {action: _.trimEnd(keywords.action, "*")},
+        match: {action: { query: _.trimEnd(keywords.action, "*"), operator: "and" } },
       });
     }
   }
@@ -123,13 +128,13 @@ export function parse(query: string): any {
       q.bool.filter.push({
         bool: {
           should: keywords.crud.map((letter) => ({
-            term: { crud: letter },
+            match: { crud: letter },
           })),
         },
       });
     } else {
       q.bool.filter.push({
-        term: { crud: keywords.crud },
+        match: { crud: keywords.crud },
       });
     }
   }
@@ -162,7 +167,7 @@ export function parse(query: string): any {
 
   if (keywords["actor.id"]) {
     q.bool.filter.push({
-      term: { "actor.id": keywords["actor.id"] },
+      match: { "actor.id": { query: keywords["actor.id"], operator: "and" }  },
     });
   }
 
@@ -189,9 +194,9 @@ export function parse(query: string): any {
 
   if ((_.isString(keywords) && keywords) || keywords.text) {
     q.bool.filter.push({
-      multi_match: {
+      query_string: {
         query: _.isString(keywords) ? keywords : keywords.text,
-        fields: [ "_all" ],
+        default_operator: "and",
       },
     });
   }
@@ -207,10 +212,10 @@ export function searchParams(opts: Options): any {
 
   return {
     index,
-    type: "event",
+    type: "_doc",
     _source: true,
-    size: opts.size,
-    sort: [`canonical_time:${opts.sort}`, `id:${opts.sort}`],
+    size: opts.size != 0 ? opts.size : undefined,
+    sort: [`canonical_time:{"order" : "${opts.sort}" , "missing" : "_last"}`, `id:{"order" : "${opts.sort}" , "missing" : "_last"}`],
     search_after: opts.cursor,
     body: { query },
   };

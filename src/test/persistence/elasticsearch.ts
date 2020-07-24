@@ -15,18 +15,18 @@ import {
       groupId: "g1",
       targetId: "t1",
     });
-    expect(index).to.equal("retraced.p1.e1");
+    expect(index).to.equal("retraced.p1.e1.current");
     expect(filters).to.have.length(2);
     expect(filters[0]).to.deep.equal({
       bool: {
         should: [
-          { term: {"group.id": "g1"}},
-          { term: {team_id: "g1"}},
+          { match: {"group.id": { query: "g1", operator: "and" }}},
+          { match: {team_id: { query: "g1", operator: "and" }}},
         ],
       },
     });
     expect(filters[1]).to.deep.equal({
-      term: { "target.id": "t1" },
+      match: { "target.id": { query: "t1", operator: "and" } },
     });
   }
 
@@ -36,7 +36,7 @@ import {
       environmentId: "e1",
     });
 
-    expect(index).to.equal("retraced.p1.e1");
+    expect(index).to.equal("retraced.p1.e1.current");
     expect(filters).to.deep.equal([]);
   }
 }

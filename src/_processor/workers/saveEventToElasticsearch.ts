@@ -72,8 +72,9 @@ export class ElasticsearchSaver {
 
     const resp = await this.es.index({
       index: alias,
-      type: "event",
+      type: "_doc",
       body: event,
+      id: event.id ? event.canonical_time.toString() + "-" + event.id : undefined,
     });
 
     if (resp.errors === true) {

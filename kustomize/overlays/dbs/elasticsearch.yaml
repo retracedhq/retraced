@@ -7,9 +7,10 @@ metadata:
     app: elasticsearch
   name: elasticsearch
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 9200
+    nodePort: 30920
     targetPort: estransport
   selector:
     app: elasticsearch
@@ -25,10 +26,13 @@ data:
     http.host: 0.0.0.0
 
     http.port: 9200
-    http.cors.allow-origin: "chrome-extension://jopjeaiilkcibeohjdmejhoifenbnmlh"
+    http.cors.allow-origin: "/.*/"
     http.cors.enabled: true
-    http.cors.allow-headers : X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
+    http.cors.allow-headers: X-Requested-With,X-Auth-Token,Content-Type, Content-Length, Authorization
     http.cors.allow-credentials: true
+
+    discovery.type: single-node
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -46,7 +50,7 @@ spec:
     spec:
       containers:
         - name: elasticsearch
-          image: elasticsearch:2.4.4
+          image: elasticsearch:7.8.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: estransport
@@ -54,11 +58,22 @@ spec:
           volumeMounts:
             - name: esdatadir
               mountPath: /usr/share/elasticsearch/data
-
+            - name: elasticsearch
+              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              subPath: elasticsearch.yml
+              
+          # command: ["sleep", "500d"]
       volumes:
         - name: esdatadir
           persistentVolumeClaim:
             claimName: esdatadir
+
+        - name: elasticsearch
+          configMap:
+            name: elasticsearch
+            items:
+            - key: elasticsearch.yml
+              path: elasticsearch.yml
 
   volumeClaimTemplates:
     - metadata:

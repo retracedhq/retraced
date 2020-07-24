@@ -143,13 +143,15 @@ describe("Create Events", function () {
             });
 
             context("When a call is made to the GraphQL endpoint for the event", function () {
+                const thisQuery = GraphQLQuery
+                thisQuery.variables.query = "integrationminimum" + randomNumber.toString()
                 beforeEach(function (done) {
                     this.timeout(Env.EsIndexWaitMs * 2);
                     sleep(Env.EsIndexWaitMs).then(() => {
                         chai.request(Env.Endpoint)
                             .post("/publisher/v1/graphql")
                             .set("Authorization", "token=" + Env.ApiKey)
-                            .send(GraphQLQuery)
+                            .send(thisQuery)
                             .end(function (err, res) {
                                 responseBody = JSON.parse(res.text);
                                 expect(err).to.be.null;
