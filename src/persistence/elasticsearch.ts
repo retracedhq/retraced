@@ -50,7 +50,9 @@ function intFromEnv(key, defaultN) {
 export function getNewElasticsearch(): Client {
   if (!newEs) {
     const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
-    newEs = new Client({nodes: hosts, ssl: {rejectUnauthorized: false}});
+    if ((process.env.ELASTICSEARCH_NODES || "") != "") {
+      newEs = new Client({nodes: hosts, ssl: {rejectUnauthorized: false}});
+    }
   }
   return newEs;
 }
