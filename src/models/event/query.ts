@@ -2,12 +2,14 @@ import "source-map-support/register";
 import * as _ from "lodash";
 import * as searchQueryParser from "search-query-parser";
 import * as moment from "moment";
+import { ApiResponse, RequestParams } from '@elastic/elasticsearch'
 
 import { Scope } from "../../security/scope";
-import getEs, { scope } from "../../persistence/elasticsearch";
+import getEs, { scope, getNewElasticsearch } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
 
 const es = getEs();
+const newEs = getNewElasticsearch();
 
 // An empty list for groupIds or targetIds means unrestricted.
 export const unrestricted = Object.seal([]);
@@ -56,17 +58,15 @@ export default async function query(opts: Options): Promise<Result> {
 async function doQuery(opts: Options): Promise<Result> {
   const params = searchParams(opts);
 
-  polyfillSearchAfter(params);
+  logger.debug(`raw newParams: ${JSON.stringify(params)}\n`)
 
-  logger.debug(`raw params: ${JSON.stringify(params)}\n`)
+  const newResp = await newEs.search(params);
 
-  const resp = await es.search(params);
-
-  logger.debug(`raw resp: ${JSON.stringify(resp)}\n`)
+  logger.debug(`raw newResp: ${JSON.stringify(newResp)}\n`)
 
   return {
-    totalHits: resp.hits.total,
-    events: _.map(resp.hits.hits, ({ _source }) => _source),
+    totalHits: newResp.body.hits.total,
+    events: _.map(newResp.body.hits.hits, ({ _source }) => _source),
   };
 }
 
@@ -204,32 +204,18 @@ export function parse(query: string): any {
   return q;
 }
 
-export function searchParams(opts: Options): any {
+export function searchParams(opts: Options): RequestParams.Search {
   const query = parse(opts.query);
   const [index, securityFilters] = scope(opts.scope);
 
   query.bool.filter = query.bool.filter.concat(securityFilters);
 
-  return {
-    index,
-    type: "_doc",
-    _source: true,
-    size: opts.size != 0 ? opts.size : undefined,
-    sort: [`canonical_time:{"order" : "${opts.sort}" , "missing" : "_last"}`, `id:{"order" : "${opts.sort}" , "missing" : "_last"}`],
-    search_after: opts.cursor,
-    body: { query },
-  };
-}
+  // Converts cursor to query filters. Remove after ???
+  if (opts.cursor) {
+    const [timestamp, id] = opts.cursor;
+    const isAsc = /asc/.test(opts.sort);
 
-// Converts params.search_after to query filters. Remove after upgrade to ES 5.
-export function polyfillSearchAfter(params: any) {
-  if (params.search_after) {
-    const [timestamp, id] = params.search_after;
-    const isAsc = /asc/.test(params.sort[0]);
-
-    delete params.search_after;
-
-    params.body.query.bool.filter.push({
+    query.bool.filter.push({
       bool: {
         must_not: {
           range: {
@@ -240,7 +226,7 @@ export function polyfillSearchAfter(params: any) {
         },
       },
     });
-    params.body.query.bool.filter.push({
+    query.bool.filter.push({
       bool: {
         should: [{
           // include non-identical timestamps in range
@@ -260,4 +246,26 @@ export function polyfillSearchAfter(params: any) {
       },
     });
   }
+
+  return {
+    index: index,
+    _source: "true",
+    size: opts.size != 0 ? opts.size : undefined,
+    body: {
+      query: query,
+      sort: {
+        canonical_time: opts.sort
+      }
+    },
+  }
+
+  // return {
+  //   index,
+  //   type: "_doc",
+  //   _source: true,
+  //   size: opts.size != 0 ? opts.size : undefined,
+  //   sort: [`canonical_time: ${opts.sort}`],
+  //   search_after: opts.cursor,
+  //   body: { query },
+  // };
 }

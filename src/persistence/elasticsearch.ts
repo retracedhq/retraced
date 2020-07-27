@@ -3,8 +3,10 @@ import * as elasticsearch from "elasticsearch";
 import * as _ from "lodash";
 import * as moment from "moment";
 import { Scope } from "../security/scope";
+import { Client, ApiResponse, RequestParams } from '@elastic/elasticsearch';
 
-let es: elasticsearch.Client;
+let es: elasticsearch.Client; // the legacy elasticsearch client library
+let newEs: Client; // the elasticsearch 7.6+ client library
 
 /*
  * The Elasticsearch client library does not retry requests that failed due to
@@ -45,7 +47,15 @@ function intFromEnv(key, defaultN) {
   return _.isNaN(env) ? defaultN : env;
 }
 
-export default function getElasticsearch() {
+export function getNewElasticsearch(): Client {
+  if (!newEs) {
+    const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
+    newEs = new Client({nodes: hosts, ssl: {rejectUnauthorized: false}});
+  }
+  return newEs;
+}
+
+export default function getElasticsearch(): elasticsearch.Client {
   if (!es) {
     const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
     es = new elasticsearch.Client({

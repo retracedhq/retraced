@@ -7,6 +7,7 @@ import {
   searchParams,
   Options,
 } from "../../../models/event/query";
+import { RequestParams } from "@elastic/elasticsearch";
 
 @suite class QueryEventsTest {
 
@@ -178,13 +179,10 @@ import {
       cursor: [1492060162148, "abc123"],
     };
     const output = searchParams(input);
-    const answer = {
+    const answer: RequestParams.Search = {
       index: "retraced.p1.e1.current",
-      type: "_doc",
-      _source: true,
+      _source: "true",
       size: 10,
-      sort: ["canonical_time:{\"order\" : \"asc\" , \"missing\" : \"_last\"}", "id:{\"order\" : \"asc\" , \"missing\" : \"_last\"}"],
-      search_after: [1492060162148, "abc123"],
       body: {
         query: {
           bool: {
@@ -204,9 +202,43 @@ import {
                 match: {"target.id": { query: "t1", operator: "and" }},
               },
               // target scope filters
+              {
+                bool: {
+                  must_not: {
+                    "range": {
+                      canonical_time: {
+                        lt: 1492060162148
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                bool: {
+                  should: [
+                    {
+                      "range": {
+                        canonical_time: {
+                          gt: 1492060162148
+                        }
+                      },
+                    },
+                    {
+                      "range": {
+                        id: {
+                          gt: "abc123"
+                        }
+                      },  
+                    },
+                  ]
+                }
+              },
             ],
           },
         },
+        sort: {
+          canonical_time: "asc"
+        }
       },
     };
     expect(output).to.deep.equal(answer);
