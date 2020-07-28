@@ -59,7 +59,7 @@ export const builder: any = {
 export const handler = async (argv) => {
   logger.info({msg: "starting handler"});
   const pgPool = getPgPool();
-  const es = getElasticsearch();
+  const es: any = getElasticsearch();
   let eventSource = new PostgresEventSource(pgPool, argv.startDate, argv.endDate, argv.pageSize);
 
   const esTempIndex = `retraced.reindex.${uuid.v4()}`;

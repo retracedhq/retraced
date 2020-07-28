@@ -1,7 +1,7 @@
 
 import getEs from "../../persistence/elasticsearch";
 
-const es = getEs();
+const es: any = getEs();
 
 export interface Options {
   index: string;

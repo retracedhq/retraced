@@ -3,7 +3,7 @@ import getElasticsearch from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
 
 const pgPool = getPgPool();
-const es = getElasticsearch();
+const es: any = getElasticsearch();
 
 interface Options {
   projectId: string;

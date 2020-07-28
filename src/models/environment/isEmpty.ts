@@ -1,6 +1,6 @@
 import getElasticsearch from "../../persistence/elasticsearch";
 
-const es = getElasticsearch();
+const es: any = getElasticsearch();
 
 interface Options {
   projectId: string;
