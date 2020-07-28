@@ -61,6 +61,7 @@ COPY --from=node /src/retraceddb /src/retraceddb
 copy --from=node /src/migrations/pg /src/migrations/pg
 copy --from=node /src/migrations/pg10 /src/migrations/pg10
 copy --from=node /src/migrations/pg /src/migrations/pg10
+copy --from=node /src/migrations/es /src/migrations/es
 COPY --from=node /src/api /src/api
 COPY --from=node /src/retracedctl /src/bin/retracedctl
 COPY --from=node /src/processor /src/processor
