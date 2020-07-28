@@ -3,9 +3,9 @@ import * as elasticsearch from "elasticsearch";
 import * as _ from "lodash";
 import * as request from "request-promise";
 
-let es;
+let es: elasticsearch.Client;
 
-export default function getElasticsearch() {
+export default function getElasticsearch() : elasticsearch.Client {
   if (!es) {
     const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
     if (hosts.length < 1 || !hosts[0]) {

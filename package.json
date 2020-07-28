@@ -5,6 +5,7 @@
   "main": "./build/index.js",
   "license": "UNLICENSED",
   "dependencies": {
+    "@elastic/elasticsearch": "^7.8.0",
     "analytics-node": "^2.1.0",
     "async": "^2.0.1",
     "auth0-js": "^8.0.4",

@@ -91,7 +91,7 @@ export const handler = (argv) => {
                     break;
 
                   case "putTemplate": {
-                    es.indices.putTemplate(esQuery.params, (err2, resp, status) => {
+                    es.indices.putTemplate(esQuery.params, (err2, resp) => {
                       if (err2) {
                         reject(err2);
                         return;

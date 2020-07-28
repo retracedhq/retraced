@@ -125,7 +125,7 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
 
   logger.info(`indexing page with size ${result.length}`);
   await new Promise<void>((resolve, reject) => {
-    es.bulk({ body }, (errr, resp, status) => {
+    es.bulk({ body }, (errr, resp) => {
       if (errr) {
         console.log(chalk.red(errr.stack));
         process.exit(1);
