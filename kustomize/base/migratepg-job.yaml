@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrate-pg-1-4-0
+  name: migrate-pg-1-4-1
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   template:
@@ -9,7 +9,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: db
-        image: registry.replicated.com/shipretraced/retraced:1.4.0
+        image: registry.replicated.com/shipretraced/retraced:1.4.1
         imagePullPolicy: IfNotPresent
         command:
         - /src/retraceddb

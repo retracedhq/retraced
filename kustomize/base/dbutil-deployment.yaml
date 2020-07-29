@@ -22,7 +22,7 @@ spec:
       - name: auditlog-imagepull-secret
       containers:
       - name: dbutil
-        image: registry.replicated.com/shipretraced/retraced:1.4.0
+        image: registry.replicated.com/shipretraced/retraced:1.4.1
         command:
         - /bin/sleep
         - infinity

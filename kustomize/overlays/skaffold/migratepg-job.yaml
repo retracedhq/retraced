@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrate-pg-1-4-0
+  name: migrate-pg-1-4-1
 spec:
   template:
     spec:
