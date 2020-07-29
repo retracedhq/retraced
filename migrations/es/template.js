@@ -2,6 +2,7 @@ module.exports = () => {
   return {
     category: 'indices',
     op: 'putTemplate',
+    time: 1595612529,
     params: {
       name: 'retraced_main',
       body: {
