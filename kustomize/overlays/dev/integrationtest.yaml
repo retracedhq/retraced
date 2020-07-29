@@ -6,7 +6,7 @@ spec:
   restartPolicy: OnFailure
   containers:
     - name: tests
-      image: registry.replicated.com/shipretraced/retraced:1.4.2
+      image: registry.replicated.com/shipretraced/retraced:1.4.3
       command:
         - npx
         - mocha
