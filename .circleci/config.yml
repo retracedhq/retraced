@@ -125,44 +125,44 @@ jobs:
       # but since we don't really have a SaaS env to test this in right now, we're going to need
       # to come up with some other way to integration test this, ideally as part of tagged build
       - run: |
-            docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
-            docker pull registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
-            docker pull registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
+          docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+          docker pull registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
+          docker pull registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
       - run: |
-            function semverParseInto() { # thanks cloudflare
-                local RE='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z-]*\)'
-                eval $2=`echo $1 | sed -e "s#$RE#\1#"`
-                eval $3=`echo $1 | sed -e "s#$RE#\2#"`
-                eval $4=`echo $1 | sed -e "s#$RE#\3#"`
-                eval $5=`echo $1 | sed -e "s#$RE#\4#"`
-            }
-            semverParseInto "$CIRCLE_TAG" MAJOR MINOR PATCH SPECIAL
+          function semverParseInto() { # thanks cloudflare
+              local RE='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z-]*\)'
+              eval $2=`echo $1 | sed -e "s#$RE#\1#"`
+              eval $3=`echo $1 | sed -e "s#$RE#\2#"`
+              eval $4=`echo $1 | sed -e "s#$RE#\3#"`
+              eval $5=`echo $1 | sed -e "s#$RE#\4#"`
+          }
+          semverParseInto "$CIRCLE_TAG" MAJOR MINOR PATCH SPECIAL
 
-            if [ -n "$SPECIAL" ]; then
-               echo "pre-release != release, so just push the tag and exit"
+          if [ -n "$SPECIAL" ]; then
+              echo "pre-release != release, so just push the tag and exit"
 
-               docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${CIRCLE_TAG}
-               docker push registry.replicated.com/library/retraced:${CIRCLE_TAG}
-               exit 0
-            fi
+              docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${CIRCLE_TAG}
+              docker push registry.replicated.com/library/retraced:${CIRCLE_TAG}
+              exit 0
+          fi
 
-            docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:stable
-            docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:latest
-            docker push registry.replicated.com/library/retraced:stable
-            docker push registry.replicated.com/library/retraced:latest
+          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:stable
+          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:latest
+          docker push registry.replicated.com/library/retraced:stable
+          docker push registry.replicated.com/library/retraced:latest
 
-            docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}
-            docker push registry.replicated.com/library/retraced:${MAJOR}
-            docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}
-            docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}
-            docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
-            docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
+          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}
+          docker push registry.replicated.com/library/retraced:${MAJOR}
+          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}
+          docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}
+          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
+          docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
 
-            docker tag registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
-            docker push registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
+          docker tag registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
+          docker push registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
 
-            docker tag registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
-            docker push registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
+          docker tag registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
+          docker push registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
 
   is_retracedhq:
     <<: *defaults
