@@ -61,12 +61,12 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - docker build -t registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-postgres .
+      - run: docker build -t registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-postgres .
       - anchore/analyze_local_image:
-        image_name: registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
-        dockerfile_path: ./deploy/Dockerfile-postgres
-        policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
-        policy_failure: true
+          image_name: registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
+          dockerfile_path: ./deploy/Dockerfile-postgres
+          policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
+          policy_failure: true
       - anchore/parse_reports
       - run: docker push registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
 
@@ -76,12 +76,12 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - docker build -t registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-nsq .
+      - run: docker build -t registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-nsq .
       - anchore/analyze_local_image:
-        image_name: registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
-        dockerfile_path: ./deploy/Dockerfile-nsq
-        policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
-        policy_failure: true
+          image_name: registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
+          dockerfile_path: ./deploy/Dockerfile-nsq
+          policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
+          policy_failure: true
       - anchore/parse_reports
       - run: docker push registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
 
