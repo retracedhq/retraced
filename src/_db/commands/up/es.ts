@@ -103,6 +103,9 @@ export const handler = (argv) => {
         bugsnag.notify(err2);
         console.log(chalk.red(err2.stack));
         process.exit(1);
-      });
+      })
+      .then(() => {
+        process.exit(0);
+      })
   });
 };
