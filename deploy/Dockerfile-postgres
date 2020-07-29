@@ -4,9 +4,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     \
     \
-    libgnutls30 \
-    libperl5.24 \
-    perl \
-    perl-base \
-    perl-modules-5.24 \
+    e2fslibs \
+    e2fsprogs \
+    libcomerr2 \
+    libss2 \
   && rm -rf /var/lib/apt/lists/*

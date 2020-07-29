@@ -1,4 +1,7 @@
-version: 2
+version: 2.1
+
+orbs:
+  anchore: anchore/anchore-engine@1.7.0
 
 experimental:
   notify:
@@ -32,7 +35,8 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
   build_docker:
-    <<: *defaults
+    executor: anchore/anchore_engine
+    working_directory: ~/repo
     steps:
       - checkout
       - setup_remote_docker
@@ -40,20 +44,75 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
-      - run: docker pull debian:buster-slim
-      - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
-      - run: docker build -f deploy/Dockerfile-slim -t registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} .
-      - run: docker push registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+      - run: docker build --pull -t registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
+      - anchore/analyze_local_image:
+          image_name: registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+          dockerfile_path: ./deploy/Dockerfile-slim
+          policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
+          policy_failure: true
+      - anchore/parse_reports
+      - run: docker save -o retraced.tar registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./retraced.tar
+
+  build_postgres:
+    executor: anchore/anchore_engine
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker build --pull -t registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-postgres .
+      - anchore/analyze_local_image:
+          image_name: registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
+          dockerfile_path: ./deploy/Dockerfile-postgres
+          policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
+          policy_failure: true
+      - anchore/parse_reports
+      - run: docker save -o retraced-postgres.tar registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./retraced-postgres.tar
+
+  build_nsq:
+    executor: anchore/anchore_engine
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker build --pull -t registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-nsq .
+      - anchore/analyze_local_image:
+          image_name: registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
+          dockerfile_path: ./deploy/Dockerfile-nsq
+          policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
+          policy_failure: true
+      - anchore/parse_reports
+      - run: docker save -o retraced-nsq.tar registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./retraced-nsq.tar
 
   deploy_unstable:
     <<: *defaults
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker pull debian:buster-slim
-      - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
-      - run: docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: docker load -i /tmp/workspace/retraced.tar
+      - run: docker load -i /tmp/workspace/retraced-postgres.tar
+      - run: docker load -i /tmp/workspace/retraced-nsq.tar
       - run: docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:alpha
+      - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
+      - deploy:
+          command: docker push registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+      - deploy:
+          command: docker push registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
+      - deploy:
+          command: docker push registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
       - deploy:
           command: docker push registry.replicated.com/library/retraced:alpha
 
@@ -65,6 +124,8 @@ jobs:
       - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
       - run:  |
           docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+          docker pull registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
+          docker pull registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
 
   deploy_stable:
     <<: *defaults
@@ -82,42 +143,45 @@ jobs:
       #
       # but since we don't really have a SaaS env to test this in right now, we're going to need
       # to come up with some other way to integration test this, ideally as part of tagged build
-      - run: docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
       - run: |
-            function semverParseInto() { # thanks cloudflare
-                local RE='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z-]*\)'
-                eval $2=`echo $1 | sed -e "s#$RE#\1#"`
-                eval $3=`echo $1 | sed -e "s#$RE#\2#"`
-                eval $4=`echo $1 | sed -e "s#$RE#\3#"`
-                eval $5=`echo $1 | sed -e "s#$RE#\4#"`
-            }
-            semverParseInto "$CIRCLE_TAG" MAJOR MINOR PATCH SPECIAL
+          docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+          docker pull registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
+          docker pull registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
+      - run: |
+          function semverParseInto() { # thanks cloudflare
+              local RE='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z-]*\)'
+              eval $2=`echo $1 | sed -e "s#$RE#\1#"`
+              eval $3=`echo $1 | sed -e "s#$RE#\2#"`
+              eval $4=`echo $1 | sed -e "s#$RE#\3#"`
+              eval $5=`echo $1 | sed -e "s#$RE#\4#"`
+          }
+          semverParseInto "$CIRCLE_TAG" MAJOR MINOR PATCH SPECIAL
 
-            if [ -n "$SPECIAL" ]; then
-               echo "pre-release != release, so just push the tag and exit"
+          if [ -n "$SPECIAL" ]; then
+              echo "pre-release != release, so just push the tag and exit"
 
-               docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${CIRCLE_TAG}
-               docker push registry.replicated.com/library/retraced:${CIRCLE_TAG}
-               exit 0
-            fi
+              docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${CIRCLE_TAG}
+              docker push registry.replicated.com/library/retraced:${CIRCLE_TAG}
+              exit 0
+          fi
 
-            docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:stable
-            docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:latest
-            docker push registry.replicated.com/library/retraced:stable
-            docker push registry.replicated.com/library/retraced:latest
+          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:stable
+          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:latest
+          docker push registry.replicated.com/library/retraced:stable
+          docker push registry.replicated.com/library/retraced:latest
 
-            docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}
-            docker push registry.replicated.com/library/retraced:${MAJOR}
-            docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}
-            docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}
-            docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
-            docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
+          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}
+          docker push registry.replicated.com/library/retraced:${MAJOR}
+          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}
+          docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}
+          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
+          docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
 
-            docker build -t registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH} -f deploy/Dockerfile-postgres .
-            docker push registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
+          docker tag registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
+          docker push registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
 
-            docker build -t registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH} -f deploy/Dockerfile-nsq .
-            docker push registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
+          docker tag registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
+          docker push registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
 
   is_retracedhq:
     <<: *defaults
@@ -131,23 +195,31 @@ jobs:
 
 workflows:
   version: 2
-  unstable_staging:
+  unstable:
     jobs:
       - test
-      - is_retracedhq:
-          filters:
-            branches:
-              only: /master/
       - build_docker:
           requires:
             - test
-            - is_retracedhq
+      - build_postgres:
+          requires:
+            - test
+      - build_nsq:
+          requires:
+            - test
+      - is_retracedhq:
           filters:
             branches:
               only: /master/
       - deploy_unstable:
           requires:
             - build_docker
+            - build_postgres
+            - build_nsq
+            - is_retracedhq
+          filters:
+            branches:
+              only: /master/
 
   stable_prod:
     jobs:
@@ -179,4 +251,3 @@ workflows:
               only: /^v[0-9]+(\.[0-9]+)*(-.*)*/
             branches:
               ignore: /.*/
-
