@@ -51,7 +51,7 @@ export function getNewElasticsearch(): Client {
   if (!newEs) {
     const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
     if ((process.env.ELASTICSEARCH_NODES || "") != "") {
-      newEs = new Client({nodes: hosts, ssl: {rejectUnauthorized: false}});
+      newEs = new Client({nodes: hosts, ssl: {rejectUnauthorized: false}, maxRetries: 5});
     }
   }
   return newEs;

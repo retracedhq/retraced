@@ -73,7 +73,10 @@ export const handler = async (argv) => {
   });
 
   const aliasesBlob = await es.cat.aliases({ name: esTargetIndex });
-  let currentIndices: any = [];
+  let currentIndices: string[] = [];
+  if (!aliasesBlob) {
+    logger.error({msg: "no aliasesBlob"})
+  }
   aliasesBlob.split("\n").forEach((aliasDesc) => {
     const parts = aliasDesc.split(" ");
     if (parts.length >= 2) {
@@ -85,7 +88,10 @@ export const handler = async (argv) => {
   });
 
   const aliasesBlobWrite = await es.cat.aliases({ name: esTargetWriteIndex });
-  let currentIndicesWrite: any = [];
+  let currentIndicesWrite: string[] = [];
+  if (!aliasesBlobWrite) {
+    logger.error({msg: "no aliasesBlobWrite"})
+  }
   aliasesBlobWrite.split("\n").forEach((aliasDesc) => {
     const parts = aliasDesc.split(" ");
     if (parts.length >= 2) {
@@ -105,12 +111,14 @@ export const handler = async (argv) => {
 
   const eachPage = makePageIndexer(esTempIndex);
 
+  logger.info({msg: "iterating paged"})
+
   await eventSource.iteratePaged(eachPage);
   logger.info({msg: "finished", esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite });
-  finalize({ dryRun: argv.dryRun, esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite });
+  finalize( argv.dryRun, esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite );
 };
 
-function finalize({ dryRun, esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite}) {
+function finalize( dryRun: boolean, esTempIndex: string, esTargetIndex: string, currentIndices: string[], esTargetWriteIndex: string, currentIndicesWrite: string[]) {
 
   const toAdd = [{
     index: esTempIndex,
