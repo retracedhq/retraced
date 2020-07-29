@@ -41,7 +41,11 @@ spec:
           image: registry.replicated.com/shipretraced/retraced:1.4.2
           imagePullPolicy: IfNotPresent
           command:
-            - /src/api
+            - node
+            - --inspect=0.0.0.0
+            - -r
+            - ts-node/register
+            - src/index.ts
           ports:
             - containerPort: 3000
               name: http

@@ -9,13 +9,3 @@ spec:
       imagePullSecrets:
         - $patch: delete
           name: auditlog-imagepull-secret
-      containers:
-        - name: processor
-          command:
-            - node
-            - --inspect=0.0.0.0
-            - -r
-            - ts-node/register
-            - src/_processor/index.ts
-#          ports:
-#          - containerPort: 9229

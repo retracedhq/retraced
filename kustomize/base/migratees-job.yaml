@@ -13,7 +13,11 @@ spec:
       - name: db
         image: registry.replicated.com/shipretraced/retraced:1.4.2
         command:
-        - /src/retraceddb
+        - node
+        - --inspect=0.0.0.0
+        - -r
+        - ts-node/register
+        - src/_db/runner-lite.ts
         - es
         - up
         envFrom:

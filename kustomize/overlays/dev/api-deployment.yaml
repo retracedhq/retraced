@@ -37,12 +37,6 @@ spec:
             httpGet:
               port: 3000
               path: /healthz
-          command:
-            - node
-            - --inspect=0.0.0.0
-            - -r
-            - ts-node/register
-            - src/index.ts
           ports:
           - containerPort: 9229
           env:

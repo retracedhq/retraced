@@ -39,7 +39,11 @@ spec:
           imagePullPolicy: IfNotPresent
 
           command:
-            - /src/processor
+            - node
+            - --inspect=0.0.0.0
+            - -r
+            - ts-node/register
+            - src/_processor/index.ts
           ports:
             - containerPort: 3000
               name: http

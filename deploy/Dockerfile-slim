@@ -1,7 +1,4 @@
-# # #
-# Cron build
-#
-FROM debian:buster-slim as cron
+FROM node:10 as node
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -17,69 +14,19 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
     && chmod +x "$SUPERCRONIC" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/replicated-auditlog-cron
+
 COPY deploy/crontab /crontab
-
-# # #
-# Node build
-#
-FROM node:10 as node
-
-WORKDIR /src
-ADD package.json /src
-ADD yarn.lock /src
-ADD Makefile /src
-RUN yarn install --force
-ADD .snyk /src
-RUN npm run snyk-protect
-
-ADD . /src
-
-RUN make build
-
-# this one is a little janky, mostly for local dev
-ARG skip_pkg
-
-RUN make pkg SKIP=${skip_pkg}
-
-
-# # #
-# Main build
-#
-# curl must be included for cron
-FROM debian:buster-slim
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    \
-    \
-  && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000
 
-COPY --from=node /src/retraceddb /src/retraceddb
-copy --from=node /src/migrations/pg /src/migrations/pg
-copy --from=node /src/migrations/pg10 /src/migrations/pg10
-copy --from=node /src/migrations/pg /src/migrations/pg10
-copy --from=node /src/migrations/es /src/migrations/es
-COPY --from=node /src/api /src/api
-COPY --from=node /src/retracedctl /src/bin/retracedctl
-COPY --from=node /src/processor /src/processor
-COPY --from=node /src/node_modules/snappy/build/Release/binding.node /src/node_modules/snappy/build/Release/binding.node
-COPY --from=node /src/node_modules/sse4_crc32/build/Release/crc32c.node /src/node_modules/sse4_crc32/build/Release/crc32c.node
-COPY --from=node /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node
-COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercronic-linux-amd64
-COPY --from=cron /usr/local/bin/replicated-auditlog-cron /usr/local/bin/replicated-auditlog-cron
-COPY --from=cron /crontab /crontab
-
-
-RUN ln -s /src/api /src/replicated-auditlog-api
-RUN ln -s /src/processor /src/replicated-auditlog-processor
-RUN ln -s /src/bin/retracedctl /src/replicated-auditlog-retracedctl
-RUN ln -s /src/retraceddb /src/replicated-auditlog-migrations
-
+ADD . /src
 WORKDIR /src
+RUN yarn install
 
-RUN chmod a+rwx /src # auth0 writes to pwd
+ADD migrations/pg /src/migrations/pg10
+RUN make routes
+RUN make swagger
 
-CMD ["/src/replicated-auditlog-api"]
+RUN chmod a+rwx /src
+
+CMD ["node", "--inspect=0.0.0.0", "--require", "ts-node/register", "src/index.ts"]
