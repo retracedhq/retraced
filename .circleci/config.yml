@@ -210,7 +210,7 @@ workflows:
       - is_retracedhq:
           filters:
             branches:
-              only: /master/
+              only: /v1.3/
       - deploy_unstable:
           requires:
             - build_docker
@@ -219,7 +219,7 @@ workflows:
             - is_retracedhq
           filters:
             branches:
-              only: /master/
+              only: /v1.3/
 
   stable_prod:
     jobs:
