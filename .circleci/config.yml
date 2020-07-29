@@ -24,15 +24,15 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
+          - v1-dependencies-node10-{{ checksum "package.json" }}
+          - v1-dependencies-node10-
       - run: make deps swagger cover report-coverage
       - store_test_results:
           path: results
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: v1-dependencies-node10-{{ checksum "package.json" }}
 
   build_docker:
     executor: anchore/anchore_engine
@@ -42,8 +42,8 @@ jobs:
       - setup_remote_docker
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
+          - v1-dependencies-node10-{{ checksum "package.json" }}
+          - v1-dependencies-node10-
       - run: docker build --pull -t registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
       - anchore/analyze_local_image:
           image_name: registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
@@ -134,8 +134,8 @@ jobs:
       - setup_remote_docker
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
+          - v1-dependencies-node10-{{ checksum "package.json" }}
+          - v1-dependencies-node10-
       - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
       # the original idea here was:
       #
