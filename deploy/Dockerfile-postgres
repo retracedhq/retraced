@@ -1,11 +1,5 @@
-FROM postgres:10.13
+FROM postgres:10.13-alpine
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apk add --update \
     ca-certificates \
-    \
-    \
-    e2fslibs \
-    e2fsprogs \
-    libcomerr2 \
-    libss2 \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/cache/apk/*
