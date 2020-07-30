@@ -10,6 +10,8 @@ import { Event } from "../../../persistence/EventSource";
 import common from "../../../common";
 import { logger } from "../../../../logger";
 
+var totalIndexed: number = 0;
+
 export const makePageIndexer = (writeIndex: string) => async (result: Event[]) => {
   logger.info(`processing page with count ${result.length}`);
   const es = getElasticsearch();
@@ -124,6 +126,7 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
   }
 
   logger.info(`indexing page with size ${result.length}`);
+  totalIndexed += result.length;
   await new Promise<void>((resolve, reject) => {
     es.bulk({ body }, (errr, resp) => {
       if (errr) {
@@ -144,7 +147,7 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
         process.exit(1);
       }
 
-      logger.info(`finished index`);
+      logger.info(`finished index, ${totalIndexed} completed so far`);
       resolve();
     });
   });
