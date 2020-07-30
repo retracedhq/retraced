@@ -1,5 +1,6 @@
 
 import getEs from "../../persistence/elasticsearch";
+import { logger } from "../../logger";
 
 const es: any = getEs();
 
@@ -48,6 +49,9 @@ export default async function(opts: Options): Promise<Result> {
       scroll: opts.scrollLifetime,
     };
     const resp = await es.scroll(scrollParams);
+    if (!resp) {
+      logger.info(`continue scroll resp nil with params ${JSON.stringify(scrollParams)}`)
+    }
     let results: Result = {
       totalHits: resp.hits.total,
       count: resp.hits.hits ? resp.hits.hits.length : 0,
@@ -198,6 +202,9 @@ export default async function(opts: Options): Promise<Result> {
   if (!opts.fetchAll) {
     // Normal search.
     const resp = await es.search(params);
+    if (!resp) {
+      logger.info()
+    }
     let results: Result = {
       totalHits: resp.hits.total,
       count: resp.hits.hits ? resp.hits.hits.length : 0,
@@ -223,6 +230,9 @@ export default async function(opts: Options): Promise<Result> {
     };
     params.scroll = "1m";
     let initialResp = await es.search(params);
+    if (!initialResp) {
+      logger.info(`initialResp nil with params ${JSON.stringify(params)}`)
+    }
     if (initialResp.hits.total > 0) {
       const scrollParams = {
         scroll_id: initialResp._scroll_id,
@@ -237,6 +247,9 @@ export default async function(opts: Options): Promise<Result> {
           scroll: scrollParams.scroll,
           body: scrollParams.scroll_id,
         });
+        if (!resp) {
+          logger.info(`scroll resp nil with params ${JSON.stringify(params)}`)
+        }
         if (resp.hits.hits.length === 0) {
           break;
         }
