@@ -136,6 +136,9 @@
     "scripts": [
       "migrations/es/**/*",
       "migrations/pg/**/*"
+    ],
+    "assets": [
+      "node_modules/@elastic/elasticsearch/api/**/*"
     ]
   }
 }
