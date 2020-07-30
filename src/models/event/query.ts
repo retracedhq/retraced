@@ -62,7 +62,7 @@ async function doQuery(opts: Options): Promise<Result> {
 
   const newResp = await newEs.search(params);
 
-  if (!newResp.body.hits) {
+  if (!newResp.body || !newResp.body.hits) {
     logger.info(`raw newParams: ${JSON.stringify(params)}\n`)
     logger.info(`raw newResp: ${JSON.stringify(newResp)}\n`)
   } else {
