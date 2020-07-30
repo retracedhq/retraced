@@ -8,7 +8,7 @@ function initLoggerFromEnv(): any {
     );
   }
 
-  return pino();
+  return pino({level: process.env.LOG_LEVEL});
 }
 
 export const logger = initLoggerFromEnv();
