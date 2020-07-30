@@ -45,13 +45,13 @@ jobs:
           - v1-dependencies-node10-{{ checksum "package.json" }}
           - v1-dependencies-node10-
       - run: docker build --pull -t registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
-      - anchore/analyze_local_image:
-          image_name: registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
-          dockerfile_path: ./deploy/Dockerfile-slim
-          policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
-          policy_failure: true
-          timeout: '1000'
-      - anchore/parse_reports
+      # - anchore/analyze_local_image:
+      #     image_name: registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+      #     dockerfile_path: ./deploy/Dockerfile-slim
+      #     policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
+      #     policy_failure: true
+      #     timeout: '1000'
+      # - anchore/parse_reports
       - run: docker save -o retraced.tar registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
       - persist_to_workspace:
           root: .
