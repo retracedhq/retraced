@@ -91,13 +91,14 @@ export const handler = async (argv) => {
   let currentIndicesWrite: string[] = [];
   if (!aliasesBlobWrite) {
     logger.error({msg: "no aliasesBlobWrite"})
+  } else {
+    aliasesBlobWrite.split("\n").forEach((aliasDesc) => {
+      const parts = aliasDesc.split(" ");
+      if (parts.length >= 2) {
+        currentIndicesWrite.push(parts[1]);
+      }
+    });
   }
-  aliasesBlobWrite.split("\n").forEach((aliasDesc) => {
-    const parts = aliasDesc.split(" ");
-    if (parts.length >= 2) {
-      currentIndicesWrite.push(parts[1]);
-    }
-  });
 
   logger.info({msg: "found current write indices",
     count: currentIndicesWrite.length,
