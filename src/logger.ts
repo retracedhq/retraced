@@ -8,7 +8,10 @@ function initLoggerFromEnv(): any {
     );
   }
 
-  return pino({level: process.env.LOG_LEVEL});
+  if (process.env.LOG_LEVEL) {
+    return pino({level: process.env.LOG_LEVEL});
+  }
+  return pino();
 }
 
 export const logger = initLoggerFromEnv();
