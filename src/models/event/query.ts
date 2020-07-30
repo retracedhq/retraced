@@ -62,7 +62,12 @@ async function doQuery(opts: Options): Promise<Result> {
 
   const newResp = await newEs.search(params);
 
-  logger.debug(`raw newResp: ${JSON.stringify(newResp)}\n`)
+  if (!newResp.body.hits) {
+    logger.info(`raw newParams: ${JSON.stringify(params)}\n`)
+    logger.info(`raw newResp: ${JSON.stringify(newResp)}\n`)
+  } else {
+    logger.debug(`raw newResp: ${JSON.stringify(newResp)}\n`)
+  }
 
   return {
     totalHits: newResp.body.hits.total,
