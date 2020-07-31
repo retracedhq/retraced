@@ -43,6 +43,10 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]) {
   const params = {
     json: true,
     body: payload,
+    insecure: true,
+    rejectUnauthorized: false,
+    strictSSL: false,
   };
+  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0';
   return await request.post(uri, params);
 }
