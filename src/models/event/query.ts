@@ -24,8 +24,13 @@ export interface Options {
   cursor?: [number, string];
 }
 
+export interface totalHits {
+  value: number
+  relation?: string
+}
+
 export interface Result {
-  totalHits: number;
+  totalHits: totalHits;
   events: any[];
 }
 
@@ -69,8 +74,17 @@ async function doQuery(opts: Options): Promise<Result> {
     logger.debug(`raw newResp: ${JSON.stringify(newResp)}\n`)
   }
 
+  const bodyAny: any = params.body;
+  const countParams = {
+    index: params.index,
+    body: {
+      query: bodyAny.query,
+    },
+  }
+  const newCount = await newEs.count(countParams);
+
   return {
-    totalHits: newResp.body.hits.total,
+    totalHits: { value: newCount.body.count },
     events: _.map(newResp.body.hits.hits, ({ _source }) => _source),
   };
 }
