@@ -74,8 +74,6 @@ async function doQuery(opts: Options): Promise<Result> {
     logger.debug(`raw newResp: ${JSON.stringify(newResp)}\n`)
   }
 
-  console.log(`pre-newCount`);
-
   const bodyAny: any = params.body;
   const countParams = {
     index: params.index,
