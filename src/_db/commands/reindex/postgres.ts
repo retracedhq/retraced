@@ -60,6 +60,18 @@ export const handler = async (argv) => {
   logger.info({msg: "starting handler"});
   const pgPool = getPgPool();
   const es: any = getElasticsearch();
+
+  let pgPreResults
+  if (argv.startDate && argv.endDate) {
+    console.log(chalk.yellow(`Reindexing time range: [${new Date(argv.startTime).toISOString()}, ${new Date(argv.endTime).toISOString()}`));
+    pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received", [`[${new Date(argv.startTime).toISOString()}, ${new Date(argv.endTime).toISOString()})`]);
+    console.log(chalk.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
+  } else {
+    pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task");
+    console.log(chalk.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
+  }
+
+
   let eventSource = new PostgresEventSource(pgPool, argv.startDate, argv.endDate, argv.pageSize);
 
   const esTempIndex = `retraced.reindex.${uuid.v4()}`;

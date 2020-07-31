@@ -51,7 +51,11 @@ export const builder = {
 };
 
 export const handler = async (argv) => {
-  const pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received", [`[${argv.startTime}, ${argv.endTime})`]);
+  console.log(chalk.yellow(`Reindexing time range: [${new Date(argv.startTime).toISOString()}, ${new Date(argv.endTime).toISOString()}`));
+
+  const pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received", [`[${new Date(argv.startTime).toISOString()}, ${new Date(argv.endTime).toISOString()})`]);
+
+  console.log(chalk.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
 
   const esSearchOpts: Options  = {
     index: `retraced.${argv.projectId}.${argv.environmentId}`,
@@ -69,11 +73,7 @@ export const handler = async (argv) => {
   };
   const esPreResults = await searchES(esSearchOpts);
 
-  console.log(chalk.yellow(`
-    Reindexing time range: [${new Date(argv.startTime)}, ${new Date(argv.endTime)})
-    Postgres source events in range: ${pgPreResults.rows[0].count}
-    ElasticSearch destination events in range: ${esPreResults.totalHits} (approximate)
-  `));
+  console.log(chalk.yellow(`ElasticSearch destination events in range: ${esPreResults.totalHits} (approximate)`));
 
   logger.info({
     msg: "reindexing time range",
