@@ -42,9 +42,11 @@ report-coverage:
 # and we need to change it to `require('./some-module')` to make `pkg` work, because pkg can't currently
 # handle imports that are not string literals.
 # sed -i.bak 's/lazyLoad(.\(.\+\).\, opts)/require(".\/api\/\1.js")/g' node_modules/@elastic/elasticsearch/api/index.js &&
+# 	sed -i.bak 's/function ESAPI/const path = require("path");\nfunction ESAPI/g' node_modules/@elastic/elasticsearch/api/index.js && cat node_modules/@elastic/elasticsearch/api/index.js && 
 pkg:
 	if [ -n "$(SKIP)" ]; then exit 0; else \
 	sed -i.bak "s/__dirname + '/'.\//g" node_modules/pg-format/lib/index.js && \
+	sed -i.bak 's/lazyLoad(.\(.\+\).\, opts)/require(".\/api\/\1.js")(opts)/g' node_modules/@elastic/elasticsearch/api/index.js && \
 	 `yarn bin`/pkg -t node10-linux --options no-deprecation --output api ./build/index.js && \
 	 `yarn bin`/pkg -t node10-linux --options no-deprecation --output retracedctl ./build/retracedctl.js && \
 	 `yarn bin`/pkg -t node10-linux --options no-deprecation --output processor ./build/_processor/index.js && \
