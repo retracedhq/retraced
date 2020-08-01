@@ -58,6 +58,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 EXPOSE 3000
 
 COPY --from=node /src/retraceddb /src/retraceddb
+COPY --from=node /src/retraceddb4G /src/retraceddb4G
 copy --from=node /src/migrations/pg /src/migrations/pg
 copy --from=node /src/migrations/pg10 /src/migrations/pg10
 copy --from=node /src/migrations/pg /src/migrations/pg10
