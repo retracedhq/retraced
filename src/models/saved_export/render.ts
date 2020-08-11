@@ -5,7 +5,7 @@ import * as sanitizefn from "sanitize-filename";
 
 import getPgPool from "../../persistence/pg";
 import { Scope } from "../../security/scope";
-import query, { Options } from "../event/query";
+import { doAllQuery, Options } from "../event/query";
 import filterEvents, { Options as FilterOptions } from "../event/filter";
 import { parseQuery, ParsedQuery } from "../event";
 import QueryDescriptor from "../query_desc/def";
@@ -80,23 +80,9 @@ export default async function renderSavedExport(opts) {
           throw new Error(`Unknown query descriptor version: ${queryDesc.version}`);
       }
 
-      results = await query(deepOpts);
+      results = await doAllQuery(deepOpts);
       if (!results.totalHits) {
         return undefined;
-      }
-
-      if (results.totalHits > pageSize) {
-        let pagesLeft = Math.ceil(results.totalHits - pageSize) / pageSize;
-
-        for (let i = pagesLeft; i > 0; i--) {
-          const last: any = _.last(results.events);
-          const nextPageOpts = _.cloneDeep(deepOpts);
-          nextPageOpts.size = pageSize; // removed in the query() function
-          nextPageOpts.cursor = [last.canonical_time, last.id];
-
-          const pageResults = await query(nextPageOpts);
-          results.events = _.concat(results.events, pageResults.events);
-        }
       }
     }
 

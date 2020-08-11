@@ -5,10 +5,9 @@ import * as moment from "moment";
 import { ApiResponse, RequestParams } from '@elastic/elasticsearch'
 
 import { Scope } from "../../security/scope";
-import getEs, { scope, getNewElasticsearch } from "../../persistence/elasticsearch";
+import { scope, getNewElasticsearch } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
 
-const es = getEs();
 const newEs = getNewElasticsearch();
 
 // An empty list for groupIds or targetIds means unrestricted.
@@ -86,6 +85,50 @@ async function doQuery(opts: Options): Promise<Result> {
   return {
     totalHits: { value: newCount.body.count },
     events: _.map(newResp.body.hits.hits, ({ _source }) => _source),
+  };
+}
+
+// doAllQuery is not meant to be used interactively
+// it will return all the results, which may take some time to query
+export async function doAllQuery(opts: Options): Promise<Result> {
+  const responseQueue: ApiResponse[] = []
+  var allHits: any[] = []
+
+  opts.cursor = undefined; // no cursor if getting all results
+  const params = searchParams(opts);
+  params.scroll = "30s"; // this means we have 30s to get the next entry in the scroll
+
+  logger.debug(`raw newParams: ${JSON.stringify(params)}\n`)
+
+  const newResp = await newEs.search(params);
+
+  if (!newResp.body || !newResp.body.hits) {
+    logger.info(`raw newParams: ${JSON.stringify(params)}\n`)
+    logger.info(`raw newResp: ${JSON.stringify(newResp)}\n`)
+  } else {
+    logger.debug(`raw newResp: ${JSON.stringify(newResp)}\n`)
+  }
+
+  responseQueue.push(newResp);
+  while (responseQueue.length) {
+    const oneResp = responseQueue.shift(); // get a response from the queue
+    allHits = allHits.concat(oneResp!.body.hits.hits) // append hits to the list of all hits
+
+    const nextEvent = await newEs.scroll({ // use the scroll API to get another response
+      scroll_id: oneResp!.body._scroll_id,
+      scroll: "30s"
+    })
+
+    if ( nextEvent.body.hits && nextEvent.body.hits.hits && nextEvent.body.hits.hits.length > 0 ) { // if this new response has hits, add it to the queue
+      responseQueue.push(
+        nextEvent
+      )
+    }
+  }
+
+  return {
+    totalHits: { value: allHits.length },
+    events: _.map(allHits, ({ _source }) => _source),
   };
 }
 
