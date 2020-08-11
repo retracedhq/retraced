@@ -47,4 +47,4 @@ spec:
           - containerPort: 9229
           env:
           - name: EXPORT_PAGE_SIZE_INTERNAL
-            value: "20"
+            value: "2"
