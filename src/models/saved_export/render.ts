@@ -9,6 +9,7 @@ import { doAllQuery, Options } from "../event/query";
 import filterEvents, { Options as FilterOptions } from "../event/filter";
 import { parseQuery, ParsedQuery } from "../event";
 import QueryDescriptor from "../query_desc/def";
+import { logger } from "../../logger";
 
 const pgPool = getPgPool();
 
@@ -16,6 +17,8 @@ const pageSize = process.env.EXPORT_PAGE_SIZE_INTERNAL ? parseInt(process.env.EX
 
 export default async function renderSavedExport(opts) {
   const { environmentId, projectId, groupId, savedExportId, format } = opts;
+
+  const startTime = Date.now();
 
   const pg = await pgPool.connect();
   try {
@@ -103,6 +106,8 @@ export default async function renderSavedExport(opts) {
 
     const sanitized = sanitizefn(queryName).replace(/\s/g, "_");
     const filename = `${sanitized}.${format}`;
+
+    logger.info(`exported ${results.totalHits.value} events in ${(Date.now().valueOf() - startTime.valueOf())/1000} seconds`);
 
     return {
       filename,
