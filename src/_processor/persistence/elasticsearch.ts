@@ -3,6 +3,7 @@ import * as elasticsearch from "elasticsearch";
 import * as _ from "lodash";
 import * as moment from "moment";
 import * as request from "request";
+import { readFileSync } from "fs";
 
 let es;
 
@@ -24,10 +25,18 @@ export default function getElasticsearch(): elasticsearch.Client {
     if (hosts.length < 1 || !hosts[0]) {
       throw new Error("Need at least one item in ELASTICSEARCH_NODES");
     }
+
+    const sslSettings: any = {}
+    if (process.env.ELASTICSEARCH_CAFILE) {
+      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
+      sslSettings.rejectUnauthorized = true
+    }
+
     es = new elasticsearch.Client({
       hosts,
       requestTimeout,
       maxRetries: requestRetries,
+      ssl: sslSettings
     });
   }
 
