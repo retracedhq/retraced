@@ -278,7 +278,7 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
     if (_.has(err, "retry")) {
       retry = err.retry;
     }
-    logger.error(`✘  ${leftPad(topic, 20)} ${leftPad(channel, 25)}`);
+    logger.error(`✘  ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${jobDesc(job)}`);
     logger.error(`[${jobDesc(job)}] failed (took ${elapsed.toFixed(3)}ms): ${errToLog(err)}`);
     if (retry === true) {
       logger.info(`[${jobDesc(job)}] this job will be retried later`);
