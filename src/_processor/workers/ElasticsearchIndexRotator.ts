@@ -84,8 +84,8 @@ export class ElasticsearchIndexRotator {
         const environments = await this.getEnvironments();
         const count = await Promise.all(environments.map((e) => this.verifyIndexAliases(e)))
             .then(_.sum);
-        meter(`ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair`).mark(count);
         logger.info(`Completed Elasticsearch Index Alias review with ${count} repairs performed.`);
+        meter(`ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair`).mark(count);
     }
 
     @instrumented
@@ -114,6 +114,7 @@ export class ElasticsearchIndexRotator {
 
         // This should never happen, every env should have at least an index with a search alias
         if (_.isEmpty(existingSearchAliases)) {
+            logger.info(env.environmentId, `CREATING No existing indices for search alias ${searchAlias}, creating one`);
             await this.appendNewIndex(moment(), env);
             logger.info(env.environmentId, `CREATED No existing indices for search alias ${searchAlias}, created one`);
             return 1;
@@ -136,6 +137,7 @@ export class ElasticsearchIndexRotator {
 
         // Add the missing write alias
         if (_.isEmpty(existingWriteAliases)) {
+            logger.info(env.environmentId, `CREATING alias ${writeAlias} for index ${existingSearchAliases.map((i) => `${i.alias} => ${i.index}`)[0]}`);
             const aliasToAdd = {
                 index: existingSearchAliases[0].index,
                 alias: writeAlias,
