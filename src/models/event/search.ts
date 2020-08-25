@@ -1,8 +1,9 @@
 
-import getEs from "../../persistence/elasticsearch";
+import getEs, { getNewElasticsearch } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
 
 const es: any = getEs();
+const newEs = getNewElasticsearch();
 
 export interface Options {
   index: string;
@@ -201,22 +202,22 @@ export default async function(opts: Options): Promise<Result> {
 
   if (!opts.fetchAll) {
     // Normal search.
-    const resp = await es.search(params);
+    const resp = await newEs.search(params);
     if (!resp) {
       logger.info()
     }
     let results: Result = {
-      totalHits: resp.hits.total,
-      count: resp.hits.hits ? resp.hits.hits.length : 0,
+      totalHits: resp.body.hits.total,
+      count: resp.body.hits.hits ? resp.body.hits.hits.length : 0,
       events: [],
     };
     if (results.count > 0) {
-      for (const hit of resp.hits.hits) {
+      for (const hit of resp.body.hits.hits) {
         results.events!.push(hit["_source"]);
       }
     }
-    if (resp._scroll_id) {
-      results.scrollId = resp._scroll_id;
+    if (resp.body._scroll_id) {
+      results.scrollId = resp.body._scroll_id;
     }
     return results;
 
