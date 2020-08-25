@@ -2,6 +2,7 @@ import "source-map-support/register";
 import * as elasticsearch from "elasticsearch";
 import * as _ from "lodash";
 import * as request from "request-promise";
+import { readFileSync } from "fs";
 
 let es: elasticsearch.Client;
 
@@ -11,10 +12,18 @@ export default function getElasticsearch() : elasticsearch.Client {
     if (hosts.length < 1 || !hosts[0]) {
       throw new Error("Need at least one item in ELASTICSEARCH_NODES");
     }
+
+    const sslSettings: any = {}
+    if (process.env.ELASTICSEARCH_CAFILE) {
+      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
+      sslSettings.rejectUnauthorized = true
+    }
+
     es = new elasticsearch.Client(
       {
         hosts,
         apiVersion: "7.x",
+        ssl: sslSettings,
       },
     );
   }

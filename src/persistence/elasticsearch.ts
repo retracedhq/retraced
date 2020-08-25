@@ -4,6 +4,7 @@ import * as _ from "lodash";
 import * as moment from "moment";
 import { Scope } from "../security/scope";
 import { Client, ApiResponse, RequestParams } from '@elastic/elasticsearch';
+import { readFileSync } from "fs";
 
 let es: elasticsearch.Client; // the legacy elasticsearch client library
 let newEs: Client; // the elasticsearch 7.6+ client library
@@ -51,7 +52,17 @@ export function getNewElasticsearch(): Client {
   if (!newEs) {
     const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
     if ((process.env.ELASTICSEARCH_NODES || "") != "") {
-      newEs = new Client({nodes: hosts, ssl: {rejectUnauthorized: false}, maxRetries: 5});
+      const sslSettings: any = {}
+      if (process.env.ELASTICSEARCH_CAFILE) {
+        sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
+        sslSettings.rejectUnauthorized = true
+      }
+
+      newEs = new Client({
+        nodes: hosts, 
+        ssl: sslSettings,
+        maxRetries: 5,
+      });
     }
   }
   return newEs;
@@ -60,10 +71,18 @@ export function getNewElasticsearch(): Client {
 export default function getElasticsearch(): elasticsearch.Client {
   if (!es) {
     const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
+
+    const sslSettings: any = {}
+    if (process.env.ELASTICSEARCH_CAFILE) {
+      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
+      sslSettings.rejectUnauthorized = true
+    }
+
     es = new elasticsearch.Client({
       hosts,
       requestTimeout,
       maxRetries: requestRetries,
+      ssl: sslSettings,
     });
   }
 
