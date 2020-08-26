@@ -38,7 +38,7 @@ spec:
             httpGet:
               port: 3000
               path: /healthz
-          image: registry.replicated.com/shipretraced/retraced:1.4.4
+          image: registry.replicated.com/shipretraced/retraced:1.4.5
           imagePullPolicy: IfNotPresent
           command:
             - /src/api
