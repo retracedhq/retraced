@@ -49,13 +49,18 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]) {
     throw new Error("Need at least one item in ELASTICSEARCH_NODES");
   }
   const uri = `${hosts[0]}/_aliases`;
-  const params = {
+  const params: request.CoreOptions = {
     json: true,
     body: payload,
     insecure: true,
     rejectUnauthorized: false,
     strictSSL: false,
   };
+
+  if (process.env.ELASTICSEARCH_CAFILE) {
+    params.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
+  }
+
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0';
   return await request.post(uri, params);
 }
