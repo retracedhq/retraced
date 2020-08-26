@@ -35,7 +35,7 @@ spec:
           emptyDir: {}
       containers:
         - name: processor
-          image: registry.replicated.com/shipretraced/retraced:1.4.4
+          image: registry.replicated.com/shipretraced/retraced:1.4.5
           imagePullPolicy: IfNotPresent
 
           command:
