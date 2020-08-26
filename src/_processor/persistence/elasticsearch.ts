@@ -103,10 +103,15 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]): Pro
     throw new Error("Need at least one item in ELASTICSEARCH_NODES");
   }
   const uri = `${hosts[0]}/_aliases`;
-  const params = {
+  const params: request.CoreOptions = {
     json: true,
     body: payload,
   };
+
+  if (process.env.ELASTICSEARCH_CAFILE) {
+    params.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
+  }
+
   return new Promise((res, rej) => {
     request.post(uri, params, (err, resp, body) => {
       if (err) {
