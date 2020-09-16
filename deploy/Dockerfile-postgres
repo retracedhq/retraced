@@ -2,4 +2,6 @@ FROM postgres:10.14-alpine
 
 RUN apk add --update \
     ca-certificates \
+  && apk add --upgrade \
+    libxml2 \
   && rm -rf /var/cache/apk/*
