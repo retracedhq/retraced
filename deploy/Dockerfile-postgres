@@ -1,5 +1,8 @@
 FROM postgres:10.14-alpine
 
-RUN apk add --update \
+RUN apk add --update --no-cache \
     ca-certificates \
-  && rm -rf /var/cache/apk/*
+  && apk add --upgrade --no-cache \
+    \
+    \
+    libxml2
