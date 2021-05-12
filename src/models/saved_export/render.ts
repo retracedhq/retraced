@@ -63,7 +63,7 @@ export default async function renderSavedExport(opts) {
             queryDesc.showCreate && "c",
             queryDesc.showRead && "r",
             queryDesc.showUpdate && "u",
-            queryDesc.showDelete && "d"
+            queryDesc.showDelete && "d",
           ]);
           deepOpts.query = `crud:${cruds.join(",")}`;
 
@@ -71,7 +71,7 @@ export default async function renderSavedExport(opts) {
             const start = moment(queryDesc.startTime || 0);
             const end = moment(queryDesc.endTime || Date.now());
 
-            deepOpts.query += ` received:"${start.format()},${end.format()}"`
+            deepOpts.query += ` received:"${start.format()},${end.format()}"`;
           }
 
           if (queryDesc.searchQuery) {
@@ -107,7 +107,7 @@ export default async function renderSavedExport(opts) {
     const sanitized = sanitizefn(queryName).replace(/\s/g, "_");
     const filename = `${sanitized}.${format}`;
 
-    logger.info(`exported ${results.totalHits.value} events in ${(Date.now().valueOf() - startTime.valueOf())/1000} seconds`);
+    logger.info(`exported ${results.totalHits.value} events in ${(Date.now().valueOf() - startTime.valueOf()) / 1000} seconds`);
 
     return {
       filename,

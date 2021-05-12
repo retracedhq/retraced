@@ -1,16 +1,11 @@
 import "source-map-support/register";
 import * as chalk from "chalk";
-import * as _ from "lodash";
 import * as uuid from "uuid";
 import * as util from "util";
-import * as ProgressBar from "progress";
-import * as moment from "moment";
 
 import getElasticsearch, { putAliases } from "../../persistence/elasticsearch";
-import { Event } from "../../persistence/EventSource";
 import PostgresEventSource from "../../persistence/PostgresEventSource";
 import getPgPool from "../../persistence/pg";
-import common from "../../common";
 import { logger } from "../../../logger";
 import { makePageIndexer } from "./shared/page";
 
@@ -61,7 +56,7 @@ export const handler = async (argv) => {
   const pgPool = getPgPool();
   const es: any = getElasticsearch();
 
-  let pgPreResults
+  let pgPreResults;
   if (argv.startDate && argv.endDate) {
     console.log(chalk.yellow(`Reindexing time range: [${new Date(argv.startTime).toISOString()}, ${new Date(argv.endTime).toISOString()}`));
     pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received", [`[${new Date(argv.startTime).toISOString()}, ${new Date(argv.endTime).toISOString()})`]);
@@ -70,7 +65,6 @@ export const handler = async (argv) => {
     pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task");
     console.log(chalk.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
   }
-
 
   let eventSource = new PostgresEventSource(pgPool, argv.startDate, argv.endDate, argv.pageSize);
 
@@ -87,7 +81,7 @@ export const handler = async (argv) => {
   const aliasesBlob = await es.cat.aliases({ name: esTargetIndex });
   let currentIndices: string[] = [];
   if (!aliasesBlob) {
-    logger.error({msg: "no aliasesBlob"})
+    logger.error({msg: "no aliasesBlob"});
   }
   aliasesBlob.split("\n").forEach((aliasDesc) => {
     const parts = aliasDesc.split(" ");
@@ -102,7 +96,7 @@ export const handler = async (argv) => {
   const aliasesBlobWrite = await es.cat.aliases({ name: esTargetWriteIndex });
   let currentIndicesWrite: string[] = [];
   if (!aliasesBlobWrite) {
-    logger.error({msg: "no aliasesBlobWrite"})
+    logger.error({msg: "no aliasesBlobWrite"});
   } else {
     aliasesBlobWrite.split("\n").forEach((aliasDesc) => {
       const parts = aliasDesc.split(" ");
@@ -124,7 +118,7 @@ export const handler = async (argv) => {
 
   const eachPage = makePageIndexer(esTempIndex);
 
-  logger.info({msg: "iterating paged"})
+  logger.info({msg: "iterating paged"});
 
   await eventSource.iteratePaged(eachPage);
   logger.info({msg: "finished", esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite });

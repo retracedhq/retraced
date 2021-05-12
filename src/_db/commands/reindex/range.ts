@@ -1,7 +1,6 @@
 import * as chalk from "chalk";
 import PostgresEventSource from "../../persistence/PostgresEventSource";
 import getPgPool from "../../persistence/pg";
-import common from "../../common";
 import { logger } from "../../../logger";
 import { makePageIndexer } from "./shared/page";
 import searchES, { Options } from "../../../models/event/search";
@@ -94,4 +93,4 @@ export const handler = async (argv) => {
   const eachPage = makePageIndexer(esTargetWriteIndex);
 
   await eventSource.iteratePaged(eachPage);
-}
+};

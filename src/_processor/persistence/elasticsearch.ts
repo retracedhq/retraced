@@ -26,17 +26,17 @@ export default function getElasticsearch(): elasticsearch.Client {
       throw new Error("Need at least one item in ELASTICSEARCH_NODES");
     }
 
-    const sslSettings: any = {}
+    const sslSettings: any = {};
     if (process.env.ELASTICSEARCH_CAFILE) {
-      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
-      sslSettings.rejectUnauthorized = true
+      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+      sslSettings.rejectUnauthorized = true;
     }
 
     es = new elasticsearch.Client({
       hosts,
       requestTimeout,
       maxRetries: requestRetries,
-      ssl: sslSettings
+      ssl: sslSettings,
     });
   }
 
@@ -109,7 +109,7 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]): Pro
   };
 
   if (process.env.ELASTICSEARCH_CAFILE) {
-    params.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
+    params.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
   }
 
   return new Promise((res, rej) => {

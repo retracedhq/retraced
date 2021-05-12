@@ -6,17 +6,17 @@ import { readFileSync } from "fs";
 
 let es: elasticsearch.Client;
 
-export default function getElasticsearch() : elasticsearch.Client {
+export default function getElasticsearch(): elasticsearch.Client {
   if (!es) {
     const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
     if (hosts.length < 1 || !hosts[0]) {
       throw new Error("Need at least one item in ELASTICSEARCH_NODES");
     }
 
-    const sslSettings: any = {}
+    const sslSettings: any = {};
     if (process.env.ELASTICSEARCH_CAFILE) {
-      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
-      sslSettings.rejectUnauthorized = true
+      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+      sslSettings.rejectUnauthorized = true;
     }
 
     es = new elasticsearch.Client(
@@ -58,9 +58,9 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]) {
   };
 
   if (process.env.ELASTICSEARCH_CAFILE) {
-    params.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
+    params.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
   }
 
-  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0';
+  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
   return await request.post(uri, params);
 }

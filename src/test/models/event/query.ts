@@ -87,13 +87,13 @@ import { RequestParams } from "@elastic/elasticsearch";
     expect(parse("actor.id:b82c4cfa428342ac822c42c1f6b89200")).to.deep.equal({
       bool: {
         filter: [
-          { match: { 
-            "actor.id": { 
+          { match: {
+            "actor.id": {
               query: "b82c4cfa428342ac822c42c1f6b89200",
               operator: "and",
-              }
+              },
             },
-          }
+          },
         ],
       },
     });
@@ -205,40 +205,40 @@ import { RequestParams } from "@elastic/elasticsearch";
               {
                 bool: {
                   must_not: {
-                    "range": {
+                    range: {
                       canonical_time: {
-                        lt: 1492060162148
-                      }
-                    }
-                  }
-                }
+                        lt: 1492060162148,
+                      },
+                    },
+                  },
+                },
               },
               {
                 bool: {
                   should: [
                     {
-                      "range": {
+                      range: {
                         canonical_time: {
-                          gt: 1492060162148
-                        }
+                          gt: 1492060162148,
+                        },
                       },
                     },
                     {
-                      "range": {
+                      range: {
                         id: {
-                          gt: "abc123"
-                        }
-                      },  
+                          gt: "abc123",
+                        },
+                      },
                     },
-                  ]
-                }
+                  ],
+                },
               },
             ],
           },
         },
         sort: {
-          canonical_time: "asc"
-        }
+          canonical_time: "asc",
+        },
       },
     };
     expect(output).to.deep.equal(answer);
