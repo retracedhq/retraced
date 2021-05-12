@@ -3,7 +3,7 @@ import * as elasticsearch from "elasticsearch";
 import * as _ from "lodash";
 import * as moment from "moment";
 import { Scope } from "../security/scope";
-import { Client, ApiResponse, RequestParams } from '@elastic/elasticsearch';
+import { Client } from "@elastic/elasticsearch";
 import { readFileSync } from "fs";
 
 let es: elasticsearch.Client; // the legacy elasticsearch client library
@@ -51,15 +51,15 @@ function intFromEnv(key, defaultN) {
 export function getNewElasticsearch(): Client {
   if (!newEs) {
     const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
-    if ((process.env.ELASTICSEARCH_NODES || "") != "") {
-      const sslSettings: any = {}
+    if ((process.env.ELASTICSEARCH_NODES || "") !== "") {
+      const sslSettings: any = {};
       if (process.env.ELASTICSEARCH_CAFILE) {
-        sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
-        sslSettings.rejectUnauthorized = true
+        sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+        sslSettings.rejectUnauthorized = true;
       }
 
       newEs = new Client({
-        nodes: hosts, 
+        nodes: hosts,
         ssl: sslSettings,
         maxRetries: 5,
       });
@@ -72,10 +72,10 @@ export default function getElasticsearch(): elasticsearch.Client {
   if (!es) {
     const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
 
-    const sslSettings: any = {}
+    const sslSettings: any = {};
     if (process.env.ELASTICSEARCH_CAFILE) {
-      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE)
-      sslSettings.rejectUnauthorized = true
+      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+      sslSettings.rejectUnauthorized = true;
     }
 
     es = new elasticsearch.Client({

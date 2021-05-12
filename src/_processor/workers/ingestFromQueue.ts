@@ -43,7 +43,7 @@ export default async function ingestFromQueue(job: any) {
             task.received,
             JSON.stringify(task.original_event),
         ]);
-        if (results.rows.length == 0) {
+        if (results.rows.length === 0) {
           // conflict, already ingested
           return;
         }

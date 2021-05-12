@@ -10,7 +10,7 @@ import { Event } from "../../../persistence/EventSource";
 import common from "../../../common";
 import { logger } from "../../../../logger";
 
-var totalIndexed: number = 0;
+let totalIndexed: number = 0;
 
 export const makePageIndexer = (writeIndex: string) => async (result: Event[]) => {
   logger.info(`processing page with count ${result.length}`);

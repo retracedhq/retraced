@@ -138,7 +138,7 @@ import { Connection } from "./Connection";
 - Invalid event input at index 1:
 -- Field 'group.id' is required if 'group' is present
 -- Event is not marked anonymous, and missing required field 'actor'
--- Unable to parse 'source_ip' field as valid IPV4 address: lol`);
+-- Unable to parse 'source_ip' field as valid IPV4 or IPV6 address: lol`);
 
             expect(err.invalid).to.deep.equal([
                 {
@@ -154,7 +154,7 @@ import { Connection } from "./Connection";
                 },
                 {
                     index: 1,
-                    message: "Invalid event input at index 1:\n-- Field 'group.id' is required if 'group' is present\n-- Event is not marked anonymous, and missing required field 'actor'\n-- Unable to parse 'source_ip' field as valid IPV4 address: lol",
+                    message: "Invalid event input at index 1:\n-- Field 'group.id' is required if 'group' is present\n-- Event is not marked anonymous, and missing required field 'actor'\n-- Unable to parse 'source_ip' field as valid IPV4 or IPV6 address: lol",
                     violations: [
                         {
                             field: "group.id",
@@ -168,7 +168,7 @@ import { Connection } from "./Connection";
                         },
                         {
                             field: "source_ip",
-                            message: "Unable to parse 'source_ip' field as valid IPV4 address: lol",
+                            message: "Unable to parse 'source_ip' field as valid IPV4 or IPV6 address: lol",
                             received: "lol",
                             violation: "invalid",
                         },
@@ -183,6 +183,7 @@ import { Connection } from "./Connection";
         conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
         nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
     }
+
     @test public async "EventCreater#createEvent()"() {
         const pool = TypeMoq.Mock.ofType(pg.Pool);
         const conn = TypeMoq.Mock.ofType(Connection);
@@ -197,6 +198,61 @@ import { Connection } from "./Connection";
             actor: {
                 id: "vicki@vickstelmo.music",
             },
+            source_ip: "192.168.0.1",
+        };
+
+        authenticator.setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
+            .returns(() => Promise.resolve({
+                token: "some-token",
+                created: moment(),
+                name: "A Token",
+                disabled: false,
+                projectId: "a-project",
+                environmentId: "an-environment",
+            }));
+
+        conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
+        conn.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())) // Still need to validate args
+            .verifiable(TypeMoq.Times.once());
+        pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());
+
+        // set up nsq
+        const jobBody = JSON.stringify({ taskId: "kfbr392" });
+        nsq
+            .setup((x) => x.produce("raw_events", jobBody))
+            .returns((args) => Promise.resolve());
+
+        const creater = new EventCreater(
+            pool.object,
+            nsq.object,
+            fakeHasher,
+            fakeUUID,
+            authenticator.object,
+            50,
+            1000,
+        );
+
+        const created: CreateEventResponse = await creater.createEvent("token=some-token", "a-project", body);
+
+        expect(created.id).to.equal("kfbr392");
+        expect(created.hash).to.equal("fake-hash");
+    }
+
+    @test public async "EventCreater#createEvent() ipv6"() {
+        const pool = TypeMoq.Mock.ofType(pg.Pool);
+        const conn = TypeMoq.Mock.ofType(Connection);
+        const nsq = TypeMoq.Mock.ofType(NSQClient);
+        const authenticator = TypeMoq.Mock.ofType(Authenticator);
+        const fakeHasher = (e) => "fake-hash";
+        const fakeUUID = () => "kfbr392";
+
+        const body: CreateEventRequest = {
+            action: "largeTazoTea.purchase",
+            crud: "c",
+            actor: {
+                id: "vicki@vickstelmo.music",
+            },
+            source_ip: "2001:0DB8:6037:18d8:68dd:ccdd:43a1:217d",
         };
 
         authenticator.setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))

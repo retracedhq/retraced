@@ -15,7 +15,8 @@ import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
 
-const IP_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
+const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
+const IPV6_REGEX = /^((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}$/;
 
 const requiredFields = [
   "action",
@@ -509,9 +510,9 @@ export class EventCreater {
       });
     }
 
-    if (maybeEvent.source_ip && !IP_REGEX.test(maybeEvent.source_ip)) {
+    if (maybeEvent.source_ip && !IPV4_REGEX.test(maybeEvent.source_ip) && !IPV6_REGEX.test(maybeEvent.source_ip)) {
       violations.push({
-        message: `Unable to parse 'source_ip' field as valid IPV4 address: ${maybeEvent["source_ip"]}`,
+        message: `Unable to parse 'source_ip' field as valid IPV4 or IPV6 address: ${maybeEvent["source_ip"]}`,
         field: "source_ip",
         received: maybeEvent.source_ip,
         violation: "invalid",

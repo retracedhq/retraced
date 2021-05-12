@@ -50,7 +50,7 @@ export default async function(opts: Options): Promise<Result> {
     };
     const resp = await es.scroll(scrollParams);
     if (!resp) {
-      logger.info(`continue scroll resp nil with params ${JSON.stringify(scrollParams)}`)
+      logger.info(`continue scroll resp nil with params ${JSON.stringify(scrollParams)}`);
     }
     let results: Result = {
       totalHits: resp.hits.total,
@@ -98,10 +98,10 @@ export default async function(opts: Options): Promise<Result> {
     for (const targetId of opts.targetIds) {
       clause.bool.should.push({
         match: {
-          "target.id": { 
+          "target.id": {
             query: targetId,
             operator: "and",
-          }
+          },
         },
       });
       filters.push(clause);
@@ -203,7 +203,7 @@ export default async function(opts: Options): Promise<Result> {
     // Normal search.
     const resp = await es.search(params);
     if (!resp) {
-      logger.info()
+      logger.info();
     }
     let results: Result = {
       totalHits: resp.hits.total,
@@ -231,7 +231,7 @@ export default async function(opts: Options): Promise<Result> {
     params.scroll = "1m";
     let initialResp = await es.search(params);
     if (!initialResp) {
-      logger.info(`initialResp nil with params ${JSON.stringify(params)}`)
+      logger.info(`initialResp nil with params ${JSON.stringify(params)}`);
     }
     if (initialResp.hits.total > 0) {
       const scrollParams = {
@@ -248,7 +248,7 @@ export default async function(opts: Options): Promise<Result> {
           body: scrollParams.scroll_id,
         });
         if (!resp) {
-          logger.info(`scroll resp nil with params ${JSON.stringify(params)}`)
+          logger.info(`scroll resp nil with params ${JSON.stringify(params)}`);
         }
         if (resp.hits.hits.length === 0) {
           break;

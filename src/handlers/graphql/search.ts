@@ -19,7 +19,7 @@ export interface Args {
 }
 
 export default async function search(
- q: any,
+  q: any,
   args: Args,
   context: Scope,
 ) {
