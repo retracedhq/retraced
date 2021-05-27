@@ -14,7 +14,7 @@
     "bluebird": "^3.5.0",
     "body-parser": "^1.15.2",
     "bugsnag": "^1.9.1",
-    "cassandra-driver": "^3.1.5",
+    "cassandra-driver": "^4.6.3",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "chai-http": "^4.2.0",
