@@ -3,7 +3,7 @@ kind: Service
 metadata:
   labels:
     app: elasticsearch
-  name: elasticsearch
+  name: retraced-elasticsearch
 spec:
   type: ClusterIP
   ports:

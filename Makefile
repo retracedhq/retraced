@@ -87,3 +87,6 @@ k8s-migrate:
 
 k8s: k8s-pre k8s-deployment k8s-service k8s-ingress k8s-migrate
 	: "Templated k8s yamls"
+
+dev:
+	skaffold dev --status-check=false --force=true

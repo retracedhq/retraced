@@ -28,15 +28,16 @@ describe("Publisher Search", function() {
         beforeEach(retracedUp(Env));
 
         describe(`And 10 events have been reported with actor ${uniqueActorId}`, function() {
-            const events = _.map(_.range(10), () => ({
+            const created = Date.now();
+            const events = _.map(_.range(10), (i) => ({
                 action: "integration.test.api",
                 group: {
                     id: "rtrcdqa1234",
                     name: "RetracedQA",
                 },
-                created: currentTime,
+                created: new Date(created + i),
                 crud: "c",
-                sourceIp: "192.168.0.1",
+                sourceIp: `192.168.0.${i}`,
                 actor: {
                     id: uniqueActorId,
                     name: "RetracedQA Employee",
@@ -124,6 +125,6 @@ describe("Publisher Search", function() {
                     });
                 });
             });
-        });
+       });
     });
 });

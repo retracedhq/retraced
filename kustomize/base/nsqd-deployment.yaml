@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nsqd
+  name: retraced-nsqd
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   selector:
