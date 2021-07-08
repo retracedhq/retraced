@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dbutil
+  name: retraced-dbutil
 spec:
   template:
     spec:
       containers:
         - name: dbutil
-          image: registry.replicated.com/shipretraced/retraced
+          image: registry.replicated.com/library/retraced

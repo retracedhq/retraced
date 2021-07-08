@@ -236,9 +236,9 @@ import { RequestParams } from "@elastic/elasticsearch";
             ],
           },
         },
-        sort: {
-          canonical_time: "asc",
-        },
+        sort: [
+          {canonical_time: "asc"},
+        ],
       },
     };
     expect(output).to.deep.equal(answer);

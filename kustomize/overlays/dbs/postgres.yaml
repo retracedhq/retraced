@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: retraced-postgres
   labels:
     app: postgres
 spec:
@@ -17,7 +17,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres
+  name: retraced-postgres
 spec:
   selector:
     matchLabels:

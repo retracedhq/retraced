@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: retraced-api
 spec:
   replicas: 1
   template:
     spec:
       initContainers:
       - name: bootstrap
-        image: registry.replicated.com/shipretraced/retraced:1.4.6
+        image: registry.replicated.com/library/retraced:1.4.6
         command:
         - /bin/sh
         args:

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: retraced-api
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   selector:
@@ -38,7 +38,7 @@ spec:
             httpGet:
               port: 3000
               path: /healthz
-          image: registry.replicated.com/shipretraced/retraced:1.4.6
+          image: registry.replicated.com/library/retraced:1.4.6
           imagePullPolicy: IfNotPresent
           command:
             - /src/api

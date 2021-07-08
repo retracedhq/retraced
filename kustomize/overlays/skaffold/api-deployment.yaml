@@ -1,14 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: retraced-api
 spec:
   template:
     spec:
       initContainers:
         - name: bootstrap
-          image: registry.replicated.com/shipretraced/retraced
+          image: registry.replicated.com/library/retraced
       containers:
         - name: api
-          image: registry.replicated.com/shipretraced/retraced
-
+          image: registry.replicated.com/library/retraced
+          env:
+            - name: PG_SEARCH
+              value: ""
+            - name: LOG_LEVEL
+              value: debug

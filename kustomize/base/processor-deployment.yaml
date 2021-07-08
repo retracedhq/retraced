@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: processor
+  name: retraced-processor
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   selector:
@@ -35,7 +35,7 @@ spec:
           emptyDir: {}
       containers:
         - name: processor
-          image: registry.replicated.com/shipretraced/retraced:1.4.6
+          image: registry.replicated.com/library/retraced:1.4.6
           imagePullPolicy: IfNotPresent
 
           command:

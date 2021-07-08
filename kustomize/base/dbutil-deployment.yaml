@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dbutil
+  name: retraced-dbutil
   namespace: '{{repl ConfigOption "namespace"}}'
   labels:
     app: retraced
@@ -22,7 +22,7 @@ spec:
       - name: auditlog-imagepull-secret
       containers:
       - name: dbutil
-        image: registry.replicated.com/shipretraced/retraced:1.4.6
+        image: registry.replicated.com/library/retraced:1.4.6
         command:
         - /bin/sleep
         - infinity
