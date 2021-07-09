@@ -1,6 +1,6 @@
 .PHONY: clean prebuild deps lint swagger routes build cover test report-coverage pkg build run run-processor run-debug
 SKIP :=
-REPO := retracedhq/api
+REPO := retracedhq/retraced
 PATH := $(shell pwd)
 SHELL := /bin/bash -lo pipefail
 
