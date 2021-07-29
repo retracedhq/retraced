@@ -1,5 +1,6 @@
 import * as express from "express";
 import { logger } from "./logger";
+import getEs from "./persistence/elasticsearch";
 
 const app = express();
 let lastNSQ: Date = new Date();
@@ -11,7 +12,11 @@ export function startHealthz() {
     });
 
     // Needed for Kubernetes health checks
-    app.get("/livez", (req, res) => {
+    app.get("/livez", async (req, res) => {
+        const esHealth  = await getEs().cluster.health({ masterTimeout: "1s" });
+        // TODO: use esHealth for something
+        console.log(`${JSON.stringify(esHealth)}`);
+
         const currentTime: Date = new Date();
         // 1000 * 60 * 60 is one hour
         if (currentTime > new Date(lastNSQ.getTime() + (1000 * 60 * 60))) {
