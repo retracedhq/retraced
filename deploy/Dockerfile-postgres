@@ -1,8 +1,8 @@
-FROM postgres:10.16-alpine
+FROM postgres:10.17-alpine
 
 RUN apk add --update --no-cache \
     ca-certificates \
   && apk add --upgrade --no-cache \
     \
     \
-    libxml2
+    apk-tools

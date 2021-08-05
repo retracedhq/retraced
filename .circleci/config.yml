@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  anchore: anchore/anchore-engine@1.7.0
+  anchore: anchore/anchore-engine@1
 
 experimental:
   notify:
@@ -11,7 +11,7 @@ experimental:
 
 defaults: &defaults
   docker:
-    - image: circleci/node:8
+    - image: circleci/node:14
   working_directory: ~/repo
 
 jobs:
@@ -39,7 +39,8 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.13
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
@@ -62,7 +63,8 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.13
       - run: docker build --pull -t registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-postgres .
       - anchore/analyze_local_image:
           image_name: registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
@@ -81,7 +83,8 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.13
       - run: docker build --pull -t registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-nsq .
       - anchore/analyze_local_image:
           image_name: registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
@@ -99,7 +102,8 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.13
       - attach_workspace:
           at: /tmp/workspace
       - run: docker load -i /tmp/workspace/retraced.tar
@@ -120,7 +124,8 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.13
       - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
       - run:  |
           docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
@@ -131,7 +136,8 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.13
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
