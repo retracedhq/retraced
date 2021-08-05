@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  anchore: anchore/anchore-engine@1.7.0
+  anchore: anchore/anchore-engine@1
 
 experimental:
   notify:
