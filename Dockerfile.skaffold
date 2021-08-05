@@ -1,4 +1,4 @@
-FROM node:8 as node
+FROM node:14 as node
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
