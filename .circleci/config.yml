@@ -26,6 +26,7 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
+      - run: rm -rf /home/circleci/repo/node_modules
       - run: make deps swagger cover report-coverage
       - store_test_results:
           path: results
