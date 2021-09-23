@@ -6,4 +6,5 @@ RUN apk add --update --no-cache \
     \
     \
     apk-tools \
-    openssl
+    openssl \
+    libgcrypt
