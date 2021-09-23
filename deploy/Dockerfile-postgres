@@ -5,4 +5,5 @@ RUN apk add --update --no-cache \
   && apk add --upgrade --no-cache \
     \
     \
-    apk-tools
+    apk-tools \
+    openssl
