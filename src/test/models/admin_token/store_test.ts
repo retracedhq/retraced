@@ -1,4 +1,4 @@
-import * as bcrypt from "bcrypt";
+import * as bcrypt from "bcryptjs";
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
 
