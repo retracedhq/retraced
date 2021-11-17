@@ -55,8 +55,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     \
     \
-    libp11-kit0 \
-    openssl \
   && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000
@@ -70,7 +68,6 @@ COPY --from=node /src/retracedctl /src/bin/retracedctl
 COPY --from=node /src/processor /src/processor
 COPY --from=node /src/node_modules/snappy/build/Release/binding.node /src/node_modules/snappy/build/Release/binding.node
 COPY --from=node /src/node_modules/sse4_crc32/build/Release/sse4_crc32.node /src/node_modules/sse4_crc32/build/Release/sse4_crc32.node
-COPY --from=node /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node
 COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercronic-linux-amd64
 COPY --from=cron /usr/local/bin/replicated-auditlog-cron /usr/local/bin/replicated-auditlog-cron
 COPY --from=cron /crontab /crontab
