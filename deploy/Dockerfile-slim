@@ -55,8 +55,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     \
     \
-    libp11-kit0 \
-    openssl \
   && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000
