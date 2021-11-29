@@ -5244,10 +5244,10 @@ nodemailer-mandrill-transport@^1.2.0:
     extend "^3.0.0"
     mandrill-api "^1.0.45"
 
-nodemailer@^4.6.7:
-  version "4.6.7"
-  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.6.7.tgz#b68de7f36d65618bdeeeb76234e3547d51266373"
-  integrity sha512-GIAAYvs9XIP1fBa8wR89ukUh3yjL44pom5LKY5nTZcL+Zp9sRkqL8wgskyBQECQg9CPsDX/fjTZx8MNz20t0jA==
+nodemailer@^6.7.2:
+  version "6.7.2"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.7.2.tgz#44b2ad5f7ed71b7067f7a21c4fedabaec62b85e0"
+  integrity sha512-Dz7zVwlef4k5R71fdmxwR8Q39fiboGbu3xgswkzGwczUfjp873rVxt1O46+Fh0j1ORnAC6L9+heI8uUpO6DT7Q==
 
 noop-logger@^0.1.1:
   version "0.1.1"
