@@ -3100,12 +3100,10 @@ graphlib@^2.1.1:
   dependencies:
     lodash "^4.11.1"
 
-graphql@^0.9.2:
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.9.2.tgz#2cb5c635de13f790a77c5879649cb401b1589386"
-  integrity sha1-LLXGNd4T95CnfFh5ZJy0AbFYk4Y=
-  dependencies:
-    iterall "1.0.3"
+graphql@^16.2.0:
+  version "16.2.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.2.0.tgz#de3150e80f1fc009590b92a9d16ab1b46e12b656"
+  integrity sha512-MuQd7XXrdOcmfwuLwC2jNvx0n3rxIuNYOxUtiee5XOmfrWo613ar2U8pE7aHAKh8VwfpifubpD9IP+EdEAEOsA==
 
 growl@1.9.2:
   version "1.9.2"
@@ -4035,11 +4033,6 @@ istanbul@1.1.0-alpha.1:
     nopt "3.x"
     which "^1.1.1"
     wordwrap "^1.0.0"
-
-iterall@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/iterall/-/iterall-1.0.3.tgz#e0b31958f835013c323ff0b10943829ac69aa4b7"
-  integrity sha1-4LMZWPg1ATwyP/CxCUOCmsaapLc=
 
 jmespath@0.15.0:
   version "0.15.0"
