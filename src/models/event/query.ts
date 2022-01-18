@@ -128,7 +128,7 @@ export async function doAllQuery(opts: Options): Promise<Result> {
 
   return {
     totalHits: { value: allHits.length },
-    events: _.map(allHits, ({ _source }) => _source),
+    events: redactEvents(_.map(allHits, ({ _source }) => _source)),
   };
 }
 
@@ -330,4 +330,21 @@ export function searchParams(opts: Options): RequestParams.Search {
   //   search_after: opts.cursor,
   //   body: { query },
   // };
+}
+
+export function redactEvents(events: any[]): any[] {
+  return events.map(redactEvent);
+}
+
+function redactEvent(event: any): any {
+
+  // if this is a string, filter it and return
+  if (typeof event === "string" || event instanceof String) {
+    return event + "testing";
+  }
+
+  // if this is not a string, it is not filterable - but it might have member objects that are
+  Object.keys(event).forEach((c) => event[c] = redactEvent(event[c]));
+
+  return event;
 }
