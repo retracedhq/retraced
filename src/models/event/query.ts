@@ -2,6 +2,7 @@ import "source-map-support/register";
 import * as _ from "lodash";
 import * as searchQueryParser from "search-query-parser";
 import * as moment from "moment";
+import * as crypto from "crypto";
 import { ApiResponse, RequestParams } from "@elastic/elasticsearch";
 
 import { Scope } from "../../security/scope";
@@ -336,15 +337,28 @@ export function redactEvents(events: any[]): any[] {
   return events.map(redactEvent);
 }
 
+const len64: RegExp = RegExp("^[a-z0-9]{64}$")
+
 function redactEvent(event: any): any {
 
   // if this is a string, filter it and return
   if (typeof event === "string" || event instanceof String) {
-    return event + "testing";
+    const matches = event.match(len64);
+    if (matches === null) {
+      return event;
+    }
+    matches.forEach((c) => event = event.replace(c, hashedString(c)));
+    return event;
   }
 
   // if this is not a string, it is not filterable - but it might have member objects that are
   Object.keys(event).forEach((c) => event[c] = redactEvent(event[c]));
 
   return event;
+}
+
+function hashedString(str: string): string {
+  const hasher = crypto.createHash("sha256");
+  hasher.update(str);
+  return hasher.digest("hex");
 }
