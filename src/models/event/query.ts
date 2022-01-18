@@ -85,7 +85,7 @@ async function doQuery(opts: Options): Promise<Result> {
 
   return {
     totalHits: { value: newCount.body.count },
-    events: _.map(newResp.body.hits.hits, ({ _source }) => _source),
+    events: redactEvents(_.map(newResp.body.hits.hits, ({ _source }) => _source)),
   };
 }
 
