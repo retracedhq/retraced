@@ -337,7 +337,7 @@ export function redactEvents(events: any[]): any[] {
   return events.map(redactEvent);
 }
 
-const len64: RegExp = RegExp("^[a-z0-9]{64}$")
+const len64: RegExp = RegExp("^[a-z0-9]{64}$"); // see https://regex101.com/r/feBvam/1 for examples
 
 function redactEvent(event: any): any {
 
