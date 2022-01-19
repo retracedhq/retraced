@@ -333,26 +333,32 @@ export function searchParams(opts: Options): RequestParams.Search {
   // };
 }
 
+// redactEvents searches for matches to the supplied regex, and replaces any matches with the sha256sum of the match.
 export function redactEvents(events: any[]): any[] {
-  return events.map(redactEvent);
+  if (events) {
+    return events.map(redactEvent);
+  }
+  return events;
 }
 
+// TODO: make this configurable via an environment variable
 const len64: RegExp = RegExp("^[a-z0-9]{64}$"); // see https://regex101.com/r/feBvam/1 for examples
 
 function redactEvent(event: any): any {
-
-  // if this is a string, filter it and return
-  if (typeof event === "string" || event instanceof String) {
-    const matches = event.match(len64);
-    if (matches === null) {
+  if (event) {
+    // if this is a string, filter it and return
+    if (typeof event === "string" || event instanceof String) {
+      const matches = event.match(len64);
+      if (matches === null) {
+        return event;
+      }
+      matches.forEach((c) => event = event.replace(c, hashedString(c)));
       return event;
     }
-    matches.forEach((c) => event = event.replace(c, hashedString(c)));
-    return event;
+  
+    // if this is not a string, it is not filterable - but it might have member objects that are
+    Object.keys(event).forEach((c) => event[c] = redactEvent(event[c]));
   }
-
-  // if this is not a string, it is not filterable - but it might have member objects that are
-  Object.keys(event).forEach((c) => event[c] = redactEvent(event[c]));
 
   return event;
 }
