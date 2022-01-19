@@ -11,6 +11,6 @@ patchesStrategicMerge:
   - ./api-deployment.yaml
   - ./api-service.yaml
   - ./cron-deployment.yaml
-  - ./migratees-job.yaml
   - ./migratepg-job.yaml
+  - ./migratees-job.yaml
   - ./processor-deployment.yaml

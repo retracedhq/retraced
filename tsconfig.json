@@ -11,6 +11,7 @@
         "skipLibCheck": true,
         "allowJs": true,
         "outDir": "build",
+				"lib": ["es2015"],
         "pretty": true
     },
     "include": [

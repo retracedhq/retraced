@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: nsqd
+  name: retraced-nsqd
   namespace: '{{repl ConfigOption "namespace"}}'
   labels:
     app: auditlog

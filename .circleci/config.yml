@@ -26,7 +26,7 @@ jobs:
           keys:
           - v1-dependencies-node10-{{ checksum "package.json" }}
           - v1-dependencies-node10-
-      - run: make deps swagger cover report-coverage
+      - run: make deps swagger cover
       - store_test_results:
           path: results
       - save_cache:

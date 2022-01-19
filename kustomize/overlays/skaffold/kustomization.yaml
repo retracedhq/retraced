@@ -8,6 +8,6 @@ patchesStrategicMerge:
   - ./cron-deployment.yaml
   - ./dbutil-deployment.yaml
   - ./integrationtest.yaml
-  - ./migratees-job.yaml
   - ./migratepg-job.yaml
+  - ./migratees-job.yaml
   - ./processor-deployment.yaml

@@ -1,10 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: processor
+  name: retraced-processor
 spec:
   template:
     spec:
       containers:
         - name: processor
-          image: registry.replicated.com/shipretraced/retraced
+          image: registry.replicated.com/library/retraced
+          env:
+            - name: PG_SEARCH
+              value: ""
+            - name: LOG_LEVEL
+              value: debug
