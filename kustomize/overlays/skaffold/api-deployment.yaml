@@ -16,3 +16,5 @@ spec:
               value: ""
             - name: LOG_LEVEL
               value: debug
+            - name: REDACT_REGEX
+              value: "^[a-z0-9]{64}$"

@@ -31,6 +31,8 @@ spec:
           value: dev
         - name: BOOTSTRAP_API_TOKEN
           value: dev
+        - name: REDACT_REGEX
+          value: "^[a-z0-9]{64}$"
       containers:
         - name: api
           readinessProbe:
