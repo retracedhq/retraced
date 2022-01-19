@@ -68,6 +68,7 @@ describe("Viewer API", function () {
                     isFailure: false,
                     fields: {
                         quality: "excellent",
+                        redactable: "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz01",
                     },
                 };
                 const valid = tv4.validate(event, CreateEventSchema);
@@ -196,6 +197,8 @@ describe("Viewer API", function () {
                             expect(responseBody).to.have.deep.property("data.search.edges[0].node.source_ip", "192.168.0.1");
                             expect(responseBody).to.have.deep.property("data.search.edges[0].node.fields[0].key", "quality");
                             expect(responseBody).to.have.deep.property("data.search.edges[0].node.fields[0].value", "excellent");
+                            expect(responseBody).to.have.deep.property("data.search.edges[0].node.fields[1].key", "redactable");
+                            expect(responseBody).to.have.deep.property("data.search.edges[0].node.fields[1].value", "9811e1ddf569b14d62a237a466700c99034c0836d098a02b2bd146265489c068");
                         });
 
                     });
