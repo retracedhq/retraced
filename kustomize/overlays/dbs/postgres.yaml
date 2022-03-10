@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:10.4
+        image: postgres:10.20
         imagePullPolicy: IfNotPresent
         env:
         - name: PGDATA
