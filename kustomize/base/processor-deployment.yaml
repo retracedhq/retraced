@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels:
-        app: auditlog 
+        app: auditlog
         tier: processor
     spec:
       affinity:
@@ -56,8 +56,8 @@ spec:
             httpGet:
               port: 3000
               path: /livez
-            initialDelaySeconds: 3
-            periodSeconds: 1
+            initialDelaySeconds: 30
+            periodSeconds: 10
           resources:
             requests:
               cpu: 100m

@@ -30,6 +30,8 @@ import { logger } from "./logger";
 import { startHealthz, updateLastNSQ } from "./healthz";
 import getPgPool from "../persistence/pg";
 
+startHealthz();
+
 if (!process.env["BUGSNAG_TOKEN"]) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
 } else {
@@ -57,8 +59,8 @@ if (process.env["NO_WARP_PIPE"]) {
 const leftPad = (s, n) => n > s.length ? " ".repeat(n - s.length) + s : s;
 const registry = monkit.getRegistry();
 
+
 metrics.bootstrapFromEnv();
-startHealthz();
 
 const slowElapsedThreshold = 250.0; // ms
 
