@@ -31,4 +31,4 @@ RUN make swagger
 
 RUN chmod a+rwx /src
 
-CMD ["node", "--inspect=0.0.0.0", "-r", "ts-node/register", "src/index.ts"]
+CMD ["node", "--inspect=0.0.0.0", "-r", "ts-node/register", "src/_db/runner-lite.ts", "pg", "seed"]

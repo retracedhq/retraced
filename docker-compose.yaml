@@ -1,0 +1,259 @@
+version: "3"
+
+networks:
+  retraced:
+
+services:
+  retraced-api:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.skaffold
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+    environment:
+      - POSTGRES_HOST=postgres
+      - HMAC_SECRET_ADMIN=xxxxxxx
+      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
+      - NSQD_HTTP_PORT=4151
+      - SHLVL=1
+      - POSTGRES_USER=retraced
+      - EXPORT_PAGE_SIZE_INTERNAL=2
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_POOL_SIZE=10
+      - HMAC_SECRET_VIEWER=xxxxxxxxx
+      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
+      - POSTGRES_PORT=5432
+      - API_BASE_URL_PATH=/auditlog
+      - RETRACED_API_BASE=http://localhost:3000/auditlog
+      - POSTGRES_DATABASE=retraced
+      - SUPERCRONIC=supercronic-linux-amd64
+      - LOG_LEVEL=debug
+      - ELASTICSEARCH_NODES=http://elasticsearch:9200
+      - NSQD_HOST=nsqd
+      - HOSTNAME=retraced-api-67856674bf-kwq7f
+      - NSQD_TCP_PORT=4150
+    networks:
+      - retraced
+    depends_on:
+      - postgres-migration
+
+  retraced-dbutil:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.dbutil
+    environment:
+      - POSTGRES_HOST=postgres
+      - HMAC_SECRET_ADMIN=xxxxxxx
+      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
+      - NSQD_HTTP_PORT=4151
+      - SHLVL=1
+      - POSTGRES_USER=retraced
+      - EXPORT_PAGE_SIZE_INTERNAL=2
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_POOL_SIZE=10
+      - HMAC_SECRET_VIEWER=xxxxxxxxx
+      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
+      - POSTGRES_PORT=5432
+      - API_BASE_URL_PATH=/auditlog
+      - RETRACED_API_BASE=http://localhost:3000/auditlog
+      - POSTGRES_DATABASE=retraced
+      - SUPERCRONIC=supercronic-linux-amd64
+      - LOG_LEVEL=debug
+      - ELASTICSEARCH_NODES=http://elasticsearch:9200
+      - NSQD_HOST=nsqd
+      - HOSTNAME=retraced-api-67856674bf-kwq7f
+      - NSQD_TCP_PORT=4150
+    networks:
+      - retraced
+
+  retraced-processor:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.processor
+    ports:
+      - "3001:3000"
+    environment:
+      - POSTGRES_HOST=postgres
+      - HMAC_SECRET_ADMIN=xxxxxxx
+      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
+      - NSQD_HTTP_PORT=4151
+      - SHLVL=1
+      - POSTGRES_USER=retraced
+      - EXPORT_PAGE_SIZE_INTERNAL=2
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_POOL_SIZE=10
+      - HMAC_SECRET_VIEWER=xxxxxxxxx
+      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
+      - POSTGRES_PORT=5432
+      - API_BASE_URL_PATH=/auditlog
+      - RETRACED_API_BASE=http://localhost:3000/auditlog
+      - POSTGRES_DATABASE=retraced
+      - SUPERCRONIC=supercronic-linux-amd64
+      - LOG_LEVEL=debug
+      - ELASTICSEARCH_NODES=http://elasticsearch:9200
+      - NSQD_HOST=nsqd
+      - NSQD_TCP_PORT=4150
+    networks:
+      - retraced
+    depends_on:
+      - postgres
+
+  retraced-cron:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.cron
+    environment:
+      - POSTGRES_HOST=postgres
+      - HMAC_SECRET_ADMIN=xxxxxxx
+      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
+      - NSQD_HTTP_PORT=4151
+      - SHLVL=1
+      - POSTGRES_USER=retraced
+      - EXPORT_PAGE_SIZE_INTERNAL=2
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_POOL_SIZE=10
+      - HMAC_SECRET_VIEWER=xxxxxxxxx
+      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
+      - POSTGRES_PORT=5432
+      - API_BASE_URL_PATH=/auditlog
+      - RETRACED_API_BASE=http://localhost:3000/auditlog
+      - POSTGRES_DATABASE=retraced
+      - SUPERCRONIC=supercronic-linux-amd64
+      - LOG_LEVEL=debug
+      - ELASTICSEARCH_NODES=http://elasticsearch:9200
+      - NSQD_HOST=nsqd
+      - NSQD_TCP_PORT=4150
+    networks:
+      - retraced
+    depends_on:
+      - postgres
+
+  nsqd:
+    image: nsqio/nsq:v1.2.1 
+    ports:
+      - "4150:4150"
+      - "4151:4151"
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=retraced
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=retraced
+    command: nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd."
+    networks:
+      - retraced
+
+  postgres:
+    image: postgres:10.4
+    ports:
+      - "5423:5423"
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=retraced
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=retraced
+    networks:
+      - retraced
+
+  elasticsearch:
+    image: elasticsearch:7.8.0
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - "9200:9200"
+    networks:
+      - retraced
+
+  retraced-dev-bootstrap:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.pg.bootstrap
+    environment:
+      - POSTGRES_HOST=postgres
+      - HMAC_SECRET_ADMIN=xxxxxxx
+      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
+      - NSQD_HTTP_PORT=4151
+      - SHLVL=1
+      - POSTGRES_USER=retraced
+      - EXPORT_PAGE_SIZE_INTERNAL=2
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_POOL_SIZE=10
+      - HMAC_SECRET_VIEWER=xxxxxxxxx
+      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
+      - POSTGRES_PORT=5432
+      - API_BASE_URL_PATH=/auditlog
+      - RETRACED_API_BASE=http://localhost:3000/auditlog
+      - POSTGRES_DATABASE=retraced
+      - SUPERCRONIC=supercronic-linux-amd64
+      - LOG_LEVEL=debug
+      - ELASTICSEARCH_NODES=http://elasticsearch:9200
+      - NSQD_HOST=nsqd
+      - HOSTNAME=retraced-api-67856674bf-kwq7f
+      - NSQD_TCP_PORT=4150
+    networks:
+      - retraced
+    depends_on:
+      - postgres
+
+  postgres-migration:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.pg.migration
+    environment:
+      - POSTGRES_HOST=postgres
+      - HMAC_SECRET_ADMIN=xxxxxxx
+      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
+      - NSQD_HTTP_PORT=4151
+      - SHLVL=1
+      - POSTGRES_USER=retraced
+      - EXPORT_PAGE_SIZE_INTERNAL=2
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_POOL_SIZE=10
+      - HMAC_SECRET_VIEWER=xxxxxxxxx
+      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
+      - POSTGRES_PORT=5432
+      - API_BASE_URL_PATH=/auditlog
+      - RETRACED_API_BASE=http://localhost:3000/auditlog
+      - POSTGRES_DATABASE=retraced
+      - SUPERCRONIC=supercronic-linux-amd64
+      - LOG_LEVEL=debug
+      - ELASTICSEARCH_NODES=http://elasticsearch:9200
+      - NSQD_HOST=nsqd
+      - HOSTNAME=retraced-api-67856674bf-kwq7f
+      - NSQD_TCP_PORT=4150
+    networks:
+      - retraced
+    depends_on:
+      - postgres
+
+  elastic-migration:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.es.migration
+    environment:
+      - POSTGRES_HOST=postgres
+      - HMAC_SECRET_ADMIN=xxxxxxx
+      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
+      - NSQD_HTTP_PORT=4151
+      - SHLVL=1
+      - POSTGRES_USER=retraced
+      - EXPORT_PAGE_SIZE_INTERNAL=2
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_POOL_SIZE=10
+      - HMAC_SECRET_VIEWER=xxxxxxxxx
+      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
+      - POSTGRES_PORT=5432
+      - API_BASE_URL_PATH=/auditlog
+      - RETRACED_API_BASE=http://localhost:3000/auditlog
+      - POSTGRES_DATABASE=retraced
+      - SUPERCRONIC=supercronic-linux-amd64
+      - LOG_LEVEL=debug
+      - ELASTICSEARCH_NODES=http://elasticsearch:9200
+      - NSQD_HOST=nsqd
+      - HOSTNAME=retraced-api-67856674bf-kwq7f
+      - NSQD_TCP_PORT=4150
+    networks:
+      - retraced
+    depends_on:
+      elasticsearch:
+        condition: service_started

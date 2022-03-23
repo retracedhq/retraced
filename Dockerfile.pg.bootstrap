@@ -30,5 +30,4 @@ RUN make swagger
 # RUN sed -i.bak 's/lazyLoad(.\(.\+\).\, opts)/require(".\/api\/\1.js")/g' node_modules/@elastic/elasticsearch/api/index.js
 
 RUN chmod a+rwx /src
-
-CMD ["node", "--inspect=0.0.0.0", "-r", "ts-node/register", "src/index.ts"]
+CMD node -r ts-node/register src/retracedctl.ts bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev 
