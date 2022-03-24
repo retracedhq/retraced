@@ -1,7 +1,30 @@
-version: "3"
+version: "3.4"
 
 networks:
   retraced:
+
+x-common-variables: &common-variables
+  POSTGRES_HOST: postgres
+  HMAC_SECRET_ADMIN: xxxxxxx
+  SUPERCRONIC_SHA1SUM: 96960ba3207756bb01e6892c978264e5362e117e
+  NSQD_HTTP_PORT: 4151
+  SHLVL: 1
+  POSTGRES_USER: retraced
+  EXPORT_PAGE_SIZE_INTERNAL: 2
+  POSTGRES_PASSWORD: password
+  POSTGRES_POOL_SIZE: 10
+  HMAC_SECRET_VIEWER: xxxxxxxxx
+  SUPERCRONIC_URL: https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
+  POSTGRES_PORT: 5432
+  API_BASE_URL_PATH: /auditlog
+  RETRACED_API_BASE: http://localhost:3000/auditlog
+  POSTGRES_DATABASE: retraced
+  SUPERCRONIC: supercronic-linux-amd64
+  LOG_LEVEL: debug
+  ELASTICSEARCH_NODES: http://elasticsearch:9200
+  NSQD_HOST: nsqd
+  HOSTNAME: retraced-api-67856674bf-kwq7f
+  NSQD_TCP_PORT: 4150
 
 services:
   retraced-api:
@@ -11,28 +34,7 @@ services:
     ports:
       - "3000:3000"
       - "9229:9229"
-    environment:
-      - POSTGRES_HOST=postgres
-      - HMAC_SECRET_ADMIN=xxxxxxx
-      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
-      - NSQD_HTTP_PORT=4151
-      - SHLVL=1
-      - POSTGRES_USER=retraced
-      - EXPORT_PAGE_SIZE_INTERNAL=2
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_POOL_SIZE=10
-      - HMAC_SECRET_VIEWER=xxxxxxxxx
-      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
-      - POSTGRES_PORT=5432
-      - API_BASE_URL_PATH=/auditlog
-      - RETRACED_API_BASE=http://localhost:3000/auditlog
-      - POSTGRES_DATABASE=retraced
-      - SUPERCRONIC=supercronic-linux-amd64
-      - LOG_LEVEL=debug
-      - ELASTICSEARCH_NODES=http://elasticsearch:9200
-      - NSQD_HOST=nsqd
-      - HOSTNAME=retraced-api-67856674bf-kwq7f
-      - NSQD_TCP_PORT=4150
+    environment: *common-variables
     networks:
       - retraced
     command: node --inspect=0.0.0.0 -r ts-node/register src/index.ts
@@ -43,28 +45,7 @@ services:
     build: 
       context: .
       dockerfile: ./Dockerfile.base
-    environment:
-      - POSTGRES_HOST=postgres
-      - HMAC_SECRET_ADMIN=xxxxxxx
-      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
-      - NSQD_HTTP_PORT=4151
-      - SHLVL=1
-      - POSTGRES_USER=retraced
-      - EXPORT_PAGE_SIZE_INTERNAL=2
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_POOL_SIZE=10
-      - HMAC_SECRET_VIEWER=xxxxxxxxx
-      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
-      - POSTGRES_PORT=5432
-      - API_BASE_URL_PATH=/auditlog
-      - RETRACED_API_BASE=http://localhost:3000/auditlog
-      - POSTGRES_DATABASE=retraced
-      - SUPERCRONIC=supercronic-linux-amd64
-      - LOG_LEVEL=debug
-      - ELASTICSEARCH_NODES=http://elasticsearch:9200
-      - NSQD_HOST=nsqd
-      - HOSTNAME=retraced-api-67856674bf-kwq7f
-      - NSQD_TCP_PORT=4150
+    environment: *common-variables
     networks:
       - retraced
     command: /bin/sleep infinity
@@ -75,27 +56,7 @@ services:
       dockerfile: ./Dockerfile.base
     ports:
       - "3001:3000"
-    environment:
-      - POSTGRES_HOST=postgres
-      - HMAC_SECRET_ADMIN=xxxxxxx
-      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
-      - NSQD_HTTP_PORT=4151
-      - SHLVL=1
-      - POSTGRES_USER=retraced
-      - EXPORT_PAGE_SIZE_INTERNAL=2
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_POOL_SIZE=10
-      - HMAC_SECRET_VIEWER=xxxxxxxxx
-      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
-      - POSTGRES_PORT=5432
-      - API_BASE_URL_PATH=/auditlog
-      - RETRACED_API_BASE=http://localhost:3000/auditlog
-      - POSTGRES_DATABASE=retraced
-      - SUPERCRONIC=supercronic-linux-amd64
-      - LOG_LEVEL=debug
-      - ELASTICSEARCH_NODES=http://elasticsearch:9200
-      - NSQD_HOST=nsqd
-      - NSQD_TCP_PORT=4150
+    environment: *common-variables
     networks:
       - retraced
     depends_on:
@@ -106,27 +67,7 @@ services:
     build: 
       context: .
       dockerfile: ./Dockerfile.base
-    environment:
-      - POSTGRES_HOST=postgres
-      - HMAC_SECRET_ADMIN=xxxxxxx
-      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
-      - NSQD_HTTP_PORT=4151
-      - SHLVL=1
-      - POSTGRES_USER=retraced
-      - EXPORT_PAGE_SIZE_INTERNAL=2
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_POOL_SIZE=10
-      - HMAC_SECRET_VIEWER=xxxxxxxxx
-      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
-      - POSTGRES_PORT=5432
-      - API_BASE_URL_PATH=/auditlog
-      - RETRACED_API_BASE=http://localhost:3000/auditlog
-      - POSTGRES_DATABASE=retraced
-      - SUPERCRONIC=supercronic-linux-amd64
-      - LOG_LEVEL=debug
-      - ELASTICSEARCH_NODES=http://elasticsearch:9200
-      - NSQD_HOST=nsqd
-      - NSQD_TCP_PORT=4150
+    environment: *common-variables
     networks:
       - retraced
     depends_on:
@@ -172,28 +113,7 @@ services:
     build: 
       context: .
       dockerfile: ./Dockerfile.base
-    environment:
-      - POSTGRES_HOST=postgres
-      - HMAC_SECRET_ADMIN=xxxxxxx
-      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
-      - NSQD_HTTP_PORT=4151
-      - SHLVL=1
-      - POSTGRES_USER=retraced
-      - EXPORT_PAGE_SIZE_INTERNAL=2
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_POOL_SIZE=10
-      - HMAC_SECRET_VIEWER=xxxxxxxxx
-      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
-      - POSTGRES_PORT=5432
-      - API_BASE_URL_PATH=/auditlog
-      - RETRACED_API_BASE=http://localhost:3000/auditlog
-      - POSTGRES_DATABASE=retraced
-      - SUPERCRONIC=supercronic-linux-amd64
-      - LOG_LEVEL=debug
-      - ELASTICSEARCH_NODES=http://elasticsearch:9200
-      - NSQD_HOST=nsqd
-      - HOSTNAME=retraced-api-67856674bf-kwq7f
-      - NSQD_TCP_PORT=4150
+    environment: *common-variables
     networks:
       - retraced
     depends_on:
@@ -204,28 +124,7 @@ services:
     build: 
       context: .
       dockerfile: ./Dockerfile.base
-    environment:
-      - POSTGRES_HOST=postgres
-      - HMAC_SECRET_ADMIN=xxxxxxx
-      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
-      - NSQD_HTTP_PORT=4151
-      - SHLVL=1
-      - POSTGRES_USER=retraced
-      - EXPORT_PAGE_SIZE_INTERNAL=2
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_POOL_SIZE=10
-      - HMAC_SECRET_VIEWER=xxxxxxxxx
-      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
-      - POSTGRES_PORT=5432
-      - API_BASE_URL_PATH=/auditlog
-      - RETRACED_API_BASE=http://localhost:3000/auditlog
-      - POSTGRES_DATABASE=retraced
-      - SUPERCRONIC=supercronic-linux-amd64
-      - LOG_LEVEL=debug
-      - ELASTICSEARCH_NODES=http://elasticsearch:9200
-      - NSQD_HOST=nsqd
-      - HOSTNAME=retraced-api-67856674bf-kwq7f
-      - NSQD_TCP_PORT=4150
+    environment: *common-variables
     networks:
       - retraced
     depends_on:
@@ -236,28 +135,7 @@ services:
     build: 
       context: .
       dockerfile: ./Dockerfile.base
-    environment:
-      - POSTGRES_HOST=postgres
-      - HMAC_SECRET_ADMIN=xxxxxxx
-      - SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
-      - NSQD_HTTP_PORT=4151
-      - SHLVL=1
-      - POSTGRES_USER=retraced
-      - EXPORT_PAGE_SIZE_INTERNAL=2
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_POOL_SIZE=10
-      - HMAC_SECRET_VIEWER=xxxxxxxxx
-      - SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
-      - POSTGRES_PORT=5432
-      - API_BASE_URL_PATH=/auditlog
-      - RETRACED_API_BASE=http://localhost:3000/auditlog
-      - POSTGRES_DATABASE=retraced
-      - SUPERCRONIC=supercronic-linux-amd64
-      - LOG_LEVEL=debug
-      - ELASTICSEARCH_NODES=http://elasticsearch:9200
-      - NSQD_HOST=nsqd
-      - HOSTNAME=retraced-api-67856674bf-kwq7f
-      - NSQD_TCP_PORT=4150
+    environment: *common-variables
     networks:
       - retraced
     command: node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts es
