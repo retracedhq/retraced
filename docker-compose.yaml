@@ -7,7 +7,7 @@ services:
   retraced-api:
     build: 
       context: .
-      dockerfile: ./Dockerfile.skaffold
+      dockerfile: ./Dockerfile.base
     ports:
       - "3000:3000"
       - "9229:9229"
@@ -35,13 +35,14 @@ services:
       - NSQD_TCP_PORT=4150
     networks:
       - retraced
+    command: node --inspect=0.0.0.0 -r ts-node/register src/index.ts
     depends_on:
       - postgres-migration
 
   retraced-dbutil:
     build: 
       context: .
-      dockerfile: ./Dockerfile.dbutil
+      dockerfile: ./Dockerfile.base
     environment:
       - POSTGRES_HOST=postgres
       - HMAC_SECRET_ADMIN=xxxxxxx
@@ -66,11 +67,12 @@ services:
       - NSQD_TCP_PORT=4150
     networks:
       - retraced
+    command: /bin/sleep infinity
 
   retraced-processor:
     build: 
       context: .
-      dockerfile: ./Dockerfile.processor
+      dockerfile: ./Dockerfile.base
     ports:
       - "3001:3000"
     environment:
@@ -98,11 +100,12 @@ services:
       - retraced
     depends_on:
       - postgres
+    command: node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts
 
   retraced-cron:
     build: 
       context: .
-      dockerfile: ./Dockerfile.cron
+      dockerfile: ./Dockerfile.base
     environment:
       - POSTGRES_HOST=postgres
       - HMAC_SECRET_ADMIN=xxxxxxx
@@ -128,6 +131,7 @@ services:
       - retraced
     depends_on:
       - postgres
+    command: /usr/local/bin/replicated-auditlog-cron /crontab
 
   nsqd:
     image: nsqio/nsq:v1.2.1 
@@ -167,7 +171,7 @@ services:
   retraced-dev-bootstrap:
     build: 
       context: .
-      dockerfile: ./Dockerfile.pg.bootstrap
+      dockerfile: ./Dockerfile.base
     environment:
       - POSTGRES_HOST=postgres
       - HMAC_SECRET_ADMIN=xxxxxxx
@@ -193,12 +197,13 @@ services:
     networks:
       - retraced
     depends_on:
-      - postgres
+      - postgres-migration
+    command: node -r ts-node/register src/retracedctl.ts bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev 
 
   postgres-migration:
     build: 
       context: .
-      dockerfile: ./Dockerfile.pg.migration
+      dockerfile: ./Dockerfile.base
     environment:
       - POSTGRES_HOST=postgres
       - HMAC_SECRET_ADMIN=xxxxxxx
@@ -225,11 +230,12 @@ services:
       - retraced
     depends_on:
       - postgres
+    command: node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts pg
 
   elastic-migration:
     build: 
       context: .
-      dockerfile: ./Dockerfile.es.migration
+      dockerfile: ./Dockerfile.base
     environment:
       - POSTGRES_HOST=postgres
       - HMAC_SECRET_ADMIN=xxxxxxx
@@ -254,6 +260,7 @@ services:
       - NSQD_TCP_PORT=4150
     networks:
       - retraced
+    command: node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts es
     depends_on:
       elasticsearch:
         condition: service_started

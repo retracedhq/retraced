@@ -30,5 +30,3 @@ RUN make swagger
 # RUN sed -i.bak 's/lazyLoad(.\(.\+\).\, opts)/require(".\/api\/\1.js")/g' node_modules/@elastic/elasticsearch/api/index.js
 
 RUN chmod a+rwx /src
-
-CMD ["node", "--inspect=0.0.0.0", "-r", "ts-node/register", "src/_db/runner-lite.ts", "pg", "seed"]
