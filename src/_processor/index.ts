@@ -59,7 +59,6 @@ if (process.env["NO_WARP_PIPE"]) {
 const leftPad = (s, n) => n > s.length ? " ".repeat(n - s.length) + s : s;
 const registry = monkit.getRegistry();
 
-
 metrics.bootstrapFromEnv();
 
 const slowElapsedThreshold = 250.0; // ms

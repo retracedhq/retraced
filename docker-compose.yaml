@@ -40,6 +40,7 @@ services:
     command: node --inspect=0.0.0.0 -r ts-node/register src/index.ts
     depends_on:
       - postgres-migration
+    restart: "always"
 
   retraced-dbutil:
     build: 
@@ -62,6 +63,7 @@ services:
     depends_on:
       - postgres
     command: node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts
+    restart: "always"
 
   retraced-cron:
     build: 
@@ -73,6 +75,7 @@ services:
     depends_on:
       - postgres
     command: /usr/local/bin/replicated-auditlog-cron /crontab
+    restart: "always"
 
   nsqd:
     image: nsqio/nsq:v1.2.1 
@@ -87,6 +90,7 @@ services:
     command: nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd."
     networks:
       - retraced
+    restart: "always"
 
   postgres:
     image: postgres:10.4
@@ -99,6 +103,7 @@ services:
       - POSTGRES_DB=retraced
     networks:
       - retraced
+    restart: "always"
 
   elasticsearch:
     image: elasticsearch:7.8.0
@@ -131,14 +136,14 @@ services:
       - postgres
     command: node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts pg
 
-  elastic-migration:
-    build: 
-      context: .
-      dockerfile: ./Dockerfile.base
-    environment: *common-variables
-    networks:
-      - retraced
-    command: node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts es
-    depends_on:
-      elasticsearch:
-        condition: service_started
+  # elastic-migration:
+  #   build: 
+  #     context: .
+  #     dockerfile: ./Dockerfile.base
+  #   environment: *common-variables
+  #   networks:
+  #     - retraced
+  #   command: node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts es
+  #   depends_on:
+  #     elasticsearch:
+  #       condition: service_started

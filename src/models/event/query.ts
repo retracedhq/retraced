@@ -314,10 +314,10 @@ export function searchParams(opts: Options): RequestParams.Search {
     _source: "true",
     size: opts.size !== 0 ? opts.size : undefined,
     body: {
-      query: query,
+      query,
       sort: [
         {canonical_time: opts.sort},
-      ]
+      ],
     },
   };
 
