@@ -29,7 +29,7 @@ export const builder = {
     demand: true,
   },
   schemaPath: {
-    default: "/src/migrations/pg",
+    default: "./src/migrations/pg",
   },
 };
 

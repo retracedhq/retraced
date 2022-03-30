@@ -1,0 +1,40 @@
+version: "3.6"
+
+services:
+  nsqd:
+    image: nsqio/nsq:v1.2.1 
+    ports:
+      - "4150:4150"
+      - "4151:4151"
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=retraced
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=retraced
+    command: nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd."
+    restart: "always"
+
+  postgres:
+    image: postgres:10.4
+    ports:
+      - "5432:5432"
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=retraced
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=retraced
+
+  elasticsearch:
+    image: elasticsearch:7.8.0
+    volumes:
+      - ../elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - "9200:9200"
+
+  retraced-cron:
+    image: retraced_retraced-cron
+    environment:
+      - NSQD_HOST=nsqd
+      - NSQD_TCP_PORT=4150
+    command: /usr/local/bin/replicated-auditlog-cron /crontab
+    restart: "always"

@@ -50,6 +50,9 @@ spec:
             - /bin/sh
             - -i
             - -c
+            - /bin/sh
+            - -i
+            - -c
             - pg_isready -h 127.0.0.1 -p 5432
           initialDelaySeconds: 30
           timeoutSeconds: 5
