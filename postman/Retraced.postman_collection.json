@@ -1,0 +1,145 @@
+{
+	"info": {
+		"_postman_id": "f4f6cb3b-50b1-43c3-84c8-f190f6dbf243",
+		"name": "Retraced",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Audit-Log",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "dev",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/auditlog/v1/graphql",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auditlog",
+						"v1",
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token=dev",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"action\": \"string\",\n  \"crud\": \"c\",\n  \"group\": {\n    \"id\": \"string\",\n    \"name\": \"string\"\n  },\n  \"displayTitle\": \"string\",\n  \"created\": \"2022-03-21T07:17:54.428Z\",\n  \"actor\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"href\": \"string\"\n  },\n  \"target\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"href\": \"string\",\n    \"type\": \"string\"\n  },\n  \"source_ip\": \"127.0.0.3\",\n  \"description\": \"string\",\n  \"is_anonymous\": true,\n  \"is_failure\": true,\n  \"fields\": {},\n  \"component\": \"string\",\n  \"version\": \"string\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/auditlog/publisher/v1/project/dev/event",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auditlog",
+						"publisher",
+						"v1",
+						"project",
+						"dev",
+						"event"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "historic-ticker",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1234/api/historic-ticker",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1234",
+					"path": [
+						"api",
+						"historic-ticker"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token=dev",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"query\": {\n        \"search_text\": \"127.0.0.3\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/auditlog/viewer/v1/project/dev/events/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auditlog",
+						"viewer",
+						"v1",
+						"project",
+						"dev",
+						"events",
+						"search"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
