@@ -5,8 +5,8 @@
 Key responsibilities of the retraced API include:
 
 - Receiving and storing CreateEvent requests
-- Creating ViewerTokens to power the embeded `logs` viewer
-- Responding to queiries from embedded `logs` with results from Elasticsearch
+- Creating ViewerTokens to power the embedded `logs` viewer
+- Responding to queries from embedded `logs` with results from Elasticsearch
 - Probably some EITAPI stuff
 - Handle Auth0 login callback
 - Tokens, stats, etc.
