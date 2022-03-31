@@ -6,37 +6,6 @@
 	},
 	"item": [
 		{
-			"name": "Audit-Log",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "dev",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/auditlog/v1/graphql",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"auditlog",
-						"v1",
-						"graphql"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Save",
 			"request": {
 				"auth": {
@@ -52,7 +21,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"action\": \"string\",\n  \"crud\": \"c\",\n  \"group\": {\n    \"id\": \"string\",\n    \"name\": \"string\"\n  },\n  \"displayTitle\": \"string\",\n  \"created\": \"2022-03-21T07:17:54.428Z\",\n  \"actor\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"href\": \"string\"\n  },\n  \"target\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"href\": \"string\",\n    \"type\": \"string\"\n  },\n  \"source_ip\": \"127.0.0.3\",\n  \"description\": \"string\",\n  \"is_anonymous\": true,\n  \"is_failure\": true,\n  \"fields\": {},\n  \"component\": \"string\",\n  \"version\": \"string\"\n}",
+					"raw": "{\n  \"action\": \"action1\",\n  \"crud\": \"c\",\n  \"group\": {\n    \"id\": \"string\",\n    \"name\": \"group1\"\n  },\n  \"displayTitle\": \"string\",\n  \"created\": \"2022-03-21T07:17:54.428Z\",\n  \"actor\": {\n    \"id\": \"string\",\n    \"name\": \"actor1\",\n    \"href\": \"string\"\n  },\n  \"target\": {\n    \"id\": \"string\",\n    \"name\": \"target1\",\n    \"href\": \"target2\",\n    \"type\": \"target1\"\n  },\n  \"source_ip\": \"127.0.0.3\",\n  \"description\": \"descc\",\n  \"is_anonymous\": true,\n  \"is_failure\": true,\n  \"fields\": {},\n  \"component\": \"comp1\",\n  \"version\": \"v1\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -79,27 +48,7 @@
 			"response": []
 		},
 		{
-			"name": "historic-ticker",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:1234/api/historic-ticker",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "1234",
-					"path": [
-						"api",
-						"historic-ticker"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Fetch",
+			"name": "Viewer Fetch",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -136,6 +85,66 @@
 						"dev",
 						"events",
 						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin Fetch",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"endtime\", +new Date());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token=dev",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"query\": {\n        \"search_text\": \"v1\",\n        \"offset\": 0,\n        \"length\": 50,\n        \"start_time\": 0,\n        \"end_time\": {{endtime}},\n        \"create\": \"c\",\n        \"read\": \"\",\n        \"update\": \"\",\n        \"delete\": \"\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/auditlog/admin/v1/project/dev/events/search?environment_id=dev",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auditlog",
+						"admin",
+						"v1",
+						"project",
+						"dev",
+						"events",
+						"search"
+					],
+					"query": [
+						{
+							"key": "environment_id",
+							"value": "dev"
+						}
 					]
 				}
 			},

@@ -1,6 +1,8 @@
 import { checkAdminAccess } from "../../security/helpers";
 import searchEvents, { Options } from "../../models/event/search";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
+import Authenticator from "../../security/Authenticator";
+import getPgPool from '../../persistence/pg';
 
 /*
 What we're expecting from clients:
@@ -18,7 +20,7 @@ query: {
 }
 */
 export default async function handler(req) {
-  await checkAdminAccess(req);
+    const apiToken = await new Authenticator(getPgPool()).getApiTokenOr401(req.headers.authorization, req.params.projectId);
 
   if (!req.query.environment_id) {
     throw { status: 400, err: new Error("Missing environment_id") };
