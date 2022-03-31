@@ -21,7 +21,9 @@ query: {
 */
 export default async function handler(req) {
     const apiToken = await new Authenticator(getPgPool()).getApiTokenOr401(req.headers.authorization, req.params.projectId);
-
+    if(!apiToken.readAccess) {
+        throw { status: 401, err: new Error("Unauthorized") };
+    }
   if (!req.query.environment_id) {
     throw { status: 400, err: new Error("Missing environment_id") };
   }

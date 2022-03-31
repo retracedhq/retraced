@@ -176,11 +176,25 @@ export async function bootstrapProject(opts: BootstrapOpts) {
             project.id,
             env.id,
             {
-                name: opts.tokenName,
+                name: `${opts.tokenName}_read`,
                 disabled: false,
             },
             undefined,
-            opts.apiKey,
+            `${opts.apiKey}_read`,
+            true,
+            false
+        );
+        await createToken(
+            project.id,
+            env.id,
+            {
+                name: `${opts.tokenName}_write`,
+                disabled: false,
+            },
+            undefined,
+            `${opts.apiKey}_write`,
+            false,
+            true
         );
     } else if (token.projectId !== project.id) {
         throw new Error(`api key ${opts.keyVarRef} does not belong to project ${opts.projectVarRef}`);
