@@ -1,0 +1,16 @@
+ignore:
+
+  # https://github.com/anchore/grype#specifying-matches-to-ignore
+  # example to ignore a vulnerability
+  # This is the full set of supported rule fields:
+  # - vulnerability: CVE-2008-4318
+  #   fix-state: unknown
+  #   package:
+  #     name: libcurl
+  #     version: 1.5.1
+  #     type: npm
+  #     location: "/usr/local/lib/node_modules/**"
+
+# ignore postgres vulnerabilities
+- package:
+    type: apk
