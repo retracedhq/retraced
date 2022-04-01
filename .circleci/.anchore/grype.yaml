@@ -10,7 +10,3 @@ ignore:
   #     version: 1.5.1
   #     type: npm
   #     location: "/usr/local/lib/node_modules/**"
-
-# ignore postgres vulnerabilities
-- package:
-    type: apk
