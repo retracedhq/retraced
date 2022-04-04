@@ -83,6 +83,7 @@ export default async function(opts: Options): Promise<Result> {
           "country",
           "loc_subdiv1",
           "loc_subdiv2",
+          "source_ip",
           "fields.*",
         ],
       },
