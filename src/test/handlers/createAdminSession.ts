@@ -1,12 +1,7 @@
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
-import * as TypeMoq from "typemoq";
-import * as moment from "moment";
-
-import * as pg from "pg";
 
 import handler from "../../handlers/createAdminSession";
-import { createSession, ExternalAuth, CreateSessionResult } from "../../handlers/createAdminSession";
 
 @suite class CreateAdminSessionTest {
     @test public async "CreateAdminSession#handler() throws if external_auth is not present in boby"() {
