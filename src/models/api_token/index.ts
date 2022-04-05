@@ -44,7 +44,7 @@ export function apiTokenFromRow(row: any): ApiToken {
     environmentId: row.environment_id,
     projectId: row.project_id,
     readAccess: row.read_access,
-    writeAccess: row.write_access
+    writeAccess: row.write_access,
   };
 }
 

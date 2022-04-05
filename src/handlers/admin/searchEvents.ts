@@ -1,8 +1,7 @@
-import { checkAdminAccess } from "../../security/helpers";
 import searchEvents, { Options } from "../../models/event/search";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import Authenticator from "../../security/Authenticator";
-import getPgPool from '../../persistence/pg';
+import getPgPool from "../../persistence/pg";
 
 /*
 What we're expecting from clients:
@@ -20,10 +19,10 @@ query: {
 }
 */
 export default async function handler(req) {
-    const apiToken = await new Authenticator(getPgPool()).getApiTokenOr401(req.headers.authorization, req.params.projectId);
-    if(!apiToken.readAccess) {
-        throw { status: 401, err: new Error("Unauthorized") };
-    }
+  const apiToken = await new Authenticator(getPgPool()).getApiTokenOr401(req.headers.authorization, req.params.projectId);
+  if (!apiToken.readAccess) {
+      throw { status: 401, err: new Error("Unauthorized") };
+  }
   if (!req.query.environment_id) {
     throw { status: 400, err: new Error("Missing environment_id") };
   }
@@ -58,9 +57,9 @@ export default async function handler(req) {
 
   return {
     status: 200,
-    body: JSON.stringify({
+    body:   JSON.stringify({
       total_hits: results.totalHits,
-      events: hydratedEvents || [],
+      events:     hydratedEvents || [],
     }),
   };
 }

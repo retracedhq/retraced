@@ -155,7 +155,7 @@ export class EventCreater {
   @instrumented
   public async createEvent(authorization: string, projectId: string, event: CreateEventRequest) {
     const apiToken = await this.authenticator.getApiTokenOr401(authorization, projectId);
-    if(!apiToken.writeAccess) {
+    if (!apiToken.writeAccess) {
         throw { status: 401, err: new Error("Unauthorized") };
     }
     const violations = this.validateEventInput(event);

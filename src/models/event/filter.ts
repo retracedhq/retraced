@@ -94,7 +94,9 @@ const quote = (s: string): string => `"${s}"`;
 export function getFilters(query: ParsedQuery, scope: Scope): Filter[] {
     const filters: Filter[] = [];
     const nextParam = paramer(0);
-
+    if (!query) {
+        query = {};
+    }
     if (query.actions) {
         const some = query.actions.map((actionQuery: ActionQuery) => {
             if (actionQuery.isPrefix) {

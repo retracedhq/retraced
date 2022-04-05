@@ -12,8 +12,8 @@ module.exports = () => {
               "autocomplete_filter": {
                 "type": "edge_ngram",
                 "min_gram": 1,
-                "max_gram": 20
-              }
+                "max_gram": 20,
+              },
             },
             "analyzer": {
               "autocomplete": {
@@ -21,81 +21,81 @@ module.exports = () => {
                 "tokenizer": "standard",
                 "filter": [
                   "lowercase",
-                  "autocomplete_filter"
-                ]
-              }
-            }
-          }
+                  "autocomplete_filter",
+                ],
+              },
+            },
+          },
         },
         "mappings": {
           "properties": {
             "id": {
-              "type": "keyword"
+              "type": "keyword",
             },
             "action": {
-              "type": "text"
+              "type": "text",
             },
             "group": {
               "properties": {
                 "id": {
-                  "type": "keyword"
+                  "type": "keyword",
                 },
                 "name": {
-                  "type": "text"
-                }
-              }
+                  "type": "text",
+                },
+              },
             },
             "actor": {
               "properties": {
                 "id": {
-                  "type": "keyword"
+                  "type": "keyword",
                 },
                 "name": {
-                  "type": "text"
-                }
-              }
+                  "type": "text",
+                },
+              },
             },
             "target": {
               "properties": {
                 "id": {
-                  "type": "keyword"
+                  "type": "keyword",
                 },
                 "name": {
-                  "type": "text"
+                  "type": "text",
                 },
                 "type": {
-                  "type": "text"
-                }
-              }
+                  "type": "text",
+                },
+              },
             },
             "description": {
-              "type": "text"
+              "type": "text",
             },
             "created": {
               "type": "date",
-              "format": "epoch_millis"
+              "format": "epoch_millis",
             },
             "received": {
               "type": "date",
-              "format": "epoch_millis"
+              "format": "epoch_millis",
             },
             "canonical_time": {
               "type": "date",
-              "format": "epoch_millis"
+              "format": "epoch_millis",
             },
             "source_ip": {
-              "type": "ip"
+              "type": "ip",
             },
             "raw": {
               "type": "text",
-              "index": false
+              "index": false,
             },
             "country": {
-              "type": "text"
-            }
-          }
-        }
-      }
+              "type": "text",
+            },
+          },
+        },
+      },
     },
   };
 };
