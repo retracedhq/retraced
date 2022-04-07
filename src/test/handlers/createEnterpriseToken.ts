@@ -1,31 +1,20 @@
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
-import createProject from "../../../handlers/admin/createProject";
-import getPgPool from "../../../persistence/pg";
-import { AdminTokenStore } from "../../../models/admin_token/store";
+import { createEnterpriseToken } from "../../handlers/createEnterpriseToken";
+import getPgPool from "../../persistence/pg";
+import { AdminTokenStore } from "../../models/admin_token/store";
+import create from "../../models/api_token/create";
 
-@suite class CreateProject {
-    @test public async "CreateProject#createProject()"() {
+@suite class CreateEnterpriseToken {
+    @test public async "CreateEnterpriseToken#createEnterpriseToken()"() {
         let pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await createProject({
-                get: (name) => {
-                    if (name === "Authorization") {
-                        return `id=${res.id} token=${res.token}`;
-                    }
-                },
-                params: {
-                    projectId: "test",
-                    environment_id: "test",
-                },
-                body: {
-                    name: "test1",
-                },
+            await setup(pool);
+            let result = await createEnterpriseToken(`token=test`, "test", "test", {
+                display_name: "test",
             });
-            expect(result.status).to.equal(201);
-            expect(JSON.parse(result.body).project.name).to.equal("test1");
+            expect(result.display_name).to.equal("test");
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -40,6 +29,10 @@ async function setup(pool) {
     await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test", "test", "dummytoken"]);
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     let res = await AdminTokenStore.default().createAdminToken("test");
+    await create("test", "test", {
+        name: "test",
+        disabled: false,
+    }, undefined, "test");
     return res;
 }
 
@@ -51,4 +44,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM projectuser WHERE project_id=$1`, ["test"]);
     await pool.query(`DELETE FROM token WHERE environment_id=$1`, ["test"]);
     await pool.query(`DELETE FROM retraceduser WHERE email=$1`, ["test@test.com"]);
+    await pool.query(`DELETE FROM eitapi_token WHERE environment_id=$1`, ["test"]);
 }

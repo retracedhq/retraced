@@ -25,7 +25,7 @@ x-common-variables: &common-variables
   NSQD_HOST: nsqd
   HOSTNAME: retraced-api-67856674bf-kwq7f
   NSQD_TCP_PORT: 4150
-  PG_SEARCH: true
+  # PG_SEARCH: true
 
 services:
   retraced-api:
@@ -115,16 +115,16 @@ services:
     networks:
       - retraced
 
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:7.8.0
-  #   environment:
-  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-  #   networks:
-  #     - retraced
-  #   depends_on:
-  #     - elasticsearch
-  #   ports:
-  #     - 5601:5601
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.8.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - retraced
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
 
   retraced-dev-bootstrap:
     build: 
@@ -148,14 +148,14 @@ services:
       - postgres
     command: node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts pg
 
-  # elastic-migration:
-  #   build: 
-  #     context: .
-  #     dockerfile: ./Dockerfile.base
-  #   environment: *common-variables
-  #   networks:
-  #     - retraced
-  #   command: node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts es
-  #   depends_on:
-  #     elasticsearch:
-  #       condition: service_started
+  elastic-migration:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.base
+    environment: *common-variables
+    networks:
+      - retraced
+    command: node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts es
+    depends_on:
+      elasticsearch:
+        condition: service_started

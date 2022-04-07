@@ -10,16 +10,16 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
         try {
             await cleanup(pool);
             let res = await setup(pool);
-            let result = await createAPIToken(`id=${res.id} token=${res.token}`,"test", "test", "test", {
+            let result = await createAPIToken(`id=${res.id} token=${res.token}`, "test", "test", "test", {
                 disabled: false,
-                name: "test"
+                name: "test",
             });
-            expect(result.token).to.equal('test');
-            expect(result.projectId).to.equal('test');
-            expect(result.environmentId).to.equal('test');
+            expect(result.token).to.equal("test");
+            expect(result.projectId).to.equal("test");
+            expect(result.environmentId).to.equal("test");
             expect(result.readAccess).to.equal(true);
             expect(result.writeAccess).to.equal(true);
-        } catch(ex) {
+        } catch (ex) {
             console.log(ex);
         } finally {
             await cleanup(pool);
@@ -27,10 +27,10 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
     }
 }
 async function setup(pool) {
-    await pool.query('INSERT INTO project (id, name) VALUES ($1, $2)', ["test", "test"]);
-    await pool.query('INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)', ["test", "test", "test"]);
+    await pool.query("INSERT INTO project (id, name) VALUES ($1, $2)", ["test", "test"]);
+    await pool.query("INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     let res = await AdminTokenStore.default().createAdminToken("test");
-    await pool.query('INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)', ["test", "test", "test"]);
+    await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     return res;
 }
 
@@ -41,4 +41,3 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM environment WHERE name=$1`, ["test"]);
     await pool.query(`DELETE FROM project WHERE name=$1`, ["test"]);
 }
-

@@ -5,9 +5,8 @@ import handler from "../../handlers/createAdminSession";
 
 @suite class CreateAdminSessionTest {
     @test public async "CreateAdminSession#handler() throws if external_auth is not present in boby"() {
-        
         let req = {
-            body: {}
+            body: {},
         };
         const expected = new Error("Missing required auth");
 
@@ -21,11 +20,10 @@ import handler from "../../handlers/createAdminSession";
     }
 
     @test public async "CreateAdminSession#handler() throws if auth0 is not initialised"() {
-        
         let req = {
             body: {
-                external_auth: ""
-            }
+                external_auth: "",
+            },
         };
         const expected = new Error("Missing required auth");
 

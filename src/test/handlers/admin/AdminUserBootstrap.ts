@@ -1,9 +1,5 @@
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
-import * as TypeMoq from "typemoq";
-import * as moment from "moment";
-
-import * as pg from "pg";
 
 import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
 
@@ -11,11 +7,6 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
 
 @suite class AdminUserBootstrapTest {
     @test public async "AdminUserBootstrap#AdminUserBootstrap() gets initialized"() {
-        
-        let req = {
-            body: {}
-        };
-
         try {
             let adminUserBootstrap = new AdminUserBootstrap("test");
             expect(adminUserBootstrap).to.not.be.null;
@@ -25,15 +16,14 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
     }
 
     @test public async "AdminUserBootstrap#handle() throws if token is not found"() {
-
         const expected = new Error("Not Found");
 
         try {
             let adminUserBootstrap = new AdminUserBootstrap("test");
             await adminUserBootstrap.handle("", {
-                "email": "",
-                "upstreamToken": "",
-                "inviteId": "",
+                email: "",
+                upstreamToken: "",
+                inviteId: "",
             });
         } catch (err) {
             expect(err.err.message).to.equal(expected.message);
@@ -42,15 +32,14 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
     }
 
     @test public async "AdminUserBootstrap#handle() throws if token is not valid"() {
-
         const expected = new Error("Not Found");
 
         try {
             let adminUserBootstrap = new AdminUserBootstrap("test");
             await adminUserBootstrap.handle("token=not_shared_secret", {
-                "email": "",
-                "upstreamToken": "",
-                "inviteId": "",
+                email: "",
+                upstreamToken: "",
+                inviteId: "",
             });
         } catch (err) {
             expect(err.err.message).to.equal(expected.message);
@@ -59,15 +48,14 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
     }
 
     @test public async "AdminUserBootstrap#handle() throws if claims has not valid email"() {
-
         const expected = new Error("Missing or invalid parameter: `claims.email`");
 
         try {
             let adminUserBootstrap = new AdminUserBootstrap("test");
             await adminUserBootstrap.handle("token=test", {
-                "email": "",
-                "upstreamToken": "",
-                "inviteId": "",
+                email: "",
+                upstreamToken: "",
+                inviteId: "",
             });
         } catch (err) {
             expect(err.err.message).to.equal(expected.message);
@@ -76,15 +64,12 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
     }
 
     @test public async "AdminUserBootstrap#handle()"() {
-
-        const expected = new Error("Missing or invalid parameter: `claims.email`");
-
         try {
             let adminUserBootstrap = new AdminUserBootstrap("test");
             let res = await adminUserBootstrap.handle("token=test", {
-                "email": "test@test.com",
-                "upstreamToken": "",
-                "inviteId": "",
+                email: "test@test.com",
+                upstreamToken: "",
+                inviteId: "",
             });
             console.log(res);
         } catch (err) {
@@ -93,9 +78,6 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
     }
 
     @test public async "AdminUserBootstrap#handler()"() {
-
-        const expected = new Error("Missing or invalid parameter: `claims.email`");
-
         try {
             let adminUserBootstrap = new AdminUserBootstrap("test");
             let handler = adminUserBootstrap.handler();
