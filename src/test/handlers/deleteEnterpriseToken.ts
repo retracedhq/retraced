@@ -5,7 +5,6 @@ import { createEnterpriseToken } from "../../handlers/createEnterpriseToken";
 import { expect } from "chai";
 import { AdminTokenStore } from "../../models/admin_token/store";
 import create from "../../models/api_token/create";
-import { result } from "lodash";
 
 @suite class DeleteEnterpriseToken {
     @test public async "deleteEnterpriseToken#deleteEnterpriseToken()"() {
@@ -67,4 +66,3 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM retraceduser WHERE email=$1`, ["test@test.com"]);
     await pool.query(`DELETE FROM eitapi_token WHERE environment_id=$1`, ["test"]);
 }
-
