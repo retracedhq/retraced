@@ -34,7 +34,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
     }
 }
 async function setup(pool) {
-    try{
+    try {
     await pool.query("INSERT INTO project (id, name) VALUES ($1, $2)", ["test", "test"]);
     await pool.query("INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test", "test@test.com"]);
@@ -42,9 +42,9 @@ async function setup(pool) {
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     let res = await AdminTokenStore.default().createAdminToken("test");
     return res;
-    } catch(ex) {
+    } catch (ex) {
         console.log(ex);
-        return { id: "", token: "", };
+        return { id: "", token: "" };
     }
 }
 
@@ -57,7 +57,7 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM projectuser WHERE project_id=$1`, ["test"]);
     await pool.query(`DELETE FROM token WHERE environment_id=$1`, ["test"]);
     await pool.query(`DELETE FROM retraceduser WHERE email=$1`, ["test@test.com"]);
-    } catch(ex) {
+    } catch (ex) {
         console.log(ex);
     }
 }

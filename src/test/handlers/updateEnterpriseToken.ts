@@ -32,7 +32,7 @@ import create from "../../models/api_token/create";
             let result = await createEnterpriseToken(`token=test`, "test", "test", {
                 display_name: "test",
             });
-            let res = await updateEnterpriseToken("token=test", "test", "test1", result.token, "test", "");
+            await updateEnterpriseToken("token=test", "test", "test1", result.token, "test", "");
             throw new Error(`Expected error 'Expected updated row count of 1, got 0' to be thrown`);
         } catch (ex) {
             expect(ex.message).to.equal("Expected updated row count of 1, got 0");

@@ -12,7 +12,7 @@ import create from "../../models/api_token/create";
         try {
             await cleanup(pool);
             await setup(pool);
-            let result = await createEnterpriseToken(`token=test`, "test", "test", {
+            await createEnterpriseToken(`token=test`, "test", "test", {
                 display_name: "test",
             });
             let res = await listEnterpriseTokens("token=test", "test", "test");

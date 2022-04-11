@@ -12,13 +12,13 @@ import create from "../../models/api_token/create";
         try {
             await cleanup(pool);
             await setup(pool);
-            let result = await createEnterpriseToken(`token=test`, "test", "test", {
+            await createEnterpriseToken(`token=test`, "test", "test", {
                 display_name: "test",
             });
             let res = await getInvite({
                 query: {
                     id: "test",
-                }
+                },
             });
             expect(res.status).to.equal(200);
             expect(res.body).to.not.be.undefined;
