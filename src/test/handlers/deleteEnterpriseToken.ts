@@ -32,7 +32,6 @@ import create from "../../models/api_token/create";
                 display_name: "test",
             });
             await deleteEnterpriseToken("token=test", "test", "test", result.token + "1");
-            console.log(result);
             throw new Error(`Expected error 'Not Found' to be thrown`);
         } catch (ex) {
             expect(ex.status).to.equal(404);

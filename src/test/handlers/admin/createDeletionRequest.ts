@@ -32,7 +32,6 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
             });
             throw new Error(`Expected error 'Unhandled resource kind: 'test'' to be thrown`);
         } catch (ex) {
-            console.log(ex);
             expect(ex.status).to.equal(400);
             expect(ex.err.message).to.equal("Unhandled resource kind: 'test'");
         } finally {
@@ -50,7 +49,6 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
             });
             throw new Error(`Expected error 'Environment not found: id='test1'' to be thrown`);
         } catch (ex) {
-            console.log(ex);
             expect(ex.status).to.equal(400);
             expect(ex.err.message).to.equal("Environment not found: id='test1'");
         } finally {
@@ -72,7 +70,6 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
             });
             throw new Error(`Expected error 'A deletion request already exists for that resource.' to be thrown`);
         } catch (ex) {
-            console.log(ex);
             expect(ex.status).to.equal(409);
             expect(ex.err.message).to.equal("A deletion request already exists for that resource.");
         } finally {

@@ -66,12 +66,11 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
     @test public async "AdminUserBootstrap#handle()"() {
         try {
             let adminUserBootstrap = new AdminUserBootstrap("test");
-            let res = await adminUserBootstrap.handle("token=test", {
+            await adminUserBootstrap.handle("token=test", {
                 email: "test@test.com",
                 upstreamToken: "",
                 inviteId: "",
             });
-            console.log(res);
         } catch (err) {
             console.log(err);
         }

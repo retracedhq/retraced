@@ -26,7 +26,6 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
             await approveDeletionConfirmation(`id=${res.id} token=${res.token}`, "test", "test", "test1");
             throw new Error(`Expected error 'No such confirmation code' to be thrown`);
         } catch (ex) {
-            console.log(ex);
             expect(ex.status).to.equal(404);
             expect(ex.err.message).to.equal("No such confirmation code");
         } finally {
