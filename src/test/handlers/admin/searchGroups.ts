@@ -1,19 +1,18 @@
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
-import searchEvents from "../../../handlers/admin/searchEvents";
+import searchGroups from "../../../handlers/admin/searchGroups";
 import getPgPool from "../../../persistence/pg";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 
-@suite class SearchEvents {
-    @test public async "SearchEvents#searchEvents()"() {
+@suite class SearchGroups {
+    @test public async "SearchGroups#searchGroups()"() {
         let pool = getPgPool();
         try {
             await cleanup(pool);
-            await setup(pool);
-            await pool.query("INSERT INTO token (token, created, disabled, environment_id, name, project_id, read_access, write_access) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", ["test", new Date(), false, "test", "test", "test", true, true]);
-            let result = await searchEvents({
-                headers: {
-                    authorization: `token=test`,
+            let res = await setup(pool);
+            let result = await searchGroups({
+                get: () => {
+                    return `id=${res.id} token=${res.token}`;
                 },
                 params: {
                     projectId: "test",
@@ -23,67 +22,69 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 },
                 body: {
                     query: {
-                        search_text: "127.0.0.1",
-                        offset: 0,
-                        length: 50,
-                        start_time: 0,
-                        end_time: +new Date(),
-                        create: "c",
-                        read: "",
-                        update: "",
-                        delete: "",
+
                     },
                 },
             });
             expect(result.status).to.equal(200);
-            expect(result.body).to.not.undefined;
+            expect(JSON.parse(result.body).groups.length).to.equal(0);
+            expect(JSON.parse(result.body).total_hits).to.equal(0);
         } catch (ex) {
             console.log(ex);
         } finally {
             await cleanup(pool);
         }
     }
-    @test public async "SearchEvents#searchEvents() without read access"() {
+    @test public async "SearchGroups#searchGroups() with invalid environment"() {
         let pool = getPgPool();
         try {
             await cleanup(pool);
-            await setup(pool);
-            await pool.query("INSERT INTO token (token, created, disabled, environment_id, name, project_id, read_access, write_access) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", ["test", new Date(), false, "test", "test", "test", false, true]);
-            await searchEvents({
-                headers: {
-                    authorization: `token=test`,
+            let res = await setup(pool);
+            let result = await searchGroups({
+                get: () => {
+                    return `id=${res.id} token=${res.token}`;
                 },
                 params: {
                     projectId: "test",
                 },
                 query: {
-                    environment_id: "test",
+                    environment_id: "testt",
+                },
+                body: {
+                    query: {
+
+                    },
                 },
             });
-            throw new Error(`Expected an error 'Unauthorized'`);
+            expect(result.status).to.equal(200);
+            expect(JSON.parse(result.body).groups.length).to.equal(0);
+            expect(JSON.parse(result.body).total_hits).to.equal(0);
         } catch (ex) {
-            expect(ex.status).to.equal(401);
-            expect(ex.err.message).to.equal("Unauthorized");
+            console.log(ex);
         } finally {
             await cleanup(pool);
         }
     }
-    @test public async "SearchEvents#searchEvents() without environment id"() {
+    @test public async "SearchGroups#searchGroups() throws when environment is not received"() {
         let pool = getPgPool();
         try {
             await cleanup(pool);
-            await setup(pool);
-            await pool.query("INSERT INTO token (token, created, disabled, environment_id, name, project_id, read_access, write_access) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", ["test", new Date(), false, "test", "test", "test", true, true]);
-            await searchEvents({
-                headers: {
-                    authorization: `token=test`,
+            let res = await setup(pool);
+            await searchGroups({
+                get: () => {
+                    return `id=${res.id} token=${res.token}`;
                 },
                 params: {
                     projectId: "test",
                 },
                 query: {},
+                body: {
+                    query: {
+
+                    },
+                },
             });
-            throw new Error(`Expected an error 'Missing environment_id'`);
+            throw new Error("Expected error \"Missing environment_id\"");
         } catch (ex) {
             expect(ex.status).to.equal(400);
             expect(ex.err.message).to.equal("Missing environment_id");
@@ -98,11 +99,10 @@ async function setup(pool) {
     await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test", "test@test.com"]);
     await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test1", "test1@test.com"]);
     await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test", "test", "dummytoken"]);
-    // await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test1", "test", "dummytoken"]);
+    await pool.query("INSERT INTO token (token, created, disabled, environment_id, name, project_id, read_access, write_access) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", ["test", new Date(), false, "test", "test", "test", true, true]);
     let res = await AdminTokenStore.default().createAdminToken("test");
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test1", "test", "test1"]);
-    await pool.query("INSERT INTO actor (id, created, environment_id, event_count, first_active, foreign_id, last_active, name, project_id, url, fields) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)", ["test", new Date(), "test", 100, new Date(), "test", new Date(), "test", "test", "www.test.com", { name: "test" }]);
     // await pool.query("INSERT INTO deletion_request (id, created, backoff_interval, resource_kind, resource_id) VALUES ($1, $2, $3, $4, $5)", ["test", new Date(), 10000000, "test", "test"]);
     // await pool.query("INSERT INTO deletion_confirmation (id, deletion_request_id, retraceduser_id, visible_code) VALUES ($1, $2, $3, $4)", ["test", "test", "test", "test"]);
     return res;
@@ -118,6 +118,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM retraceduser WHERE id=$1 OR id=$2`, ["test", "test1"]);
     await pool.query(`DELETE FROM deletion_request WHERE resource_id=$1`, ["test"]);
     await pool.query(`DELETE FROM deletion_confirmation WHERE id=$1`, ["test"]);
-    await pool.query(`DELETE FROM action WHERE id=$1`, ["test"]);
-    await pool.query(`DELETE FROM actor WHERE id=$1`, ["test"]);
+    await pool.query(`DELETE FROM invite WHERE project_id=$1`, ["test"]);
 }

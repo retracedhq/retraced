@@ -29,7 +29,7 @@ export default async function handler(req: express.Request) {
 
 export async function createSavedSearchHandler(auth: string, body: CreateSavedSearchRequest): Promise<SavedSearch> {
   const eitapiToken = await checkEitapiAccessUnwrapped(auth);
-
+  console.log("!body.name", !body.name);
   if (!body.name) {
     throw {
       err: new Error("Missing required 'name' field"),
