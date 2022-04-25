@@ -41,7 +41,6 @@ import create from "../../../models/api_token/create";
             });
             throw new Error(`Expected error "Missing required 'saved_search_id' field" to be thrown`);
         } catch (ex) {
-            console.log(ex);
             expect(ex.status).to.equal(400);
             expect(ex.err.message).to.equal("Missing required 'saved_search_id' field");
         } finally {
@@ -64,7 +63,6 @@ import create from "../../../models/api_token/create";
             });
             throw new Error(`Expected error "Saved search not found (id=${savedSearchId})' to be thrown`);
         } catch (ex) {
-            console.log(ex);
             expect(ex.status).to.equal(404);
             expect(ex.err.message).to.equal(`Saved search not found (id=${savedSearchId})`);
         } finally {

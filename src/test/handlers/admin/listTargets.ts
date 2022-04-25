@@ -56,6 +56,6 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM retraceduser WHERE id=$1 OR id=$2`, ["test", "test1"]);
     await pool.query(`DELETE FROM deletion_request WHERE resource_id=$1`, ["test"]);
     await pool.query(`DELETE FROM deletion_confirmation WHERE id=$1`, ["test"]);
-    await pool.query(`DELETE FROM action WHERE id=$1`, ["test"]);
-    await pool.query(`DELETE FROM actor WHERE id=$1`, ["test"]);
+    await pool.query(`DELETE FROM action WHERE id=$1 OR environment_id=$1`, ["test"]);
+    await pool.query(`DELETE FROM actor WHERE id=$1 OR environment_id=$1`, ["test"]);
 }

@@ -150,7 +150,7 @@ import create from "../../../models/api_token/create";
             await cleanup(pool);
         }
     }
-    @test public async "PumpActiveSearch#pumpActiveSearch() throws if active and saved search if not found"() {
+    @test public async "PumpActiveSearch#pumpActiveSearch() throws if active and saved search not found"() {
         let pool = getPgPool();
         let activeSearchId = "test";
         let savedSearchId = "dfs";
@@ -174,9 +174,10 @@ import create from "../../../models/api_token/create";
                 },
                 body: {},
             });
-            console.log(res);
+            console.log("res=>", res);
             throw new Error(`Expected error "Active search (id=${activeSearchId}) refers to a non-existent saved search (id=${savedSearchId})" to be thrown`);
         } catch (ex) {
+            console.log(ex);
             expect(ex.status).to.equal(404);
             expect(ex.err.message).to.equal(`Active search (id=${activeSearchId}) refers to a non-existent saved search (id=${savedSearchId})`);
         } finally {
