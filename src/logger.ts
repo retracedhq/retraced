@@ -3,12 +3,12 @@ import * as fs from "fs";
 
 function initLoggerFromEnv(): any {
   if (process.env.RETRACED_API_LOG_FILE) {
-    return pino(
+    return pino.pino(
         fs.createWriteStream(process.env.RETRACED_API_LOG_FILE),
     );
   }
 
-  return pino();
+  return pino.pino();
 }
 
 export const logger = initLoggerFromEnv();
