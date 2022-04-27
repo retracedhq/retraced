@@ -1,6 +1,6 @@
 import "source-map-support/register";
 import getPgPool from "../../persistence/pg";
-import { Invite } from "./index";
+import { Invite, parseInvite } from "./index";
 
 const pgPool = getPgPool();
 
@@ -25,7 +25,7 @@ export default async function getInvite(opts: Options): Promise<null|Invite> {
 
   const result = await pgPool.query(q, v);
   if (result.rowCount > 0) {
-    return result.rows[0];
+    return parseInvite(result.rows[0]);
   }
 
   return null;

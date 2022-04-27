@@ -1,4 +1,4 @@
-import * as pino from "pino";
+import { pino } from "pino";
 import * as fs from "fs";
 import * as process from "process";
 
