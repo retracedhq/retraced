@@ -3,7 +3,7 @@ import { logger } from "../../logger";
 
 const pgPool = getPgPool();
 
-export default async function (id: string): Promise<boolean> {
+export default async function(id: string): Promise<boolean> {
   const q = `
     delete
     from

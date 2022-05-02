@@ -13,7 +13,7 @@ interface Opts {
   projectId: string;
 
   id?: string;
-};
+}
 
 export default async function createEnvironment(opts: Opts): Promise<Environment> {
   const environment = {

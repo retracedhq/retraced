@@ -14,4 +14,4 @@ export default async function(req) {
   return {
     status: 204,
   };
-};
+}

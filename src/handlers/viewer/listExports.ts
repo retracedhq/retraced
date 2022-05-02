@@ -13,4 +13,4 @@ export default async function(req) {
     status: 200,
     body: JSON.stringify(list),
   };
-};
+}

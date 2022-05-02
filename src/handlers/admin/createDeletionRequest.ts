@@ -75,7 +75,7 @@ export default async function handle(
 
   // Currently, we expect approval from all other team members.
   // TODO(zhaytee): Allow this list to be configured at some level.
-  let confirmationUserIds: string[] = [];
+  const confirmationUserIds: string[] = [];
   const teamMembers: any = await listTeamMembers({ projectId });
   for (const member of teamMembers) {
     if (member.id !== thisUserId) {

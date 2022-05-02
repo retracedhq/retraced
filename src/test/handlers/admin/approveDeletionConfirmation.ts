@@ -6,11 +6,11 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
 
 @suite class ApproveDeletionConfirmation {
     @test public async "ApproveDeletionConfirmation#approveDeletionConfirmation()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await approveDeletionConfirmation(`id=${res.id} token=${res.token}`, "test", "test", "test");
+            const res = await setup(pool);
+            const result = await approveDeletionConfirmation(`id=${res.id} token=${res.token}`, "test", "test", "test");
             expect(result).to.be.undefined;
         } catch (ex) {
             console.log(ex);
@@ -19,10 +19,10 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
         }
     }
     @test public async "ApproveDeletionConfirmation#approveDeletionConfirmation() throws if visible code is invalid"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
+            const res = await setup(pool);
             await approveDeletionConfirmation(`id=${res.id} token=${res.token}`, "test", "test", "test1");
             throw new Error(`Expected error 'No such confirmation code' to be thrown`);
         } catch (ex) {
@@ -38,7 +38,7 @@ async function setup(pool) {
     await pool.query("INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test", "test@test.com"]);
     await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test", "test", "dummytoken"]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO deletion_request (id, created, backoff_interval, resource_kind, resource_id) VALUES ($1, $2, $3, $4, $5)", ["test", new Date(), 10000000, "test", "test"]);
     await pool.query("INSERT INTO deletion_confirmation (id, deletion_request_id, retraceduser_id, visible_code) VALUES ($1, $2, $3, $4)", ["test", "test", "test", "test"]);

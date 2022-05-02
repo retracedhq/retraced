@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import * as chalk from "chalk";
+import chalk from "chalk";
 import * as walk from "walk";
 import * as path from "path";
 import * as util from "util";
@@ -105,7 +105,7 @@ export const handler = (argv) => {
             }
           });
         })
-        .then(<any> ((shouldSave) => {
+        .then(((shouldSave) => {
           if (shouldSave) {
             return pg.query(`insert into es_migration_meta (
             id, created
@@ -114,7 +114,7 @@ export const handler = (argv) => {
           ) on conflict do nothing`, [timestamp]);
           }
           return Promise.resolve();
-        }))
+        }) as any)
         .then(() => {
           next(); // done! next file pls
         })

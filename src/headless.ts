@@ -30,7 +30,7 @@ export async function reportEvents(events: Event[]) {
 export async function audit(
     req: express.Request,
     action: string,
-    crud: crud,
+    crudOperation: crud,
     record?: any,
 ) {
     if (!enabled) {
@@ -39,7 +39,7 @@ export async function audit(
     const fromReq = await fromRequest(req);
     const event = makeEvent(
         action,
-        crud,
+        crudOperation,
         fromReq,
         record,
     );
@@ -90,16 +90,16 @@ async function fromRequest(req: express.Request) {
 
 function makeEvent(
     action: string,
-    crud: crud,
-    fromRequest: any,
+    crudOperation: crud,
+    fromRequestInfo: any,
     record?: any,
 ) {
     const event: any = _.merge(
         {
           action,
-          crud,
+          crud: crudOperation,
         },
-        fromRequest,
+        fromRequestInfo,
         record,
     );
 

@@ -9,7 +9,7 @@ export interface Options {
 export default async function(opts: Options) {
   const pg = await pgPool.connect();
   try {
-    let q = `
+    const q = `
     select
       id, project_id, environment_id, group_id, saved_search_id, next_token, next_start_time
     from

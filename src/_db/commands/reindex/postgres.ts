@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import * as chalk from "chalk";
+import chalk from "chalk";
 import * as uuid from "uuid";
 import * as util from "util";
 
@@ -66,7 +66,7 @@ export const handler = async (argv) => {
     console.log(chalk.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
   }
 
-  let eventSource = new PostgresEventSource(pgPool, argv.startDate, argv.endDate, argv.pageSize);
+  const eventSource = new PostgresEventSource(pgPool, argv.startDate, argv.endDate, argv.pageSize);
 
   const esTempIndex = `retraced.reindex.${uuid.v4()}`;
   const esTargetIndex = `retraced.${argv.projectId}.${argv.environmentId}`;
@@ -79,7 +79,7 @@ export const handler = async (argv) => {
   });
 
   const aliasesBlob = await es.cat.aliases({ name: esTargetIndex });
-  let currentIndices: string[] = [];
+  const currentIndices: string[] = [];
   if (!aliasesBlob) {
     logger.error({msg: "no aliasesBlob"});
   }
@@ -94,7 +94,7 @@ export const handler = async (argv) => {
   });
 
   const aliasesBlobWrite = await es.cat.aliases({ name: esTargetWriteIndex });
-  let currentIndicesWrite: string[] = [];
+  const currentIndicesWrite: string[] = [];
   if (!aliasesBlobWrite) {
     logger.error({msg: "no aliasesBlobWrite"});
   } else {
@@ -148,14 +148,10 @@ function finalize( dryRun: boolean, esTempIndex: string, esTargetIndex: string, 
 
   if (dryRun) {
     console.log(chalk.yellow(`
-    
     --dryRun was set, skipping final index rotation.
-    
     Index changes for completing the reindex manually are shown above. If you'd like to use these indices, you should:
-    
-        - remove aliases from the indices listed in toRemove, 
+        - remove aliases from the indices listed in toRemove,
         - add aliases to the indices listed in toAdd`,
-
     ));
     process.exit(0);
   }

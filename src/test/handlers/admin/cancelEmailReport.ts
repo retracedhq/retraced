@@ -6,11 +6,11 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
 
 @suite class CancelEmailReport {
     @test public async "CancelEmailReport#cancelEmailReport()#dailyReport"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
-            let result = await cancelEmailReport({
+            const result = await cancelEmailReport({
                 params: {
                     environmentId: "test",
                     userId: "test",
@@ -31,11 +31,11 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
         }
     }
     @test public async "CancelEmailReport#cancelEmailReport()#anomalyReport"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
-            let result = await cancelEmailReport({
+            const result = await cancelEmailReport({
                 params: {
                     environmentId: "test",
                     userId: "test",
@@ -56,11 +56,11 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
         }
     }
     @test public async "CancelEmailReport#cancelEmailReport() throws if env user is not found"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
-            let result = await cancelEmailReport({
+            const result = await cancelEmailReport({
                 params: {
                     environmentId: "test1",
                     userId: "test",
@@ -78,11 +78,11 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
         }
     }
     @test public async "CancelEmailReport#cancelEmailReport() throws if token is invalid"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
-            let result = await cancelEmailReport({
+            const result = await cancelEmailReport({
                 params: {
                     environmentId: "test",
                     userId: "test",
@@ -105,7 +105,7 @@ async function setup(pool) {
     await pool.query("INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test", "test@test.com"]);
     await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token, daily_report) VALUES ($1, $2, $3, $4)", ["test", "test", "dummytoken", true]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO deletion_request (id, created, backoff_interval, resource_kind, resource_id) VALUES ($1, $2, $3, $4, $5)", ["test", new Date(), 10000000, "test", "test"]);
     await pool.query("INSERT INTO deletion_confirmation (id, deletion_request_id, retraceduser_id, visible_code) VALUES ($1, $2, $3, $4)", ["test", "test", "test", "test"]);

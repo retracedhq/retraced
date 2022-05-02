@@ -57,7 +57,7 @@ export function RegisterRoutes(app: any) {
                 ,{{{json security.scopes}}}
                 {{/if}}), 
             {{/if}} 
-            function (request: any, response: any) {
+            function(request: any, response: any) {
             // Begin customization of template from https://raw.githubusercontent.com/lukeautry/tsoa/master/src/routeGeneration/templates/express.ts
             // Moved from directly below validation to enable getting handlerName
             {{#if ../../iocModule}}

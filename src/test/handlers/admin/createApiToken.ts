@@ -6,11 +6,11 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
 
 @suite class CreateAPIToken {
     @test public async "CreateAPIToken#createAPIToken()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await createAPIToken(`id=${res.id} token=${res.token}`, "test", "test", "test", {
+            const res = await setup(pool);
+            const result = await createAPIToken(`id=${res.id} token=${res.token}`, "test", "test", "test", {
                 disabled: false,
                 name: "test",
             });
@@ -29,7 +29,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
 async function setup(pool) {
     await pool.query("INSERT INTO project (id, name) VALUES ($1, $2)", ["test", "test"]);
     await pool.query("INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     return res;
 }

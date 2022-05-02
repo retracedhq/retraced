@@ -62,14 +62,14 @@ export default async function counts(
     throw { status: 400, err: new Error("Invalid type") };
   }
 
-  const counts = await countBy({
+  const countsResult = await countBy({
     groupBy,
     crud,
     startTime: startTime.valueOf(),
     endTime: endTime.valueOf(),
     scope: context,
   });
-  let edges: any[] = counts
+  let edges: any[] = countsResult
     .map(({ value, count }, i) => ({
       node: value,
       count,
@@ -103,10 +103,10 @@ export default async function counts(
   }
 
   return {
-    totalCount: counts.length,
+    totalCount: countsResult.length,
     edges,
     pageInfo: {
-      hasNextPage: end < counts.length,
+      hasNextPage: end < countsResult.length,
     },
   };
 }

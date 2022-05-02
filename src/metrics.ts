@@ -35,7 +35,7 @@ export function startStatsdReporter(
         reporter.report();
     }, intervalMs);
     logger.info("started");
-};
+}
 
 export function startStatusPageReporter(
     url: string,
@@ -59,7 +59,7 @@ export function startStatusPageReporter(
         reporter.report();
     }, intervalMs);
     logger.info("started");
-};
+}
 
 export function bootstrapFromEnv() {
     const statsdHost = process.env.STATSD_HOST || process.env.KUBERNETES_SERVICE_HOST;
@@ -107,7 +107,7 @@ export function instrumented(target: any, key: string, descriptor?: PropertyDesc
         return descriptor;
     }
 
-    let originalMethod = descriptor.value;
+    const originalMethod = descriptor.value;
     const klass = target.constructor.name;
 
     // this needs to be a non-arrow function or we'll get the wrong `this`
@@ -132,11 +132,11 @@ export function histogram(name: string, help?: string, labels?: string[]) {
     const summary = Prometheus.register.getSingleMetric("summaries") as Prometheus.Summary<string> ||
         new Prometheus.Summary<string>(
             {
-                name: name,
+                name,
                 help: help || name,
                 labelNames: labels || ["class", "method", "metric"],
                 percentiles: [.5, .75, .95, .98, .99, .999],
-            }
+            },
         );
 
     // "summaries",
@@ -163,7 +163,7 @@ export function timer(name: string, help?: string, labels?: string[]) {
 
     const times = Prometheus.register.getSingleMetric("summaries") as Prometheus.Summary<string> ||
         new Prometheus.Summary<string>({
-            name: name,
+            name,
             help: help || name,
             labelNames: labels || ["class", "method", "metric"],
             percentiles: [.5, .75, .95, .98, .99, .999],
@@ -171,7 +171,7 @@ export function timer(name: string, help?: string, labels?: string[]) {
 
     const throughput = Prometheus.register.getSingleMetric("counters") as Prometheus.Counter<string> ||
         new Prometheus.Counter<string>({
-            name: name,
+            name,
             help: help || name,
             labelNames: labels || ["class", "method", "metric"],
         });
@@ -197,7 +197,7 @@ export function meter(name: string, help?: string, labels?: string[]) {
 
     const throughput = Prometheus.register.getSingleMetric("counters") as Prometheus.Counter<string> ||
         new Prometheus.Counter<string>({
-            name: name,
+            name,
             help: help || name,
             labelNames: labels || ["class", "method", "metric"],
         });
@@ -219,24 +219,24 @@ export function gauge(name: string, help?: string, labels?: string[]) {
 
     name = name.replace(/\./g, "_");
 
-    const gauge = Prometheus.register.getSingleMetric("gauges") as Prometheus.Gauge<string> ||
+    const gaugeObj = Prometheus.register.getSingleMetric("gauges") as Prometheus.Gauge<string> ||
         new Prometheus.Gauge<string>({
-            name: name,
+            name,
             help: help || name,
             labelNames: labels || ["class", "method", "metric", "aggregation"],
-        }
+        },
 
         );
 
     return {
         set(value: number, obsLabels?: string[]) {
             monkitGauge(name).set(value);
-            gauge
+            gaugeObj
                 .labels(...(obsLabels || name.split("_")))
                 .set(value);
         },
     };
-};
+}
 
 /**
  * Run the given function, recording throughput, latency and errors
@@ -259,4 +259,4 @@ export async function instrument(
         const elapsedNanos = (elapsed[0] * 1000000000) + elapsed[1];
         t.update(elapsedNanos);
     }
-};
+}

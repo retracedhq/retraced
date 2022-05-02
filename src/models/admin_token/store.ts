@@ -39,7 +39,7 @@ export class AdminTokenStore {
       "adminToken.bcrypt",
       () => bcrypt.hash(token, 12),
     );
-    let created = new Date();
+    const created = new Date();
 
     const q = `
 INSERT INTO admin_token (

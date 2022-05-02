@@ -1,7 +1,6 @@
 import "source-map-support/register";
 import * as url from "url";
 import * as express from "express";
-import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as _ from "lodash";
 import * as bugsnag from "bugsnag";
@@ -60,7 +59,7 @@ app.set("etag", false); // we're doing our own etag thing I guess
 app.set("trust proxy", "uniquelocal");
 
 app.use(bugsnag.requestHandler);
-app.use(bodyParser.json({ limit: "10mb" }));
+app.use(express.json({ limit: "10mb" }));
 app.use(cors());
 app.use(bugsnag.errorHandler);
 

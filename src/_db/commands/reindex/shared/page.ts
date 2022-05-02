@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import * as chalk from "chalk";
+import chalk from "chalk";
 import * as _ from "lodash";
 import * as util from "util";
 import * as ProgressBar from "progress";
