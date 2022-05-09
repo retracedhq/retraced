@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import * as chalk from "chalk";
 import * as pg from "pg";
 import * as Cursor from "pg-cursor";
 

@@ -150,7 +150,7 @@ export async function ensureHeadlessProject() {
 export async function bootstrapProject(opts: BootstrapOpts) {
     let project: any = await getProject(opts.projectId);
 
-    if (project) {
+    if (project && project.id) {
         project = await hydrateProject(project);
     } else {
         project = await createProject({

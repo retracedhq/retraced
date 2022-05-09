@@ -1,6 +1,6 @@
 import "source-map-support/register";
 import * as rp from "request-promise";
-import chalk from "chalk";
+import * as chalk from "chalk";
 import * as _ from "lodash";
 import * as Chance from "chance";
 import * as util from "util";

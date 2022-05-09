@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import chalk from "chalk";
+import * as chalk from "chalk";
 import * as walk from "walk";
 import * as path from "path";
 import * as util from "util";
