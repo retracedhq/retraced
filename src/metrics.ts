@@ -243,7 +243,7 @@ export function gauge(name: string, help?: string, labels?: string[]) {
  */
 export async function instrument(
     name: string,
-    delegate: Function,
+    delegate: () => any,
 ) {
     const t = timer(`${name}.timer`);
     const errors = meter(`${name}.errors`);
