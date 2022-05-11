@@ -152,7 +152,7 @@ function scrubDatetimeRange(input: string | string[]): [number, number] {
 }
 
 // exported for testing
-export function parse(query: string): any {
+export function parse(searchQuery: string): any {
     const options = {
         keywords: [
             "action",
@@ -165,7 +165,7 @@ export function parse(query: string): any {
             "location",
         ],
     };
-    let keywords = searchQueryParser.parse(query, options);
+    let keywords = searchQueryParser.parse(searchQuery, options);
     const q: any = {
         bool: {
             filter: [],
@@ -269,17 +269,17 @@ export function parse(query: string): any {
 }
 
 export function searchParams(opts: Options): RequestParams.Search {
-    const query = parse(opts.query);
+    const searchQuery = parse(opts.query);
     const [index, securityFilters] = scope(opts.scope);
 
-    query.bool.filter = query.bool.filter.concat(securityFilters);
+    searchQuery.bool.filter = searchQuery.bool.filter.concat(securityFilters);
 
     // Converts cursor to query filters. Remove after ???
     if (opts.cursor) {
         const [timestamp, id] = opts.cursor;
         const isAsc = /asc/.test(opts.sort);
 
-        query.bool.filter.push({
+        searchQuery.bool.filter.push({
             bool: {
                 must_not: {
                     range: {
@@ -290,7 +290,7 @@ export function searchParams(opts: Options): RequestParams.Search {
                 },
             },
         });
-        query.bool.filter.push({
+        searchQuery.bool.filter.push({
             bool: {
                 should: [{
                     // include non-identical timestamps in range
@@ -316,7 +316,7 @@ export function searchParams(opts: Options): RequestParams.Search {
         _source: "true",
         size: opts.size !== 0 ? opts.size : undefined,
         body: {
-            query,
+            query: searchQuery,
             sort: [
                 { canonical_time: opts.sort },
             ],

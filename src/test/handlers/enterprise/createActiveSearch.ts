@@ -7,11 +7,11 @@ import create from "../../../models/api_token/create";
 
 @suite class CreateActiveSearch {
     @test public async "CreateActiveSearch#createActiveSearch()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
-            let res = await createActiveSearch({
+            const res = await createActiveSearch({
                 get: (name = "Authorization") => {
                     return name === "Authorization" ? `token=test` : "";
                 },
@@ -20,8 +20,9 @@ import create from "../../../models/api_token/create";
                 },
             });
             console.log(res);
-            expect(res).to.not.be.undefined;
-            expect(res.body).to.not.undefined;
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.body).to.not.undefined;
+            return op;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -29,7 +30,7 @@ import create from "../../../models/api_token/create";
         }
     }
     @test public async "CreateActiveSearch#createActiveSearch() throws search id is not present"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
@@ -48,8 +49,8 @@ import create from "../../../models/api_token/create";
         }
     }
     @test public async "CreateActiveSearch#createActiveSearch() throws search id is invalid"() {
-        let pool = getPgPool();
-        let savedSearchId = "testt";
+        const pool = getPgPool();
+        const savedSearchId = "testt";
         try {
             await cleanup(pool);
             await setup(pool);
@@ -79,7 +80,7 @@ async function setup(pool) {
     await pool.query("INSERT INTO invite (id, created, email, project_id) VALUES ($1, $2, $3, $4)", ["test", new Date(), "test@test.com", "test"]);
     await pool.query("INSERT INTO saved_search (id, name, project_id, environment_id, group_id, query_desc) VALUES ($1, $2, $3, $4, $5, $6)", ["test", "test", "test", "test", "test", "Select all actors from Pune"]);
     await pool.query("INSERT INTO eitapi_token (id, display_name, project_id, environment_id, group_id, view_log_action) VALUES ($1, $2, $3, $4, $5, $6)", ["test", "test", "test", "test", "test", "test"]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await create("test", "test", {
         name: "test",
         disabled: false,
@@ -100,3 +101,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM active_search WHERE project_id=$1`, ["test"]);
     await pool.query(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
 }
+
+export default CreateActiveSearch;

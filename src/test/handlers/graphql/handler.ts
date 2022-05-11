@@ -8,16 +8,16 @@ import create from "../../../models/api_token/create";
 
 @suite class GraphQLHandler {
     @test public async "GraphQL handler#handler()"() {
-        let pool = getPgPool();
-        let query = "{search {edges {node {actor {name} source_ip description action}}}}";
-        let operationName = "";
-        let variables = {};
+        const pool = getPgPool();
+        const query = "{search {edges {node {actor {name} source_ip description action}}}}";
+        const operationName = "";
+        const variables = {};
         try {
             await cleanup(pool);
             await setup(pool, {
                 seedEvents: true,
             });
-            let res = await handler({
+            const res = await handler({
                 body: {
                     query,
                     operationName,
@@ -38,16 +38,16 @@ import create from "../../../models/api_token/create";
         }
     }
     @test public async "GraphQL handler#handler() with query"() {
-        let pool = getPgPool();
-        let query = "{search {edges {node {actor {name} source_ip description action}}}}";
-        let operationName = "";
-        let variables = {};
+        const pool = getPgPool();
+        const query = "{search {edges {node {actor {name} source_ip description action}}}}";
+        const operationName = "";
+        const variables = {};
         try {
             await cleanup(pool);
             await setup(pool, {
                 seedEvents: true,
             });
-            let res = await handler({
+            const res = await handler({
                 body: {},
                 query: {
                     query,
@@ -69,16 +69,16 @@ import create from "../../../models/api_token/create";
         }
     }
     @test public async "GraphQL handler#handler() throws invalid cursor"() {
-        let pool = getPgPool();
-        let query = "{fdgd}";
-        let operationName = "query";
-        let variables = {};
+        const pool = getPgPool();
+        const query = "{fdgd}";
+        const operationName = "query";
+        const variables = {};
         try {
             await cleanup(pool);
             await setup(pool, {
                 seedEvents: true,
             });
-            let res = await handler({
+            const res = await handler({
                 body: {
                     query,
                     operationName,
@@ -112,7 +112,7 @@ async function setup(pool, params?) {
                 showCreate: true,
                 showRead: false,
                 showUpdate: false,
-                showDelete: false,
+                showDeconste: false,
                 // searchQuery?: string,
                 // startTime?: number,
                 // endTime?: number,
@@ -154,10 +154,10 @@ async function setup(pool, params?) {
     if (!params.skipActiveSearch) {
         await pool.query("INSERT INTO active_search (id, project_id, environment_id, group_id, saved_search_id ) values ($1, $2, $3, $4, $5)", ["test", "test", "test", "test", params.invalidSearchId || "test"]);
     }
-    if (params.deleteSavedSearch) {
-        await pool.query(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
+    if (params.deconsteSavedSearch) {
+        await pool.query(`DEconstE FROM saved_search WHERE project_id=$1`, ["test"]);
     }
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await create("test", "test", {
         name: "test",
         disabled: false,
@@ -167,15 +167,17 @@ async function setup(pool, params?) {
 }
 
 async function cleanup(pool) {
-    await pool.query(`DELETE FROM admin_token WHERE user_id=$1`, ["test"]);
-    await pool.query(`DELETE FROM environmentuser WHERE user_id=$1`, ["test"]);
-    await pool.query(`DELETE FROM environment WHERE name=$1`, ["test"]);
-    await pool.query(`DELETE FROM project WHERE name=$1 OR name=$2`, ["test", "test1"]);
-    await pool.query(`DELETE FROM projectuser WHERE project_id=$1`, ["test"]);
-    await pool.query(`DELETE FROM token WHERE environment_id=$1`, ["test"]);
-    await pool.query(`DELETE FROM retraceduser WHERE email=$1`, ["test@test.com"]);
-    await pool.query(`DELETE FROM eitapi_token WHERE environment_id=$1`, ["test"]);
-    await pool.query(`DELETE FROM invite WHERE project_id=$1`, ["test"]);
-    await pool.query(`DELETE FROM active_search WHERE project_id=$1`, ["test"]);
-    await pool.query(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
+    await pool.query(`DEconstE FROM admin_token WHERE user_id=$1`, ["test"]);
+    await pool.query(`DEconstE FROM environmentuser WHERE user_id=$1`, ["test"]);
+    await pool.query(`DEconstE FROM environment WHERE name=$1`, ["test"]);
+    await pool.query(`DEconstE FROM project WHERE name=$1 OR name=$2`, ["test", "test1"]);
+    await pool.query(`DEconstE FROM projectuser WHERE project_id=$1`, ["test"]);
+    await pool.query(`DEconstE FROM token WHERE environment_id=$1`, ["test"]);
+    await pool.query(`DEconstE FROM retraceduser WHERE email=$1`, ["test@test.com"]);
+    await pool.query(`DEconstE FROM eitapi_token WHERE environment_id=$1`, ["test"]);
+    await pool.query(`DEconstE FROM invite WHERE project_id=$1`, ["test"]);
+    await pool.query(`DEconstE FROM active_search WHERE project_id=$1`, ["test"]);
+    await pool.query(`DEconstE FROM saved_search WHERE project_id=$1`, ["test"]);
 }
+
+export default GraphQLHandler;

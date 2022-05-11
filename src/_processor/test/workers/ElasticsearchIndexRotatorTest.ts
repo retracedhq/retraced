@@ -54,3 +54,5 @@ import { QueryResult } from "pg";
 
     }
 }
+
+export default ElasticsearchIndexRotatorTest;

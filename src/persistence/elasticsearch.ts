@@ -136,24 +136,24 @@ function shouldRetry(err) {
 
 // Get the index string for a projectId and environmentId and any filters
 // needed to restrict viewer and enterprise clients to authorized data.
-export function scope(scope: Scope): [string, any[]] {
-  const index = `retraced.${scope.projectId}.${scope.environmentId}.current`;
+export function scope(scopeInfo: Scope): [string, any[]] {
+  const index = `retraced.${scopeInfo.projectId}.${scopeInfo.environmentId}.current`;
   const filters: any[] = [];
 
-  if (scope.groupId) {
+  if (scopeInfo.groupId) {
     filters.push({
       bool: {
         should: [
-          { match: { "group.id": { query: scope.groupId, operator: "and" } }},
-          { match: { team_id: { query: scope.groupId, operator: "and" } }},
+          { match: { "group.id": { query: scopeInfo.groupId, operator: "and" } }},
+          { match: { team_id: { query: scopeInfo.groupId, operator: "and" } }},
         ],
       },
     });
   }
 
-  if (scope.targetId) {
+  if (scopeInfo.targetId) {
     filters.push({
-      match: { "target.id": { query: scope.targetId, operator: "and" } },
+      match: { "target.id": { query: scopeInfo.targetId, operator: "and" } },
     });
   }
 

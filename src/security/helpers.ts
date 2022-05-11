@@ -72,7 +72,7 @@ export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: 
   if (_.isEmpty(authHeader)) {
     throw { status: 401, err: new Error("Missing Authorization header") };
   }
-  let claims = await parseClaims(authHeader);
+  const claims = await parseClaims(authHeader);
 
   // Some endpoints don't reference a project (such as list projects)
   if (projectId) {

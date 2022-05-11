@@ -41,3 +41,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM environment WHERE name=$1`, ["test"]);
     await pool.query(`DELETE FROM project WHERE name=$1`, ["test"]);
 }
+
+export default CreateAPIToken;

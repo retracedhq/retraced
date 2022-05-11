@@ -6,11 +6,11 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
 
 @suite class GetDashboard {
     @test public async "GetDashboard#getDashboard()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await getDashboard({
+            const res = await setup(pool);
+            const result = await getDashboard({
                 get: () => {
                     return `id=${res.id} token=${res.token}`;
                 },
@@ -28,7 +28,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 },
             });
             expect(result.status).to.equal(200);
-            expect(result.body).to.not.undefined;
+            return expect(result.body).to.not.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -36,11 +36,11 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
         }
     }
     @test public async "GetDashboard#getDashboard() without crud"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await getDashboard({
+            const res = await setup(pool);
+            const result = await getDashboard({
                 get: () => {
                     return `id=${res.id} token=${res.token}`;
                 },
@@ -57,7 +57,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 },
             });
             expect(result.status).to.equal(200);
-            expect(result.body).to.not.undefined;
+            return expect(result.body).to.not.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -65,12 +65,12 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
         }
     }
     @test public async "GetDashboard#getDashboard() without start_date"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
+            const res = await setup(pool);
             process.env.PG_SEARCH = "true";
-            let result = await getDashboard({
+            const result = await getDashboard({
                 get: () => {
                     return `id=${res.id} token=${res.token}`;
                 },
@@ -87,7 +87,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 },
             });
             expect(result.status).to.equal(200);
-            expect(result.body).to.not.undefined;
+            return expect(result.body).to.not.undefined;
             process.env.PG_SEARCH = undefined;
         } catch (ex) {
             console.log(ex);
@@ -96,12 +96,12 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
         }
     }
     @test public async "GetDashboard#getDashboard() without end_date"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
+            const res = await setup(pool);
             process.env.PG_SEARCH = "true";
-            let result = await getDashboard({
+            const result = await getDashboard({
                 get: () => {
                     return `id=${res.id} token=${res.token}`;
                 },
@@ -117,9 +117,9 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                     name: "test",
                 },
             });
-            expect(result.status).to.equal(200);
-            expect(result.body).to.not.undefined;
             process.env.PG_SEARCH = undefined;
+            expect(result.status).to.equal(200);
+            return expect(result.body).to.not.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -127,12 +127,12 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
         }
     }
     @test public async "GetDashboard#getDashboard() with PG_SEARCH"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
+            const res = await setup(pool);
             process.env.PG_SEARCH = "true";
-            let result = await getDashboard({
+            const result = await getDashboard({
                 get: () => {
                     return `id=${res.id} token=${res.token}`;
                 },
@@ -149,9 +149,9 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                     name: "test",
                 },
             });
-            expect(result.status).to.equal(200);
-            expect(result.body).to.not.undefined;
             process.env.PG_SEARCH = undefined;
+            expect(result.status).to.equal(200);
+            return expect(result.body).to.not.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -166,7 +166,7 @@ async function setup(pool) {
     await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test1", "test1@test.com"]);
     await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test", "test", "dummytoken"]);
     // await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test1", "test", "dummytoken"]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test1", "test", "test1"]);
     // await pool.query("INSERT INTO deletion_request (id, created, backoff_interval, resource_kind, resource_id) VALUES ($1, $2, $3, $4, $5)", ["test", new Date(), 10000000, "test", "test"]);
@@ -185,3 +185,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM deletion_request WHERE resource_id=$1`, ["test"]);
     await pool.query(`DELETE FROM deletion_confirmation WHERE id=$1`, ["test"]);
 }
+
+export default GetDashboard;

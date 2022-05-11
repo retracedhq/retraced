@@ -8,16 +8,16 @@ import create from "../../models/api_token/create";
 
 @suite class UpdateEnterpriseToken {
     @test public async "UpdateEnterpriseToken#updateEnterpriseToken()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
-            let result = await createEnterpriseToken(`token=test`, "test", "test", {
+            const result = await createEnterpriseToken(`token=test`, "test", "test", {
                 display_name: "test",
             });
-            let res = await updateEnterpriseToken("token=test", "test", "test", result.token, "test1", "");
-            expect(res).to.not.be.undefined;
+            const res = await updateEnterpriseToken("token=test", "test", "test", result.token, "test1", "");
             expect(res.display_name).to.eq("test1");
+            return expect(res).to.not.be.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -25,11 +25,11 @@ import create from "../../models/api_token/create";
         }
     }
     @test public async "UpdateEnterpriseToken#updateEnterpriseToken() throws if token is wrong"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
-            let result = await createEnterpriseToken(`token=test`, "test", "test", {
+            const result = await createEnterpriseToken(`token=test`, "test", "test", {
                 display_name: "test",
             });
             await updateEnterpriseToken("token=test", "test", "test1", result.token, "test", "");
@@ -48,7 +48,7 @@ async function setup(pool) {
     await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test", "test", "dummytoken"]);
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO invite (id, created, email, project_id) VALUES ($1, $2, $3, $4)", ["test", new Date(), "test@test.com", "test"]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await create("test", "test", {
         name: "test",
         disabled: false,
@@ -67,3 +67,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM eitapi_token WHERE environment_id=$1`, ["test"]);
     await pool.query(`DELETE FROM invite WHERE project_id=$1`, ["test"]);
 }
+
+export default UpdateEnterpriseToken;

@@ -6,11 +6,11 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
 
 @suite class GetDeletionRequest {
     @test public async "GetDeletionRequest#getDeletionRequest()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await getDeletionRequest(`id=${res.id} token=${res.token}`, "test", "test", "test");
+            const res = await setup(pool);
+            const result = await getDeletionRequest(`id=${res.id} token=${res.token}`, "test", "test", "test");
             expect(result.expired).to.equal(false);
             expect(result.backoffRemaining).to.equal(9999999);
             expect(result.outstandingConfirmations.length).to.equal(0);
@@ -21,11 +21,11 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
         }
     }
     @test public async "GetDeletionRequest#getDeletionRequest() throws 404"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await getDeletionRequest(`id=${res.id} token=${res.token}`, "test", "test", "test1");
+            const res = await setup(pool);
+            const result = await getDeletionRequest(`id=${res.id} token=${res.token}`, "test", "test", "test1");
             console.log(result);
             throw new Error("Exprected to throw '{ status: 404 }'");
         } catch (ex) {
@@ -42,7 +42,7 @@ async function setup(pool) {
     await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test1", "test1@test.com"]);
     await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test", "test", "dummytoken"]);
     // await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test1", "test", "dummytoken"]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test1", "test", "test1"]);
     await pool.query("INSERT INTO deletion_request (id, created, backoff_interval, resource_kind, resource_id) VALUES ($1, $2, $3, $4, $5)", ["test", new Date(), 10000000, "test", "test"]);
@@ -61,3 +61,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM deletion_request WHERE resource_id=$1`, ["test"]);
     await pool.query(`DELETE FROM deletion_confirmation WHERE id=$1`, ["test"]);
 }
+
+export default GetDeletionRequest;

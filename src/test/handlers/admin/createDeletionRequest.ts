@@ -14,7 +14,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 resourceKind: "environment",
                 resourceId: "test",
             });
-            expect(result.id).to.not.be.undefined;
+            return expect(result.id).to.not.be.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -86,7 +86,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 resourceKind: "environment",
                 resourceId: "test",
             });
-            expect(result.id).to.not.be.undefined;
+            return expect(result.id).to.not.be.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -120,3 +120,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM deletion_request WHERE resource_id=$1`, ["test"]);
     await pool.query(`DELETE FROM deletion_confirmation WHERE id=$1`, ["test"]);
 }
+
+export default CreateDeletionRequest;

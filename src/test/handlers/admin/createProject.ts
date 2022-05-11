@@ -6,11 +6,11 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
 
 @suite class CreateProject {
     @test public async "CreateProject#createProject()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await createProject({
+            const res = await setup(pool);
+            const result = await createProject({
                 get: (name) => {
                     if (name === "Authorization") {
                         return `id=${res.id} token=${res.token}`;
@@ -40,7 +40,7 @@ async function setup(pool) {
     await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test", "test@test.com"]);
     await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test", "test", "dummytoken"]);
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     return res;
     } catch (ex) {
         console.log(ex);
@@ -61,3 +61,5 @@ async function cleanup(pool) {
         console.log(ex);
     }
 }
+
+export default CreateProject;

@@ -9,7 +9,7 @@ import CustReq from "../../mock-classes/CustomRequest";
 
 @suite class CreateSavedSearch {
     @test public async "CreateSavedSearch#createSavedSearch()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
@@ -23,9 +23,10 @@ import CustReq from "../../mock-classes/CustomRequest";
                 actor_ids: [],
                 start: +new Date(),
             };
-            let res = await createSavedSearch(req);
-            expect(res).to.not.be.undefined;
-            expect(res.body).to.not.undefined;
+            const res = await createSavedSearch(req);
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.body).to.not.undefined;
+            return op;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -33,7 +34,7 @@ import CustReq from "../../mock-classes/CustomRequest";
         }
     }
     @test public async "CreateSavedSearch#createSavedSearch() without start time"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
@@ -46,9 +47,10 @@ import CustReq from "../../mock-classes/CustomRequest";
                 actions: [],
                 actor_ids: [],
             };
-            let res = await createSavedSearch(req);
-            expect(res).to.not.be.undefined;
-            expect(res.body).to.not.undefined;
+            const res = await createSavedSearch(req);
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.body).to.not.undefined;
+            return op;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -56,7 +58,7 @@ import CustReq from "../../mock-classes/CustomRequest";
         }
     }
     @test public async "CreateSavedSearch#createSavedSearch() with invalid start time"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
@@ -70,9 +72,10 @@ import CustReq from "../../mock-classes/CustomRequest";
                 actor_ids: [],
                 start: "randomInvalid value",
             };
-            let res = await createSavedSearch(req);
-            expect(res).to.not.be.undefined;
-            expect(res.body).to.not.undefined;
+            const res = await createSavedSearch(req);
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.body).to.not.undefined;
+            return op;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -80,20 +83,20 @@ import CustReq from "../../mock-classes/CustomRequest";
         }
     }
     @test public async "CreateSavedSearch#createSavedSearch() throws Missing required 'name' field"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
             await createEnterpriseToken(`token=test`, "test", "test", {
                 display_name: "test",
             });
-            let req = new CustReq();
+            const req = new CustReq();
             req.body = {
                 actions: [],
                 actor_ids: [],
                 start: "",
             };
-            let result = await createSavedSearch(req);
+            const result = await createSavedSearch(req);
             console.log(result);
             throw new Error(`Expected error "Missing required 'name' field" to be thrown`);
         } catch (ex) {
@@ -105,15 +108,15 @@ import CustReq from "../../mock-classes/CustomRequest";
         }
     }
     // @test public async "CreateSavedSearch#createSavedSearch() throws search id is invalid"() {
-    //     let pool = getPgPool();
-    //     let savedSearchId = "testt";
+    //     const pool = getPgPool();
+    //     const savedSearchId = "testt";
     //     try {
     //         await cleanup(pool);
     //         await setup(pool);
     //         await createEnterpriseToken(`token=test`, "test", "test", {
     //             display_name: "test",
     //         });
-    //         let res = await createSavedSearch({
+    //         const res = await createSavedSearch({
     //             get: () => {
     //                 return `token=test`;
     //             },
@@ -139,7 +142,7 @@ async function setup(pool) {
         await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
         await pool.query("INSERT INTO invite (id, created, email, project_id) VALUES ($1, $2, $3, $4)", ["test", new Date(), "test@test.com", "test"]);
         await pool.query("INSERT INTO saved_search (id, name, project_id, environment_id, group_id, query_desc) VALUES ($1, $2, $3, $4, $5, $6)", ["test", "test", "test", "test", "test", "Select all actors from Pune"]);
-        let res = await AdminTokenStore.default().createAdminToken("test");
+        const res = await AdminTokenStore.default().createAdminToken("test");
         await create("test", "test", {
             name: "test",
             disabled: false,
@@ -167,3 +170,5 @@ async function cleanup(pool) {
         console.log("Cleanup", ex);
     }
 }
+
+export default CreateSavedSearch;

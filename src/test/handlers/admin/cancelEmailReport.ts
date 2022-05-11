@@ -21,9 +21,10 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 },
             });
             expect(result.status).to.equal(301);
-            expect(result.headers).to.not.undefined;
-            expect(result.headers ? result.headers.Location : undefined).to.not.undefined;
+            let res = expect(result.headers).to.not.undefined;
+            res = expect(result.headers ? result.headers.Location : undefined).to.not.undefined;
             expect(result.headers ? result.headers.Location : undefined).to.equal("https://www.retraced.io/unsubscribed/daily-reports/");
+            return res;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -46,9 +47,10 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 },
             });
             expect(result.status).to.equal(301);
-            expect(result.headers).to.not.undefined;
-            expect(result.headers ? result.headers.Location : undefined).to.not.undefined;
+            let res = expect(result.headers).to.not.undefined;
+            res = expect(result.headers ? result.headers.Location : undefined).to.not.undefined;
             expect(result.headers ? result.headers.Location : undefined).to.equal("https://www.retraced.io/unsubscribed/anomaly-reports/");
+            return res;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -123,3 +125,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM deletion_request WHERE id=$1`, ["test"]);
     await pool.query(`DELETE FROM deletion_confirmation WHERE id=$1`, ["test"]);
 }
+
+export default CancelEmailReport;

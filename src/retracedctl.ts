@@ -6,7 +6,7 @@ import * as createTemplate from "./commands/create-template";
 import * as listEnvironments from "./commands/list-environments";
 import * as listProjects from "./commands/list-projects";
 
-yargs
+const res = yargs
   .env()
   .help()
   .command(
@@ -34,3 +34,4 @@ yargs
     listProjects.handler,
   )
   .argv;
+console.log(res);

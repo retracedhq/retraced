@@ -8,12 +8,12 @@ import { deprecated } from "../../../handlers/admin/deleteInvite";
 
 @suite class DeleteInvite {
     @test public async "DeleteInvite#deleteInvite()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await deleteInvite(`id=${res.id} token=${res.token}`, "test", "test");
-            expect(result).to.be.undefined;
+            const res = await setup(pool);
+            const result = await deleteInvite(`id=${res.id} token=${res.token}`, "test", "test");
+            return expect(result).to.be.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -21,11 +21,11 @@ import { deprecated } from "../../../handlers/admin/deleteInvite";
         }
     }
     @test public async "DeleteInvite#deprecated()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await deprecated({
+            const res = await setup(pool);
+            const result = await deprecated({
                 get: () => {
                     return `id=${res.id} token=${res.token}`;
                 },
@@ -49,7 +49,7 @@ async function setup(pool) {
     await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test1", "test1@test.com"]);
     await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test", "test", "dummytoken"]);
     await pool.query("INSERT INTO token (token, created, disabled, environment_id, name, project_id, read_access, write_access) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", ["test", new Date(), false, "test", "test", "test", true, true]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test1", "test", "test1"]);
     await createInvite(`id=${res.id} token=${res.token}`, "test", "test");
@@ -70,3 +70,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM deletion_confirmation WHERE id=$1`, ["test"]);
     await pool.query(`DELETE FROM invite WHERE project_id=$1`, ["test"]);
 }
+
+export default DeleteInvite;

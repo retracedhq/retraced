@@ -88,3 +88,5 @@ const isAny = TypeMoq.It.isAny;
         expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").count).to.equal(2);
     }
 }
+
+export default NormalizeRepairerTest;

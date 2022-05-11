@@ -8,11 +8,11 @@ import create from "../../../models/api_token/create";
 
 @suite class DeleteActiveSearch {
     @test public async "DeleteActiveSearch#deleteActiveSearch()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool, {});
-            let res = await deleteActiveSearch({
+            const res = await deleteActiveSearch({
                 get: () => {
                     return `token=test`;
                 },
@@ -21,8 +21,8 @@ import create from "../../../models/api_token/create";
                 },
                 body: {},
             });
-            expect(res).to.not.be.undefined;
             expect(res.status).to.equal(204);
+            return expect(res).to.not.be.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -30,7 +30,7 @@ import create from "../../../models/api_token/create";
         }
     }
     @test public async "DeleteActiveSearch#deleteActiveSearch() throws Missing required 'id' parameter"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool, {});
@@ -111,7 +111,7 @@ async function setup(pool, params?) {
     if (params.deleteSavedSearch) {
         await pool.query(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
     }
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await create("test", "test", {
         name: "test",
         disabled: false,
@@ -133,3 +133,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM active_search WHERE project_id=$1`, ["test"]);
     await pool.query(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
 }
+
+export default DeleteActiveSearch;

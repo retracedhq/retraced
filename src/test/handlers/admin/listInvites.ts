@@ -7,11 +7,11 @@ import { deprecated } from "../../../handlers/admin/listInvites";
 
 @suite class ListInvites {
     @test public async "ListInvites#listInvites()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await listInvites(`id=${res.id} token=${res.token}`, "test");
+            const res = await setup(pool);
+            const result = await listInvites(`id=${res.id} token=${res.token}`, "test");
             expect(result.length).to.not.equal(0);
         } catch (ex) {
             console.log(ex);
@@ -20,11 +20,11 @@ import { deprecated } from "../../../handlers/admin/listInvites";
         }
     }
     @test public async "ListInvites#deprecated()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await deprecated({
+            const res = await setup(pool);
+            const result = await deprecated({
                 get: () => {
                     return `id=${res.id} token=${res.token}`;
                 },
@@ -36,7 +36,7 @@ import { deprecated } from "../../../handlers/admin/listInvites";
                 },
             });
             expect(result.status).to.equal(200);
-            expect(result.body).to.not.undefined;
+            return expect(result.body).to.not.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -44,12 +44,12 @@ import { deprecated } from "../../../handlers/admin/listInvites";
         }
     }
     @test public async "ListInvites#deprecated() zero length"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
+            const res = await setup(pool);
             await pool.query(`DELETE FROM invite WHERE project_id=$1`, ["test"]);
-            let result = await deprecated({
+            const result = await deprecated({
                 get: () => {
                     return `id=${res.id} token=${res.token}`;
                 },
@@ -76,7 +76,7 @@ async function setup(pool) {
     await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test1", "test1@test.com"]);
     await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test", "test", "dummytoken"]);
     await pool.query("INSERT INTO invite (id, created, email, project_id) VALUES ($1, $2, $3, $4)", ["test", new Date(), "test@test.com", "test"]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test1", "test", "test1"]);
     // await pool.query("INSERT INTO deletion_request (id, created, backoff_interval, resource_kind, resource_id) VALUES ($1, $2, $3, $4, $5)", ["test", new Date(), 10000000, "test", "test"]);
@@ -96,3 +96,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM deletion_request WHERE resource_id=$1`, ["test"]);
     await pool.query(`DELETE FROM deletion_confirmation WHERE id=$1`, ["test"]);
 }
+
+export default ListInvites;

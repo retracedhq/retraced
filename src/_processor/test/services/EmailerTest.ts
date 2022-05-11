@@ -46,3 +46,5 @@ import { Emailer } from "../../services/Emailer";
         }]);
     }
 }
+
+export default EmailerTest;

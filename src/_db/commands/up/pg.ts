@@ -35,33 +35,26 @@ export const builder = {
 
 logger.info("registering handler");
 export const handler = (argv) => {
-    logger.child({ up: "pg", schemaPath: argv.schemaPath }).info("beginning handler");
-    const cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`;
-    logger.info("initializing migrator");
-    let migrator = new postgrator({
-        migrationDirectory: argv.schemaPath,
-        driver: "pg",
-        connectionString: cs,
-        requestTimeout: 1000 * 10,
-    });
-
-    logger.info("executing migration");
-    migrator.migrate("max").then(migrations => {
-        _.forEach(migrations, (m) => {
-            console.log(chalk.green(m.name));
+    try {
+        logger.child({ up: "pg", schemaPath: argv.schemaPath }).info("beginning handler");
+        const cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`;
+        logger.info("initializing migrator");
+        const migrator = new postgrator({
+            migrationDirectory: argv.schemaPath,
+            driver: "pg",
+            connectionString: cs,
+            requestTimeout: 1000 * 10,
         });
-        process.exit(0);
-    })
-    //   migrator.migrate("max", (err, migrations) => {
-    //     if (err) {
-    //       bugsnag.notify(err);
-    //       console.log(chalk.red(err));
-    //       process.exit(1);
-    //     }
 
-    //     _.forEach(migrations, (m) => {
-    //       console.log(chalk.green(m.name));
-    //     });
-    //     process.exit(0);
-    //   });
+        logger.info("executing migration");
+        migrator.migrate("max").then((migrations) => {
+            _.forEach(migrations, (m) => {
+                console.log(chalk.green(m.name));
+            });
+            process.exit(0);
+        });
+    } catch (err) {
+        bugsnag.notify(err);
+        console.log(err);
+    }
 };

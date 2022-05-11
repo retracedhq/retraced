@@ -8,11 +8,11 @@ import create from "../../../models/api_token/create";
 
 @suite class PumpActiveSearch {
     @test public async "PumpActiveSearch#pumpActiveSearch()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool, {});
-            let res = await pumpActiveSearch({
+            const res = await pumpActiveSearch({
                 get: () => {
                     return `token=test`;
                 },
@@ -25,9 +25,10 @@ import create from "../../../models/api_token/create";
                 },
                 body: {},
             });
-            expect(res).to.not.be.undefined;
-            expect(res.body).to.not.be.undefined;
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.body).to.not.be.undefined;
             expect(res.status).to.equal(200);
+            return op;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -35,13 +36,13 @@ import create from "../../../models/api_token/create";
         }
     }
     @test public async "PumpActiveSearch#pumpActiveSearch() with events"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool, {
                 seedEvents: true,
             });
-            let res = await pumpActiveSearch({
+            const res = await pumpActiveSearch({
                 get: () => {
                     return `token=test`;
                 },
@@ -54,9 +55,10 @@ import create from "../../../models/api_token/create";
                 },
                 body: {},
             });
-            expect(res).to.not.be.undefined;
-            expect(res.body).to.not.be.undefined;
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.body).to.not.be.undefined;
             expect(res.status).to.equal(200);
+            return op;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -64,7 +66,7 @@ import create from "../../../models/api_token/create";
         }
     }
     @test public async "PumpActiveSearch#pumpActiveSearch() throws Missing required 'id' parameter"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool, {});
@@ -90,14 +92,14 @@ import create from "../../../models/api_token/create";
         }
     }
     @test public async "PumpActiveSearch#pumpActiveSearch() throws Active search not found"() {
-        let pool = getPgPool();
-        let activeSearchId = "wdcedc";
+        const pool = getPgPool();
+        const activeSearchId = "wdcedc";
         try {
             await cleanup(pool);
             await setup(pool, {
                 skipActiveSearch: true,
             });
-            let res = await pumpActiveSearch({
+            const res = await pumpActiveSearch({
                 get: () => {
                     return `token=test`;
                 },
@@ -120,15 +122,15 @@ import create from "../../../models/api_token/create";
         }
     }
     @test public async "PumpActiveSearch#pumpActiveSearch() throws Unknown query descriptor version"() {
-        let pool = getPgPool();
-        let version = 2;
-        let activeSearchId = "test";
+        const pool = getPgPool();
+        const version = 2;
+        const activeSearchId = "test";
         try {
             await cleanup(pool);
             await setup(pool, {
                 version,
             });
-            let res = await pumpActiveSearch({
+            const res = await pumpActiveSearch({
                 get: () => {
                     return `token=test`;
                 },
@@ -151,9 +153,9 @@ import create from "../../../models/api_token/create";
         }
     }
     @test public async "PumpActiveSearch#pumpActiveSearch() throws if active and saved search not found"() {
-        let pool = getPgPool();
-        let activeSearchId = "test";
-        let savedSearchId = "dfs";
+        const pool = getPgPool();
+        const activeSearchId = "test";
+        const savedSearchId = "dfs";
         try {
             await cleanup(pool);
             await setup(pool, {
@@ -161,7 +163,7 @@ import create from "../../../models/api_token/create";
                 invalidSearchId: savedSearchId,
                 deleteSavedSearch: true,
             });
-            let res = await pumpActiveSearch({
+            await pumpActiveSearch({
                 get: () => {
                     return `token=test`;
                 },
@@ -174,7 +176,6 @@ import create from "../../../models/api_token/create";
                 },
                 body: {},
             });
-            console.log("res=>", res);
             throw new Error(`Expected error "Active search (id=${activeSearchId}) refers to a non-existent saved search (id=${savedSearchId})" to be thrown`);
         } catch (ex) {
             console.log(ex);
@@ -244,7 +245,7 @@ async function setup(pool, params?) {
     if (params.deleteSavedSearch) {
         await pool.query(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
     }
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await create("test", "test", {
         name: "test",
         disabled: false,
@@ -266,3 +267,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM active_search WHERE project_id=$1`, ["test"]);
     await pool.query(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
 }
+
+export default PumpActiveSearch;

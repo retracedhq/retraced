@@ -22,7 +22,7 @@ export default async function renderSavedExport(opts) {
 
   const pg = await pgPool.connect();
   try {
-    let q = `select name, body
+    const q = `select name, body
       from saved_export
       where id = $1 and environment_id = $2 and project_id = $3`;
     const v = [savedExportId, environmentId, projectId];
@@ -31,8 +31,8 @@ export default async function renderSavedExport(opts) {
       throw new Error(`No such saved export: id=${savedExportId}, envid=${environmentId}, projid=${projectId}`);
     }
 
-    let queryDesc: QueryDescriptor = JSON.parse(result.rows[0].body);
-    let queryName = result.rows[0].name;
+    const queryDesc: QueryDescriptor = JSON.parse(result.rows[0].body);
+    const queryName = result.rows[0].name;
 
     let results: any;
 
@@ -59,7 +59,7 @@ export default async function renderSavedExport(opts) {
 
       switch (queryDesc.version) {
         case 1:
-          let cruds = _.compact([
+          const cruds = _.compact([
             queryDesc.showCreate && "c",
             queryDesc.showRead && "r",
             queryDesc.showUpdate && "u",

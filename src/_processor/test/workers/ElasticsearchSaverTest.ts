@@ -154,3 +154,5 @@ function expectUpdate(expectedValue) {
 
     }
 }
+
+export default ElasticsearchSaverTest;

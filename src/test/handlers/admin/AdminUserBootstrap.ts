@@ -8,8 +8,8 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
 @suite class AdminUserBootstrapTest {
     @test public async "AdminUserBootstrap#AdminUserBootstrap() gets initialized"() {
         try {
-            let adminUserBootstrap = new AdminUserBootstrap("test");
-            expect(adminUserBootstrap).to.not.be.null;
+            const adminUserBootstrap = new AdminUserBootstrap("test");
+            return expect(adminUserBootstrap).to.not.be.null;
         } catch (err) {
             console.log(err);
         }
@@ -19,7 +19,7 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
         const expected = new Error("Not Found");
 
         try {
-            let adminUserBootstrap = new AdminUserBootstrap("test");
+            const adminUserBootstrap = new AdminUserBootstrap("test");
             await adminUserBootstrap.handle("", {
                 email: "",
                 upstreamToken: "",
@@ -35,7 +35,7 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
         const expected = new Error("Not Found");
 
         try {
-            let adminUserBootstrap = new AdminUserBootstrap("test");
+            const adminUserBootstrap = new AdminUserBootstrap("test");
             await adminUserBootstrap.handle("token=not_shared_secret", {
                 email: "",
                 upstreamToken: "",
@@ -51,7 +51,7 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
         const expected = new Error("Missing or invalid parameter: `claims.email`");
 
         try {
-            let adminUserBootstrap = new AdminUserBootstrap("test");
+            const adminUserBootstrap = new AdminUserBootstrap("test");
             await adminUserBootstrap.handle("token=test", {
                 email: "",
                 upstreamToken: "",
@@ -65,7 +65,7 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
 
     @test public async "AdminUserBootstrap#handle()"() {
         try {
-            let adminUserBootstrap = new AdminUserBootstrap("test");
+            const adminUserBootstrap = new AdminUserBootstrap("test");
             await adminUserBootstrap.handle("token=test", {
                 email: "test@test.com",
                 upstreamToken: "",
@@ -78,11 +78,12 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
 
     @test public async "AdminUserBootstrap#handler()"() {
         try {
-            let adminUserBootstrap = new AdminUserBootstrap("test");
-            let handler = adminUserBootstrap.handler();
-            expect(handler).to.not.be.undefined;
+            const adminUserBootstrap = new AdminUserBootstrap("test");
+            const handler = adminUserBootstrap.handler();
+            return expect(handler).to.not.be.undefined;
         } catch (err) {
             console.log(err);
         }
     }
 }
+export default AdminUserBootstrapTest;

@@ -486,7 +486,7 @@ import { Connection } from "./Connection";
             },
         ];
 
-        for (const test of tests) {
+        for (const testElement of tests) {
             const creater = new EventCreater(
                 TypeMoq.Mock.ofType(pg.Pool).object,
                 TypeMoq.Mock.ofType(NSQClient).object,
@@ -497,7 +497,7 @@ import { Connection } from "./Connection";
                 1000,
             );
             const calls: boolean[] = [];
-            const persisters = test.persisters.map((p, i) => {
+            const persisters = testElement.persisters.map((p, i) => {
                 calls[i] = false;
                 return {
                     delayMS: p.delay,
@@ -527,16 +527,18 @@ import { Connection } from "./Connection";
                     persisters,
                 );
             } catch (err) {
-                if (test.succeeds) {
+                if (testElement.succeeds) {
                     throw err;
                 }
             }
 
-            test.persisters.forEach((p, i) => {
+            testElement.persisters.forEach((p, i) => {
               if (p.called !== calls[i]) {
-                throw new Error(`${test.description}: persister[${i}] ${p.called ? "should" : "should not"} have been called`);
+                throw new Error(`${testElement.description}: persister[${i}] ${p.called ? "should" : "should not"} have been called`);
               }
             });
         }
     }
 }
+
+export default EventCreaterTest;

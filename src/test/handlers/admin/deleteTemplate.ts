@@ -7,12 +7,12 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
 
 @suite class DeleteTemplate {
     @test public async "DeleteTemplate#deleteTemplate()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
-            let result = await deleteTemplate(`id=${res.id} token=${res.token}`, "test", "test", "test");
-            expect(result).to.be.undefined;
+            const res = await setup(pool);
+            const result = await deleteTemplate(`id=${res.id} token=${res.token}`, "test", "test", "test");
+            return expect(result).to.be.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -20,10 +20,10 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
         }
     }
     @test public async "DeleteTemplate#deleteTemplate() throws if not found"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let res = await setup(pool);
+            const res = await setup(pool);
             await deleteTemplate(`id=${res.id} token=${res.token}`, "test", "test1", "test");
             throw new Error(`Expected error 'Not found' to be thrown`);
         } catch (ex) {
@@ -41,7 +41,7 @@ async function setup(pool) {
     await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test1", "test1@test.com"]);
     await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", ["test", "test", "dummytoken"]);
     await pool.query("INSERT INTO token (token, created, disabled, environment_id, name, project_id, read_access, write_access) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", ["test", new Date(), false, "test", "test", "test", true, true]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test1", "test", "test1"]);
     await createTemplate(`id=${res.id} token=${res.token}`, "test", "test", {
@@ -68,3 +68,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM invite WHERE project_id=$1`, ["test"]);
     await pool.query(`DELETE FROM display_template WHERE environment_id=$1`, ["test"]);
 }
+
+export default DeleteTemplate;

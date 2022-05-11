@@ -7,11 +7,11 @@ import create from "../../models/api_token/create";
 
 @suite class CreateViewerSession {
     @test public async "CreateViewerSession#handlerRaw()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
-            let result = await handler({
+            const result = await handler({
                 get: (name) => {
                     if (name === "Authorization") {
                         return "token=test";
@@ -26,7 +26,7 @@ import create from "../../models/api_token/create";
                 ip: "127.0.0.1",
             });
             expect(result.status).to.equal(200);
-            expect(result.body).to.not.be.undefined;
+            return expect(result.body).to.not.be.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -34,7 +34,7 @@ import create from "../../models/api_token/create";
         }
     }
     @test public async "CreateViewerSession#handlerRaw() throws if token is wrong"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool);
@@ -69,7 +69,7 @@ async function setup(pool) {
     await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", ["test", "test", "test"]);
     await pool.query("INSERT INTO group_detail (environment_id, project_id, name, group_id) VALUES ($1, $2, $3, $4)", ["test", "test", "test", "test"]);
     await pool.query("INSERT INTO viewer_descriptors (id, project_id, environment_id, group_id, actor_id, created, is_admin, view_log_action, scope) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)", ["test", "test", "test", "test", "test", new Date(), false, "", "target_id=test"]);
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await create("test", "test", {
         name: "test",
         disabled: false,
@@ -89,3 +89,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM group_detail WHERE environment_id=$1`, ["test"]);
     await pool.query(`DELETE FROM viewer_descriptors WHERE environment_id=$1`, ["test"]);
 }
+
+export default CreateViewerSession;

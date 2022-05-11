@@ -11,7 +11,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
             await cleanup(pool);
             const res = await setup(pool);
             const result = await approveDeletionConfirmation(`id=${res.id} token=${res.token}`, "test", "test", "test");
-            expect(result).to.be.undefined;
+            return expect(result).to.be.undefined;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -56,3 +56,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM deletion_request WHERE id=$1`, ["test"]);
     await pool.query(`DELETE FROM deletion_confirmation WHERE id=$1`, ["test"]);
 }
+
+export default ApproveDeletionConfirmation;

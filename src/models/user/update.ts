@@ -6,7 +6,7 @@ const pgPool = getPgPool();
 interface Opts {
   user_id: string;
   timezone: string;
-};
+}
 
 export default async function(opts: Opts): Promise<any> {
   // validate the timezone
@@ -22,7 +22,7 @@ export default async function(opts: Opts): Promise<any> {
 
   const q = `
     update retraceduser
-    set 
+    set
       timezone = $1
     where
       id = $2

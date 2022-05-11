@@ -8,11 +8,11 @@ import create from "../../../models/api_token/create";
 
 @suite class SearchAdHoc {
     @test public async "SearchAdHoc#searchAdHoc()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool, {});
-            let res = await searchAdHoc({
+            const res = await searchAdHoc({
                 get: (name) => {
                     switch (name) {
                         case "Authorization":
@@ -33,9 +33,10 @@ import create from "../../../models/api_token/create";
                 },
                 body: {},
             });
-            expect(res).to.not.be.undefined;
-            expect(res.body).to.not.be.undefined;
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.body).to.not.be.undefined;
             expect(res.status).to.equal(200);
+            return op;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -43,11 +44,11 @@ import create from "../../../models/api_token/create";
         }
     }
     @test public async "SearchAdHoc#searchAdHoc() without ETag"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
             await setup(pool, {});
-            let res = await searchAdHoc({
+            const res = await searchAdHoc({
                 get: (name) => {
                     switch (name) {
                         case "Authorization":
@@ -68,9 +69,10 @@ import create from "../../../models/api_token/create";
                 },
                 body: {},
             });
-            expect(res).to.not.be.undefined;
-            expect(res.body).to.not.be.undefined;
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.body).to.not.be.undefined;
             expect(res.status).to.equal(200);
+            return op;
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -137,7 +139,7 @@ async function setup(pool, params?) {
     if (params.deleteSavedSearch) {
         await pool.query(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
     }
-    let res = await AdminTokenStore.default().createAdminToken("test");
+    const res = await AdminTokenStore.default().createAdminToken("test");
     await create("test", "test", {
         name: "test",
         disabled: false,
@@ -159,3 +161,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM active_search WHERE project_id=$1`, ["test"]);
     await pool.query(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
 }
+
+export default SearchAdHoc;
