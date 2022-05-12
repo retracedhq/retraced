@@ -15,7 +15,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
             });
             expect(result.disabled).to.equal(true);
             expect(result.name).to.equal("test");
-            return expect(result).to.not.undefined;
+            return expect(result !== undefined);
         } catch (ex) {
             console.log(ex);
         } finally {

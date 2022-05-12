@@ -28,7 +28,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 },
             });
             expect(result.status).to.equal(200);
-            return expect(result.body).to.not.undefined;
+            expect(result.body !== undefined);
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -57,7 +57,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 },
             });
             expect(result.status).to.equal(200);
-            return expect(result.body).to.not.undefined;
+            expect(result.body !== undefined);
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -87,7 +87,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 },
             });
             expect(result.status).to.equal(200);
-            return expect(result.body).to.not.undefined;
+            expect(result.body !== undefined);
             process.env.PG_SEARCH = undefined;
         } catch (ex) {
             console.log(ex);
@@ -119,7 +119,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
             });
             process.env.PG_SEARCH = undefined;
             expect(result.status).to.equal(200);
-            return expect(result.body).to.not.undefined;
+            expect(result.body !== undefined);
         } catch (ex) {
             console.log(ex);
         } finally {
@@ -151,7 +151,7 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
             });
             process.env.PG_SEARCH = undefined;
             expect(result.status).to.equal(200);
-            return expect(result.body).to.not.undefined;
+            expect(result.body !== undefined);
         } catch (ex) {
             console.log(ex);
         } finally {

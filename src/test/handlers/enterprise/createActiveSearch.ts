@@ -21,7 +21,7 @@ import create from "../../../models/api_token/create";
             });
             console.log(res);
             let op = expect(res).to.not.be.undefined;
-            op = expect(res.body).to.not.undefined;
+            op = expect(res.body !== undefined);
             return op;
         } catch (ex) {
             console.log(ex);

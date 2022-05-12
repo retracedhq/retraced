@@ -51,6 +51,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         const creater = new EventCreater(
@@ -113,6 +115,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());
@@ -209,6 +213,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
@@ -232,7 +238,7 @@ import { Connection } from "./Connection";
             1000,
         );
 
-        const created: CreateEventResponse = await creater.createEvent("token=some-token", "a-project", body);
+        const created: any = await creater.createEvent("token=some-token", "a-project", body);
 
         expect(created.id).to.equal("kfbr392");
         expect(created.hash).to.equal("fake-hash");
@@ -263,6 +269,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
@@ -286,7 +294,7 @@ import { Connection } from "./Connection";
             1000,
         );
 
-        const created: CreateEventResponse = await creater.createEvent("token=some-token", "a-project", body);
+        const created: any = await creater.createEvent("token=some-token", "a-project", body);
 
         expect(created.id).to.equal("kfbr392");
         expect(created.hash).to.equal("fake-hash");
@@ -332,6 +340,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());
@@ -392,6 +402,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());

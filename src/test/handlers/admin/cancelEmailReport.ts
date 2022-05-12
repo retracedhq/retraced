@@ -21,8 +21,8 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 },
             });
             expect(result.status).to.equal(301);
-            let res = expect(result.headers).to.not.undefined;
-            res = expect(result.headers ? result.headers.Location : undefined).to.not.undefined;
+            let res = expect(result.headers !== undefined);
+            res = expect(result.headers ? result.headers.Location : undefined !== undefined);
             expect(result.headers ? result.headers.Location : undefined).to.equal("https://www.retraced.io/unsubscribed/daily-reports/");
             return res;
         } catch (ex) {
@@ -47,8 +47,8 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
                 },
             });
             expect(result.status).to.equal(301);
-            let res = expect(result.headers).to.not.undefined;
-            res = expect(result.headers ? result.headers.Location : undefined).to.not.undefined;
+            let res = expect(result.headers !== undefined);
+            res = expect(result.headers ? result.headers.Location : undefined !== undefined);
             expect(result.headers ? result.headers.Location : undefined).to.equal("https://www.retraced.io/unsubscribed/anomaly-reports/");
             return res;
         } catch (ex) {

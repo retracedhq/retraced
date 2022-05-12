@@ -39,7 +39,7 @@ import createSession from "../../../handlers/createViewerSession";
                 },
             });
             console.log("RES", res);
-            return expect(res).to.not.undefined;
+            return expect(res !== undefined);
         } catch (ex) {
             console.log("Exception", ex);
         } finally {
@@ -78,7 +78,7 @@ import createSession from "../../../handlers/createViewerSession";
                 },
             });
             console.log("RES", res);
-            return expect(res).to.not.undefined;
+            return expect(res !== undefined);
         } catch (ex) {
             console.log("Exception", ex);
         } finally {
@@ -116,7 +116,7 @@ import createSession from "../../../handlers/createViewerSession";
                 },
             });
             console.log("RES", res);
-            return expect(res).to.not.undefined;
+            return expect(res !== undefined);
         } catch (ex) {
             console.log("Exception", ex);
         } finally {
@@ -352,7 +352,7 @@ async function setup(pool, params?) {
     await AdminTokenStore.default().createAdminToken("test");
     const scope = params.targetIdType === "Array" ? params.targetIdEmptyArray ? "target_id=[]" : "target_id=['test', 'name']" : (params.targetIdType === "String" ? "target_id=test" : "");
     await pool.query("INSERT INTO viewer_descriptors (id, project_id, environment_id, group_id, actor_id, created, is_admin, view_log_action, scope) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)", ["test", "test", "test", "test", "test", new Date(), false, "", scope]);
-    const res = await createSession({
+    let res = await createSession({
         get: (name) => {
             if (name === "Authorization") {
                 return "token=test";

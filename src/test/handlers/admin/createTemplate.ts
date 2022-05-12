@@ -45,7 +45,7 @@ import { deprecated } from "../../../handlers/admin/createTemplate";
                 },
             });
             expect(result.status).to.equal(201);
-            return expect(result.body).to.not.undefined;
+            expect(result.body !== undefined);
         } catch (ex) {
             console.log(ex);
         } finally {
