@@ -244,3 +244,5 @@ import { RequestParams } from "@elastic/elasticsearch";
     expect(output).to.deep.equal(answer);
   }
 }
+
+export default QueryEventsTest;

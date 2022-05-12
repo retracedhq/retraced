@@ -82,64 +82,50 @@ export default class CustReq implements express.Request {
         throw new Error("Method not implemented.");
     }
     public addListener(event: string, listener: (...args: any[]) => void): this;
-    public addListener(event: "close", listener: () => void): this;
     public addListener(event: "data", listener: (chunk: string | Buffer) => void): this;
-    public addListener(event: "end", listener: () => void): this;
-    public addListener(event: "readable", listener: () => void): this;
+    public addListener(event: "close" | "end" | "readable", listener: () => void): this;
     public addListener(event: "error", listener: (err: Error) => void): this;
     public addListener(event: any, listener: any): this {
         throw new Error("Method not implemented.");
     }
     public emit(event: string | symbol, ...args: any[]): boolean;
-    public emit(event: "close"): boolean;
+    public emit(event: "close" | "end" | "readable"): boolean;
     public emit(event: "data", chunk: string | Buffer): boolean;
-    public emit(event: "end"): boolean;
-    public emit(event: "readable"): boolean;
     public emit(event: "error", err: Error): boolean;
     public emit(event: any, err?: any, ...rest: any[]): boolean {
         throw new Error("Method not implemented." + rest);
     }
     public on(event: string, listener: (...args: any[]) => void): this;
-    public on(event: "close", listener: () => void): this;
+    public on(event: "close" | "end" | "readable", listener: () => void): this;
     public on(event: "data", listener: (chunk: string | Buffer) => void): this;
-    public on(event: "end", listener: () => void): this;
-    public on(event: "readable", listener: () => void): this;
     public on(event: "error", listener: (err: Error) => void): this;
     public on(event: any, listener: any): this {
         throw new Error("Method not implemented.");
     }
     public once(event: string, listener: (...args: any[]) => void): this;
-    public once(event: "close", listener: () => void): this;
+    public once(event: "close" | "end" | "readable", listener: () => void): this;
     public once(event: "data", listener: (chunk: string | Buffer) => void): this;
-    public once(event: "end", listener: () => void): this;
-    public once(event: "readable", listener: () => void): this;
     public once(event: "error", listener: (err: Error) => void): this;
     public once(event: any, listener: any): this {
         throw new Error("Method not implemented.");
     }
     public prependListener(event: string, listener: (...args: any[]) => void): this;
-    public prependListener(event: "close", listener: () => void): this;
+    public prependListener(event: "close" | "end" | "readable", listener: () => void): this;
     public prependListener(event: "data", listener: (chunk: string | Buffer) => void): this;
-    public prependListener(event: "end", listener: () => void): this;
-    public prependListener(event: "readable", listener: () => void): this;
     public prependListener(event: "error", listener: (err: Error) => void): this;
     public prependListener(event: any, listener: any): this {
         throw new Error("Method not implemented.");
     }
     public prependOnceListener(event: string, listener: (...args: any[]) => void): this;
-    public prependOnceListener(event: "close", listener: () => void): this;
+    public prependOnceListener(event: "close" | "end" | "readable", listener: () => void): this;
     public prependOnceListener(event: "data", listener: (chunk: string | Buffer) => void): this;
-    public prependOnceListener(event: "end", listener: () => void): this;
-    public prependOnceListener(event: "readable", listener: () => void): this;
     public prependOnceListener(event: "error", listener: (err: Error) => void): this;
     public prependOnceListener(event: any, listener: any): this {
         throw new Error("Method not implemented.");
     }
     public removeListener(event: string, listener: (...args: any[]) => void): this;
-    public removeListener(event: "close", listener: () => void): this;
+    public removeListener(event: "close" | "end" | "readable", listener: () => void): this;
     public removeListener(event: "data", listener: (chunk: string | Buffer) => void): this;
-    public removeListener(event: "end", listener: () => void): this;
-    public removeListener(event: "readable", listener: () => void): this;
     public removeListener(event: "error", listener: (err: Error) => void): this;
     public removeListener(event: any, listener: any): this {
         throw new Error("Method not implemented.");
@@ -156,7 +142,7 @@ export default class CustReq implements express.Request {
     public getMaxListeners(): number {
         throw new Error("Method not implemented.");
     }
-    public listeners(event: string | symbol): Function[] {
+    public listeners(event: string | symbol): () => [] {
         throw new Error("Method not implemented.");
     }
     public eventNames(): Array<(string | symbol)> {
@@ -177,29 +163,25 @@ export default class CustReq implements express.Request {
         throw new Error("Method not implemented.");
     }
     public accepts(): string[];
-    public accepts(type: string): string | boolean;
-    public accepts(type: string[]): string | boolean;
+    public accepts(type: string | string[]): string | boolean;
     public accepts(...type: string[]): string | boolean;
     public accepts(type?: any, ...rest: any[]): string | boolean | string[] {
         throw new Error("Method not implemented." + rest);
     }
     public acceptsCharsets(): string[];
-    public acceptsCharsets(charset: string): string | boolean;
-    public acceptsCharsets(charset: string[]): string | boolean;
+    public acceptsCharsets(charset: string | string[]): string | boolean;
     public acceptsCharsets(...charset: string[]): string | boolean;
     public acceptsCharsets(charset?: any, ...rest: any[]): string | boolean | string[] {
         throw new Error("Method not implemented.");
     }
     public acceptsEncodings(): string[];
-    public acceptsEncodings(encoding: string): string | boolean;
-    public acceptsEncodings(encoding: string[]): string | boolean;
+    public acceptsEncodings(encoding: string | string[]): string | boolean;
     public acceptsEncodings(...encoding: string[]): string | boolean;
     public acceptsEncodings(encoding?: any, ...rest: any[]): string | boolean | string[] {
         throw new Error("Method not implemented.");
     }
     public acceptsLanguages(): string[];
-    public acceptsLanguages(lang: string): string | boolean;
-    public acceptsLanguages(lang: string[]): string | boolean;
+    public acceptsLanguages(lang: string | string[]): string | boolean;
     public acceptsLanguages(...lang: string[]): string | boolean;
     public acceptsLanguages(lang?: any, ...rest: any[]): string | boolean | string[] {
         throw new Error("Method not implemented.");

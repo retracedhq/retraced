@@ -12,7 +12,9 @@
         "allowJs": true,
         "outDir": "build",
 				"lib": ["es2015"],
-        "pretty": true
+        "pretty": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true
     },
     "include": [
         "src/**/*.js",

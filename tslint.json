@@ -12,7 +12,6 @@
     "no-string-literal": false,
     "no-console": [false],
     "max-line-length": [false],
-    "no-unused-variable": true,
 	"jsdoc-format": false
   }
 }

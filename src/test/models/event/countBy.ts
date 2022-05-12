@@ -56,3 +56,5 @@ import { countBy } from "../../../models/event/countBy";
         ]);
     }
 }
+
+export default EventsCountByTest;

@@ -70,3 +70,5 @@ import { QueryResult } from "pg";
 
     }
 }
+
+export default AuthenticatorTest;

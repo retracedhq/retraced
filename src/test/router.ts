@@ -68,3 +68,5 @@ const once = TypeMoq.Times.once;
         res.verify((x) => x.json(TypeMoq.It.isObjectWith(expected)), once());
     }
 }
+
+export default RouterTest;

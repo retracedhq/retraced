@@ -40,3 +40,5 @@ import {
     expect(filters).to.deep.equal([]);
   }
 }
+
+export default ElasticsearchTest;

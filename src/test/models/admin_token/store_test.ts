@@ -10,7 +10,7 @@ class BcryptLearning {
     const token = "100";
     const hash = await bcrypt.hash(token, 12);
     const valid = await bcrypt.compare(token, hash);
-    expect(valid).to.be.true;
+    return expect(valid).to.be.true;
   }
 
   @test
@@ -18,6 +18,8 @@ class BcryptLearning {
     const token = "100";
     const hash = await bcrypt.hash(token, 12);
     const valid = await bcrypt.compare(token + token, hash);
-    expect(valid).to.be.false;
+    return expect(valid).to.be.false;
   }
 }
+
+export default BcryptLearning;

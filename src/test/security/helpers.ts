@@ -26,3 +26,5 @@ import {
         });
     }
 }
+
+export default SecurityHelpersTest;

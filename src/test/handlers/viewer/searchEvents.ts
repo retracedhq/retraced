@@ -8,13 +8,13 @@ import createSession from "../../../handlers/createViewerSession";
 
 @suite class SearchEvents {
     @test public async "searchEvents#searchEvents()"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let token = await setup(pool, {
+            const token = await setup(pool, {
                 seedEvents: true, targetIdType: "String",
             });
-            let res = await searchEvents({
+            const res = await searchEvents({
                 get: (name) => {
                     switch (name) {
                         case "Authorization":
@@ -51,13 +51,13 @@ import createSession from "../../../handlers/createViewerSession";
         }
     }
     @test public async "searchEvents#searchEvents() with scope with array"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let token = await setup(pool, {
+            const token = await setup(pool, {
                 seedEvents: true, targetIdType: "Array",
             });
-            let res = await searchEvents({
+            const res = await searchEvents({
                 get: (name) => {
                     switch (name) {
                         case "Authorization":
@@ -94,13 +94,13 @@ import createSession from "../../../handlers/createViewerSession";
         }
     }
     @test public async "searchEvents#searchEvents() with scope with empty array"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let token = await setup(pool, {
+            const token = await setup(pool, {
                 seedEvents: true, targetIdType: "Array", targetIdEmptyArray: true,
             });
-            let res = await searchEvents({
+            const res = await searchEvents({
                 get: (name) => {
                     switch (name) {
                         case "Authorization":
@@ -137,13 +137,13 @@ import createSession from "../../../handlers/createViewerSession";
         }
     }
     @test public async "searchEvents#searchEvents() with null scope"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let token = await setup(pool, {
+            const token = await setup(pool, {
                 seedEvents: true, targetIdType: "",
             });
-            let res = await searchEvents({
+            const res = await searchEvents({
                 get: (name) => {
                     switch (name) {
                         case "Authorization":
@@ -180,13 +180,13 @@ import createSession from "../../../handlers/createViewerSession";
         }
     }
     @test public async "searchEvents#searchEvents() with default query"() {
-        let pool = getPgPool();
+        const pool = getPgPool();
         try {
             await cleanup(pool);
-            let token = await setup(pool, {
+            const token = await setup(pool, {
                 seedEvents: true, targetIdType: "",
             });
-            let res = await searchEvents({
+            const res = await searchEvents({
                 get: (name) => {
                     switch (name) {
                         case "Authorization":
@@ -280,7 +280,7 @@ async function setup(pool, params?) {
         await pool.query(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
     }
     await AdminTokenStore.default().createAdminToken("test");
-    let scope = params.targetIdType === "Array" ? params.targetIdEmptyArray ? "target_id=[]" : "target_id=['test', 'name']" : (params.targetIdType === "String" ? "target_id=test" : "");
+    const scope = params.targetIdType === "Array" ? params.targetIdEmptyArray ? "target_id=[]" : "target_id=['test', 'name']" : (params.targetIdType === "String" ? "target_id=test" : "");
     await pool.query("INSERT INTO viewer_descriptors (id, project_id, environment_id, group_id, actor_id, created, is_admin, view_log_action, scope) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)", ["test", "test", "test", "test", "test", new Date(), false, "", scope]);
     let res = await createSession({
         get: (name) => {
@@ -315,3 +315,5 @@ async function cleanup(pool) {
     await pool.query(`DELETE FROM active_search WHERE project_id=$1`, ["test"]);
     await pool.query(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
 }
+
+export default SearchEvents;
