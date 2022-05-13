@@ -7,26 +7,17 @@ const pgPool = getPgPool();
 export default async function indexEvent(job): Promise<void> {
     const jobObj = JSON.parse(job.body);
     const event = cleanEvent(jobObj.event);
+    event.received = parseInt(event.received)
 
-    const q = `
-        INSERT INTO indexed_events (
-            id,
-            project_id,
-            environment_id,
-            doc
-        ) VALUES (
-            $1,
-            $2,
-            $3,
-            $4
-        )`;
+    const q = `INSERT INTO indexed_events ( id, project_id, environment_id, doc) VALUES ( $1, $2, $3, $4)`;
 
-    await pgPool.query(q, [
+    const result = await pgPool.query(q, [
         event.id,
         jobObj.projectId,
         jobObj.environmentId,
         JSON.stringify(event),
     ]);
+    console.log(result);
 }
 
 function cleanEvent(event: any): any {
