@@ -139,7 +139,7 @@ export class NSQClient {
           reject(body);
           return;
         }
-        resolve();
+        resolve({});
       });
     });
   }

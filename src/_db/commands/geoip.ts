@@ -197,7 +197,7 @@ function translateIPBlockData(filename, locations) {
       const ultraString = `insert into geoip (network, lat, lon, country, subdiv1, subdiv2, timezone) values ${queuedValues.join(",")};`;
       pgPool.query(ultraString)
         .then(() => {
-          resolve();
+          resolve({});
         })
         .catch((err) => {
           reject(err);

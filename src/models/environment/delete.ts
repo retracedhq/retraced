@@ -98,7 +98,7 @@ export default async function(opts: Options) {
               return;
             }
 
-            resolve();
+            resolve({});
           });
         });
       });

@@ -113,7 +113,7 @@ export const handler = (argv) => {
             $1, now()
           ) on conflict do nothing`, [timestamp]);
           }
-          return Promise.resolve();
+          return Promise.resolve({});
         }) as any)
         .then(() => {
           next(); // done! next file pls
