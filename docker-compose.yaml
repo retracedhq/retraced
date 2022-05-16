@@ -143,6 +143,8 @@ services:
       context: .
       dockerfile: ./Dockerfile.base
     environment: *common-variables
+    ports:
+      - "9339:9229"
     networks:
       - retraced
     depends_on:

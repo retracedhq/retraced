@@ -13,8 +13,8 @@
         "outDir": "build",
 				"lib": ["es2015"],
         "pretty": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true
+        "noUnusedLocals": false,
+        "noUnusedParameters": false
     },
     "include": [
         "src/**/*.js",

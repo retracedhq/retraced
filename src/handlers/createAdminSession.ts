@@ -136,7 +136,7 @@ export async function createSession(externalAuth: ExternalAuth): Promise<CreateS
         result.user = await createUser({
           email: externalAuth.email,
           authId: externalAuth.upstreamToken,
-        }, pg);
+        });
         result.userIsNew = true;
       } catch (err) {
         if (err === ERR_DUPLICATE_EMAIL) {

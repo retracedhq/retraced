@@ -60,7 +60,7 @@ export function getNewElasticsearch(): Client {
 
       newEs = new Client({
         nodes: hosts,
-        ssl: sslSettings,
+        tls: sslSettings,
         maxRetries: 5,
       });
     }

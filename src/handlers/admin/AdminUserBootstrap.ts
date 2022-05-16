@@ -14,11 +14,11 @@ export class AdminUserBootstrap {
     private readonly sharedSecret?: string,
   ) { }
 
-  public async handle(auth: string, claims: ExternalAuth) {
+  public async handle(auth: string | undefined, claims: ExternalAuth) {
 
     let token;
     try {
-      token = apiTokenFromAuthHeader(auth);
+      token = apiTokenFromAuthHeader(auth?.toString());
     } catch (err) {
       throw { status: 404, err: new Error("Not Found") };
     }

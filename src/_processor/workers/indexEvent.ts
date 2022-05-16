@@ -7,7 +7,7 @@ const pgPool = getPgPool();
 export default async function indexEvent(job): Promise<void> {
     const jobObj = JSON.parse(job.body);
     const event = cleanEvent(jobObj.event);
-    event.received = parseInt(event.received)
+    event.received = parseInt(event.received, 10);
 
     const q = `INSERT INTO indexed_events ( id, project_id, environment_id, doc) VALUES ( $1, $2, $3, $4)`;
 
