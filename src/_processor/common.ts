@@ -1,6 +1,6 @@
 import "source-map-support/register";
-import * as process from "process";
-import * as moment from "moment";
+import process from "process";
+import moment from "moment";
 
 export function jobDesc(job) {
   return job.id.substring(0, 8);

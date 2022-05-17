@@ -1,8 +1,8 @@
-import * as _ from "lodash";
-import * as moment from "moment";
-import * as pg from "pg";
-import * as pgFormat from "pg-format";
-import * as util from "util";
+import _ from "lodash";
+import moment from "moment";
+import pg from "pg";
+import pgFormat from "pg-format";
+import util from "util";
 import * as monkit from "monkit";
 import { instrument, instrumented } from "../metrics";
 

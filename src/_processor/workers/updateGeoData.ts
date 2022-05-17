@@ -1,12 +1,12 @@
 import "source-map-support/register";
-import * as fs from "fs";
-import * as path from "path";
-import * as readline from "readline";
-import * as request from "request";
-import * as unzipper from "unzipper";
-import * as _ from "lodash";
-import * as moment from "moment";
-import * as csv from "csv-string";
+import fs from "fs";
+import path from "path";
+import readline from "readline";
+import request from "request";
+import unzipper from "unzipper";
+import _ from "lodash";
+import moment from "moment";
+import csv from "csv-string";
 
 import getPgPool from "../persistence/pg";
 import { logger } from "../logger";

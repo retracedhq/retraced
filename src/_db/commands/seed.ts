@@ -1,12 +1,12 @@
 import "source-map-support/register";
-import * as rp from "request-promise";
-import * as chalk from "chalk";
-import * as _ from "lodash";
-import * as Chance from "chance";
-import * as util from "util";
-import * as jwt from "jsonwebtoken";
-import * as Retraced from "retraced";
-import * as ProgressBar from "progress";
+import rp from "request-promise";
+import chalk from "chalk";
+import _ from "lodash";
+import Chance from "chance";
+import util from "util";
+import jwt from "jsonwebtoken";
+import Retraced from "retraced";
+import ProgressBar from "progress";
 
 const adminHmacSecret = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 const chance = new Chance();

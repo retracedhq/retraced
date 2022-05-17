@@ -1,14 +1,14 @@
-import * as pino from "pino";
-import * as fs from "fs";
+import pino from "pino";
+import fs from "fs";
 
 function initLoggerFromEnv(): any {
   if (process.env.RETRACED_API_LOG_FILE) {
-    return pino.pino(
+    return pino(
         fs.createWriteStream(process.env.RETRACED_API_LOG_FILE),
     );
   }
 
-  return pino.pino();
+  return pino();
 }
 
 export const logger = initLoggerFromEnv();

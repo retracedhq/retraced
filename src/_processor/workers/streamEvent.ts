@@ -1,8 +1,8 @@
 import "source-map-support/register";
-import * as process from "process";
-import * as moment from "moment";
-import * as monkit from "monkit";
-import * as _ from "lodash";
+import process from "process";
+import moment from "moment";
+import monkit from "monkit";
+import _ from "lodash";
 
 import nsq from "../persistence/nsq";
 import getRedis from "../persistence/redis";

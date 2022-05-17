@@ -1,8 +1,8 @@
 import "source-map-support/register";
-import * as chalk from "chalk";
-import * as _ from "lodash";
-import * as postgrator from "postgrator";
-import * as bugsnag from "bugsnag";
+import chalk from "chalk";
+import _ from "lodash";
+import postgrator from "postgrator";
+import bugsnag from "bugsnag";
 import { setupBugsnag } from "../../common";
 
 setupBugsnag();

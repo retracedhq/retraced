@@ -1,6 +1,6 @@
 import "source-map-support/register";
-import * as nsq from "nsqjs";
-import * as request from "request";
+import nsq from "nsqjs";
+import request from "request";
 import { logger } from "../logger";
 
 interface Message {
@@ -139,7 +139,7 @@ export class NSQClient {
           reject(body);
           return;
         }
-        resolve({});
+        resolve();
       });
     });
   }

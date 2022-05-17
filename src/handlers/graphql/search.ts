@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import * as _ from "lodash";
+import _ from "lodash";
 
 import queryEvents, { Options } from "../../models/event/query";
 import filterEvents from "../../models/event/filter";

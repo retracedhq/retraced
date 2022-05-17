@@ -1,5 +1,5 @@
-import * as StatsdClient from "statsd-client";
-import * as Prometheus from "prom-client";
+import StatsdClient from "statsd-client";
+import Prometheus from "prom-client";
 
 import {
     gauge as monkitGauge,

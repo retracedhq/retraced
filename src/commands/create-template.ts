@@ -1,4 +1,4 @@
-import * as util from "util";
+import util from "util";
 import createTemplate from "../models/template/create";
 import {byName as deleteAllByName} from "../models/template/delete";
 import {Template} from "../models/template/index";

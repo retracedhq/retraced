@@ -1,6 +1,6 @@
-import * as chalk from "chalk";
-import * as pg from "pg";
-import * as Cursor from "pg-cursor";
+import chalk from "chalk";
+import pg from "pg";
+import Cursor from "pg-cursor";
 
 import { Event, EventConsumer, EventSource } from "./EventSource";
 import { logger } from "../../logger";

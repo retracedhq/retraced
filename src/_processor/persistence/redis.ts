@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import * as redis from "redis";
+import redis from "redis";
 import { logger } from "../logger";
 
 const sharedRedisClients = {};

@@ -1,6 +1,6 @@
-import * as searchQueryParser from "search-query-parser";
-import * as moment from "moment";
-import * as _ from "lodash";
+import searchQueryParser from "search-query-parser";
+import moment from "moment";
+import _ from "lodash";
 
 export interface Group {
   id: string;
@@ -112,7 +112,7 @@ function toArray(x: string | string[]): string[] {
 
 export function parseQuery(query: string): ParsedQuery {
     const options = { keywords: structuredQueryKeywords };
-    const intermediate: string | SQP = searchQueryParser.parse(query, options);
+    const intermediate: string | searchQueryParser.SearchParserResult = searchQueryParser.parse(query, options);
 
     if (_.isString(intermediate)) {
         return {
@@ -120,7 +120,7 @@ export function parseQuery(query: string): ParsedQuery {
         };
     }
 
-    const parsed: ParsedQuery = _.pick(intermediate, ["text"]);
+    const parsed: ParsedQuery = _.pick(intermediate, ["text"]) as ParsedQuery;
 
     if (intermediate.action) {
         if (_.isString(intermediate.action)) {

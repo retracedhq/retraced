@@ -1,8 +1,9 @@
 import "source-map-support/register";
-import * as _ from "lodash";
-import * as searchQueryParser from "search-query-parser";
-import * as moment from "moment";
-import { ApiResponse, RequestParams } from "@elastic/elasticsearch";
+import _ from "lodash";
+import searchQueryParser from "search-query-parser";
+import moment from "moment";
+import { SearchResponse } from "@elastic/elasticsearch/lib/api/types";
+import { SearchRequest } from "@elastic/elasticsearch/lib/api/typesWithBodyKey";
 
 import { Scope } from "../../security/scope";
 import { scope, getNewElasticsearch } from "../../persistence/elasticsearch";
@@ -66,7 +67,7 @@ async function doQuery(opts: Options): Promise<Result> {
 
     const newResp = await newEs.search(params);
 
-    if (!newResp.body || !newResp.body.hits) {
+    if (!newResp["body"] || !newResp["body"]["hits"]) {
         logger.info(`raw newParams: ${JSON.stringify(params)}\n`);
         logger.info(`raw newResp: ${JSON.stringify(newResp)}\n`);
     } else {
@@ -83,15 +84,15 @@ async function doQuery(opts: Options): Promise<Result> {
     const newCount = await newEs.count(countParams);
 
     return {
-        totalHits: { value: newCount.body.count },
-        events: _.map(newResp.body.hits.hits, ({ _source }) => _source),
+        totalHits: { value: newCount["body"].count },
+        events: _.map(newResp["body"]["hits"].hits, ({ _source }) => _source),
     };
 }
 
 // doAllQuery is not meant to be used interactively
 // it will return all the results, which may take some time to query
 export async function doAllQuery(opts: Options): Promise<Result> {
-    const responseQueue: ApiResponse[] = [];
+    const responseQueue: SearchResponse[] = [];
     let allHits: any[] = [];
 
     opts.cursor = undefined; // no cursor if getting all results
@@ -102,7 +103,7 @@ export async function doAllQuery(opts: Options): Promise<Result> {
 
     const newResp = await newEs.search(params);
 
-    if (!newResp.body || !newResp.body.hits) {
+    if (!newResp["body"] || !newResp["body"]["hits"]) {
         logger.info(`raw newParams: ${JSON.stringify(params)}\n`);
         logger.info(`raw newResp: ${JSON.stringify(newResp)}\n`);
     } else {
@@ -112,14 +113,14 @@ export async function doAllQuery(opts: Options): Promise<Result> {
     responseQueue.push(newResp);
     while (responseQueue.length) {
         const oneResp = responseQueue.shift(); // get a response from the queue
-        allHits = allHits.concat(oneResp!.body.hits.hits); // append hits to the list of all hits
+        allHits = allHits.concat(oneResp!["body"]["hits"].hits); // append hits to the list of all hits
 
         const nextEvent = await newEs.scroll({ // use the scroll API to get another response
-            scroll_id: oneResp!.body._scroll_id,
+            scroll_id: oneResp!["body"]._scroll_id,
             scroll: "30s",
         });
 
-        if (nextEvent.body.hits && nextEvent.body.hits.hits && nextEvent.body.hits.hits.length > 0) { // if this new response has hits, add it to the queue
+        if (nextEvent["body"]["hits"] && nextEvent["body"]["hits"].hits && nextEvent["body"]["hits"].hits.length > 0) { // if this new response has hits, add it to the queue
             responseQueue.push(
                 nextEvent,
             );
@@ -268,7 +269,7 @@ export function parse(searchQuery: string): any {
     return q;
 }
 
-export function searchParams(opts: Options): RequestParams.Search {
+export function searchParams(opts: Options): SearchRequest {
     const searchQuery = parse(opts.query);
     const [index, securityFilters] = scope(opts.scope);
 

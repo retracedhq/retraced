@@ -1,7 +1,7 @@
 import "source-map-support/register";
-import * as elasticsearch from "elasticsearch";
-import * as _ from "lodash";
-import * as moment from "moment";
+import elasticsearch from "elasticsearch";
+import _ from "lodash";
+import moment from "moment";
 import { Scope } from "../security/scope";
 import { Client } from "@elastic/elasticsearch";
 import { readFileSync } from "fs";

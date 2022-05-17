@@ -1,5 +1,5 @@
 import * as uuid from "uuid";
-import * as moment from "moment";
+import moment from "moment";
 import getViewerDescriptor from "../models/viewer_descriptor/get";
 import nsq from "../persistence/nsq";
 import { createViewerDescriptorVoucher } from "../security/vouchers";

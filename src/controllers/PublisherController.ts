@@ -63,7 +63,7 @@ export class PublisherAPI extends Controller {
     @Body() event: CreateEventRequest,
   ): Promise<CreateEventResponse> {
 
-    const result: CreateEventResponse = await this.eventCreater.createEvent(auth, projectId, event);
+    const result: CreateEventResponse = await this.eventCreater.createEvent(auth, projectId, event) as CreateEventResponse;
 
     this.setStatus(201);
     return result;

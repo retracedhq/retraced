@@ -2,7 +2,7 @@
 import { suite, test } from "mocha-typescript";
 import * as TypeMoq from "typemoq";
 
-import * as express from "express";
+import express from "express";
 
 import { onError } from "../router";
 

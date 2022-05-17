@@ -1,4 +1,4 @@
-import * as StatsdClient from "statsd-client";
+import StatsdClient from "statsd-client";
 import { getRegistry, StatsdReporter, StatusPageReporter, SysdigNameRewriter } from "monkit";
 import { logger } from "./logger";
 

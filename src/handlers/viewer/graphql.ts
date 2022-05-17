@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import * as querystring from "querystring";
+import querystring from "querystring";
 import { checkViewerAccess } from "../../security/helpers";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 

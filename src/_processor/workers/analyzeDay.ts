@@ -1,6 +1,6 @@
 import "source-map-support/register";
-import * as moment from "moment";
-import * as util from "util";
+import moment from "moment";
+import util from "util";
 import countActions from "../models/active_actor/count";
 import selectNewActions from "../models/action/select_new";
 import selectStoppedActions from "../models/action/select_stopped";

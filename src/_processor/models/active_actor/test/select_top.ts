@@ -1,7 +1,7 @@
 import "source-map-support/register";
 import { expect } from "chai";
 import * as uuid from "uuid";
-import * as moment from "moment";
+import moment from "moment";
 
 import getPgPool from "../../../persistence/pg";
 import selectTop from "../select_top";

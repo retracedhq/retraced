@@ -1,6 +1,6 @@
 import "source-map-support/register";
 import getPgPool from "./persistence/pg";
-import * as bugsnag from "bugsnag";
+import bugsnag from "bugsnag";
 
 const pgPool = getPgPool();
 

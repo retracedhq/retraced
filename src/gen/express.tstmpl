@@ -1,6 +1,6 @@
 /* tslint:disable */
-import * as _ from "lodash";
-import * as leftPad from "left-pad";
+import _ from "lodash";
+import leftPad from "left-pad";
 {{#if canImportByAlias}}
   import { ValidateParam } from 'tsoa';
   import { Controller } from 'tsoa';

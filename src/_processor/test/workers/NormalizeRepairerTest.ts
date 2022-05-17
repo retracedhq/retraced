@@ -3,8 +3,8 @@ import { expect } from "chai";
 
 import * as TypeMoq from "typemoq";
 
-import * as pg from "pg";
-import * as monkit from "monkit";
+import pg from "pg";
+import monkit from "monkit";
 
 import { NSQClient } from "../../persistence/nsq";
 import NormalizeRepairer from "../../workers/NormalizeRepairer";

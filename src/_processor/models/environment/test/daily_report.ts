@@ -1,7 +1,7 @@
 import "source-map-support/register";
 import { expect } from "chai";
 import * as uuid from "uuid";
-import * as moment from "moment-timezone";
+import moment from "moment-timezone";
 import { describe, it } from "mocha";
 
 import dailyReport, { Record } from "../daily_report";

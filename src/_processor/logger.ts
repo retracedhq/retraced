@@ -1,6 +1,6 @@
 import { pino } from "pino";
-import * as fs from "fs";
-import * as process from "process";
+import fs from "fs";
+import process from "process";
 
 function initLoggerFromEnv(): any {
   let p;

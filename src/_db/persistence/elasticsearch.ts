@@ -1,7 +1,7 @@
 import "source-map-support/register";
-import * as elasticsearch from "elasticsearch";
-import * as _ from "lodash";
-import * as request from "request-promise";
+import elasticsearch from "elasticsearch";
+import _ from "lodash";
+import request from "request-promise";
 import { readFileSync } from "fs";
 
 let es: elasticsearch.Client;

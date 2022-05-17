@@ -1,6 +1,6 @@
 import * as uuid from "uuid";
 import Analytics from "analytics-node";
-import * as moment from "moment";
+import moment from "moment";
 
 import getPgPool from "../../persistence/pg";
 import createApiToken from "../api_token/create";

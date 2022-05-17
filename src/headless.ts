@@ -1,8 +1,8 @@
 import "source-map-support/register";
-import * as express from "express";
+import express from "express";
 import { crud, Fields } from "./models/event";
 import { adminIdentity } from "./security/helpers";
-import * as _ from "lodash";
+import _ from "lodash";
 import { Client, Event } from "retraced";
 import getProject from "./models/project/get";
 import hydrateProject from "./models/project/hydrate";

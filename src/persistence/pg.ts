@@ -1,4 +1,4 @@
-import * as pg from "pg";
+import pg from "pg";
 import { gauge, meter } from "../metrics";
 import { logger } from "../logger";
 

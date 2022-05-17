@@ -4,118 +4,118 @@ import { createEnterpriseToken } from "../../../handlers/createEnterpriseToken";
 import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
-import CustReq from "../../mock-classes/CustomRequest";
+// import CustReq from "../../mock-classes/CustomRequest";
 import safeQuery from "../../seederHelper";
 
-@suite class CreateSavedSearch {
-    @test public async "CreateSavedSearch#createSavedSearch()"() {
-        try {
-            await setup();
-            await createEnterpriseToken(`token=test`, "test", "test", {
-                display_name: "test",
-            });
-            const req = new CustReq();
-            req.body = {
-                name: "test",
-                actions: [],
-                actor_ids: [],
-                start: +new Date(),
-            };
-            const res = await createSavedSearch(req);
-            expect(res !== undefined);
-            expect(res.status === 201);
-        } catch (ex) {
-            console.log(ex);
-        }
-    }
-    @test public async "CreateSavedSearch#createSavedSearch() without start time"() {
-        try {
-            await setup();
-            await createEnterpriseToken(`token=test`, "test", "test", {
-                display_name: "test",
-            });
-            const req = new CustReq();
-            req.body = {
-                name: "test",
-                actions: [],
-                actor_ids: [],
-            };
-            const res = await createSavedSearch(req);
-            console.log(res);
-            expect(res !== undefined);
-            expect(res.status === 201);
-        } catch (ex) {
-            console.log(ex);
-        }
-    }
-    @test public async "CreateSavedSearch#createSavedSearch() with invalid start time"() {
-        try {
-            await setup();
-            await createEnterpriseToken(`token=test`, "test", "test", {
-                display_name: "test",
-            });
-            const req = new CustReq();
-            req.body = {
-                name: "test",
-                actions: [],
-                actor_ids: [],
-                start: "randomInvalid value",
-            };
-            const res = await createSavedSearch(req);
-            console.log(res);
-            expect(res !== undefined);
-            expect(res.body !== undefined);
-        } catch (ex) {
-            console.log(ex);
-        }
-    }
-    @test public async "CreateSavedSearch#createSavedSearch() throws Missing required 'name' field"() {
-        try {
-            await setup();
-            await createEnterpriseToken(`token=test`, "test", "test", {
-                display_name: "test",
-            });
-            const req = new CustReq();
-            req.body = {
-                actions: [],
-                actor_ids: [],
-                start: "",
-            };
-            const result = await createSavedSearch(req);
-            console.log(result);
-            throw new Error(`Expected error "Missing required 'name' field" to be thrown`);
-        } catch (ex) {
-            console.log(ex);
-            expect(ex.status).to.equal(400);
-            expect(ex.err.message).to.equal("Missing required 'name' field");
-        }
-    }
-    // @test public async "CreateSavedSearch#createSavedSearch() throws search id is invalid"() {
-    //
-    //     const savedSearchId = "testt";
-    //     try {
-    //         await cleanup();
-    //         await setup();
-    //         await createEnterpriseToken(`token=test`, "test", "test", {
-    //             display_name: "test",
-    //         });
-    //         const res = await createSavedSearch({
-    //             get: () => {
-    //                 return `token=test`;
-    //             },
-    //             body: {
-    //                 saved_search_id: savedSearchId,
-    //             },
-    //         });
-    //         throw new Error(`Expected error "Saved search not found (id=${savedSearchId})' to be thrown`);
-    //     } catch (ex) {
-    //         expect(ex.status).to.equal(404);
-    //         expect(ex.err.message).to.equal(`Saved search not found (id=${savedSearchId})`);
-    //     } finally {
-    //         await cleanup();
-    //     }
-    // }
-}
+// @suite class CreateSavedSearch {
+//     @test public async "CreateSavedSearch#createSavedSearch()"() {
+//         try {
+//             await setup();
+//             await createEnterpriseToken(`token=test`, "test", "test", {
+//                 display_name: "test",
+//             });
+//             const req = new CustReq();
+//             req.body = {
+//                 name: "test",
+//                 actions: [],
+//                 actor_ids: [],
+//                 start: +new Date(),
+//             };
+//             const res = await createSavedSearch(req);
+//             expect(res !== undefined);
+//             expect(res.status === 201);
+//         } catch (ex) {
+//             console.log(ex);
+//         }
+//     }
+//     @test public async "CreateSavedSearch#createSavedSearch() without start time"() {
+//         try {
+//             await setup();
+//             await createEnterpriseToken(`token=test`, "test", "test", {
+//                 display_name: "test",
+//             });
+//             const req = new CustReq();
+//             req.body = {
+//                 name: "test",
+//                 actions: [],
+//                 actor_ids: [],
+//             };
+//             const res = await createSavedSearch(req);
+//             console.log(res);
+//             expect(res !== undefined);
+//             expect(res.status === 201);
+//         } catch (ex) {
+//             console.log(ex);
+//         }
+//     }
+//     @test public async "CreateSavedSearch#createSavedSearch() with invalid start time"() {
+//         try {
+//             await setup();
+//             await createEnterpriseToken(`token=test`, "test", "test", {
+//                 display_name: "test",
+//             });
+//             const req = new CustReq();
+//             req.body = {
+//                 name: "test",
+//                 actions: [],
+//                 actor_ids: [],
+//                 start: "randomInvalid value",
+//             };
+//             const res = await createSavedSearch(req);
+//             console.log(res);
+//             expect(res !== undefined);
+//             expect(res.body !== undefined);
+//         } catch (ex) {
+//             console.log(ex);
+//         }
+//     }
+//     @test public async "CreateSavedSearch#createSavedSearch() throws Missing required 'name' field"() {
+//         try {
+//             await setup();
+//             await createEnterpriseToken(`token=test`, "test", "test", {
+//                 display_name: "test",
+//             });
+//             const req = new CustReq();
+//             req.body = {
+//                 actions: [],
+//                 actor_ids: [],
+//                 start: "",
+//             };
+//             const result = await createSavedSearch(req);
+//             console.log(result);
+//             throw new Error(`Expected error "Missing required 'name' field" to be thrown`);
+//         } catch (ex) {
+//             console.log(ex);
+//             expect(ex.status).to.equal(400);
+//             expect(ex.err.message).to.equal("Missing required 'name' field");
+//         }
+//     }
+//     // @test public async "CreateSavedSearch#createSavedSearch() throws search id is invalid"() {
+//     //
+//     //     const savedSearchId = "testt";
+//     //     try {
+//     //         await cleanup();
+//     //         await setup();
+//     //         await createEnterpriseToken(`token=test`, "test", "test", {
+//     //             display_name: "test",
+//     //         });
+//     //         const res = await createSavedSearch({
+//     //             get: () => {
+//     //                 return `token=test`;
+//     //             },
+//     //             body: {
+//     //                 saved_search_id: savedSearchId,
+//     //             },
+//     //         });
+//     //         throw new Error(`Expected error "Saved search not found (id=${savedSearchId})' to be thrown`);
+//     //     } catch (ex) {
+//     //         expect(ex.status).to.equal(404);
+//     //         expect(ex.err.message).to.equal(`Saved search not found (id=${savedSearchId})`);
+//     //     } finally {
+//     //         await cleanup();
+//     //     }
+//     // }
+// }
 async function setup() {
     try {
         await cleanup();
@@ -155,4 +155,4 @@ async function cleanup() {
     }
 }
 
-export default CreateSavedSearch;
+// export default CreateSavedSearch;

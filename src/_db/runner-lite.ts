@@ -9,7 +9,7 @@
 //
 
 import "source-map-support/register";
-import * as yargs from "yargs";
+import yargs from "yargs";
 import * as upPG from "./commands/up/pg";
 import * as upEs from "./commands/up/es";
 import * as geoIP from "./commands/geoip";

@@ -1,5 +1,5 @@
 import * as uuid from "uuid";
-import * as _ from "lodash";
+import _ from "lodash";
 
 import { checkEitapiAccess } from "../../security/helpers";
 import searchEvents, { Options } from "../../models/event/search";

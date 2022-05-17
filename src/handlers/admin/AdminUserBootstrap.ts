@@ -3,7 +3,7 @@ import getUser from "../../models/user/getByExternalAuth";
 import createUser, { ERR_DUPLICATE_EMAIL } from "../../models/user/create";
 import { apiTokenFromAuthHeader } from "../../security/helpers";
 import { createAdminVoucher } from "../../security/vouchers";
-import * as express from "express";
+import express from "express";
 
 export class AdminUserBootstrap {
   public static default() {

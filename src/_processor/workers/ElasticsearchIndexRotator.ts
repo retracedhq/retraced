@@ -1,8 +1,8 @@
-import * as _ from "lodash";
-import * as elasticsearch from "elasticsearch";
-import * as moment from "moment";
+import _ from "lodash";
+import elasticsearch from "elasticsearch";
+import moment from "moment";
 import * as uuid from "uuid";
-import * as pg from "pg";
+import pg from "pg";
 import { histogram, instrumented, meter } from "monkit";
 
 import {

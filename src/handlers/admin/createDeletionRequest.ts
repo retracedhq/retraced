@@ -1,4 +1,4 @@
-import * as moment from "moment";
+import moment from "moment";
 import * as uuid from "uuid";
 
 import nsq from "../../persistence/nsq";
@@ -12,7 +12,7 @@ import getUser from "../../models/user/get";
 import getEnvironment from "../../models/environment/get";
 import listTeamMembers from "../../models/team/listTeamMembers";
 import { logger } from "../../logger";
-import * as util from "util";
+import util from "util";
 
 const pgPool = getPgPool();
 

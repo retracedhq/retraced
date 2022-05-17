@@ -1,6 +1,6 @@
-import * as _ from "lodash";
-import * as pg from "pg";
-import * as bcrypt from "bcrypt";
+import _ from "lodash";
+import pg from "pg";
+import bcrypt from "bcrypt";
 import { instrument, instrumented } from "../../metrics";
 import { AdminToken } from "./types";
 import getPgPool from "../../persistence/pg";

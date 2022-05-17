@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import getEs from "../../persistence/elasticsearch";
 import { DashboardTile, DashboardOptions } from "../interfaces";
 

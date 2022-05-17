@@ -1,5 +1,5 @@
 import { bootstrapProject } from "../headless";
-import * as util from "util";
+import util from "util";
 
 export const name = "bootstrap";
 export const describe = "Bootstrap a retraced project with a specified projectId, environmentId, and apiKey";

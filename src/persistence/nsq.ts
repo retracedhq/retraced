@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import * as nsq from "nsqjs";
+import nsq from "nsqjs";
 import { histogram, instrumented, meter, timer } from "../metrics";
 import { logger } from "../logger";
 

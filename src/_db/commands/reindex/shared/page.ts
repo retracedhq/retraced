@@ -1,9 +1,9 @@
 import "source-map-support/register";
-import * as chalk from "chalk";
-import * as _ from "lodash";
-import * as util from "util";
-import * as ProgressBar from "progress";
-import * as moment from "moment";
+import chalk from "chalk";
+import _ from "lodash";
+import util from "util";
+import ProgressBar from "progress";
+import moment from "moment";
 
 import getElasticsearch from "../../../persistence/elasticsearch";
 import { Event } from "../../../persistence/EventSource";

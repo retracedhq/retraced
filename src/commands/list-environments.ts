@@ -1,4 +1,4 @@
-import * as util from "util";
+import util from "util";
 import getPgPool from "../persistence/pg";
 
 export const name = "list-environments";

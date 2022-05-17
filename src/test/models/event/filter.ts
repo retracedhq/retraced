@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import * as util from "util";
+import util from "util";
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
 

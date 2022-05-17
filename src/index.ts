@@ -1,12 +1,12 @@
 import "source-map-support/register";
-import * as url from "url";
-import * as express from "express";
-import * as cors from "cors";
-import * as _ from "lodash";
-import * as bugsnag from "bugsnag";
-import * as Sigsci from "sigsci-module-nodejs";
-import * as Prometheus from "prom-client";
-import * as swaggerUI from "swagger-ui-express";
+import url from "url";
+import express from "express";
+import cors from "cors";
+import _ from "lodash";
+import bugsnag from "bugsnag";
+import Sigsci from "sigsci-module-nodejs";
+import Prometheus from "prom-client";
+import swaggerUI from "swagger-ui-express";
 
 import { register, wrapRoute } from "./router";
 import { LegacyRoutes } from "./routes";
@@ -21,9 +21,9 @@ import "./controllers/PublisherController";
 import "./controllers/AdminController";
 import "./controllers/EnterpriseController";
 import { logger } from "./logger";
-import * as fs from "fs";
-import * as https from "https";
-import * as sslConf from "ssl-config";
+import fs from "fs";
+import https from "https";
+import sslConf from "ssl-config";
 
 if (!process.env["BUGSNAG_TOKEN"]) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");

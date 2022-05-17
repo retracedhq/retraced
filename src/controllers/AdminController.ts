@@ -2,7 +2,7 @@ import {
   Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse,
   Controller, Put, Request,
 } from "tsoa";
-import * as express from "express";
+import express from "express";
 import * as uuid from "uuid";
 
 import {

@@ -1,6 +1,6 @@
 import "source-map-support/register";
-import * as _ from "lodash";
-import * as bugsnag from "bugsnag";
+import _ from "lodash";
+import bugsnag from "bugsnag";
 import * as monkit from "monkit";
 
 import { errToLog, jobDesc, stopwatchClick } from "./common";

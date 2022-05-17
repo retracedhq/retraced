@@ -1,8 +1,8 @@
 import "source-map-support/register";
-import * as elasticsearch from "elasticsearch";
-import * as _ from "lodash";
-import * as moment from "moment";
-import * as request from "request";
+import elasticsearch from "elasticsearch";
+import _ from "lodash";
+import moment from "moment";
+import request from "request";
 import { readFileSync } from "fs";
 
 let es;

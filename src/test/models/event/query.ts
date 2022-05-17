@@ -7,7 +7,7 @@ import {
   searchParams,
   Options,
 } from "../../../models/event/query";
-import { RequestParams } from "@elastic/elasticsearch";
+import { SearchRequest } from "@elastic/elasticsearch/lib/api/typesWithBodyKey";
 
 @suite class QueryEventsTest {
 
@@ -179,13 +179,14 @@ import { RequestParams } from "@elastic/elasticsearch";
       cursor: [1492060162148, "abc123"],
     };
     const output = searchParams(input);
-    const answer: RequestParams.Search = {
+    const answer: SearchRequest = {
       index: "retraced.p1.e1.current",
       _source: "true",
       size: 10,
       body: {
         query: {
           bool: {
+            should: [],
             filter: [
               // user's query filters
               {match: {action: { query: "user.get", operator: "and" }}},
@@ -204,6 +205,7 @@ import { RequestParams } from "@elastic/elasticsearch";
               // target scope filters
               {
                 bool: {
+                  should: [],
                   must_not: {
                     range: {
                       canonical_time: {

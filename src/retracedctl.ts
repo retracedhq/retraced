@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as yargs from "yargs";
+import yargs from "yargs";
 import * as bootstrap from "./commands/bootstrap";
 import * as createTemplate from "./commands/create-template";
 import * as listEnvironments from "./commands/list-environments";

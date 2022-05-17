@@ -1,6 +1,6 @@
-import * as Auth0 from "auth0-js";
+import Auth0 from "auth0-js";
 import { LocalStorage } from "node-localstorage";
-import * as _ from "lodash";
+import _ from "lodash";
 import { Event } from "retraced";
 
 import getUser from "../models/user/getByExternalAuth";

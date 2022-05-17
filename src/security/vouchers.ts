@@ -1,4 +1,4 @@
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 import ViewerDescriptor from "../models/viewer_descriptor/def";
 

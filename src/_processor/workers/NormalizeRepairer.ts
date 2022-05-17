@@ -1,4 +1,4 @@
-import * as pg from "pg";
+import pg from "pg";
 import * as monkit from "monkit";
 
 import getPgPool from "../persistence/pg";
@@ -36,17 +36,17 @@ export default class NormalizeRepairer {
     private readonly minAgeMs: number;
     private readonly nsq: NSQ;
     private readonly pgPool: pg.Pool;
-    private readonly metricRegistry: monkit.Registry;
+    private metricRegistry: monkit.Registry;
     private readonly maxEvents: number;
 
     constructor(minAgeMs?: number, nsqClient?: NSQClient, pgPool?: pg.Pool, registry?: monkit.Registry, maxEvents?: number) {
         this.minAgeMs = minAgeMs || Number(process.env.PROCESSOR_NORMALIZE_REPAIRER_MIN_AGE_MS) || TWO_MINUTES_IN_MILLIS;
         this.nsq = nsqClient || nsq;
         this.pgPool = pgPool || getPgPool();
-        this.metricRegistry = registry || monkit.getRegistry();
+
         this.maxEvents = maxEvents || Number(process.env.PROCESSOR_NORMALIZE_REPAIRER_MAX_EVENTS) || 10000;
 
-        // intialize the metrics so they report zeroes
+        this.metricRegistry = registry || monkit.getRegistry();
         this.metricRegistry.meter("NormalizeRepairer.repairOldEvents.hits");
         this.metricRegistry.histogram("NormalizeRepairer.repairOldEvents.oldest");
         this.metricRegistry.histogram("NormalizeRepairer.repairOldEvents.age");
@@ -64,11 +64,11 @@ export default class NormalizeRepairer {
         const oldestEvent = resp.rows[0];
         logger.warn(`Found ${resp.rows.length} event(s) older than ${this.minAgeMs}ms missing 'normalized_event'`);
         logger.warn(`Oldest event is ${oldestEvent.id} which was received ${oldestEvent.age_ms}ms ago`);
-        this.metricRegistry.meter("NormalizeRepairer.repairOldEvents.hits").mark(resp.rows.length);
-        this.metricRegistry.histogram("NormalizeRepairer.repairOldEvents.oldest").update(oldestEvent.age_ms);
+        this.metricRegistry?.meter("NormalizeRepairer.repairOldEvents.hits").mark(resp.rows.length);
+        this.metricRegistry?.histogram("NormalizeRepairer.repairOldEvents.oldest").update(oldestEvent.age_ms);
 
         return Promise.all(resp.rows.map((row) => {
-            this.metricRegistry.histogram("NormalizeRepairer.repairOldEvents.age").update(row.age_ms);
+            this.metricRegistry?.histogram("NormalizeRepairer.repairOldEvents.age").update(row.age_ms);
             return this.nsq.produce("raw_events", JSON.stringify({ taskId: row.id }));
         }));
     }

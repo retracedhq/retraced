@@ -1,7 +1,7 @@
 import "source-map-support/register";
-import * as _ from "underscore";
+import _ from "underscore";
 import { instrument } from "../../metrics";
-import * as Elasticsearch from "elasticsearch";
+import Elasticsearch from "elasticsearch";
 
 import { Scope } from "../../security/scope";
 import getEs, { scope } from "../../persistence/elasticsearch";

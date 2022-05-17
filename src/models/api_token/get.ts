@@ -1,4 +1,4 @@
-import * as pg from "pg";
+import pg from "pg";
 import getPgPool, { Querier } from "../../persistence/pg";
 import { ApiToken, apiTokenFromRow } from "./";
 

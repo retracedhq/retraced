@@ -1,7 +1,7 @@
-import * as moment from "moment";
-import * as stringify from "csv-stringify";
-import * as _ from "lodash";
-import * as sanitizefn from "sanitize-filename";
+import moment from "moment";
+import { stringify } from "csv-stringify";
+import _ from "lodash";
+import sanitizefn from "sanitize-filename";
 
 import getPgPool from "../../persistence/pg";
 import { Scope } from "../../security/scope";

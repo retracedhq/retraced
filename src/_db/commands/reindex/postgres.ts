@@ -1,7 +1,7 @@
 import "source-map-support/register";
-import * as chalk from "chalk";
+import chalk from "chalk";
 import * as uuid from "uuid";
-import * as util from "util";
+import util from "util";
 
 import getElasticsearch, { putAliases } from "../../persistence/elasticsearch";
 import PostgresEventSource from "../../persistence/PostgresEventSource";

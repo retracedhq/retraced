@@ -1,6 +1,6 @@
 import "source-map-support/register";
-import * as _ from "lodash";
-import * as moment from "moment";
+import _ from "lodash";
+import moment from "moment";
 import upsertActor from "../models/actor/upsert";
 import upsertGroup from "../models/group/upsert";
 import upsertAction from "../models/action/upsert";

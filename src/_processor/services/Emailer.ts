@@ -10,10 +10,10 @@
  * Optionallly turns off the tx_email_recipient flag in retraceduser on certain
  * classes of permanent bounces.
  */
-import * as nodemailer from "nodemailer";
-import * as mandrillTransport from "nodemailer-mandrill-transport";
-import * as _ from "lodash";
-import * as pg from "pg";
+import nodemailer from "nodemailer";
+import mandrillTransport from "nodemailer-mandrill-transport";
+import _ from "lodash";
+import pg from "pg";
 import { getRegistry, instrumented, Registry } from "monkit";
 
 import inviteTmpl from "./templates/inviteToTeam";

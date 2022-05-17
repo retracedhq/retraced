@@ -1,9 +1,9 @@
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
-import * as moment from "moment";
+import moment from "moment";
 
-import * as pg from "pg";
+import pg from "pg";
 import { NSQClient } from "../../persistence/nsq";
 
 import { EventCreater, CreateEventRequest, CreateEventResponse } from "../../handlers/createEvent";
