@@ -1,6 +1,6 @@
 import "source-map-support/register";
 import express from "express";
-import { crud, Fields } from "./models/event";
+import { crud, EventFields } from "./models/event";
 import { adminIdentity } from "./security/helpers";
 import _ from "lodash";
 import { Client, Event } from "retraced";
@@ -47,8 +47,8 @@ export async function audit(
     await retraced.reportEvent(event);
 }
 
-export function stringifyFields(source: any): Fields {
-    const fields: Fields = {};
+export function stringifyFields(source: any): EventFields {
+    const fields: EventFields = {};
 
     for (const key in source) {
       if (source.hasOwnProperty(key)) {

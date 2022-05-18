@@ -7,7 +7,7 @@ import * as monkit from "monkit";
 import { instrument, instrumented } from "../metrics";
 
 import createCanonicalHash from "../models/event/canonicalize";
-import Event, { crud, Fields } from "../models/event/";
+import Event, { crud, EventFields } from "../models/event/";
 import { fromCreateEventInput } from "../models/event";
 import uniqueId from "../models/uniqueId";
 import { NSQClient } from "../persistence/nsq";
@@ -97,7 +97,7 @@ export interface CreateEventRequest {
     /** Denotes whether this event represents a failure to perform the action */
     is_failure?: boolean;
     /** An optional set of additional arbitrary event about the data */
-    fields?: Fields;
+    fields?: EventFields;
     /** An identifier for the vendor app component that sent the event */
     component?: string;
     /** An identifier for the version of the vendor app that sent the event, usually a git SHA */

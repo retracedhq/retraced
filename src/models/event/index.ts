@@ -20,7 +20,7 @@ export interface Target {
   type?: string;
 }
 
-export interface Fields {
+export interface EventFields {
   [key: string]: string;
 }
 
@@ -39,7 +39,7 @@ export interface RetracedEvent {
   description?: string;
   isAnonymous?: boolean;
   isFailure?: boolean;
-  fields?: Fields;
+  fields?: EventFields;
   component?: string;
   version?: string;
 }
