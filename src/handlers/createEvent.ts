@@ -78,7 +78,7 @@ export interface CreateEventRequest {
     /** The action that occured e.g. `user.login` or `spreadsheet.create` */
     action: string;
     /** Denotes whether this is a "Create", "Read", "Update", or "Delete" event. */
-    crud: crud;
+    crud: string;
     group?: RequestGroup;
     /** A title to display for the event.
      *  This field is deprecated in favor of [Display Templates](https://preview.retraced.io/documentation/advanced-retraced/display-templates/)

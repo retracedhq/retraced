@@ -2,8 +2,7 @@ import "source-map-support/register";
 import _ from "lodash";
 import searchQueryParser from "search-query-parser";
 import moment from "moment";
-import { SearchResponse } from "@elastic/elasticsearch/lib/api/types";
-import { SearchRequest } from "@elastic/elasticsearch/lib/api/typesWithBodyKey";
+import { ApiResponse, RequestParams } from "@elastic/elasticsearch";
 
 import { Scope } from "../../security/scope";
 import { scope, getNewElasticsearch } from "../../persistence/elasticsearch";
@@ -92,7 +91,7 @@ async function doQuery(opts: Options): Promise<Result> {
 // doAllQuery is not meant to be used interactively
 // it will return all the results, which may take some time to query
 export async function doAllQuery(opts: Options): Promise<Result> {
-    const responseQueue: SearchResponse[] = [];
+    const responseQueue: ApiResponse[] = [];
     let allHits: any[] = [];
 
     opts.cursor = undefined; // no cursor if getting all results
@@ -269,7 +268,7 @@ export function parse(searchQuery: string): any {
     return q;
 }
 
-export function searchParams(opts: Options): SearchRequest {
+export function searchParams(opts: Options): RequestParams.Search {
     const searchQuery = parse(opts.query);
     const [index, securityFilters] = scope(opts.scope);
 

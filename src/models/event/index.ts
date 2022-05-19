@@ -24,7 +24,12 @@ export interface EventFields {
   [key: string]: string;
 }
 
-export type crud = "c" | "r" | "u" | "d";
+export enum crud {
+    "c" = "c",
+    "r" = "r",
+    "u" = "u",
+    "d" = "d",
+}
 
 export interface RetracedEvent {
   id?: string;
