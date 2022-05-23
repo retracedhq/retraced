@@ -7,6 +7,20 @@
 	"item": [
 		{
 			"name": "Save",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Got hash in return\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hash).to.not.eql(undefined);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -15,13 +29,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "token=dev",
+						"value": "token=dev_write",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"action\": \"action1\",\n  \"crud\": \"c\",\n  \"group\": {\n    \"id\": \"string\",\n    \"name\": \"group1\"\n  },\n  \"displayTitle\": \"string\",\n  \"created\": \"2022-03-21T07:17:54.428Z\",\n  \"actor\": {\n    \"id\": \"string\",\n    \"name\": \"actor1\",\n    \"href\": \"string\"\n  },\n  \"target\": {\n    \"id\": \"string\",\n    \"name\": \"target1\",\n    \"href\": \"target2\",\n    \"type\": \"target1\"\n  },\n  \"source_ip\": \"127.0.0.3\",\n  \"description\": \"descc\",\n  \"is_anonymous\": true,\n  \"is_failure\": true,\n  \"fields\": {},\n  \"component\": \"comp1\",\n  \"version\": \"v1\"\n}",
+					"raw": "{\n  \"action\": \"action1\",\n  \"crud\": \"c\",\n  \"group\": {\n    \"id\": \"string\",\n    \"name\": \"group1\"\n  },\n  \"displayTitle\": \"string\",\n  \"created\": \"2022-03-21T07:17:54\",\n  \"actor\": {\n    \"id\": \"string\",\n    \"name\": \"actor1\",\n    \"href\": \"string\"\n  },\n  \"target\": {\n    \"id\": \"string\",\n    \"name\": \"target1\",\n    \"href\": \"target2\",\n    \"type\": \"target1\"\n  },\n  \"source_ip\": \"127.0.0.100\",\n  \"description\": \"descc\",\n  \"is_anonymous\": true,\n  \"is_failure\": true,\n  \"fields\": {},\n  \"component\": \"comp1\",\n  \"version\": \"v1\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -101,6 +115,18 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Events Found\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.events.length).to.not.eql(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -111,13 +137,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "token=dev",
+						"value": "token=dev_read",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"query\": {\n        \"search_text\": \"v1\",\n        \"offset\": 0,\n        \"length\": 50,\n        \"start_time\": 0,\n        \"end_time\": {{endtime}},\n        \"create\": \"c\",\n        \"read\": \"\",\n        \"update\": \"\",\n        \"delete\": \"\"\n    }\n}",
+					"raw": "{\n    \"query\": {\n        \"search_text\": \"127.0.0.100\",\n        \"offset\": 0,\n        \"length\": 50,\n        \"start_time\": 0,\n        \"end_time\": {{endtime}},\n        \"create\": \"c\",\n        \"read\": \"\",\n        \"update\": \"\",\n        \"delete\": \"\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -145,6 +171,59 @@
 							"key": "environment_id",
 							"value": "dev"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GraphQL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Got a body with data\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data).to.not.eql(undefined);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token=dev_read",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"query\": \"{search {edges {node {actor {name} source_ip description action}}}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/auditlog/v1/graphql",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auditlog",
+						"v1",
+						"graphql"
 					]
 				}
 			},
