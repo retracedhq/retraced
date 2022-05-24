@@ -43,14 +43,14 @@ services:
       - postgres-migration
     restart: "always"
 
-  retraced-dbutil:
-    build: 
-      context: .
-      dockerfile: ./Dockerfile.base
-    environment: *common-variables
-    networks:
-      - retraced
-    command: /bin/sleep infinity
+  # retraced-dbutil:
+  #   build: 
+  #     context: .
+  #     dockerfile: ./Dockerfile.base
+  #   environment: *common-variables
+  #   networks:
+  #     - retraced
+  #   command: /bin/sleep infinity
 
   retraced-processor:
     build: 
@@ -116,16 +116,16 @@ services:
     networks:
       - retraced
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.8.0
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    networks:
-      - retraced
-    depends_on:
-      - elasticsearch
-    ports:
-      - 5601:5601
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:7.8.0
+  #   environment:
+  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+  #   networks:
+  #     - retraced
+  #   depends_on:
+  #     - elasticsearch
+  #   ports:
+  #     - 5601:5601
 
   retraced-dev-bootstrap:
     build: 

@@ -43,14 +43,14 @@ services:
       - postgres-migration
     restart: "always"
 
-  retraced-dbutil:
-    build: 
-      context: .
-      dockerfile: ./Dockerfile.base
-    environment: *common-variables
-    networks:
-      - retraced
-    command: /bin/sleep infinity
+  # retraced-dbutil:
+  #   build: 
+  #     context: .
+  #     dockerfile: ./Dockerfile.base
+  #   environment: *common-variables
+  #   networks:
+  #     - retraced
+  #   command: /bin/sleep infinity
 
   retraced-processor:
     build: 
