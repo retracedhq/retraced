@@ -43,19 +43,20 @@ async function checkTableAvailability(tableName) {
     } while (!result);
 }
 
-async function executeQuery(tableName) : Promise<boolean> {
-    return new Promise((resolve) => {
+async function executeQuery(tableName): Promise<boolean> {
+    return new Promise(async (resolve) => {
         let pool = getPgPool();
         try {
-            var sql = "SELECT * FROM " + tableName + " LIMIT 1";
-            pool.query(sql, async function (err) {
-                if (!err) {
-                    console.log("query executed successfuly");
-                    resolve(true);
-                }
+            var sql = "SELECT * FROM schemaversion WHERE name=$1 LIMIT 1";
+            let result = await pool.query(sql, [tableName]);
+            console.log("query executed successfuly");
+            let rows = result.rows;
+            if(rows.length > 0) {
+                resolve(true);
+            } else {
                 console.log(`Table ${tableName} not found!`);
                 resolve(false);
-            });
+            }
         } catch (ex) {
             console.log(`Table ${tableName} not found!`);
             resolve(false);
