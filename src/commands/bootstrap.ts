@@ -27,41 +27,20 @@ export const builder = {
 };
 
 async function checkTableAvailability(tableName) {
-    let result = false;
-    do {
-        let pool = getPgPool();
-        if (pool) {
+    let pool = getPgPool();
+    let count = 0, sql;
+    if (pool) {
+        do {
             try {
-                console.log(`Checking for table ${tableName}`);
-                result = await executeQuery(tableName);
-                console.log(`Result => ${result}`);
+                sql = "SELECT * FROM " + tableName[count] + " LIMIT 1";
+                await pool.query(sql);
+                console.log(`Found table ${tableName[count]}`);
+                count++;
             } catch (ex) {
-                result = false;
-                console.log(ex);
+                console.log(`Table ${tableName[count]} not found`);
             }
-        }
-    } while (!result);
-}
-
-async function executeQuery(tableName): Promise<boolean> {
-    return new Promise(async (resolve) => {
-        let pool = getPgPool();
-        try {
-            var sql = "SELECT * FROM schemaversion WHERE name=$1 LIMIT 1";
-            let result = await pool.query(sql, [tableName]);
-            console.log("query executed successfuly");
-            let rows = result.rows;
-            if(rows.length > 0) {
-                resolve(true);
-            } else {
-                console.log(`Table ${tableName} not found!`);
-                resolve(false);
-            }
-        } catch (ex) {
-            console.log(`Table ${tableName} not found!`);
-            resolve(false);
-        }
-    })
+        } while (tableName.length > count);
+    }
 }
 
 export const handler = async (argv) => {
@@ -75,7 +54,7 @@ export const handler = async (argv) => {
     } = argv;
 
     let tables = ["project", "environment", "token"];
-    await tables.forEach(checkTableAvailability);
+    await checkTableAvailability(tables);
 
     bootstrapProject({
         projectId,
