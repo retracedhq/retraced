@@ -26,6 +26,14 @@ export const builder = {
     },
 };
 
+const sleep = async (time) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(undefined);
+        }, time)
+    });
+}
+
 async function checkTableAvailability(tableName) {
     let pool = getPgPool();
     let count = 0, sql;
@@ -38,6 +46,8 @@ async function checkTableAvailability(tableName) {
                 count++;
             } catch (ex) {
                 console.log(`Table ${tableName[count]} not found`);
+            } finally {
+                await sleep(300);
             }
         } while (tableName.length > count);
     }
@@ -53,26 +63,25 @@ export const handler = async (argv) => {
         tokenName,
     } = argv;
 
-    let tables = ["project", "environment", "token"];
-    await checkTableAvailability(tables);
-
-    bootstrapProject({
-        projectId,
-        apiKey,
-        environmentId,
-        projectName,
-        environmentName,
-        tokenName,
-        keyVarRef: "apiKey",
-        projectVarRef: "projectId",
-        envVarRef: "environmentId",
-    })
-        .then(() => {
-            console.log(`bootstrapped project ${argv.projectId}`);
-            process.exit(0);
-        })
-        .catch((err) => {
-            console.log(util.inspect(err));
+    do {
+        try {
+            await bootstrapProject({
+                projectId,
+                apiKey,
+                environmentId,
+                projectName,
+                environmentName,
+                tokenName,
+                keyVarRef: "apiKey",
+                projectVarRef: "projectId",
+                envVarRef: "environmentId",
+            });
+            console.log(`Bootstraped project ${argv.projectId}`);
             process.exit(1);
-        });
+        } catch (ex) {
+            console.log(`Retrying in 300ms`);
+        } finally {
+            await sleep(300);
+        }
+    } while (true);
 };

@@ -1,18 +1,18 @@
 import { pino } from "pino";
 import fs from "fs";
-import process from "process";
+import config from '../config';
 
 function initLoggerFromEnv(): any {
   let p;
-  if (process.env.RETRACED_PROCESSOR_LOG_FILE) {
+  if (config.RETRACED_PROCESSOR_LOG_FILE) {
     p = pino(
-        fs.createWriteStream(process.env.RETRACED_PROCESSOR_LOG_FILE),
+        fs.createWriteStream(config.RETRACED_PROCESSOR_LOG_FILE),
     );
   } else {
     p = pino();
   }
 
-  p.level = process.env["LOG_LEVEL"] || "warn";
+  p.level = config.LOG_LEVEL || "warn";
   return p;
 }
 

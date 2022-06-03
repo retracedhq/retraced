@@ -3,6 +3,7 @@ import * as uuid from "uuid";
 import getEs from "../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
 import { Environment } from "./index";
+import config from '../../config';
 
 const pgPool = getPgPool();
 
@@ -22,7 +23,7 @@ export default async function createEnvironment(opts: Opts): Promise<Environment
     projectId: opts.projectId,
   };
 
-  if (!process.env.PG_SEARCH) {
+  if (!config.PG_SEARCH) {
       // Create the ES index
       const searchAlias = `retraced.${environment.projectId}.${environment.id}`;
       const writeAlias = `retraced.${environment.projectId}.${environment.id}.current`;

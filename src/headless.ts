@@ -12,19 +12,20 @@ import getEnvironment from "./models/environment/get";
 import createToken from "./models/api_token/create";
 import createEnvironment from "./models/environment/create";
 import { logger } from "./logger";
+import config from './config';
 
-const enabled = !!(process.env.HEADLESS_API_KEY && process.env.HEADLESS_PROJECT_ID && process.env.HEADLESS_ENV_ID);
+const enabled = !!(config.HEADLESS_API_KEY && config.HEADLESS_PROJECT_ID && config.HEADLESS_ENV_ID);
 
 const retraced = new Client({
-    apiKey: process.env.HEADLESS_API_KEY || "",
-    projectId: process.env.HEADLESS_PROJECT_ID || "",
-    endpoint: process.env.RETRACED_API_BASE || "",
+    apiKey: config.HEADLESS_API_KEY || "",
+    projectId: config.HEADLESS_PROJECT_ID || "",
+    endpoint: config.RETRACED_API_BASE || "",
 });
 
 export async function reportEvents(events: Event[]) {
-  if (enabled) {
-    retraced.reportEvents(events);
-  }
+    if (enabled) {
+        retraced.reportEvents(events);
+    }
 }
 
 export async function audit(
@@ -51,12 +52,12 @@ export function stringifyFields(source: any): EventFields {
     const fields: EventFields = {};
 
     for (const key in source) {
-      if (source.hasOwnProperty(key)) {
-        const value = source[key];
-        if (value != null) {
-          fields[key] = value.toString();
+        if (source.hasOwnProperty(key)) {
+            const value = source[key];
+            if (value != null) {
+                fields[key] = value.toString();
+            }
         }
-      }
     }
 
     return fields;
@@ -96,8 +97,8 @@ function makeEvent(
 ) {
     const event: any = _.merge(
         {
-          action,
-          crud: crudOperation,
+            action,
+            crud: crudOperation,
         },
         fromRequestInfo,
         record,
@@ -135,9 +136,9 @@ export async function ensureHeadlessProject() {
         return;
     }
     await bootstrapProject({
-        projectId: process.env.HEADLESS_PROJECT_ID || "",
-        apiKey: process.env.HEADLESS_API_KEY || "",
-        environmentId: process.env.HEADLESS_PROJECT_ENV || "",
+        projectId: config.HEADLESS_PROJECT_ID || "",
+        apiKey: config.HEADLESS_API_KEY || "",
+        environmentId: config.HEADLESS_PROJECT_ENV || "",
         projectName: "Headless Retraced",
         environmentName: "HEADLESS_PROJECT_ENV",
         tokenName: "HEADLESS_API_KEY",
@@ -170,8 +171,12 @@ export async function bootstrapProject(opts: BootstrapOpts) {
         throw new Error(`env ${opts.envVarRef} does not belong to project ${opts.projectVarRef}`);
     }
 
-    const token = await getToken(opts.apiKey);
-    if (!token) {
+    // TODO: Take 2 args for token while bootstraping 
+    // Has to be secure and cryptic
+    // Dont use _read & _write
+    // Take 2 command line args apiKeyWrite & apiKeyRead
+    const readToken = await getToken(`${opts.apiKey}_read`);
+    if (!readToken) {
         await createToken(
             project.id,
             env.id,
@@ -184,6 +189,11 @@ export async function bootstrapProject(opts: BootstrapOpts) {
             true,
             false,
         );
+    } else if (readToken.projectId !== project.id) {
+        throw new Error(`api key ${opts.keyVarRef} does not belong to project ${opts.projectVarRef}`);
+    }
+    const writeToken = await getToken(`${opts.apiKey}_write`);
+    if (!writeToken) {
         await createToken(
             project.id,
             env.id,
@@ -196,7 +206,7 @@ export async function bootstrapProject(opts: BootstrapOpts) {
             false,
             true,
         );
-    } else if (token.projectId !== project.id) {
+    } else if (writeToken.projectId !== project.id) {
         throw new Error(`api key ${opts.keyVarRef} does not belong to project ${opts.projectVarRef}`);
     }
 }

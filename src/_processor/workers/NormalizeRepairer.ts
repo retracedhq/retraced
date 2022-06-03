@@ -4,6 +4,7 @@ import * as monkit from "monkit";
 import getPgPool from "../persistence/pg";
 import nsq, { NSQ, NSQClient } from "../persistence/nsq";
 import { logger } from "../logger";
+import config from '../../config';
 
 /**
  * This worker runs at a scheduled interval.
@@ -40,11 +41,11 @@ export default class NormalizeRepairer {
     private readonly maxEvents: number;
 
     constructor(minAgeMs?: number, nsqClient?: NSQClient, pgPool?: pg.Pool, registry?: monkit.Registry, maxEvents?: number) {
-        this.minAgeMs = minAgeMs || Number(process.env.PROCESSOR_NORMALIZE_REPAIRER_MIN_AGE_MS) || TWO_MINUTES_IN_MILLIS;
+        this.minAgeMs = minAgeMs || Number(config.PROCESSOR_NORMALIZE_REPAIRER_MIN_AGE_MS) || TWO_MINUTES_IN_MILLIS;
         this.nsq = nsqClient || nsq;
         this.pgPool = pgPool || getPgPool();
 
-        this.maxEvents = maxEvents || Number(process.env.PROCESSOR_NORMALIZE_REPAIRER_MAX_EVENTS) || 10000;
+        this.maxEvents = maxEvents || Number(config.PROCESSOR_NORMALIZE_REPAIRER_MAX_EVENTS) || 10000;
 
         this.metricRegistry = registry || monkit.getRegistry();
         this.metricRegistry.meter("NormalizeRepairer.repairOldEvents.hits");

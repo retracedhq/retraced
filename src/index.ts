@@ -7,7 +7,7 @@ import bugsnag from "bugsnag";
 import Sigsci from "sigsci-module-nodejs";
 import Prometheus from "prom-client";
 import swaggerUI from "swagger-ui-express";
-
+import config from './config';
 import { register, wrapRoute } from "./router";
 import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";
@@ -25,11 +25,11 @@ import fs from "fs";
 import https from "https";
 import sslConf from "ssl-config";
 
-if (!process.env["BUGSNAG_TOKEN"]) {
+if (!config.BUGSNAG_TOKEN) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
 } else {
-  bugsnag.register(process.env["BUGSNAG_TOKEN"] || "", {
-    releaseStage: process.env["STAGE"],
+  bugsnag.register(config.BUGSNAG_TOKEN || "", {
+    releaseStage: config.STAGE,
     notifyReleaseStages: ["production", "staging"],
   });
 }
@@ -38,17 +38,17 @@ const app = express();
 const router = express.Router();
 
 let basePath = "";
-if (process.env.API_BASE_URL_PATH) {
-  basePath = url.parse(process.env.API_BASE_URL_PATH || "").pathname || "";
+if (config.API_BASE_URL_PATH) {
+  basePath = url.parse(config.API_BASE_URL_PATH || "").pathname || "";
 }
 logger.info(`listening on basePath ${basePath}`);
 
 // Sigsci middleware has to be installed before routes and other middleware
-if (!process.env["SIGSCI_RPC_ADDRESS"]) {
+if (!config.SIGSCI_RPC_ADDRESS) {
   logger.error("SIGSCI_RPC_ADDRESS not set, Signal Sciences module will not be installed");
 } else {
   const sigsci = new Sigsci({
-    path: process.env.SIGSCI_RPC_ADDRESS,
+    path: config.SIGSCI_RPC_ADDRESS,
   });
   app.use(sigsci.express());
 }
@@ -88,14 +88,14 @@ function buildRoutes() {
     register(route, handler, router);
   });
 
-  if (process.env.ADMIN_ROOT_TOKEN) {
+  if (config.ADMIN_ROOT_TOKEN) {
     const route = { method: "post", path: "/admin/v1/user/_login" };
     const handler = wrapRoute({ handler: AdminUserBootstrap.default().handler() }, "_login");
     register(route, handler, router);
   }
 
-  if (process.env.RETRACED_ENABLE_PROMETHEUS) {
-    const endpoint = process.env.RETRACED_PROMETHEUS_ENDPOINT || "/metrics";
+  if (config.RETRACED_ENABLE_PROMETHEUS) {
+    const endpoint = config.RETRACED_PROMETHEUS_ENDPOINT || "/metrics";
     logger.info(`Registering Prometheus Exporter at ${endpoint}`);
     app.get("/metrics", (req, res) => {
       res.set("Content-Type", Prometheus.register.contentType);
@@ -138,8 +138,8 @@ export function registerHealthchecks() {
 }
 
 function serve() {
-  const sslCertPath = process.env.SSL_SERVER_CERT_PATH;
-  const sslKeyPath = process.env.SSL_SERVER_KEY_PATH;
+  const sslCertPath = config.SSL_SERVER_CERT_PATH;
+  const sslKeyPath = config.SSL_SERVER_KEY_PATH;
   if (!sslCertPath || !sslKeyPath) {
     logger.info("SSL_SERVER_CERT_PATH or SSL_SERVER_KEY_PATH unset, serving HTTP");
     serveHTTP();

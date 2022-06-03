@@ -6,8 +6,9 @@ import filterEvents from "../../models/event/filter";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { Scope } from "../../security/scope";
 import getGroups from "../../models/group/gets";
+import config from '../../config';
 
-const PG_SEARCH = !!(process.env.PG_SEARCH);
+const PG_SEARCH = !!(config.PG_SEARCH);
 const searcher = PG_SEARCH ? filterEvents : queryEvents;
 
 export interface Args {

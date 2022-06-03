@@ -2,7 +2,7 @@ import "source-map-support/register";
 import _ from "lodash";
 import bugsnag from "bugsnag";
 import * as monkit from "monkit";
-
+import config from '../config';
 import { errToLog, jobDesc, stopwatchClick } from "./common";
 import nsq from "./persistence/nsq";
 import normalizeEvent from "./workers/normalizeEvent";
@@ -30,26 +30,27 @@ import { logger } from "./logger";
 import { startHealthz, updateLastNSQ } from "./healthz";
 import getPgPool from "../persistence/pg";
 
+
 startHealthz();
 
-if (!process.env["BUGSNAG_TOKEN"]) {
+if (!config.BUGSNAG_TOKEN) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
 } else {
-  bugsnag.register(process.env["BUGSNAG_TOKEN"] || "", {
-    releaseStage: process.env["STAGE"],
+  bugsnag.register(config.BUGSNAG_TOKEN || "", {
+    releaseStage: config.STAGE,
     notifyReleaseStages: ["production", "staging"],
   });
 }
 
 let PG_SEARCH = false;
-if (process.env["PG_SEARCH"]) {
+if (config.PG_SEARCH) {
     logger.info("PG_SEARCH  set, using Postgres search");
     PG_SEARCH = true;
 } else {
     logger.info("PG_SEARCH not set, using ElasticSearch");
 }
 let NO_WARP_PIPE = false;
-if (process.env["NO_WARP_PIPE"]) {
+if (config.NO_WARP_PIPE) {
     NO_WARP_PIPE = true;
     logger.info("NO_WARP_PIPE set, disabling Warp Pipe jobs");
 } else {

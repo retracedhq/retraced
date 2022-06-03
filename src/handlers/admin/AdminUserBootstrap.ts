@@ -4,10 +4,11 @@ import createUser, { ERR_DUPLICATE_EMAIL } from "../../models/user/create";
 import { apiTokenFromAuthHeader } from "../../security/helpers";
 import { createAdminVoucher } from "../../security/vouchers";
 import express from "express";
+import config from '../../config';
 
 export class AdminUserBootstrap {
   public static default() {
-    return new AdminUserBootstrap(process.env.ADMIN_ROOT_TOKEN);
+    return new AdminUserBootstrap(config.ADMIN_ROOT_TOKEN);
   }
 
   constructor(

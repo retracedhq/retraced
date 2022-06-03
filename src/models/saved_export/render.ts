@@ -10,10 +10,11 @@ import filterEvents, { Options as FilterOptions } from "../event/filter";
 import { parseQuery, ParsedQuery } from "../event";
 import QueryDescriptor from "../query_desc/def";
 import { logger } from "../../logger";
+import config from '../../config';
 
 const pgPool = getPgPool();
 
-const pageSize = process.env.EXPORT_PAGE_SIZE_INTERNAL ? parseInt(process.env.EXPORT_PAGE_SIZE_INTERNAL, 10) : 10000;
+const pageSize = config.EXPORT_PAGE_SIZE_INTERNAL ? parseInt(config.EXPORT_PAGE_SIZE_INTERNAL, 10) : 10000;
 
 export default async function renderSavedExport(opts) {
   const { environmentId, projectId, groupId, savedExportId, format } = opts;
@@ -36,7 +37,7 @@ export default async function renderSavedExport(opts) {
 
     let results: any;
 
-    if (process.env.PG_SEARCH) {
+    if (config.PG_SEARCH) {
         const scope = {
             projectId,
             environmentId,

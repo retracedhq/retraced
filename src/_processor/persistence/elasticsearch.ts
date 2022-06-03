@@ -4,6 +4,7 @@ import _ from "lodash";
 import moment from "moment";
 import request from "request";
 import { readFileSync } from "fs";
+import config from '../../config';
 
 let es;
 
@@ -14,21 +15,21 @@ const backoff = intFromEnv("ELASTICSEARCH_BACKOFF", 1000);
 const totalTimeout = intFromEnv("ELASTICSEARCH_TOTAL_TIMEOUT", 25000);
 
 function intFromEnv(key, defaultN) {
-  const env = Number(process.env[key]);
+  const env = Number(config[key]);
 
   return _.isNaN(env) ? defaultN : env;
 }
 
 export default function getElasticsearch(): elasticsearch.Client {
   if (!es) {
-    const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
+    const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
     if (hosts.length < 1 || !hosts[0]) {
       throw new Error("Need at least one item in ELASTICSEARCH_NODES");
     }
 
     const sslSettings: any = {};
-    if (process.env.ELASTICSEARCH_CAFILE) {
-      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+    if (config.ELASTICSEARCH_CAFILE) {
+      sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
       sslSettings.rejectUnauthorized = true;
     }
 
@@ -98,7 +99,7 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]): Pro
     ],
   };
 
-  const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
+  const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
   if (hosts.length < 1 || !hosts[0]) {
     throw new Error("Need at least one item in ELASTICSEARCH_NODES");
   }
@@ -108,8 +109,8 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]): Pro
     body: payload,
   };
 
-  if (process.env.ELASTICSEARCH_CAFILE) {
-    params.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+  if (config.ELASTICSEARCH_CAFILE) {
+    params.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
   }
 
   return new Promise((res, rej) => {

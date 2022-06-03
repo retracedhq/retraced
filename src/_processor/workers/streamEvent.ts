@@ -6,9 +6,10 @@ import _ from "lodash";
 
 import nsq from "../persistence/nsq";
 import getRedis from "../persistence/redis";
+import config from '../../config';
 
 export default async function(job) {
-  const redis = getRedis(process.env.WARP_PIPE_REDIS_DB);
+  const redis = getRedis(config.WARP_PIPE_REDIS_DB);
   const jobObj = JSON.parse(job.body);
   const groupId = jobObj.event.group && jobObj.event.group.id;
   const { projectId, environmentId, event: normalizedEvent } = jobObj;

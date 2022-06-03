@@ -15,14 +15,15 @@ import { createAdminVoucher } from "../security/vouchers";
 import { reportEvents } from "../headless";
 import getPgPool from "../persistence/pg";
 import { logger } from "../logger";
+import config from '../config';
 
 const pgPool = getPgPool();
 let auth0;
 
-if (process.env.AUTH0_CLIENT_DOMAIN && process.env.AUTH0_CLIENT_ID) {
+if (config.AUTH0_CLIENT_DOMAIN && config.AUTH0_CLIENT_ID) {
   auth0 = new Auth0.WebAuth({
-    domain: process.env.AUTH0_CLIENT_DOMAIN,
-    clientID: process.env.AUTH0_CLIENT_ID,
+    domain: config.AUTH0_CLIENT_DOMAIN,
+    clientID: config.AUTH0_CLIENT_ID,
     callbackURL: "",
     leeway: 30,
   });

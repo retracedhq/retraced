@@ -14,6 +14,7 @@ import { NSQClient } from "../persistence/nsq";
 import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
+import config from '../config';
 
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 const IPV6_REGEX = /^((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}$/;
@@ -544,6 +545,6 @@ export const defaultEventCreater = new EventCreater(
     createCanonicalHash,
     uniqueId,
     Authenticator.default(),
-    Number(process.env.PUBLISHER_BULK_CREATE_MAX_EVENTS || "50"),
-    Number(process.env.PUBLISHER_CREATE_EVENT_TIMEOUT || "1000"),
+    Number(config.PUBLISHER_BULK_CREATE_MAX_EVENTS || "50"),
+    Number(config.PUBLISHER_CREATE_EVENT_TIMEOUT || "1000"),
 );

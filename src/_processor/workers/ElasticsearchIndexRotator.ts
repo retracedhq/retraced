@@ -13,6 +13,7 @@ import {
 } from "../persistence/elasticsearch";
 import getPg from "../persistence/pg";
 import { logger } from "../logger";
+import config from '../../config';
 
 export type IndexNamer = (newDate: moment.Moment) => string;
 
@@ -194,6 +195,6 @@ export class ElasticsearchIndexRotator {
 
 }
 
-export const rotator = process.env.PG_SEARCH ? null : ElasticsearchIndexRotator.default();
+export const rotator = config.PG_SEARCH ? null : ElasticsearchIndexRotator.default();
 export const worker = () => rotator ? rotator.worker(moment.utc().add(1, "days")) : () => {/* nope */};
 export const repair = () => rotator ? rotator.repairAliases() : () => {/* nope */};

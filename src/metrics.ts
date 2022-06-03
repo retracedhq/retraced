@@ -1,5 +1,6 @@
 import StatsdClient from "statsd-client";
 import Prometheus from "prom-client";
+import config from './config';
 
 import {
     gauge as monkitGauge,
@@ -62,11 +63,11 @@ export function startStatusPageReporter(
 }
 
 export function bootstrapFromEnv() {
-    const statsdHost = process.env.STATSD_HOST || process.env.KUBERNETES_SERVICE_HOST;
-    const statsdPort = Number(process.env.STATSD_PORT) || 8125;
-    const statsdIntervalMillis = Number(process.env.STATSD_INTERVAL_MILLIS) || 30000;
-    const statsdPrefix = process.env.STATSD_PREFIX || "";
-    const sysdigRewriter = Boolean(process.env.STATSD_USE_SYSDIG_NAME_REWRITER) || false;
+    const statsdHost = config.STATSD_HOST || config.KUBERNETES_SERVICE_HOST;
+    const statsdPort = Number(config.STATSD_PORT) || 8125;
+    const statsdIntervalMillis = Number(config.STATSD_INTERVAL_MILLIS) || 30000;
+    const statsdPrefix = config.STATSD_PREFIX || "";
+    const sysdigRewriter = Boolean(config.STATSD_USE_SYSDIG_NAME_REWRITER) || false;
 
     if (!statsdHost) {
         logger.error("neither KUBERNETES_SERVICE_HOST nor STATSD_HOST is set, metrics will not be reported to statsd or sysdig");
@@ -74,10 +75,10 @@ export function bootstrapFromEnv() {
         startStatsdReporter(statsdHost, statsdPort, statsdIntervalMillis, statsdPrefix, sysdigRewriter);
     }
 
-    const statusPageToken = process.env.STATUSPAGEIO_TOKEN;
-    const statusPagePageId = process.env.STATUSPAGEIO_PAGE_ID || "2d8w7krf3x52"; // Retraced API
-    const statusPageUrl = process.env.STATUSPAGEIO_URL || "api.statuspage.io";
-    const intervalMs = Number(process.env.STATUSPAGEIO_INTERVAL_MILLIS) || 30000;
+    const statusPageToken = config.STATUSPAGEIO_TOKEN;
+    const statusPagePageId = config.STATUSPAGEIO_PAGE_ID || "2d8w7krf3x52"; // Retraced API
+    const statusPageUrl = config.STATUSPAGEIO_URL || "api.statuspage.io";
+    const intervalMs = Number(config.STATUSPAGEIO_INTERVAL_MILLIS) || 30000;
     const metricIds = {
         "EventCreater.createEvent.timer.p50": "whb4rfgv5fzv",
         "EventCreater.createEvent.timer.p98": "stkhk01nkb4f",
@@ -124,7 +125,7 @@ export function instrumented(target: any, key: string, descriptor?: PropertyDesc
 }
 
 export function histogram(name: string, help?: string, labels?: string[]) {
-    if (!process.env.RETRACED_ENABLE_PROMETHEUS) {
+    if (!config.RETRACED_ENABLE_PROMETHEUS) {
         return monkitHistogram(name);
     }
 
@@ -155,7 +156,7 @@ export function histogram(name: string, help?: string, labels?: string[]) {
 }
 
 export function timer(name: string, help?: string, labels?: string[]) {
-    if (!process.env.RETRACED_ENABLE_PROMETHEUS) {
+    if (!config.RETRACED_ENABLE_PROMETHEUS) {
         return monkitTimer(name);
     }
 
@@ -189,7 +190,7 @@ export function timer(name: string, help?: string, labels?: string[]) {
 }
 
 export function meter(name: string, help?: string, labels?: string[]) {
-    if (!process.env.RETRACED_ENABLE_PROMETHEUS) {
+    if (!config.RETRACED_ENABLE_PROMETHEUS) {
         return monkitMeter(name);
     }
 
@@ -213,7 +214,7 @@ export function meter(name: string, help?: string, labels?: string[]) {
 }
 
 export function gauge(name: string, help?: string, labels?: string[]) {
-    if (!process.env.RETRACED_ENABLE_PROMETHEUS) {
+    if (!config.RETRACED_ENABLE_PROMETHEUS) {
         return monkitGauge(name);
     }
 

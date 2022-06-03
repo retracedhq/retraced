@@ -8,6 +8,7 @@ import createEnvironment from "../environment/create";
 import addUserToProject from "./addUser";
 import { Environment } from "../environment";
 import { ApiToken } from "../api_token";
+import config from '../../config';
 
 const pgPool = getPgPool();
 
@@ -48,8 +49,8 @@ export default function createProject(opts) {
         }
 
         // Report this project as a user to segment
-        if (process.env.SEGMENT_WRITE_KEY) {
-          const analytics = new Analytics(process.env.SEGMENT_WRITE_KEY);
+        if (config.SEGMENT_WRITE_KEY) {
+          const analytics = new Analytics(config.SEGMENT_WRITE_KEY);
           analytics.identify({
             userId: project.id,
             traits: {

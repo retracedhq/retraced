@@ -21,6 +21,7 @@
     "cors": "2.8.5",
     "csv": "6.0.5",
     "csv-string": "4.1.0",
+    "dotenv": "16.0.1",
     "elasticsearch": "16.0.0",
     "express": "4.18.1",
     "graphql": "0.9.2",
@@ -109,7 +110,9 @@
     "cover": "nyc mocha",
     "mintest": "mocha --recursive -r ts-node/register --reporter 'min' src/test/**/*.ts",
     "report-coverage": "coveralls < ./coverage/lcov.info && codeclimate-test-reporter < ./coverage/lcov.info",
-    "snyk-protect": "snyk protect"
+    "snyk-protect": "snyk protect",
+    "start:api": "node --inspect=0.0.0.0 -r ts-node/register src/index.ts",
+    "start:processor": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts"
   },
   "author": "",
   "snyk": true,

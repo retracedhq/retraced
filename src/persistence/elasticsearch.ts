@@ -5,6 +5,7 @@ import moment from "moment";
 import { Scope } from "../security/scope";
 import { Client } from "@elastic/elasticsearch";
 import { readFileSync } from "fs";
+import config from '../config';
 
 let es: elasticsearch.Client; // the legacy elasticsearch client library
 let newEs: Client; // the elasticsearch 7.6+ client library
@@ -43,18 +44,18 @@ const backoff = intFromEnv("ELASTICSEARCH_BACKOFF", 1000);
 const totalTimeout = intFromEnv("ELASTICSEARCH_TOTAL_TIMEOUT", 25000);
 
 function intFromEnv(key, defaultN) {
-  const env = Number(process.env[key]);
+  const env = Number(config[key]);
 
   return _.isNaN(env) ? defaultN : env;
 }
 
 export function getNewElasticsearch(): Client {
   if (!newEs) {
-    const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
-    if ((process.env.ELASTICSEARCH_NODES || "") !== "") {
+    const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
+    if ((config.ELASTICSEARCH_NODES || "") !== "") {
       const sslSettings: any = {};
-      if (process.env.ELASTICSEARCH_CAFILE) {
-        sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+      if (config.ELASTICSEARCH_CAFILE) {
+        sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
         sslSettings.rejectUnauthorized = true;
       }
 
@@ -70,11 +71,11 @@ export function getNewElasticsearch(): Client {
 
 export default function getElasticsearch(): elasticsearch.Client {
   if (!es) {
-    const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
+    const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
 
     const sslSettings: any = {};
-    if (process.env.ELASTICSEARCH_CAFILE) {
-      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+    if (config.ELASTICSEARCH_CAFILE) {
+      sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
       sslSettings.rejectUnauthorized = true;
     }
 

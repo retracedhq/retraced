@@ -2,6 +2,7 @@ import { checkAdminAccessUnwrapped } from "../../security/helpers";
 import { Invite } from "../../models/invite";
 import createInviteModel from "../../models/invite/create";
 import nsq from "../../persistence/nsq";
+import config from '../../config';
 
 export async function deprecated(req) {
   const invite = await createInvite(
@@ -38,7 +39,7 @@ export default async function createInvite(
     subject: "You have been invited to join a group on Retraced.",
     template: "retraced/invite-to-team",
     context: {
-      invite_url: `${process.env.RETRACED_APP_BASE}/invitations/${invite.id}`,
+      invite_url: `${config.RETRACED_APP_BASE}/invitations/${invite.id}`,
     },
   }));
 

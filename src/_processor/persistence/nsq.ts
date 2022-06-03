@@ -2,6 +2,7 @@ import "source-map-support/register";
 import nsq from "nsqjs";
 import request from "request";
 import { logger } from "../logger";
+import config from '../../config';
 
 interface Message {
   timestamp: number;
@@ -37,7 +38,7 @@ export interface NSQ {
 
 export class NSQClient {
   public static fromEnv(): NSQClient {
-    return new NSQClient(process.env.NSQD_HOST || "", Number(process.env.NSQD_TCP_PORT) || 4150, Number(process.env.NSQD_HTTP_PORT) || 4151);
+    return new NSQClient(config.NSQD_HOST || "", Number(config.NSQD_TCP_PORT) || 4150, Number(config.NSQD_HTTP_PORT) || 4151);
   }
 
   private readonly nsqdTCPAddresses: string[];
