@@ -9,7 +9,7 @@
     "analytics-node": "^2.1.0",
     "async": "^2.0.1",
     "auth0-js": "^8.0.4",
-    "aws-sdk": "^2.6.12",
+    "aws-sdk": "^2.1149.0",
     "bcrypt": "^2.0.0",
     "bluebird": "^3.5.0",
     "body-parser": "^1.15.2",
