@@ -62,6 +62,6 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]) {
     params.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
   }
 
-  config.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
   return await request.post(uri, params);
 }
