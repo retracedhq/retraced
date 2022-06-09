@@ -30,7 +30,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "token=dev_write",
+						"value": "token=dev",
 						"type": "text"
 					}
 				],
