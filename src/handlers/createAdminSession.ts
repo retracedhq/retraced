@@ -15,7 +15,7 @@ import { createAdminVoucher } from "../security/vouchers";
 import { reportEvents } from "../headless";
 import getPgPool from "../persistence/pg";
 import { logger } from "../logger";
-import config from '../config';
+import config from "../config";
 
 const pgPool = getPgPool();
 let auth0;

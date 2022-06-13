@@ -13,7 +13,7 @@ import getEnvironment from "../../models/environment/get";
 import listTeamMembers from "../../models/team/listTeamMembers";
 import { logger } from "../../logger";
 import util from "util";
-import config from '../../config';
+import config from "../../config";
 
 const pgPool = getPgPool();
 

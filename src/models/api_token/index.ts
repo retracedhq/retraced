@@ -10,8 +10,6 @@ export interface ApiToken extends ApiTokenValues {
   created: moment.Moment;
   environmentId: string;
   projectId: string;
-  readAccess: boolean;
-  writeAccess: boolean;
 }
 
 export interface ApiTokenResponse {
@@ -43,8 +41,6 @@ export function apiTokenFromRow(row: any): ApiToken {
     name: row.name,
     environmentId: row.environment_id,
     projectId: row.project_id,
-    readAccess: row.read_access,
-    writeAccess: row.write_access,
   };
 }
 
@@ -56,7 +52,5 @@ export function rowFromApiToken(t: ApiToken): any {
     name: t.name,
     environment_id: t.environmentId,
     project_id: t.projectId,
-    read_access: t.readAccess,
-    write_access: t.writeAccess,
   };
 }

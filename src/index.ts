@@ -7,7 +7,7 @@ import bugsnag from "bugsnag";
 import Sigsci from "sigsci-module-nodejs";
 import Prometheus from "prom-client";
 import swaggerUI from "swagger-ui-express";
-import config from './config';
+import config from "./config";
 import { register, wrapRoute } from "./router";
 import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";

@@ -2,7 +2,7 @@ import { checkAdminAccessUnwrapped } from "../../security/helpers";
 import { Invite } from "../../models/invite";
 import createInviteModel from "../../models/invite/create";
 import nsq from "../../persistence/nsq";
-import config from '../../config';
+import config from "../../config";
 
 export async function deprecated(req) {
   const invite = await createInvite(

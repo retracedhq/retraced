@@ -14,7 +14,7 @@ import { NSQClient } from "../persistence/nsq";
 import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
-import config from '../config';
+import config from "../config";
 
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 const IPV6_REGEX = /^((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}$/;
@@ -157,9 +157,6 @@ export class EventCreater {
     public async createEvent(authorization: string, projectId: string, event: CreateEventRequest) {
         try {
             const apiToken = await this.authenticator.getApiTokenOr401(authorization, projectId);
-            if (!apiToken.writeAccess) {
-                throw { status: 401, err: new Error("Unauthorized") };
-            }
             const violations = this.validateEventInput(event);
             if (!_.isEmpty(violations)) {
                 throw {

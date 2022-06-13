@@ -1,7 +1,7 @@
 import pg from "pg";
 import { gauge, meter } from "../metrics";
 import { logger } from "../logger";
-import config from '../config';
+import config from "../config";
 
 let pgPool: pg.Pool;
 

@@ -7,7 +7,7 @@ import {
   searchParams,
   Options,
 } from "../../../models/event/query";
-import { SearchRequest } from "@elastic/elasticsearch/lib/api/typesWithBodyKey";
+import { RequestParams } from "@elastic/elasticsearch";
 
 @suite class QueryEventsTest {
 
@@ -179,7 +179,7 @@ import { SearchRequest } from "@elastic/elasticsearch/lib/api/typesWithBodyKey";
       cursor: [1492060162148, "abc123"],
     };
     const output = searchParams(input);
-    const answer: SearchRequest = {
+    const answer: RequestParams.Search = {
       index: "retraced.p1.e1.current",
       _source: "true",
       size: 10,

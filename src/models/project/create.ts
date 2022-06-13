@@ -8,7 +8,7 @@ import createEnvironment from "../environment/create";
 import addUserToProject from "./addUser";
 import { Environment } from "../environment";
 import { ApiToken } from "../api_token";
-import config from '../../config';
+import config from "../../config";
 
 const pgPool = getPgPool();
 

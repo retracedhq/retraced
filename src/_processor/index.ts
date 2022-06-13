@@ -2,7 +2,7 @@ import "source-map-support/register";
 import _ from "lodash";
 import bugsnag from "bugsnag";
 import * as monkit from "monkit";
-import config from '../config';
+import config from "../config";
 import { errToLog, jobDesc, stopwatchClick } from "./common";
 import nsq from "./persistence/nsq";
 import normalizeEvent from "./workers/normalizeEvent";
@@ -29,7 +29,6 @@ import * as metrics from "./metrics";
 import { logger } from "./logger";
 import { startHealthz, updateLastNSQ } from "./healthz";
 import getPgPool from "../persistence/pg";
-
 
 startHealthz();
 

@@ -4,7 +4,7 @@ import * as monkit from "monkit";
 import getPgPool from "../persistence/pg";
 import nsq, { NSQ, NSQClient } from "../persistence/nsq";
 import { logger } from "../logger";
-import config from '../../config';
+import config from "../../config";
 
 /**
  * This worker runs at a scheduled interval.

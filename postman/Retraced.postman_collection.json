@@ -129,7 +129,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "token=dev_read",
+						"value": "token=dev",
 						"type": "text"
 					}
 				],

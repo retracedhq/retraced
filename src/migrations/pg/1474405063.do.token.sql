@@ -4,7 +4,5 @@ create table token (
     disabled boolean,
     environment_id text,
     name text,
-    project_id text,
-    read_access boolean DEFAULT true,
-    write_access boolean DEFAULT true
+    project_id text
 );

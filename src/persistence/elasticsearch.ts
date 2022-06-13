@@ -5,7 +5,7 @@ import moment from "moment";
 import { Scope } from "../security/scope";
 import { Client } from "@elastic/elasticsearch";
 import { readFileSync } from "fs";
-import config from '../config';
+import config from "../config";
 
 let es: elasticsearch.Client; // the legacy elasticsearch client library
 let newEs: Client; // the elasticsearch 7.6+ client library

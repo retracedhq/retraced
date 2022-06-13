@@ -1,6 +1,6 @@
 import pino from "pino";
 import fs from "fs";
-import config from './config';
+import config from "./config";
 
 function initLoggerFromEnv(): any {
   if (config.RETRACED_API_LOG_FILE) {

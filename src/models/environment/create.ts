@@ -3,7 +3,7 @@ import * as uuid from "uuid";
 import getEs from "../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
 import { Environment } from "./index";
-import config from '../../config';
+import config from "../../config";
 
 const pgPool = getPgPool();
 

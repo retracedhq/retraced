@@ -21,7 +21,7 @@ import reportTmpl from "./templates/reportDay";
 import deletionRequestTmpl from "./templates/deletionRequest";
 import getPgPool from "../persistence/pg";
 import { logger } from "../logger";
-import config from '../../config';
+import config from "../../config";
 
 export interface Email {
     to: string | string[];

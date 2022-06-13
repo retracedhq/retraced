@@ -1,6 +1,6 @@
 import StatsdClient from "statsd-client";
 import Prometheus from "prom-client";
-import config from './config';
+import config from "./config";
 
 import {
     gauge as monkitGauge,

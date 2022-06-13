@@ -30,13 +30,14 @@ const sleep = async (time) => {
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve(undefined);
-        }, time)
+        }, time);
     });
-}
+};
 
 async function checkTableAvailability(tableName) {
-    let pool = getPgPool();
-    let count = 0, sql;
+    const pool = getPgPool();
+    let count = 0;
+    let sql;
     if (pool) {
         do {
             try {

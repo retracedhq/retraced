@@ -16,8 +16,6 @@ export default async function create(
   values: ApiTokenValues,
   querier?: Querier,
   token?: string,
-  readAccess?: boolean,
-  writeAccess?: boolean,
 ): Promise<ApiToken> {
   querier = querier || pgPool;
 
@@ -27,16 +25,14 @@ export default async function create(
     projectId,
     environmentId,
     ...values,
-    readAccess: readAccess || true,
-    writeAccess: writeAccess || true,
   };
 
   const row = rowFromApiToken(newApiToken);
 
   const insertStmt = `insert into token (
-      token, created, disabled, name, environment_id, project_id, read_access, write_access
+      token, created, disabled, name, environment_id, project_id
     ) values (
-      $1, to_timestamp($2), $3, $4, $5, $6, $7, $8
+      $1, to_timestamp($2), $3, $4, $5, $6
     )`;
   const insertVals = [
     row.token,
@@ -45,8 +41,6 @@ export default async function create(
     row.name,
     row.environment_id,
     row.project_id,
-    row.read_access,
-    row.write_access,
   ];
   await querier.query(insertStmt, insertVals);
 

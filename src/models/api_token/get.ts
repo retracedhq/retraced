@@ -6,7 +6,7 @@ const pgPool: pg.Pool = getPgPool();
 
 export const getApiTokenQuery = `
   select
-    token, created, disabled, environment_id, name, project_id, read_access, write_access
+    token, created, disabled, environment_id, name, project_id
   from
     token
   where

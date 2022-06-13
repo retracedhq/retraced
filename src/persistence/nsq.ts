@@ -2,7 +2,7 @@ import "source-map-support/register";
 import nsq from "nsqjs";
 import { histogram, instrumented, meter, timer } from "../metrics";
 import { logger } from "../logger";
-import config from '../config';
+import config from "../config";
 
 export class NSQClient {
   public static fromEnv() {

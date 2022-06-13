@@ -12,7 +12,7 @@ import getEnvironment from "./models/environment/get";
 import createToken from "./models/api_token/create";
 import createEnvironment from "./models/environment/create";
 import { logger } from "./logger";
-import config from './config';
+import config from "./config";
 
 const enabled = !!(config.HEADLESS_API_KEY && config.HEADLESS_PROJECT_ID && config.HEADLESS_ENV_ID);
 
@@ -171,42 +171,23 @@ export async function bootstrapProject(opts: BootstrapOpts) {
         throw new Error(`env ${opts.envVarRef} does not belong to project ${opts.projectVarRef}`);
     }
 
-    // TODO: Take 2 args for token while bootstraping 
+    // TODO: Take 2 args for token while bootstraping
     // Has to be secure and cryptic
     // Dont use _read & _write
     // Take 2 command line args apiKeyWrite & apiKeyRead
-    const readToken = await getToken(`${opts.apiKey}_read`);
-    if (!readToken) {
+    const token = await getToken(opts.apiKey);
+    if (!token) {
         await createToken(
             project.id,
             env.id,
             {
-                name: `${opts.tokenName}_read`,
+                name: opts.tokenName,
                 disabled: false,
             },
             undefined,
-            `${opts.apiKey}_read`,
-            true,
-            false,
+            opts.apiKey,
         );
-    } else if (readToken.projectId !== project.id) {
-        throw new Error(`api key ${opts.keyVarRef} does not belong to project ${opts.projectVarRef}`);
-    }
-    const writeToken = await getToken(`${opts.apiKey}`);
-    if (!writeToken) {
-        await createToken(
-            project.id,
-            env.id,
-            {
-                name: `${opts.tokenName}`,
-                disabled: false,
-            },
-            undefined,
-            `${opts.apiKey}`,
-            false,
-            true,
-        );
-    } else if (writeToken.projectId !== project.id) {
+    } else if (token.projectId !== project.id) {
         throw new Error(`api key ${opts.keyVarRef} does not belong to project ${opts.projectVarRef}`);
     }
 }

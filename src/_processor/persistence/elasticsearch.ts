@@ -4,7 +4,7 @@ import _ from "lodash";
 import moment from "moment";
 import request from "request";
 import { readFileSync } from "fs";
-import config from '../../config';
+import config from "../../config";
 
 let es;
 

@@ -1,7 +1,7 @@
 import StatsdClient from "statsd-client";
 import { getRegistry, StatsdReporter, StatusPageReporter, SysdigNameRewriter } from "monkit";
 import { logger } from "./logger";
-import config from '../config';
+import config from "../config";
 
 export function startStatsdReporter(
     statsdHost: string,

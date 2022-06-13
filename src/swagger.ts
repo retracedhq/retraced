@@ -1,6 +1,6 @@
 import _ from "lodash";
 import compositeSpec from "../build/swagger.json";
-import config from './config';
+import config from "./config";
 
 const apiHost: string = config.RETRACED_API_BASE || "localhost:3000";
 const apiSchemes: string = config.RETRACED_API_SCHEMES || "http,https";

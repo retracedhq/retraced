@@ -13,7 +13,7 @@ import {
 } from "../persistence/elasticsearch";
 import getPg from "../persistence/pg";
 import { logger } from "../logger";
-import config from '../../config';
+import config from "../../config";
 
 export type IndexNamer = (newDate: moment.Moment) => string;
 
@@ -30,7 +30,7 @@ export interface Environment {
  * - retraced.<project>.<env>.YYYYMMDD
  * - retraced.<project>.<env>
  *
- * Where YYYYMMDD is a date string representing tomorrow's date.
+ * Where YYYYMMDD is a date string representing tomorrow"s date.
  *
  * The first alias will be written to by processor for events with received
  * starting tomorrow.

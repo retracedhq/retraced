@@ -17,8 +17,6 @@ import { AdminTokenStore } from "../../../models/admin_token/store";
             expect(result.token).to.equal("test");
             expect(result.projectId).to.equal("test");
             expect(result.environmentId).to.equal("test");
-            expect(result.readAccess).to.equal(true);
-            expect(result.writeAccess).to.equal(true);
         } catch (ex) {
             console.log(ex);
         } finally {

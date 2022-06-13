@@ -10,7 +10,7 @@ import filterEvents, { Options as FilterOptions } from "../event/filter";
 import { parseQuery, ParsedQuery } from "../event";
 import QueryDescriptor from "../query_desc/def";
 import { logger } from "../../logger";
-import config from '../../config';
+import config from "../../config";
 
 const pgPool = getPgPool();
 

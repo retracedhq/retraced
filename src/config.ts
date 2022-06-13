@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-let env: any = dotenv.config().parsed;
+const env: any = dotenv.config().parsed;
 
 export default {
     POSTGRES_HOST: process.env.POSTGRES_HOST || env.POSTGRES_HOST || "localhost",

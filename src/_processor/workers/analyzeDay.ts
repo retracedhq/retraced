@@ -9,7 +9,7 @@ import selectTopGroups from "../models/active_group/select_top";
 import { EnvironmentTimeRange } from "../common";
 import { Emailer } from "../services/Emailer";
 import { logger } from "../logger";
-import config from '../../config';
+import config from "../../config";
 
 interface Opts {
   projectId: string;

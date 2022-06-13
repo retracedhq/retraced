@@ -4,7 +4,7 @@ import moment from "moment";
 import nsq from "../persistence/nsq";
 import getRedis from "../persistence/redis";
 import { logger } from "../logger";
-import config from '../../config';
+import config from "../../config";
 
 export default async function(job) {
   const redis = getRedis(config.WARP_PIPE_REDIS_DB);

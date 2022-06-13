@@ -3,7 +3,7 @@ import elasticsearch from "elasticsearch";
 import _ from "lodash";
 import request from "request-promise";
 import { readFileSync } from "fs";
-import config from '../../config';
+import config from "../../config";
 
 let es: elasticsearch.Client;
 
