@@ -91,9 +91,9 @@ export class PublisherAPI extends Controller {
   public async createEventsBulk(
     @Header("Authorization") auth: string,
     @Path("projectId") projectId: string,
-    @Body() events: CreateEventBulkRequest,
+    @Body() body: CreateEventBulkRequest,
   ): Promise<CreateEventBulkResponse> {
-    const result: CreateEventBulkResponse = await this.eventCreater.createEventBulk(auth, projectId, events);
+    const result: CreateEventBulkResponse = await this.eventCreater.createEventBulk(auth, projectId, body.events);
 
     this.setStatus(201);
     return result;

@@ -73,7 +73,9 @@ export interface RequestTarget {
     type?: string;
 }
 
-export type CreateEventBulkRequest = CreateEventRequest[];
+export type CreateEventBulkRequest = {
+    events: CreateEventRequest[]
+}
 
 export interface CreateEventRequest {
     /** The action that occured e.g. `user.login` or `spreadsheet.create` */
