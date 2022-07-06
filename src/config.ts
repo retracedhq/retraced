@@ -23,7 +23,7 @@ export default {
     NSQD_HOST: process.env.NSQD_HOST || env.NSQD_HOST,
     HOSTNAME: process.env.HOSTNAME || env.HOSTNAME,
     NSQD_TCP_PORT: process.env.NSQD_TCP_PORT || env.NSQD_TCP_PORT || 4150,
-    PG_SEARCH: process.env.PG_SEARCH || env.PG_SEARCH || false,
+    PG_SEARCH: process.env.PG_SEARCH || env.PG_SEARCH || undefined,
     HEADLESS_ENV_ID: process.env.HEADLESS_ENV_ID || env.HEADLESS_ENV_ID,
     HEADLESS_API_KEY: process.env.HEADLESS_API_KEY || env.HEADLESS_API_KEY,
     HEADLESS_PROJECT_ID: process.env.HEADLESS_PROJECT_ID || env.HEADLESS_PROJECT_ID,

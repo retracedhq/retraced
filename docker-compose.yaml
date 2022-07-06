@@ -115,7 +115,6 @@ services:
       - "9200:9200"
     networks:
       - retraced
-    restart: "always"
 
   # kibana:
   #   image: docker.elastic.co/kibana/kibana:7.8.0
