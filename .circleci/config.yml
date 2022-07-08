@@ -1,7 +1,5 @@
 version: 2.1
 
-orbs:
-  anchore: anchore/anchore-engine@1.7.0
 
 experimental:
   notify:
@@ -35,8 +33,7 @@ jobs:
           key: v1-dependencies-node10-{{ checksum "package.json" }}
 
   build_docker:
-    executor: anchore/anchore_engine
-    working_directory: ~/repo
+    <<: *defaults
     steps:
       - checkout
       - setup_remote_docker
@@ -45,12 +42,11 @@ jobs:
           - v1-dependencies-node10-{{ checksum "package.json" }}
           - v1-dependencies-node10-
       - run: docker build --pull -t registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
-      - anchore/analyze_local_image:
-          image_name: registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
-          dockerfile_path: ./deploy/Dockerfile-slim
-          policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
-          policy_failure: true
-      - anchore/parse_reports
+      - run:
+          name: Run local image vulnerability scan
+          command: |
+            curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
+            ./grype --fail-on=medium  --only-fixed --config=.circleci/.anchore/grype.yaml -vv registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
       - run: docker save -o retraced.tar registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
       - persist_to_workspace:
           root: .
@@ -58,18 +54,16 @@ jobs:
             - ./retraced.tar
 
   build_postgres:
-    executor: anchore/anchore_engine
-    working_directory: ~/repo
+    <<: *defaults
     steps:
       - checkout
       - setup_remote_docker
       - run: docker build --pull -t registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-postgres .
-      - anchore/analyze_local_image:
-          image_name: registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
-          dockerfile_path: ./deploy/Dockerfile-postgres
-          policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
-          policy_failure: true
-      - anchore/parse_reports
+      - run:
+          name: Run local image vulnerability scan
+          command: |
+            curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
+            ./grype --fail-on=medium  --only-fixed --config=.circleci/.anchore/grype.yaml -vv registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
       - run: docker save -o retraced-postgres.tar registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
       - persist_to_workspace:
           root: .
@@ -77,18 +71,16 @@ jobs:
             - ./retraced-postgres.tar
 
   build_nsq:
-    executor: anchore/anchore_engine
-    working_directory: ~/repo
+    <<: *defaults
     steps:
       - checkout
       - setup_remote_docker
       - run: docker build --pull -t registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-nsq .
-      - anchore/analyze_local_image:
-          image_name: registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
-          dockerfile_path: ./deploy/Dockerfile-nsq
-          policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
-          policy_failure: true
-      - anchore/parse_reports
+      - run:
+          name: Run local image vulnerability scan
+          command: |
+            curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
+            ./grype --fail-on=medium  --only-fixed --config=.circleci/.anchore/grype.yaml -vv registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
       - run: docker save -o retraced-nsq.tar registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
       - persist_to_workspace:
           root: .
