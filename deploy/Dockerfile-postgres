@@ -1,4 +1,4 @@
-FROM postgres:10.15-alpine
+FROM postgres:14.2-alpine
 
 RUN apk add --update \
     ca-certificates \

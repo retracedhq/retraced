@@ -78,9 +78,9 @@ export const handler = async (argv) => {
                 envVarRef: "environmentId",
             });
             console.log(`Bootstraped project ${argv.projectId}`);
-            process.exit(1);
+            process.exit(0);
         } catch (ex) {
-            console.log(`Retrying in 300ms`);
+            console.log(`Retrying in 300ms`, ex);
         } finally {
             await sleep(300);
         }

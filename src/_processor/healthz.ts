@@ -20,7 +20,7 @@ export function startHealthz() {
         res.status(200).send(`{"lastNSQ": ${lastNSQ.getTime()}}, "status": "Healthy"}`);
     });
 
-    app.listen(3001, "0.0.0.0", () => {
+    app.listen(3000, "0.0.0.0", () => {
         logger.info("Processor health checks listening on port 3000...");
     });
 }
