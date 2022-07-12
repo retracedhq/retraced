@@ -8,7 +8,7 @@ build:
   - image: registry.replicated.com/library/retraced
     context: ./
     docker:
-      dockerfile: ./Dockerfile.base
+      dockerfile: ./Dockerfile
 
 deploy:
   kustomize:

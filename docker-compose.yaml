@@ -31,7 +31,7 @@ services:
   retraced-api:
     build: 
       context: .
-      dockerfile: ./Dockerfile.base
+      dockerfile: ./Dockerfile
     ports:
       - "3000:3000"
       - "9119:9229"
@@ -46,7 +46,7 @@ services:
   # retraced-dbutil:
   #   build: 
   #     context: .
-  #     dockerfile: ./Dockerfile.base
+  #     dockerfile: ./Dockerfile
   #   environment: *common-variables
   #   networks:
   #     - retraced
@@ -55,9 +55,9 @@ services:
   retraced-processor:
     build: 
       context: .
-      dockerfile: ./Dockerfile.base
+      dockerfile: ./Dockerfile
     ports:
-      - "3001:3000"
+      - "3000:3000"
       - "9191:9229"
     environment: *common-variables
     networks:
@@ -70,7 +70,7 @@ services:
   retraced-cron:
     build: 
       context: .
-      dockerfile: ./Dockerfile.base
+      dockerfile: ./Dockerfile
     environment: *common-variables
     networks:
       - retraced
@@ -130,7 +130,7 @@ services:
   retraced-dev-bootstrap:
     build: 
       context: .
-      dockerfile: ./Dockerfile.base
+      dockerfile: ./Dockerfile
     environment: *common-variables
     networks:
       - retraced
@@ -141,7 +141,7 @@ services:
   postgres-migration:
     build: 
       context: .
-      dockerfile: ./Dockerfile.base
+      dockerfile: ./Dockerfile
     environment: *common-variables
     ports:
       - "9339:9229"
@@ -154,7 +154,7 @@ services:
   elastic-migration:
     build: 
       context: .
-      dockerfile: ./Dockerfile.base
+      dockerfile: ./Dockerfile
     environment: *common-variables
     networks:
       - retraced
