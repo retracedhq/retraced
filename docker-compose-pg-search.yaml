@@ -57,7 +57,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - "3000:3000"
+      - "3001:3000"
       - "9191:9229"
     environment: *common-variables
     networks:
