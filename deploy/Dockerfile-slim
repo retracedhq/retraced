@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.3/supercronic-linux-amd64
 ENV SUPERCRONIC=supercronic-linux-amd64
-ENV SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
+ENV SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
 RUN curl -fsSLO "$SUPERCRONIC_URL" \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
     && chmod +x "$SUPERCRONIC" \
@@ -22,7 +22,7 @@ COPY deploy/crontab /crontab
 # # #
 # Node build
 #
-FROM node:10 as node
+FROM node:16.16.0 as node
 
 WORKDIR /src
 ADD package.json /src
@@ -60,10 +60,10 @@ EXPOSE 3000
 
 COPY --from=node /src/retraceddb /src/retraceddb
 COPY --from=node /src/retraceddb4G /src/retraceddb4G
-copy --from=node /src/migrations/pg /src/migrations/pg
-copy --from=node /src/migrations/pg10 /src/migrations/pg10
-copy --from=node /src/migrations/pg /src/migrations/pg10
-copy --from=node /src/migrations/es /src/migrations/es
+COPY --from=node /src/migrations/pg /src/migrations/pg
+COPY --from=node /src/migrations/pg10 /src/migrations/pg10
+COPY --from=node /src/migrations/pg /src/migrations/pg10
+COPY --from=node /src/migrations/es /src/migrations/es
 COPY --from=node /src/api /src/api
 COPY --from=node /src/retracedctl /src/bin/retracedctl
 COPY --from=node /src/processor /src/processor
