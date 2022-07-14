@@ -29,7 +29,7 @@ export const builder = {
         demand: true,
     },
     schemaPath: {
-        default: process.env.DEPLOYMENT_TYPE === "compose" ? "/src/migrations/pg" : "./src/migrations/pg",
+        default: "/src/migrations/pg",
     },
 };
 
