@@ -1,1 +1,0 @@
-alter table object rename to target;

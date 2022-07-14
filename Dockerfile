@@ -23,7 +23,7 @@ WORKDIR /src
 RUN yarn install
 
 ADD . /src
-ADD migrations/pg /src/migrations/pg10
+ADD migrations/pg /src/migrations/pg
 RUN make routes
 RUN make swagger
 

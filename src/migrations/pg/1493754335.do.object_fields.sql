@@ -1,2 +1,0 @@
-ALTER TABLE target ADD COLUMN fields JSON;
-ALTER TABLE actor ADD COLUMN fields JSON;
