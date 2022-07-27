@@ -9,7 +9,7 @@ experimental:
 
 defaults: &defaults
   docker:
-    - image: circleci/node:10
+    - image: circleci/node:16
   working_directory: ~/repo
 
 jobs:
@@ -22,15 +22,15 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - v1-dependencies-node10-{{ checksum "package.json" }}
-          - v1-dependencies-node10-
+          - v1-dependencies-node16-{{ checksum "package.json" }}
+          - v1-dependencies-node16-
       - run: make deps swagger cover
       - store_test_results:
           path: results
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-node10-{{ checksum "package.json" }}
+          key: v1-dependencies-node16-{{ checksum "package.json" }}
 
   build_docker:
     <<: *defaults
@@ -39,8 +39,8 @@ jobs:
       - setup_remote_docker
       - restore_cache:
           keys:
-          - v1-dependencies-node10-{{ checksum "package.json" }}
-          - v1-dependencies-node10-
+          - v1-dependencies-node16-{{ checksum "package.json" }}
+          - v1-dependencies-node16-
       - run: docker build --pull -t registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
       - run:
           name: Run local image vulnerability scan
@@ -126,8 +126,8 @@ jobs:
       - setup_remote_docker
       - restore_cache:
           keys:
-          - v1-dependencies-node10-{{ checksum "package.json" }}
-          - v1-dependencies-node10-
+          - v1-dependencies-node16-{{ checksum "package.json" }}
+          - v1-dependencies-node16-
       - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
       # the original idea here was:
       #
