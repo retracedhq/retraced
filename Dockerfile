@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:16.16.0 as node
+FROM --platform=linux/amd64 node:18.0.0 as node
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
