@@ -8,7 +8,7 @@
     "@elastic/elasticsearch": "7.8.0",
     "analytics-node": "6.0.0",
     "auth0-js": "9.19.0",
-    "aws-sdk": "2.1122.0",
+    "aws-sdk": "2.1183.0",
     "bcrypt": "5.0.1",
     "bugsnag": "1.9.1",
     "cassandra-driver": "4.6.3",
