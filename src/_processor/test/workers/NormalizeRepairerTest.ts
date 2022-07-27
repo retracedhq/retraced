@@ -3,8 +3,8 @@ import { expect } from "chai";
 
 import * as TypeMoq from "typemoq";
 
-import * as pg from "pg";
-import * as monkit from "monkit";
+import pg from "pg";
+import monkit from "monkit";
 
 import { NSQClient } from "../../persistence/nsq";
 import NormalizeRepairer from "../../workers/NormalizeRepairer";
@@ -88,3 +88,5 @@ const isAny = TypeMoq.It.isAny;
         expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").count).to.equal(2);
     }
 }
+
+export default NormalizeRepairerTest;

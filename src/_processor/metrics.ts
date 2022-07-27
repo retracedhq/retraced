@@ -1,6 +1,7 @@
-import * as StatsdClient from "statsd-client";
+import StatsdClient from "statsd-client";
 import { getRegistry, StatsdReporter, StatusPageReporter, SysdigNameRewriter } from "monkit";
 import { logger } from "./logger";
+import config from "../config";
 
 export function startStatsdReporter(
     statsdHost: string,
@@ -48,11 +49,11 @@ export function startStatusPageReporter(
 }
 
 export function bootstrapFromEnv() {
-    const statsdHost = process.env.STATSD_HOST || process.env.KUBERNETES_SERVICE_HOST;
-    const statsdPort = Number(process.env.STATSD_PORT) || 8125;
-    const statsdIntervalMillis = Number(process.env.STATSD_INTERVAL_MILLIS) || 30000;
-    const statsdPrefix = process.env.STATSD_PREFIX || "";
-    const sysdigRewriter = Boolean(process.env.STATSD_USE_SYSDIG_NAME_REWRITER) || false;
+    const statsdHost = config.STATSD_HOST || config.KUBERNETES_SERVICE_HOST;
+    const statsdPort = Number(config.STATSD_PORT) || 8125;
+    const statsdIntervalMillis = Number(config.STATSD_INTERVAL_MILLIS) || 30000;
+    const statsdPrefix = config.STATSD_PREFIX || "";
+    const sysdigRewriter = Boolean(config.STATSD_USE_SYSDIG_NAME_REWRITER) || false;
 
     if (!statsdHost) {
         logger.error("neither KUBERNETES_SERVICE_HOST nor STATSD_HOST is set, metrics will not be reported to statsd or sysdig");
@@ -60,10 +61,10 @@ export function bootstrapFromEnv() {
         startStatsdReporter(statsdHost, statsdPort, statsdIntervalMillis, statsdPrefix, sysdigRewriter);
     }
 
-    const statusPageToken = process.env.STATUSPAGEIO_TOKEN;
-    const statusPagePageId = process.env.STATUSPAGEIO_PAGE_ID || "2d8w7krf3x52"; // Retraced API
-    const statusPageUrl = process.env.STATUSPAGEIO_URL || "api.statuspage.io";
-    const intervalMs = Number(process.env.STATUSPAGEIO_INTERVAL_MILLIS) || 30000;
+    const statusPageToken = config.STATUSPAGEIO_TOKEN;
+    const statusPagePageId = config.STATUSPAGEIO_PAGE_ID || "2d8w7krf3x52"; // Retraced API
+    const statusPageUrl = config.STATUSPAGEIO_URL || "api.statuspage.io";
+    const intervalMs = Number(config.STATUSPAGEIO_INTERVAL_MILLIS) || 30000;
     const metricIds = {
         "workers.saveEventToElasticSearch.latencyCreated.mean": "gmwxt3r6mw2m",
         "workers.saveEventToElasticSearch.latencyCreated.p98": "r9hjcyp0dp7j",

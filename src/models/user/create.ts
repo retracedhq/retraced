@@ -1,5 +1,5 @@
 import * as uuid from "uuid";
-import * as moment from "moment";
+import moment from "moment";
 
 import getPgPool, { Querier } from "../../persistence/pg";
 import { RetracedUser } from "./index";
@@ -15,7 +15,7 @@ export interface Options {
   authId: string;
 }
 
-export default async function createUser(opts: Options, pg: Querier = pgPool): Promise<RetracedUser> {
+export default async function createUser(opts: Options): Promise<RetracedUser> {
 
   // Check for dupe e-mail
   let q = "select count(1) from retraceduser where email = $1";

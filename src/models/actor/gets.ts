@@ -19,7 +19,7 @@ export default async function(opts: Options): Promise<any> {
         extract(epoch from first_active) * 1000 as first_active,
         extract(epoch from last_active) * 1000 as last_active`;
 
-    const tokenList = opts.actorIds.map((a, i) => { return `$${i + 1}`; });
+    const tokenList = opts.actorIds.map((a, i) => `$${i + 1}`);
     const q = `select ${fields} from actor where id in (${tokenList})`;
     const v = opts.actorIds;
 

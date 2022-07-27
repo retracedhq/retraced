@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 
 import getPgPool from "../../persistence/pg";
 
@@ -17,7 +17,7 @@ export default async function(opts: Options): Promise<any> {
         extract(epoch from first_active) * 1000 as first_active,
         extract(epoch from last_active) * 1000 as last_active`;
 
-    const tokenList = opts.foreignTargetIds.map((a, i) => { return `$${i + 2}`; });
+    const tokenList = opts.foreignTargetIds.map((a, i) => `$${i + 2}`);
     const q = `select ${fields} from target where environment_id = $1 and foreign_id in (${tokenList})`;
     const v = _.flatten([opts.environmentId, opts.foreignTargetIds]);
 

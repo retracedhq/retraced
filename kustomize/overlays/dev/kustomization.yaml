@@ -3,7 +3,7 @@ bases:
   - ../../base
 resources:
   - ./secrets.yaml
-  - ./integrationtest.yaml
+  # - ./integrationtest.yaml
 commonLabels:
   retraceddev: "1"
 

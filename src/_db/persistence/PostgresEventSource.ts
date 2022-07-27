@@ -1,6 +1,6 @@
-import * as chalk from "chalk";
-import * as pg from "pg";
-import * as Cursor from "pg-cursor";
+import chalk from "chalk";
+import pg from "pg";
+import Cursor from "pg-cursor";
 
 import { Event, EventConsumer, EventSource } from "./EventSource";
 import { logger } from "../../logger";
@@ -20,13 +20,13 @@ export default class PostgresEventSource implements EventSource {
 
     public async iteratePaged(callback: EventConsumer): Promise<void> {
         logger.info({msg: "connecting"});
-        const pg = await this.pgPool.connect();
+        const pgPool = await this.pgPool.connect();
 
         try {
             logger.info({msg: "building stream query"});
             const query: Cursor = this.getQuery();
             logger.info({msg: "executing query"});
-            const q: any = pg.query(query);
+            const q: any = pgPool.query(query);
 
             while (true) {
               const rows = await new Promise<any[]>((resolve, reject) => {
@@ -42,7 +42,7 @@ export default class PostgresEventSource implements EventSource {
                 return;
               }
 
-              let events = rows.filter((r) => {
+              const events = rows.filter((r) => {
                 if (!r.normalized_event) {
                   console.log(chalk.yellow(`WARN Skipping task ${r.id}, it is missing 'normalized_event'`));
                   return false;
@@ -53,7 +53,7 @@ export default class PostgresEventSource implements EventSource {
               await callback(events);
             }
         } finally {
-            pg.release();
+            pgPool.release();
         }
 
     }

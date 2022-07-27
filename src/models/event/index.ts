@@ -1,6 +1,6 @@
-import * as searchQueryParser from "search-query-parser";
-import * as moment from "moment";
-import * as _ from "lodash";
+import searchQueryParser from "search-query-parser";
+import moment from "moment";
+import _ from "lodash";
 
 export interface Group {
   id: string;
@@ -20,11 +20,16 @@ export interface Target {
   type?: string;
 }
 
-export interface Fields {
+export interface EventFields {
   [key: string]: string;
 }
 
-export type crud = "c" | "r" | "u" | "d";
+export enum crud {
+    "c" = "c",
+    "r" = "r",
+    "u" = "u",
+    "d" = "d",
+}
 
 export interface RetracedEvent {
   id?: string;
@@ -39,7 +44,7 @@ export interface RetracedEvent {
   description?: string;
   isAnonymous?: boolean;
   isFailure?: boolean;
-  fields?: Fields;
+  fields?: EventFields;
   component?: string;
   version?: string;
 }
@@ -112,7 +117,7 @@ function toArray(x: string | string[]): string[] {
 
 export function parseQuery(query: string): ParsedQuery {
     const options = { keywords: structuredQueryKeywords };
-    const intermediate: string | SQP = searchQueryParser.parse(query, options);
+    const intermediate: string | searchQueryParser.SearchParserResult = searchQueryParser.parse(query, options);
 
     if (_.isString(intermediate)) {
         return {
@@ -120,7 +125,7 @@ export function parseQuery(query: string): ParsedQuery {
         };
     }
 
-    const parsed: ParsedQuery = _.pick(intermediate, ["text"]);
+    const parsed: ParsedQuery = _.pick(intermediate, ["text"]) as ParsedQuery;
 
     if (intermediate.action) {
         if (_.isString(intermediate.action)) {

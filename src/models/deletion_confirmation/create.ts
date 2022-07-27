@@ -1,5 +1,5 @@
 import * as uuid from "uuid";
-import * as pg from "pg";
+import pg from "pg";
 
 import getPgPool from "../../persistence/pg";
 import {

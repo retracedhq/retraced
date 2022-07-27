@@ -52,7 +52,7 @@ export default async function(opts: Options): Promise<Result> {
     if (!resp) {
       logger.info(`continue scroll resp nil with params ${JSON.stringify(scrollParams)}`);
     }
-    let results: Result = {
+    const results: Result = {
       totalHits: resp.hits.total,
       count: resp.hits.hits ? resp.hits.hits.length : 0,
       events: [],
@@ -83,6 +83,7 @@ export default async function(opts: Options): Promise<Result> {
           "country",
           "loc_subdiv1",
           "loc_subdiv2",
+          "source_ip",
           "fields.*",
         ],
       },
@@ -92,7 +93,7 @@ export default async function(opts: Options): Promise<Result> {
   if (opts.targetIds) {
     const clause = {
       bool: {
-        should: <any> [],
+        should: [] as any,
       },
     };
     for (const targetId of opts.targetIds) {
@@ -135,7 +136,7 @@ export default async function(opts: Options): Promise<Result> {
   if (opts.actorIds) {
     const clause = {
       bool: {
-        should: <any> [],
+        should: [] as any,
       },
     };
     for (const actorId of opts.actorIds) {
@@ -151,7 +152,7 @@ export default async function(opts: Options): Promise<Result> {
   if (opts.actions) {
     const clause = {
       bool: {
-        should: <any> [],
+        should: [] as any,
       },
     };
     for (const action of opts.actions) {
@@ -205,7 +206,7 @@ export default async function(opts: Options): Promise<Result> {
     if (!resp) {
       logger.info();
     }
-    let results: Result = {
+    const results: Result = {
       totalHits: resp.hits.total,
       count: resp.hits.hits ? resp.hits.hits.length : 0,
       events: [],
@@ -223,13 +224,13 @@ export default async function(opts: Options): Promise<Result> {
   } else {
     // Here we use the scrolling API to pull every single event from the index.
     // TODO: Stream this data to disk for later serving. Could be huge.
-    let results: Result = {
+    const results: Result = {
       totalHits: 0,
       count: 0,
       events: [],
     };
     params.scroll = "1m";
-    let initialResp = await es.search(params);
+    const initialResp = await es.search(params);
     if (!initialResp) {
       logger.info(`initialResp nil with params ${JSON.stringify(params)}`);
     }

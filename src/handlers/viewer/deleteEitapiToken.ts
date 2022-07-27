@@ -38,4 +38,4 @@ export default async function(req) {
     status: 204,
     body: "",
   };
-};
+}

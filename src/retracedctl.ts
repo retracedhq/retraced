@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import * as yargs from "yargs";
+import yargs from "yargs";
 import * as bootstrap from "./commands/bootstrap";
 import * as createTemplate from "./commands/create-template";
 import * as listEnvironments from "./commands/list-environments";
 import * as listProjects from "./commands/list-projects";
 
-yargs
+const res = yargs
   .env()
   .help()
   .command(
@@ -34,3 +34,4 @@ yargs
     listProjects.handler,
   )
   .argv;
+console.log(res);

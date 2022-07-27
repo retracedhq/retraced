@@ -1,6 +1,6 @@
 import "source-map-support/register";
-import * as _ from "lodash";
-import * as moment from "moment";
+import _ from "lodash";
+import moment from "moment";
 
 import { Scope } from "../../security/scope";
 import countBy from "../../models/event/countBy";
@@ -62,14 +62,14 @@ export default async function counts(
     throw { status: 400, err: new Error("Invalid type") };
   }
 
-  const counts = await countBy({
+  const countsResult = await countBy({
     groupBy,
     crud,
     startTime: startTime.valueOf(),
     endTime: endTime.valueOf(),
     scope: context,
   });
-  let edges: any[] = counts
+  let edges: any[] = countsResult
     .map(({ value, count }, i) => ({
       node: value,
       count,
@@ -103,10 +103,10 @@ export default async function counts(
   }
 
   return {
-    totalCount: counts.length,
+    totalCount: countsResult.length,
     edges,
     pageInfo: {
-      hasNextPage: end < counts.length,
+      hasNextPage: end < countsResult.length,
     },
   };
 }

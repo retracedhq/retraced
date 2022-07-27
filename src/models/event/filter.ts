@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import * as _ from "lodash";
+import _ from "lodash";
 
 import getPgPool from "../../persistence/pg";
 import { Scope } from "../../security/scope";
@@ -94,7 +94,9 @@ const quote = (s: string): string => `"${s}"`;
 export function getFilters(query: ParsedQuery, scope: Scope): Filter[] {
     const filters: Filter[] = [];
     const nextParam = paramer(0);
-
+    if (!query) {
+        query = {};
+    }
     if (query.actions) {
         const some = query.actions.map((actionQuery: ActionQuery) => {
             if (actionQuery.isPrefix) {

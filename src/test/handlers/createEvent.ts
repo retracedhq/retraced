@@ -1,9 +1,9 @@
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
-import * as moment from "moment";
+import moment from "moment";
 
-import * as pg from "pg";
+import pg from "pg";
 import { NSQClient } from "../../persistence/nsq";
 
 import { EventCreater, CreateEventRequest, CreateEventResponse } from "../../handlers/createEvent";
@@ -51,6 +51,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         const creater = new EventCreater(
@@ -113,6 +115,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());
@@ -209,6 +213,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
@@ -232,7 +238,7 @@ import { Connection } from "./Connection";
             1000,
         );
 
-        const created: CreateEventResponse = await creater.createEvent("token=some-token", "a-project", body);
+        const created: any = await creater.createEvent("token=some-token", "a-project", body);
 
         expect(created.id).to.equal("kfbr392");
         expect(created.hash).to.equal("fake-hash");
@@ -263,6 +269,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
@@ -286,7 +294,7 @@ import { Connection } from "./Connection";
             1000,
         );
 
-        const created: CreateEventResponse = await creater.createEvent("token=some-token", "a-project", body);
+        const created: any = await creater.createEvent("token=some-token", "a-project", body);
 
         expect(created.id).to.equal("kfbr392");
         expect(created.hash).to.equal("fake-hash");
@@ -332,6 +340,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());
@@ -392,6 +402,8 @@ import { Connection } from "./Connection";
                 disabled: false,
                 projectId: "a-project",
                 environmentId: "an-environment",
+                writeAccess: true,
+                readAccess: true,
             }));
 
         pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());
@@ -486,7 +498,7 @@ import { Connection } from "./Connection";
             },
         ];
 
-        for (const test of tests) {
+        for (const testElement of tests) {
             const creater = new EventCreater(
                 TypeMoq.Mock.ofType(pg.Pool).object,
                 TypeMoq.Mock.ofType(NSQClient).object,
@@ -497,7 +509,7 @@ import { Connection } from "./Connection";
                 1000,
             );
             const calls: boolean[] = [];
-            const persisters = test.persisters.map((p, i) => {
+            const persisters = testElement.persisters.map((p, i) => {
                 calls[i] = false;
                 return {
                     delayMS: p.delay,
@@ -527,16 +539,18 @@ import { Connection } from "./Connection";
                     persisters,
                 );
             } catch (err) {
-                if (test.succeeds) {
+                if (testElement.succeeds) {
                     throw err;
                 }
             }
 
-            test.persisters.forEach((p, i) => {
+            testElement.persisters.forEach((p, i) => {
               if (p.called !== calls[i]) {
-                throw new Error(`${test.description}: persister[${i}] ${p.called ? "should" : "should not"} have been called`);
+                throw new Error(`${testElement.description}: persister[${i}] ${p.called ? "should" : "should not"} have been called`);
               }
             });
         }
     }
 }
+
+export default EventCreaterTest;

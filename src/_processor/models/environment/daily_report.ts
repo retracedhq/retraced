@@ -3,7 +3,7 @@
  * and are subscribed to daily reports for an environment.
  */
 import "source-map-support/register";
-import * as _ from "lodash";
+import _ from "lodash";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -70,6 +70,6 @@ export default async function dailyReport(opts: Options): Promise<Record[]> {
       (email, id, token) => ({ email, id, token }),
     );
 
-    return _.omit(r, ["recipient_emails", "recipient_ids", "recipient_tokens"]);
+    return _.omit(r, ["recipient_emails", "recipient_ids", "recipient_tokens"]) as Record;
   });
 }

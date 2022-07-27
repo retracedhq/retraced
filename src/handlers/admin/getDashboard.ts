@@ -1,16 +1,17 @@
-import * as moment from "moment";
-import * as _ from "lodash";
+import moment from "moment";
+import _ from "lodash";
 
 import { checkAdminAccess } from "../../security/helpers";
 
 import { DashboardOptions } from "../../dashboard/interfaces";
 import getActionsTile from "../../dashboard/actions/top";
 import getGroupsTile from "../../dashboard/groups/top";
+import config from "../../config";
 
 export default async function(req) {
   await checkAdminAccess(req);
 
-  if (process.env.PG_SEARCH) {
+  if (config.PG_SEARCH) {
     return {
       status: 200,
       body: JSON.stringify({

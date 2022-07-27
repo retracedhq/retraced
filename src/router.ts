@@ -1,8 +1,8 @@
-import * as _ from "lodash";
+import _ from "lodash";
 
-import * as bugsnag from "bugsnag";
-import * as express from "express";
-import * as util from "util";
+import bugsnag from "bugsnag";
+import express from "express";
+import util from "util";
 import * as uuid from "uuid";
 import { logger } from "./logger";
 

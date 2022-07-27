@@ -1,21 +1,22 @@
 import "source-map-support/register";
-import * as elasticsearch from "elasticsearch";
-import * as _ from "lodash";
-import * as request from "request-promise";
+import elasticsearch from "elasticsearch";
+import _ from "lodash";
+import request from "request-promise";
 import { readFileSync } from "fs";
+import config from "../../config";
 
 let es: elasticsearch.Client;
 
 export default function getElasticsearch(): elasticsearch.Client {
   if (!es) {
-    const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
+    const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
     if (hosts.length < 1 || !hosts[0]) {
       throw new Error("Need at least one item in ELASTICSEARCH_NODES");
     }
 
     const sslSettings: any = {};
-    if (process.env.ELASTICSEARCH_CAFILE) {
-      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+    if (config.ELASTICSEARCH_CAFILE) {
+      sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
       sslSettings.rejectUnauthorized = true;
     }
 
@@ -44,7 +45,7 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]) {
     ],
   };
 
-  const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
+  const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
   if (hosts.length < 1 || !hosts[0]) {
     throw new Error("Need at least one item in ELASTICSEARCH_NODES");
   }
@@ -57,8 +58,8 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]) {
     strictSSL: false,
   };
 
-  if (process.env.ELASTICSEARCH_CAFILE) {
-    params.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+  if (config.ELASTICSEARCH_CAFILE) {
+    params.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
   }
 
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";

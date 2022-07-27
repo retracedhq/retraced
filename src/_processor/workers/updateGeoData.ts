@@ -1,15 +1,16 @@
 import "source-map-support/register";
-import * as fs from "fs";
-import * as path from "path";
-import * as readline from "readline";
-import * as request from "request";
-import * as unzipper from "unzipper";
-import * as _ from "lodash";
-import * as moment from "moment";
-import * as csv from "csv-string";
+import fs from "fs";
+import path from "path";
+import readline from "readline";
+import request from "request";
+import unzipper from "unzipper";
+import _ from "lodash";
+import moment from "moment";
+import csv from "csv-string";
 
 import getPgPool from "../persistence/pg";
 import { logger } from "../logger";
+import config from "../../config";
 
 const pgPool = getPgPool();
 
@@ -18,9 +19,9 @@ const source = "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City
 const locFileName = "GeoLite2-City-Locations-en.csv";
 const ipv4FileName = "GeoLite2-City-Blocks-IPv4.csv";
 const ipv6FileName = "GeoLite2-City-Blocks-IPv6.csv";
-const locFilePath = path.join(process.env.TMPDIR || "/tmp", locFileName);
-const ipv4FilePath = path.join(process.env.TMPDIR || "/tmp", ipv4FileName);
-const ipv6FilePath = path.join(process.env.TMPDIR || "/tmp", ipv6FileName);
+const locFilePath = path.join(config.TMPDIR || "/tmp", locFileName);
+const ipv4FilePath = path.join(config.TMPDIR || "/tmp", ipv4FileName);
+const ipv6FilePath = path.join(config.TMPDIR || "/tmp", ipv6FileName);
 
 export default async function updateGeoData() {
   // Use cached files if less than a day old.

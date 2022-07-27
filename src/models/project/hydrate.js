@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import hydrateEnvironment from "../environment/hydrate";
 
 import listApiTokens from "../api_token/list";

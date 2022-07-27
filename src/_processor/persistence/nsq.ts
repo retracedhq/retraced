@@ -1,7 +1,8 @@
 import "source-map-support/register";
-import * as nsq from "nsqjs";
-import * as request from "request";
+import nsq from "nsqjs";
+import request from "request";
 import { logger } from "../logger";
+import config from "../../config";
 
 interface Message {
   timestamp: number;
@@ -37,7 +38,7 @@ export interface NSQ {
 
 export class NSQClient {
   public static fromEnv(): NSQClient {
-    return new NSQClient(process.env.NSQD_HOST || "", Number(process.env.NSQD_TCP_PORT) || 4150, Number(process.env.NSQD_HTTP_PORT) || 4151);
+    return new NSQClient(config.NSQD_HOST || "", Number(config.NSQD_TCP_PORT) || 4150, Number(config.NSQD_HTTP_PORT) || 4151);
   }
 
   private readonly nsqdTCPAddresses: string[];
@@ -81,13 +82,13 @@ export class NSQClient {
   ) {
     // nsqjs passes to discard handler on attempt == maxAttempts, but expect
     // to wait until attempt > maxAttempts.
-    const config = {
+    const nsqConfig = {
       maxAttempts: opts.maxAttempts + 1,
       messageTimeout: opts.messageTimeoutMS,
       maxInFlight: opts.maxInFlight,
       nsqdTCPAddresses: this.nsqdTCPAddresses,
     };
-    const reader = new nsq.Reader(topic, channel, config);
+    const reader = new nsq.Reader(topic, channel, nsqConfig);
 
     reader.connect();
     reader.on("error", (err) => {

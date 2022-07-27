@@ -1,5 +1,5 @@
 
-import * as ruler from "ruler";
+import ruler from "ruler";
 
 export interface Options {
   rule: any;

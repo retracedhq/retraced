@@ -6,7 +6,7 @@ import {
 
 const pgPool = getPgPool();
 
-export default async function (visibleCode: string): Promise<DeletionConfirmation | null> {
+export default async function(visibleCode: string): Promise<DeletionConfirmation | null> {
   const q = `
     select
       id, deletion_request_id, retraceduser_id, received, visible_code

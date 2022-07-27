@@ -2,7 +2,7 @@ import "source-map-support/register";
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
-import * as elasticsearch from "elasticsearch";
+import elasticsearch from "elasticsearch";
 
 import { countBy } from "../../../models/event/countBy";
 
@@ -56,3 +56,5 @@ import { countBy } from "../../../models/event/countBy";
         ]);
     }
 }
+
+export default EventsCountByTest;

@@ -3,9 +3,9 @@ import { expect } from "chai";
 
 import * as TypeMoq from "typemoq";
 
-import * as moment from "moment";
-import * as elasticsearch from "elasticsearch";
-import * as monkit from "monkit";
+import moment from "moment";
+import elasticsearch from "elasticsearch";
+import monkit from "monkit";
 
 import { Clock } from "../../common";
 import { ElasticsearchSaver } from "../../workers/saveEventToElasticsearch";
@@ -154,3 +154,5 @@ function expectUpdate(expectedValue) {
 
     }
 }
+
+export default ElasticsearchSaverTest;

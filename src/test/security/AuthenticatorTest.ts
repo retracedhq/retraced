@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { suite, test } from "mocha-typescript";
 import * as TypeMoq from "typemoq";
 
-import * as pg from "pg";
+import pg from "pg";
 import Authenticator from "../../security/Authenticator";
 import { getApiTokenQuery } from "../../models/api_token/get";
 import { QueryResult } from "pg";
@@ -70,3 +70,5 @@ import { QueryResult } from "pg";
 
     }
 }
+
+export default AuthenticatorTest;

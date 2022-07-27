@@ -1,5 +1,5 @@
 import * as uuid from "uuid";
-import * as moment from "moment";
+import moment from "moment";
 
 import ViewerDescriptor from "./def";
 import getPgPool from "../../persistence/pg";

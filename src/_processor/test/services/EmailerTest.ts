@@ -1,8 +1,8 @@
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
 
-import * as nodemailer from "nodemailer";
-import * as Handlebars from "handlebars";
+import nodemailer from "nodemailer";
+import Handlebars from "handlebars";
 
 import { Emailer } from "../../services/Emailer";
 
@@ -46,3 +46,5 @@ import { Emailer } from "../../services/Emailer";
         }]);
     }
 }
+
+export default EmailerTest;

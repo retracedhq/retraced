@@ -25,6 +25,6 @@ spec:
               name: auditlog
               key: DB_TOKEN
         - name: SCHEMA_PATH
-          value: "/src/migrations/pg10"
+          value: "/src/migrations/pg"
       imagePullSecrets:
       - name: auditlog-imagepull-secret

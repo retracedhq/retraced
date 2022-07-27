@@ -1,7 +1,7 @@
-import * as moment from "moment";
-import * as stringify from "csv-stringify";
-import * as _ from "lodash";
-import * as sanitizefn from "sanitize-filename";
+import moment from "moment";
+import { stringify } from "csv-stringify";
+import _ from "lodash";
+import sanitizefn from "sanitize-filename";
 
 import getPgPool from "../../persistence/pg";
 import { Scope } from "../../security/scope";
@@ -10,10 +10,11 @@ import filterEvents, { Options as FilterOptions } from "../event/filter";
 import { parseQuery, ParsedQuery } from "../event";
 import QueryDescriptor from "../query_desc/def";
 import { logger } from "../../logger";
+import config from "../../config";
 
 const pgPool = getPgPool();
 
-const pageSize = process.env.EXPORT_PAGE_SIZE_INTERNAL ? parseInt(process.env.EXPORT_PAGE_SIZE_INTERNAL, 10) : 10000;
+const pageSize = config.EXPORT_PAGE_SIZE_INTERNAL ? parseInt(config.EXPORT_PAGE_SIZE_INTERNAL, 10) : 10000;
 
 export default async function renderSavedExport(opts) {
   const { environmentId, projectId, groupId, savedExportId, format } = opts;
@@ -22,7 +23,7 @@ export default async function renderSavedExport(opts) {
 
   const pg = await pgPool.connect();
   try {
-    let q = `select name, body
+    const q = `select name, body
       from saved_export
       where id = $1 and environment_id = $2 and project_id = $3`;
     const v = [savedExportId, environmentId, projectId];
@@ -31,12 +32,12 @@ export default async function renderSavedExport(opts) {
       throw new Error(`No such saved export: id=${savedExportId}, envid=${environmentId}, projid=${projectId}`);
     }
 
-    let queryDesc: QueryDescriptor = JSON.parse(result.rows[0].body);
-    let queryName = result.rows[0].name;
+    const queryDesc: QueryDescriptor = JSON.parse(result.rows[0].body);
+    const queryName = result.rows[0].name;
 
     let results: any;
 
-    if (process.env.PG_SEARCH) {
+    if (config.PG_SEARCH) {
         const scope = {
             projectId,
             environmentId,
@@ -59,7 +60,7 @@ export default async function renderSavedExport(opts) {
 
       switch (queryDesc.version) {
         case 1:
-          let cruds = _.compact([
+          const cruds = _.compact([
             queryDesc.showCreate && "c",
             queryDesc.showRead && "r",
             queryDesc.showUpdate && "u",

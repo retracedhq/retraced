@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:10.4
+        image: postgres:14.2
         imagePullPolicy: IfNotPresent
         env:
         - name: PGDATA
@@ -47,6 +47,9 @@ spec:
         livenessProbe:
           exec:
             command:
+            - /bin/sh
+            - -i
+            - -c
             - /bin/sh
             - -i
             - -c

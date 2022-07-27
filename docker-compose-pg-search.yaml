@@ -1,0 +1,162 @@
+version: "3.4"
+
+networks:
+  retraced:
+
+x-common-variables: &common-variables
+  POSTGRES_HOST: postgres
+  HMAC_SECRET_ADMIN: xxxxxxx
+  SUPERCRONIC_SHA1SUM: 96960ba3207756bb01e6892c978264e5362e117e
+  NSQD_HTTP_PORT: 4151
+  SHLVL: 1
+  POSTGRES_USER: retraced
+  EXPORT_PAGE_SIZE_INTERNAL: 2
+  POSTGRES_PASSWORD: password
+  POSTGRES_POOL_SIZE: 10
+  HMAC_SECRET_VIEWER: xxxxxxxxx
+  SUPERCRONIC_URL: https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
+  POSTGRES_PORT: 5432
+  API_BASE_URL_PATH: /auditlog
+  RETRACED_API_BASE: http://localhost:3000/auditlog
+  POSTGRES_DATABASE: retraced
+  SUPERCRONIC: supercronic-linux-amd64
+  LOG_LEVEL: debug
+  ELASTICSEARCH_NODES: http://elasticsearch:9200
+  NSQD_HOST: nsqd
+  HOSTNAME: retraced-api-67856674bf-kwq7f
+  NSQD_TCP_PORT: 4150
+  PG_SEARCH: "true"
+
+services:
+  retraced-api:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:3000"
+      - "9119:9229"
+    environment: *common-variables
+    networks:
+      - retraced
+    command: node --inspect=0.0.0.0 -r ts-node/register src/index.ts
+    depends_on:
+      - postgres-migration
+    restart: "always"
+
+  # retraced-dbutil:
+  #   build: 
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   environment: *common-variables
+  #   networks:
+  #     - retraced
+  #   command: /bin/sleep infinity
+
+  retraced-processor:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "3001:3000"
+      - "9191:9229"
+    environment: *common-variables
+    networks:
+      - retraced
+    depends_on:
+      - postgres
+    command: node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts
+    restart: "always"
+
+  retraced-cron:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    environment: *common-variables
+    networks:
+      - retraced
+    depends_on:
+      - postgres
+    command: /usr/local/bin/replicated-auditlog-cron /crontab
+    restart: "always"
+
+  nsqd:
+    image: nsqio/nsq:v1.2.1 
+    ports:
+      - "4150:4150"
+      - "4151:4151"
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=retraced
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=retraced
+    command: nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd."
+    networks:
+      - retraced
+    restart: "always"
+
+  postgres:
+    image: postgres:14.2
+    ports:
+      - "5432:5432"
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=retraced
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=retraced
+    networks:
+      - retraced
+    restart: "always"
+
+  # elasticsearch:
+    # image: elasticsearch:7.8.0
+    # volumes:
+    #   - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    # ports:
+    #   - "9200:9200"
+    # networks:
+    #   - retraced
+
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:7.8.0
+  #   environment:
+  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+  #   networks:
+  #     - retraced
+  #   depends_on:
+  #     - elasticsearch
+  #   ports:
+  #     - 5601:5601
+
+  retraced-dev-bootstrap:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    environment: *common-variables
+    networks:
+      - retraced
+    depends_on:
+      - postgres-migration
+    command: node -r ts-node/register src/retracedctl.ts bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev 
+
+  postgres-migration:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    environment: *common-variables
+    networks:
+      - retraced
+    depends_on:
+      - postgres
+    command: node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts pg
+
+  # elastic-migration:
+  #   build: 
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   environment: *common-variables
+  #   networks:
+  #     - retraced
+  #   command: node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts es
+  #   depends_on:
+  #     elasticsearch:
+  #       condition: service_started

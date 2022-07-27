@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import * as util from "util";
+import util from "util";
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
 
@@ -223,28 +223,30 @@ const tests = [
 
 @suite class FilterEventsTest {
     @test public "parseQuery() getFilters()"() {
-        tests.forEach((test) => {
-            const parsed = parseQuery(test.query);
+        tests.forEach((testObj) => {
+            const parsed = parseQuery(testObj.query);
 
             try {
-                expect(parsed).to.deep.equal(test.parsed);
+                expect(parsed).to.deep.equal(testObj.parsed);
             } catch (err) {
-                throw new Error(`"${test.query}" parseQuery() =>
+                throw new Error(`"${testObj.query}" parseQuery() =>
 ${util.inspect(parsed, {depth: 10})}
     WANT:
-${util.inspect(test.parsed, {depth: 10})}`);
+${util.inspect(testObj.parsed, {depth: 10})}`);
             }
 
-            const filters = getFilters(parsed, test.scope);
+            const filters = getFilters(parsed, testObj.scope);
 
             try {
-                expect(filters).to.deep.equal(test.filters);
+                expect(filters).to.deep.equal(testObj.filters);
             } catch (err) {
-                throw new Error(`"${test.query}" getFilters() =>
+                throw new Error(`"${testObj.query}" getFilters() =>
 ${util.inspect(filters, {depth: 10})}
     WANT:
-${util.inspect(test.filters, {depth: 10})}`);
+${util.inspect(testObj.filters, {depth: 10})}`);
             }
         });
     }
 }
+
+export default FilterEventsTest;

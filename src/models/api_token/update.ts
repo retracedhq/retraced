@@ -13,7 +13,7 @@ export default async function update(tokenId: string, fields: Partial<ApiTokenVa
     return extant;
   }
 
-  let sets: string[] = [];
+  const sets: string[] = [];
   const v: any[] = [tokenId];
   let curField = 2;
   if (fields.disabled !== undefined) {

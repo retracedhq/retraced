@@ -1,6 +1,6 @@
 import "source-map-support/register";
-import * as moment from "moment";
-import * as util from "util";
+import moment from "moment";
+import util from "util";
 import countActions from "../models/active_actor/count";
 import selectNewActions from "../models/action/select_new";
 import selectStoppedActions from "../models/action/select_stopped";
@@ -9,6 +9,7 @@ import selectTopGroups from "../models/active_group/select_top";
 import { EnvironmentTimeRange } from "../common";
 import { Emailer } from "../services/Emailer";
 import { logger } from "../logger";
+import config from "../../config";
 
 interface Opts {
   projectId: string;
@@ -51,7 +52,7 @@ export default async function analyzeDay(job) {
   const recipients = opts.recipients.map((recipient) => {
     return {
       ...recipient,
-      unsubscribe: `${process.env.RETRACED_API_BASE}/admin/v1/environment/${opts.environmentId}/user/${recipient.id}/unsubscribe/daily?token=${recipient.token}`,
+      unsubscribe: `${config.RETRACED_API_BASE}/admin/v1/environment/${opts.environmentId}/user/${recipient.id}/unsubscribe/daily?token=${recipient.token}`,
     };
   });
 

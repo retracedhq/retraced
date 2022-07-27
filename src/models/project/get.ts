@@ -22,7 +22,7 @@ export default function getProject(projectId): Promise<any> {
         } else if (result.rowCount > 0) {
           resolve(result.rows[0]);
         } else {
-          resolve();
+          resolve({});
         }
       });
     });

@@ -1,4 +1,4 @@
-import * as moment from "moment";
+import moment from "moment";
 import * as uuid from "uuid";
 
 import nsq from "../../persistence/nsq";
@@ -12,7 +12,8 @@ import getUser from "../../models/user/get";
 import getEnvironment from "../../models/environment/get";
 import listTeamMembers from "../../models/team/listTeamMembers";
 import { logger } from "../../logger";
-import * as util from "util";
+import util from "util";
+import config from "../../config";
 
 const pgPool = getPgPool();
 
@@ -75,7 +76,7 @@ export default async function handle(
 
   // Currently, we expect approval from all other team members.
   // TODO(zhaytee): Allow this list to be configured at some level.
-  let confirmationUserIds: string[] = [];
+  const confirmationUserIds: string[] = [];
   const teamMembers: any = await listTeamMembers({ projectId });
   for (const member of teamMembers) {
     if (member.id !== thisUserId) {
@@ -126,7 +127,7 @@ export default async function handle(
         subject: "Your approval is required for a critical operation.",
         template: "retraced/deletion-request",
         context: {
-          approve_url: `${process.env.RETRACED_APP_BASE}/project/${projectId}/${environmentId}/settings/environments?deleteRequest=${code}`,
+          approve_url: `${config.RETRACED_APP_BASE}/project/${projectId}/${environmentId}/settings/environments?deleteRequest=${code}`,
           resource_kind: newDeletionRequest.resourceKind,
           resource_name: resourceName,
         },

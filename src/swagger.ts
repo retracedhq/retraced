@@ -1,8 +1,9 @@
-import * as _ from "lodash";
-import * as compositeSpec from "../build/swagger.json";
+import _ from "lodash";
+import compositeSpec from "../build/swagger.json";
+import config from "./config";
 
-const apiHost: string = process.env.RETRACED_API_BASE || "localhost:3000";
-const apiSchemes: string = process.env.RETRACED_API_SCHEMES || "http,https";
+const apiHost: string = config.RETRACED_API_BASE || "localhost:3000";
+const apiSchemes: string = config.RETRACED_API_SCHEMES || "http,https";
 
 // exported for testing
 export interface ApiSpec {

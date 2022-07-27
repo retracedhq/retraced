@@ -10,7 +10,7 @@ interface Options {
   environmentId: string;
 }
 
-export default async function (opts: Options) {
+export default async function(opts: Options) {
   // We're doing a transaction here, so we want one consistent unique client
   // from the pool.
   const pg = await pgPool.connect();
@@ -98,7 +98,7 @@ export default async function (opts: Options) {
               return;
             }
 
-            resolve();
+            resolve({});
           });
         });
       });

@@ -5,7 +5,8 @@ import nsq from "../persistence/nsq";
 const pgPool = getPgPool();
 
 export default async function ingestFromBacklog() {
-    const q = `
+    try {
+        const q = `
         WITH deleted AS (
             DELETE FROM backlog WHERE ctid IN (
                 SELECT ctid FROM backlog LIMIT 1000
@@ -28,12 +29,15 @@ export default async function ingestFromBacklog() {
         ON CONFLICT DO NOTHING
         RETURNING id`;
 
-    const result = await pgPool.query(q, []);
+        const result = await pgPool.query(q, []);
 
-    for (const row of result.rows) {
-        const job = JSON.stringify({
-            taskId: row.id,
-        });
-        await nsq.produce("raw_events", job);
+        for (const row of result.rows) {
+            const job = JSON.stringify({
+                taskId: row.id,
+            });
+            await nsq.produce("raw_events", job);
+        }
+    } catch (ex) {
+        console.log(ex);
     }
 }

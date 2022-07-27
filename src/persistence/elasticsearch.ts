@@ -1,10 +1,11 @@
 import "source-map-support/register";
-import * as elasticsearch from "elasticsearch";
-import * as _ from "lodash";
-import * as moment from "moment";
+import elasticsearch from "elasticsearch";
+import _ from "lodash";
+import moment from "moment";
 import { Scope } from "../security/scope";
 import { Client } from "@elastic/elasticsearch";
 import { readFileSync } from "fs";
+import config from "../config";
 
 let es: elasticsearch.Client; // the legacy elasticsearch client library
 let newEs: Client; // the elasticsearch 7.6+ client library
@@ -43,18 +44,18 @@ const backoff = intFromEnv("ELASTICSEARCH_BACKOFF", 1000);
 const totalTimeout = intFromEnv("ELASTICSEARCH_TOTAL_TIMEOUT", 25000);
 
 function intFromEnv(key, defaultN) {
-  const env = Number(process.env[key]);
+  const env = Number(config[key]);
 
   return _.isNaN(env) ? defaultN : env;
 }
 
 export function getNewElasticsearch(): Client {
   if (!newEs) {
-    const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
-    if ((process.env.ELASTICSEARCH_NODES || "") !== "") {
+    const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
+    if ((config.ELASTICSEARCH_NODES || "") !== "") {
       const sslSettings: any = {};
-      if (process.env.ELASTICSEARCH_CAFILE) {
-        sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+      if (config.ELASTICSEARCH_CAFILE) {
+        sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
         sslSettings.rejectUnauthorized = true;
       }
 
@@ -70,11 +71,11 @@ export function getNewElasticsearch(): Client {
 
 export default function getElasticsearch(): elasticsearch.Client {
   if (!es) {
-    const hosts = _.split(process.env.ELASTICSEARCH_NODES || "", ",");
+    const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
 
     const sslSettings: any = {};
-    if (process.env.ELASTICSEARCH_CAFILE) {
-      sslSettings.ca = readFileSync(process.env.ELASTICSEARCH_CAFILE);
+    if (config.ELASTICSEARCH_CAFILE) {
+      sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
       sslSettings.rejectUnauthorized = true;
     }
 
@@ -136,24 +137,24 @@ function shouldRetry(err) {
 
 // Get the index string for a projectId and environmentId and any filters
 // needed to restrict viewer and enterprise clients to authorized data.
-export function scope(scope: Scope): [string, any[]] {
-  const index = `retraced.${scope.projectId}.${scope.environmentId}.current`;
+export function scope(scopeInfo: Scope): [string, any[]] {
+  const index = `retraced.${scopeInfo.projectId}.${scopeInfo.environmentId}.current`;
   const filters: any[] = [];
 
-  if (scope.groupId) {
+  if (scopeInfo.groupId) {
     filters.push({
       bool: {
         should: [
-          { match: { "group.id": { query: scope.groupId, operator: "and" } }},
-          { match: { team_id: { query: scope.groupId, operator: "and" } }},
+          { match: { "group.id": { query: scopeInfo.groupId, operator: "and" } }},
+          { match: { team_id: { query: scopeInfo.groupId, operator: "and" } }},
         ],
       },
     });
   }
 
-  if (scope.targetId) {
+  if (scopeInfo.targetId) {
     filters.push({
-      match: { "target.id": { query: scope.targetId, operator: "and" } },
+      match: { "target.id": { query: scopeInfo.targetId, operator: "and" } },
     });
   }
 

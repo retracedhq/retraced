@@ -1,7 +1,7 @@
-import * as _ from "lodash";
-import * as querystring from "querystring";
+import _ from "lodash";
+import querystring from "querystring";
 import * as uuid from "uuid";
-import * as moment from "moment";
+import moment from "moment";
 
 import { checkViewerAccess } from "../../security/helpers";
 import searchEvents, { Options } from "../../models/event/search";

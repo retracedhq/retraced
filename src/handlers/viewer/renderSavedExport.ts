@@ -42,4 +42,4 @@ export default async function(req) {
     body: result.rendered,
     filename: result.filename,
   };
-};
+}

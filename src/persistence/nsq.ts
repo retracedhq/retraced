@@ -1,14 +1,15 @@
 import "source-map-support/register";
-import * as nsq from "nsqjs";
+import nsq from "nsqjs";
 import { histogram, instrumented, meter, timer } from "../metrics";
 import { logger } from "../logger";
+import config from "../config";
 
 export class NSQClient {
   public static fromEnv() {
-    const circuitBreakerThreshold = process.env.NSQ_CIRCUIT_BREAKER_THRESHOLD;
+    const circuitBreakerThreshold = config.NSQ_CIRCUIT_BREAKER_THRESHOLD;
     return new NSQClient(
-      process.env.NSQD_HOST || "",
-      Number(process.env.NSQD_TCP_PORT),
+      config.NSQD_HOST || "",
+      Number(config.NSQD_TCP_PORT),
       Number(circuitBreakerThreshold),
     );
   }

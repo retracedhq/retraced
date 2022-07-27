@@ -186,6 +186,7 @@ import { RequestParams } from "@elastic/elasticsearch";
       body: {
         query: {
           bool: {
+            should: [],
             filter: [
               // user's query filters
               {match: {action: { query: "user.get", operator: "and" }}},
@@ -204,6 +205,7 @@ import { RequestParams } from "@elastic/elasticsearch";
               // target scope filters
               {
                 bool: {
+                  should: [],
                   must_not: {
                     range: {
                       canonical_time: {
@@ -244,3 +246,5 @@ import { RequestParams } from "@elastic/elasticsearch";
     expect(output).to.deep.equal(answer);
   }
 }
+
+export default QueryEventsTest;

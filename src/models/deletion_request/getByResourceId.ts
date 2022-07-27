@@ -6,7 +6,7 @@ import {
 
 const pgPool = getPgPool();
 
-export default async function (resourceId: string): Promise<DeletionRequest | null> {
+export default async function(resourceId: string): Promise<DeletionRequest | null> {
   const q = `
     select
       id, created, backoff_interval, resource_kind, resource_id

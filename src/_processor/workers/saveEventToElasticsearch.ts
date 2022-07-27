@@ -1,7 +1,7 @@
 import "source-map-support/register";
-import * as _ from "lodash";
-import * as moment from "moment";
-import * as elasticsearch from "elasticsearch";
+import _ from "lodash";
+import moment from "moment";
+import elasticsearch from "elasticsearch";
 import { Registry, getRegistry, instrumented } from "monkit";
 
 import { Clock } from "../common";

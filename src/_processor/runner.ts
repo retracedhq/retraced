@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import "source-map-support/register";
-import * as yargs from "yargs";
+import yargs from "yargs";
 import * as email from "./commands/email";
 
 export type yolo = any;

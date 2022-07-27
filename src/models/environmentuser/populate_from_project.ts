@@ -9,16 +9,16 @@ const pgPool = getPgPool();
 interface ByEnv {
   project_id: string;
   environment_id: string;
-};
+}
 
 interface ByUser {
   project_id: string;
   user_id: string;
-};
+}
 
 export default async function populateFromProject(opts: ByEnv | ByUser, pg: Querier = pgPool): Promise<void> {
-  if ((<ByEnv> opts).environment_id) {
-    const q = `
+  if ((opts as ByEnv).environment_id) {
+    const insertQuery = `
       insert into environmentuser (
         environment_id, user_id, daily_report, email_token
       )
@@ -26,7 +26,7 @@ export default async function populateFromProject(opts: ByEnv | ByUser, pg: Quer
       from projectuser
       where project_id = $2`;
 
-    await pg.query(q, [(<ByEnv> opts).environment_id, opts.project_id]);
+    await pg.query(insertQuery, [(opts as ByEnv).environment_id, opts.project_id]);
     return;
   }
 
@@ -38,5 +38,5 @@ export default async function populateFromProject(opts: ByEnv | ByUser, pg: Quer
     from environment
     where project_id = $2`;
 
-  await pg.query(q, [(<ByUser> opts).user_id, opts.project_id]);
-};
+  await pg.query(q, [(opts as ByUser).user_id, opts.project_id]);
+}

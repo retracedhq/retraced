@@ -10,11 +10,9 @@ export async function getEnterpriseToken(
     eitapiTokenId: string,
 ): Promise<EnterpriseTokenResponse> {
     const apiToken = await Authenticator.default().getApiTokenOr401(authorization, projectId);
-
     const token = await modelsGetEnterpriseToken({
         eitapiTokenId,
     });
-
     if (!token) {
         throw { status: 404, err: new Error("Not Found") };
     }

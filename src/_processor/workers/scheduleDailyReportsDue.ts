@@ -1,6 +1,6 @@
 import "source-map-support/register";
-import * as moment from "moment";
-import * as _ from "lodash";
+import moment from "moment";
+import _ from "lodash";
 
 import { offsetsWithLocalTimeDuringUTCHour } from "../common";
 import environmentDailyReports from "../models/environment/daily_report";

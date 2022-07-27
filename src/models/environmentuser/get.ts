@@ -14,7 +14,7 @@ interface Record {
   daily_report: boolean;
   anomaly_report: boolean;
   email_token: string;
-};
+}
 
 export default async function getEnvironmentUser(opts: Opts): Promise<null | Record> {
   const q = `
@@ -37,4 +37,4 @@ export default async function getEnvironmentUser(opts: Opts): Promise<null | Rec
     throw new Error(`Expected row count of 1, got ${result.rowCount}`);
   }
   return null;
-};
+}

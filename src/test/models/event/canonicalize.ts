@@ -35,3 +35,5 @@ import computeCanonicalHash from "../../../models/event/canonicalize";
     }
 
 }
+
+export default CanonicalizeTest;

@@ -6,7 +6,7 @@ import {
 
 const pgPool = getPgPool();
 
-export default async function (id: string): Promise<RetracedUser | null> {
+export default async function(id: string): Promise<RetracedUser | null> {
   const q = `
     select
       id, created, email, last_login, external_auth_id, timezone, tx_emails_recipient

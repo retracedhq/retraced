@@ -3,22 +3,23 @@ import getUser from "../../models/user/getByExternalAuth";
 import createUser, { ERR_DUPLICATE_EMAIL } from "../../models/user/create";
 import { apiTokenFromAuthHeader } from "../../security/helpers";
 import { createAdminVoucher } from "../../security/vouchers";
-import * as express from "express";
+import express from "express";
+import config from "../../config";
 
 export class AdminUserBootstrap {
   public static default() {
-    return new AdminUserBootstrap(process.env.ADMIN_ROOT_TOKEN);
+    return new AdminUserBootstrap(config.ADMIN_ROOT_TOKEN);
   }
 
   constructor(
     private readonly sharedSecret?: string,
   ) { }
 
-  public async handle(auth: string, claims: ExternalAuth) {
+  public async handle(auth: string | undefined, claims: ExternalAuth) {
 
     let token;
     try {
-      token = apiTokenFromAuthHeader(auth);
+      token = apiTokenFromAuthHeader(auth?.toString());
     } catch (err) {
       throw { status: 404, err: new Error("Not Found") };
     }

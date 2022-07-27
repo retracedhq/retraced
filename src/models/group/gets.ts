@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 
 import getPgPool from "../../persistence/pg";
 
@@ -9,7 +9,7 @@ const pgPool = getPgPool();
  *
  * param {string} [group_ids] The unique group id(s) to fetch
  */
-export default async function (opts) {
+export default async function(opts) {
   if (opts.group_ids.length === 0) {
     return [];
   }

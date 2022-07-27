@@ -1,5 +1,5 @@
-import * as moment from "moment";
-import * as express from "express";
+import moment from "moment";
+import express from "express";
 
 import {checkEitapiAccessUnwrapped} from "../../security/helpers";
 import createSavedSearch, {Options} from "../../models/saved_search/create";
@@ -23,13 +23,12 @@ export interface SavedSearch {
 
 export default async function handler(req: express.Request) {
   return Responses.created(
-    createSavedSearchHandler(req.get("Authorization"), req.body),
+    createSavedSearchHandler(req.get("Authorization") || "", req.body),
   );
 }
 
 export async function createSavedSearchHandler(auth: string, body: CreateSavedSearchRequest): Promise<SavedSearch> {
   const eitapiToken = await checkEitapiAccessUnwrapped(auth);
-
   if (!body.name) {
     throw {
       err: new Error("Missing required 'name' field"),

@@ -3,9 +3,9 @@ import { expect } from "chai";
 
 import * as TypeMoq from "typemoq";
 
-import * as moment from "moment";
-import * as elasticsearch from "elasticsearch";
-import * as pg from "pg";
+import moment from "moment";
+import elasticsearch from "elasticsearch";
+import pg from "pg";
 import { ElasticsearchIndexRotator } from "../../workers/ElasticsearchIndexRotator";
 import { QueryResult } from "pg";
 
@@ -54,3 +54,5 @@ import { QueryResult } from "pg";
 
     }
 }
+
+export default ElasticsearchIndexRotatorTest;

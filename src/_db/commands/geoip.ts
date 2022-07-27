@@ -1,10 +1,10 @@
 import "source-map-support/register";
-import * as chalk from "chalk";
-import * as readline from "readline";
-import * as fs from "fs";
-import * as util from "util";
-import * as ProgressBar from "progress";
-import * as clispinner from "cli-spinner";
+import chalk from "chalk";
+import readline from "readline";
+import fs from "fs";
+import util from "util";
+import ProgressBar from "progress";
+import clispinner from "cli-spinner";
 
 import getPgPool from "../persistence/pg";
 
@@ -197,7 +197,7 @@ function translateIPBlockData(filename, locations) {
       const ultraString = `insert into geoip (network, lat, lon, country, subdiv1, subdiv2, timezone) values ${queuedValues.join(",")};`;
       pgPool.query(ultraString)
         .then(() => {
-          resolve();
+          resolve({});
         })
         .catch((err) => {
           reject(err);

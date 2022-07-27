@@ -1,6 +1,6 @@
 import "source-map-support/register";
 import * as uuid from "uuid";
-import * as moment from "moment";
+import moment from "moment";
 import { PoolClient } from "pg";
 
 export default async function(opts, pg: PoolClient) {

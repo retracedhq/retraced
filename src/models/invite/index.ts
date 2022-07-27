@@ -1,4 +1,4 @@
-import * as moment from "moment";
+import moment from "moment";
 
 export interface InviteValues {
   email: string;
@@ -25,3 +25,12 @@ export function responseFromInvite(invite: Invite): InviteResponse {
     created: invite.created.format(),
   };
 }
+
+export function parseInvite(invite: any): Invite {
+    return {
+      id: invite.id,
+      project_id: invite.project_id,
+      email: invite.email,
+      created: invite.created.format(),
+    };
+  }

@@ -10,10 +10,10 @@
  * Optionallly turns off the tx_email_recipient flag in retraceduser on certain
  * classes of permanent bounces.
  */
-import * as nodemailer from "nodemailer";
-import * as mandrillTransport from "nodemailer-mandrill-transport";
-import * as _ from "lodash";
-import * as pg from "pg";
+import nodemailer from "nodemailer";
+import mandrillTransport from "nodemailer-mandrill-transport";
+import _ from "lodash";
+import pg from "pg";
 import { getRegistry, instrumented, Registry } from "monkit";
 
 import inviteTmpl from "./templates/inviteToTeam";
@@ -21,6 +21,7 @@ import reportTmpl from "./templates/reportDay";
 import deletionRequestTmpl from "./templates/deletionRequest";
 import getPgPool from "../persistence/pg";
 import { logger } from "../logger";
+import config from "../../config";
 
 export interface Email {
     to: string | string[];
@@ -58,7 +59,7 @@ export class Emailer {
       Emailer.instance = new Emailer(
         transport,
         Emailer.defaultTemplates(),
-        process.env.EMAIL_FROM || "Retraced <contact@retraced.io>",
+        config.EMAIL_FROM || "Retraced <contact@retraced.io>",
         handleRejects,
       );
     }
@@ -77,17 +78,17 @@ export class Emailer {
     }
 
     public static smtpFromEnv(): nodemailer.Transporter | null {
-        if (!process.env.SMTP_CONNECTION_URL) {
+        if (!config.SMTP_CONNECTION_URL) {
             return null;
         }
 
         logger.info("Configured SMTP for sending emails");
 
-        return nodemailer.createTransport(process.env.SMTP_CONNECTION_URL);
+        return nodemailer.createTransport(config.SMTP_CONNECTION_URL);
     }
 
     public static mandrillFromEnv(): nodemailer.Transporter | null {
-        if (!process.env.MANDRILL_KEY) {
+        if (!config.MANDRILL_KEY) {
             return null;
         }
 
@@ -95,7 +96,7 @@ export class Emailer {
 
         return nodemailer.createTransport(mandrillTransport({
             auth: {
-                apiKey: process.env.MANDRILL_KEY,
+                apiKey: config.MANDRILL_KEY,
             },
         }));
     }

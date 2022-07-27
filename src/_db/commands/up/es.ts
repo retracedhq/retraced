@@ -1,9 +1,9 @@
 import "source-map-support/register";
-import * as chalk from "chalk";
-import * as walk from "walk";
-import * as path from "path";
-import * as util from "util";
-import * as bugsnag from "bugsnag";
+import chalk from "chalk";
+import walk from "walk";
+import path from "path";
+import util from "util";
+import bugsnag from "bugsnag";
 
 import getElasticsearch from "../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
@@ -105,7 +105,7 @@ export const handler = (argv) => {
             }
           });
         })
-        .then(<any> ((shouldSave) => {
+        .then(((shouldSave) => {
           if (shouldSave) {
             return pg.query(`insert into es_migration_meta (
             id, created
@@ -113,8 +113,8 @@ export const handler = (argv) => {
             $1, now()
           ) on conflict do nothing`, [timestamp]);
           }
-          return Promise.resolve();
-        }))
+          return Promise.resolve({});
+        }) as any)
         .then(() => {
           next(); // done! next file pls
         })

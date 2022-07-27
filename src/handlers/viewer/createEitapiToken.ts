@@ -34,4 +34,4 @@ export default async function(req) {
     status: 201,
     body: JSON.stringify(result),
   };
-};
+}

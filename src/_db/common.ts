@@ -1,10 +1,11 @@
 import "source-map-support/register";
 import getPgPool from "./persistence/pg";
-import * as bugsnag from "bugsnag";
+import bugsnag from "bugsnag";
+import config from "../config";
 
 const pgPool = getPgPool();
 
-const useCache = !process.env.RETRACED_DB_NO_CACHE;
+const useCache = !config.RETRACED_DB_NO_CACHE;
 const actorCache = {};
 const targetCache = {};
 const groupCache = {};
@@ -114,11 +115,11 @@ const common = {
 };
 
 function setupBugsnag() {
-  if (!process.env["BUGSNAG_TOKEN"]) {
+  if (!config.BUGSNAG_TOKEN) {
     // console.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
   } else {
-    bugsnag.register(process.env["BUGSNAG_TOKEN"] || "", {
-      releaseStage: process.env["STAGE"],
+    bugsnag.register(config.BUGSNAG_TOKEN || "", {
+      releaseStage: config.STAGE,
       notifyReleaseStages: ["production", "staging"],
     });
   }

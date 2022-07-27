@@ -1,8 +1,8 @@
-import * as _ from "lodash";
-import * as elasticsearch from "elasticsearch";
-import * as moment from "moment";
+import _ from "lodash";
+import elasticsearch from "elasticsearch";
+import moment from "moment";
 import * as uuid from "uuid";
-import * as pg from "pg";
+import pg from "pg";
 import { histogram, instrumented, meter } from "monkit";
 
 import {
@@ -13,6 +13,7 @@ import {
 } from "../persistence/elasticsearch";
 import getPg from "../persistence/pg";
 import { logger } from "../logger";
+import config from "../../config";
 
 export type IndexNamer = (newDate: moment.Moment) => string;
 
@@ -29,7 +30,7 @@ export interface Environment {
  * - retraced.<project>.<env>.YYYYMMDD
  * - retraced.<project>.<env>
  *
- * Where YYYYMMDD is a date string representing tomorrow's date.
+ * Where YYYYMMDD is a date string representing tomorrow"s date.
  *
  * The first alias will be written to by processor for events with received
  * starting tomorrow.
@@ -194,6 +195,6 @@ export class ElasticsearchIndexRotator {
 
 }
 
-export const rotator = process.env.PG_SEARCH ? null : ElasticsearchIndexRotator.default();
+export const rotator = config.PG_SEARCH ? null : ElasticsearchIndexRotator.default();
 export const worker = () => rotator ? rotator.worker(moment.utc().add(1, "days")) : () => {/* nope */};
 export const repair = () => rotator ? rotator.repairAliases() : () => {/* nope */};

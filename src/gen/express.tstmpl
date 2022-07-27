@@ -1,6 +1,6 @@
 /* tslint:disable */
-import * as _ from "lodash";
-import * as leftPad from "left-pad";
+import _ from "lodash";
+import leftPad from "left-pad";
 {{#if canImportByAlias}}
   import { ValidateParam } from 'tsoa';
   import { Controller } from 'tsoa';
@@ -24,10 +24,9 @@ import { expressAuthentication } from '{{authenticationModule}}';
 // Begin customization of template from https://raw.githubusercontent.com/lukeautry/tsoa/master/src/routeGeneration/templates/express.ts
 import { requestId, onSuccess, onError, preRequest } from "../router";
 // End customization
-
 const models: any = {
   {{#each models}}
-  "{{name}}": {
+  "{{@key}}": {
       {{#if properties}}
       properties: {
           {{#each properties}}
@@ -50,14 +49,14 @@ export function RegisterRoutes(app: any) {
     {{#each controllers}}
     {{#each actions}}
         console.log(`TSOA ${leftPad('{{method}}', 6)} {{../../basePath}}/{{../path}}{{path}}`);
-        app.{{method}}('{{../../basePath}}/{{../path}}{{path}}', 
+        app.{{method}}('{{../../basePath}}{{../path}}{{path}}', 
             {{#if security}} 
             authenticateMiddleware('{{security.name}}'
                 {{#if security.scopes.length}} 
                 ,{{{json security.scopes}}}
                 {{/if}}), 
             {{/if}} 
-            function (request: any, response: any) {
+            function(request: any, response: any) {
             // Begin customization of template from https://raw.githubusercontent.com/lukeautry/tsoa/master/src/routeGeneration/templates/express.ts
             // Moved from directly below validation to enable getting handlerName
             {{#if ../../iocModule}}
@@ -121,15 +120,15 @@ export function RegisterRoutes(app: any) {
             case 'request':
                 return request;
             case 'query':
-                return ValidateParam(args[key], request.query[name], models, name)
+                return ValidateParam(args[key], request.query[name], models, name, {}, undefined, {{{json minimalSwaggerConfig}}})
             case 'path':
-                return ValidateParam(args[key], request.params[name], models, name)
+                return ValidateParam(args[key], request.params[name], models, name, {}, undefined, {{{json minimalSwaggerConfig}}})
             case 'header':
-                return ValidateParam(args[key], request.header(name), models, name);
+                return ValidateParam(args[key], request.header(name), models, name, {}, undefined, {{{json minimalSwaggerConfig}}})
             case 'body':
-                return ValidateParam(args[key], request.body, models, name);
+                return ValidateParam(args[key], request.body, models, name, {}, undefined, {{{json minimalSwaggerConfig}}})
             case 'body-prop':
-                return ValidateParam(args[key], request.body[name], models, name);
+                return ValidateParam(args[key], request.body[name], models, name, {}, undefined, {{{json minimalSwaggerConfig}}})
             }
         });
     }
