@@ -146,7 +146,7 @@ function createEvents(r, endpoint, projectId, count, apiToken, bulk, groupId) {
         return client.reportEvent(e).then(() => pbar.tick(1));
       }))
         .then(() => pbar.terminate())
-        .then(() => resolve())
+        .then(() => resolve(null))
         .catch(reject);
     }
   });

@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 
-ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.3/supercronic-linux-amd64
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
 ENV SUPERCRONIC=supercronic-linux-amd64
 ENV SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
 RUN curl -fsSLO "$SUPERCRONIC_URL" \
@@ -61,15 +61,13 @@ EXPOSE 3000
 COPY --from=node /src/retraceddb /src/retraceddb
 COPY --from=node /src/retraceddb4G /src/retraceddb4G
 COPY --from=node /src/migrations/pg /src/migrations/pg
-COPY --from=node /src/migrations/pg10 /src/migrations/pg10
-COPY --from=node /src/migrations/pg /src/migrations/pg10
 COPY --from=node /src/migrations/es /src/migrations/es
 COPY --from=node /src/api /src/api
 COPY --from=node /src/retracedctl /src/bin/retracedctl
 COPY --from=node /src/processor /src/processor
-COPY --from=node /src/node_modules/snappy/build/Release/binding.node /src/node_modules/snappy/build/Release/binding.node
-COPY --from=node /src/node_modules/sse4_crc32/build/Release/crc32c.node /src/node_modules/sse4_crc32/build/Release/crc32c.node
-COPY --from=node /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node
+COPY --from=node /src/node_modules/@napi-rs/snappy-linux-x64-gnu/snappy.linux-x64-gnu.node /src/node_modules/@napi-rs/snappy-linux-x64-gnu/snappy.linux-x64-gnu.node
+# COPY --from=node /src/node_modules/@node-rs/crc32/build/Release/crc32c.node /src/node_modules/sse4_crc32/build/Release/crc32c.node
+COPY --from=node /src/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node /src/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node
 COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercronic-linux-amd64
 COPY --from=cron /usr/local/bin/replicated-auditlog-cron /usr/local/bin/replicated-auditlog-cron
 COPY --from=cron /crontab /crontab

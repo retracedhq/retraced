@@ -1,151 +1,206 @@
 import { suite, test } from "mocha-typescript";
-import search from "../../../handlers/graphql/search";
-import safeQuery from "../../seederHelper";
+import counts from "../../../handlers/graphql/counts";
+import safeQuery from "../../../test/seederHelper";
 import { defaultEventCreater } from "../../../handlers/createEvent";
 import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
 
 @suite class GraphQLCounts {
-    @test public async "GraphQL search#search()"() {
+    @test public async "GraphQL counts#counts()"() {
         try {
             await setup({
                 seedEvents: true,
             });
-            const res = await search("", {
-                query: "",
-                after: "MCx0ZXN0",
+            const res = await counts("", {
+                after: "MA==",
                 first: 1,
+                crud: "c",
+                startTime: new Date(new Date().setMinutes(new Date().getMinutes() - 60)).toISOString(),
+                endTime: new Date().toISOString(),
+                type: "action",
             }, {
                 projectId: "test",
                 environmentId: "test",
                 groupId: "test",
                 targetId: "test",
             });
-            console.log(res);
             let op = expect(res).to.not.be.undefined;
             op = expect(res.totalCount).to.not.be.undefined;
             op = expect(res.pageInfo).to.not.be.undefined;
             return op;
         } catch (ex) {
-            console.log(ex);
+            // console.log(ex);
         }
     }
-    @test public async "GraphQL search#search() with last"() {
+    @test public async "GraphQL counts#counts() throws invalid cursor"() {
         try {
             await setup({
                 seedEvents: true,
             });
-            const res = await search("", {
-                query: "",
-                after: "MCx0ZXN0",
-                last: 1,
-            }, {
-                projectId: "test",
-                environmentId: "test",
-                groupId: "test",
-                targetId: "test",
-            });
-            console.log(res);
-            let op = expect(res).to.not.be.undefined;
-            op = expect(res.totalCount).to.not.be.undefined;
-            op = expect(res.pageInfo).to.not.be.undefined;
-            return op;
-        } catch (ex) {
-            console.log(ex);
-        }
-    }
-    @test public async "GraphQL search#search() with before"() {
-        try {
-            await setup({
-                seedEvents: true,
-            });
-            const res = await search("", {
-                query: "",
-                before: "MCx0ZXN0",
-                last: 1,
-            }, {
-                projectId: "test",
-                environmentId: "test",
-                groupId: "test",
-                targetId: "test",
-            });
-            console.log(res);
-            let op = expect(res).to.not.be.undefined;
-            op = expect(res.totalCount).to.not.be.undefined;
-            op = expect(res.pageInfo).to.not.be.undefined;
-            return op;
-        } catch (ex) {
-            console.log(ex);
-        }
-    }
-    @test public async "GraphQL search#search() throws if both before and after is passed"() {
-        try {
-            await setup({
-                seedEvents: true,
-            });
-            const res = await search("", {
-                query: "",
-                after: "MCx0ZXN0",
-                first: 1,
-                before: "MCx0ZXN0",
-            }, {
-                projectId: "test",
-                environmentId: "test",
-                groupId: "test",
-                targetId: "test",
-            });
-            console.log(res);
-            throw new Error("Expected 'Arguments 'before' and 'after' are exclusive' exception");
-        } catch (ex) {
-            expect(ex.status).to.equal(400);
-            expect(ex.err.message).to.equal("Arguments 'before' and 'after' are exclusive");
-        }
-    }
-    @test public async "GraphQL search#search() throws if both first and last passed"() {
-        try {
-            await setup({
-                seedEvents: true,
-            });
-            const res = await search("", {
-                query: "",
-                after: "MCx0ZXN0",
-                first: 1,
-                last: 1,
-            }, {
-                projectId: "test",
-                environmentId: "test",
-                groupId: "test",
-                targetId: "test",
-            });
-            console.log(res);
-            throw new Error("Expected 'Arguments 'first' and 'last' are exclusive' exception");
-        } catch (ex) {
-            expect(ex.status).to.equal(400);
-            expect(ex.err.message).to.equal("Arguments 'first' and 'last' are exclusive");
-        }
-    }
-    @test public async "GraphQL search#search() throws invalid cursor"() {
-        try {
-            await setup({
-                seedEvents: true,
-            });
-            const res = await search("", {
-                query: "",
+            await counts("", {
                 after: "0",
                 first: 1,
-                last: 0,
+                crud: "c",
+                startTime: new Date(new Date().setMinutes(new Date().getMinutes() - 60)).toISOString(),
+                endTime: new Date().toISOString(),
+                type: "action",
             }, {
                 projectId: "test",
                 environmentId: "test",
                 groupId: "test",
                 targetId: "test",
             });
-            console.log(res);
             throw new Error("Expected 'Invalid cursor' exception");
         } catch (ex) {
             expect(ex.status).to.equal(400);
             expect(ex.err.message).to.equal("Invalid cursor");
+        }
+    }
+    @test public async "GraphQL counts#counts() without endTime"() {
+        try {
+            await setup({
+                seedEvents: true,
+            });
+            const res = await counts("", {
+                after: "MA==",
+                first: 1,
+                crud: "c",
+                startTime: new Date(new Date().setMinutes(new Date().getMinutes() - 60)).toISOString(),
+                type: "action",
+            }, {
+                projectId: "test",
+                environmentId: "test",
+                groupId: "test",
+                targetId: "test",
+            });
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.totalCount).to.not.be.undefined;
+            op = expect(res.pageInfo).to.not.be.undefined;
+            return op;
+        } catch (ex) {
+            // console.log(ex);
+        }
+    }
+    @test public async "GraphQL counts#counts() with invalid endTime"() {
+        try {
+            await setup({
+                seedEvents: true,
+            });
+            await counts("", {
+                after: "MA==",
+                first: 1,
+                crud: "c",
+                endTime: new Date(new Date().setMinutes(new Date().getMinutes() - 60)).toISOString() + "dfsdf",
+                type: "action",
+            }, {
+                projectId: "test",
+                environmentId: "test",
+                groupId: "test",
+                targetId: "test",
+            });
+            throw new Error("Expected 'Invalid endTime' exception");
+        } catch (ex) {
+            expect(ex.status).to.equal(400);
+            expect(ex.err.message).to.equal("Invalid endTime");
+        }
+    }
+    @test public async "GraphQL counts#counts() without crud"() {
+        try {
+            await setup({
+                seedEvents: true,
+            });
+            const res = await counts("", {
+                after: "MA==",
+                first: 1,
+                startTime: new Date(new Date().setMinutes(new Date().getMinutes() - 60)).toISOString(),
+                endTime: new Date().toISOString(),
+                type: "action",
+            }, {
+                projectId: "test",
+                environmentId: "test",
+                groupId: "test",
+                targetId: "test",
+            });
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.totalCount).to.not.be.undefined;
+            op = expect(res.pageInfo).to.not.be.undefined;
+            return op;
+        } catch (ex) {
+            // console.log(ex);
+        }
+    }
+    @test public async "GraphQL counts#counts() without startTime"() {
+        try {
+            await setup({
+                seedEvents: true,
+            });
+            const res = await counts("", {
+                after: "MA==",
+                first: 1,
+                crud: "c",
+                endTime: new Date().toISOString(),
+                type: "action",
+            }, {
+                projectId: "test",
+                environmentId: "test",
+                groupId: "test",
+                targetId: "test",
+            });
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.totalCount).to.not.be.undefined;
+            op = expect(res.pageInfo).to.not.be.undefined;
+            return op;
+        } catch (ex) {
+            // console.log(ex);
+        }
+    }
+    @test public async "GraphQL counts#counts() with invalid startTime"() {
+        try {
+            await setup({
+                seedEvents: true,
+            });
+            await counts("", {
+                after: "MA==",
+                first: 1,
+                crud: "c",
+                startTime: new Date(new Date().setMinutes(new Date().getMinutes() - 60)).toISOString() + "dfsdf",
+                type: "action",
+            }, {
+                projectId: "test",
+                environmentId: "test",
+                groupId: "test",
+                targetId: "test",
+            });
+            throw new Error("Expected 'Invalid startTime' exception");
+        } catch (ex) {
+            expect(ex.status).to.equal(400);
+            expect(ex.err.message).to.equal("Invalid startTime");
+        }
+    }
+    @test public async "GraphQL counts#counts() with type group.id"() {
+        try {
+            await setup({
+                seedEvents: true,
+            });
+            const res = await counts("", {
+                after: "MA==",
+                first: 1,
+                crud: "c",
+                startTime: new Date(new Date().setMinutes(new Date().getMinutes() - 60)).toISOString() + "dfsdf",
+                type: "group",
+            }, {
+                projectId: "test",
+                environmentId: "test",
+                groupId: "test",
+                targetId: "test",
+            });
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.totalCount).to.not.be.undefined;
+            op = expect(res.pageInfo).to.not.be.undefined;
+            return op;
+        } catch (ex) {
+            // console.log(ex);
         }
     }
 }

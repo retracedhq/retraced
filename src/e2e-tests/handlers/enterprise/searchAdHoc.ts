@@ -1,48 +1,74 @@
 import { suite, test } from "mocha-typescript";
-import deleteActiveSearch from "../../../handlers/enterprise/deleteActiveSearch";
-import safeQuery from "../../seederHelper";
+import searchAdHoc from "../../../handlers/enterprise/searchAdHoc";
+import safeQuery from "../../../test/seederHelper";
 import { defaultEventCreater } from "../../../handlers/createEvent";
 import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
 
-@suite class DeleteActiveSearch {
-    @test public async "DeleteActiveSearch#deleteActiveSearch()"() {
-
+@suite class SearchAdHoc {
+    @test public async "SearchAdHoc#searchAdHoc()"() {
         try {
             await setup({});
-            const res = await deleteActiveSearch({
-                get: () => {
-                    return `token=test`;
+            const res = await searchAdHoc({
+                get: (name) => {
+                    switch (name) {
+                        case "Authorization":
+                            return `token=test`;
+                        case "ETag":
+                            return `test`;
+                        default:
+                            return `token=test`;
+                    }
                 },
                 params: {
                     activeSearchId: "test",
                 },
+                query: {
+                    actor_id: "",
+                    action: "",
+                    page_size: 10,
+                },
                 body: {},
             });
-            expect(res.status).to.equal(204);
-            return expect(res).to.not.be.undefined;
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.body).to.not.be.undefined;
+            expect(res.status).to.equal(200);
+            return op;
         } catch (ex) {
             console.log(ex);
         }
     }
-    @test public async "DeleteActiveSearch#deleteActiveSearch() throws Missing required 'id' parameter"() {
-
+    @test public async "SearchAdHoc#searchAdHoc() without ETag"() {
         try {
             await setup({});
-            await deleteActiveSearch({
-                get: () => {
-                    return `token=test`;
+            const res = await searchAdHoc({
+                get: (name) => {
+                    switch (name) {
+                        case "Authorization":
+                            return `token=test`;
+                        case "ETag":
+                            return undefined;
+                        default:
+                            return `token=test`;
+                    }
                 },
                 params: {
-                    activeSearchId: "",
+                    activeSearchId: "test",
+                },
+                query: {
+                    actor_id: "",
+                    action: "",
+                    page_size: 10,
                 },
                 body: {},
             });
-            throw new Error(`Expected error "Missing required 'id' parameter" to be thrown`);
+            let op = expect(res).to.not.be.undefined;
+            op = expect(res.body).to.not.be.undefined;
+            expect(res.status).to.equal(200);
+            return op;
         } catch (ex) {
-            expect(ex.status).to.equal(400);
-            expect(ex.err.message).to.equal("Missing required 'id' parameter");
+            console.log(ex);
         }
     }
 }
@@ -71,29 +97,6 @@ async function setup(params?) {
         )]);
     }
     if (params.seedEvents) {
-        createTestEvent();
-    }
-    if (!params.skipActiveSearch) {
-        await safeQuery("INSERT INTO active_search (id, project_id, environment_id, group_id, saved_search_id ) values ($1, $2, $3, $4, $5)", ["test", "test", "test", "test", params.invalidSearchId || "test"]);
-    }
-    if (params.deleteSavedSearch) {
-        await safeQuery(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
-    }
-    try {
-        const res = await AdminTokenStore.default().createAdminToken("test");
-        await create("test", "test", {
-            name: "test",
-            disabled: false,
-        }, undefined, "test");
-        await safeQuery("INSERT INTO eitapi_token (id, display_name, project_id, environment_id, group_id, view_log_action) VALUES ($1, $2, $3, $4, $5, $6)", ["test", "test", "test", "test", "test", "test"]);
-        return res;
-    } catch (ex) {
-        console.log(ex);
-    }
-}
-
-function createTestEvent() {
-    try {
         defaultEventCreater.createEvent("token=test", "test", {
             action: "action1",
             crud: "c",
@@ -122,9 +125,20 @@ function createTestEvent() {
             component: "comp1",
             version: "v1",
         });
-    } catch (ex) {
-        console.log(ex);
     }
+    if (!params.skipActiveSearch) {
+        await safeQuery("INSERT INTO active_search (id, project_id, environment_id, group_id, saved_search_id ) values ($1, $2, $3, $4, $5)", ["test", "test", "test", "test", params.invalidSearchId || "test"]);
+    }
+    if (params.deleteSavedSearch) {
+        await safeQuery(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
+    }
+    const res = await AdminTokenStore.default().createAdminToken("test");
+    await create("test", "test", {
+        name: "test",
+        disabled: false,
+    }, undefined, "test");
+    await safeQuery("INSERT INTO eitapi_token (id, display_name, project_id, environment_id, group_id, view_log_action) VALUES ($1, $2, $3, $4, $5, $6)", ["test", "test", "test", "test", "test", "test"]);
+    return res;
 }
 
 async function cleanup() {
@@ -141,4 +155,4 @@ async function cleanup() {
     await safeQuery(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
 }
 
-export default DeleteActiveSearch;
+export default SearchAdHoc;
