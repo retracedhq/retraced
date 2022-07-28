@@ -73,8 +73,8 @@ export interface RequestTarget {
     type?: string;
 }
 
-export type CreateEventBulkRequest = {
-    events: CreateEventRequest[]
+export interface CreateEventBulkRequest {
+    events: CreateEventRequest[];
 }
 
 export interface CreateEventRequest {
