@@ -19,7 +19,7 @@ export default async function createUser(opts: Options): Promise<RetracedUser> {
 
   // Check for dupe e-mail
   let q = "select count(1) from retraceduser where email = $1";
-  let v: Array<string | number> = [opts.email];
+  let v: (string | number)[] = [opts.email];
   const dupeCheckResult = await pgPool.query(q, v);
   if (dupeCheckResult.rows[0].count > 0) {
     throw ERR_DUPLICATE_EMAIL;

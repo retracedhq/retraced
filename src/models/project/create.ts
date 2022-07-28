@@ -60,7 +60,7 @@ export default function createProject(opts) {
           });
         }
 
-        const createEnvPromises = [] as Array<Promise<Environment>>;
+        const createEnvPromises = [] as Promise<Environment>[];
         project.environments.forEach((environment) => {
           createEnvPromises.push(createEnvironment({
             name: environment.name,
@@ -70,7 +70,7 @@ export default function createProject(opts) {
 
         Promise.all(createEnvPromises)
           .then((envs) => {
-            const createTokenPromises = [] as Array<Promise<ApiToken>>;
+            const createTokenPromises = [] as Promise<ApiToken>[];
             project.environments = envs;
             project.environments.forEach((environment: Environment) => {
               const newApiToken = {

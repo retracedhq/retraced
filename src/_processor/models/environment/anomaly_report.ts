@@ -11,11 +11,11 @@ interface Options {
 }
 
 export interface Record {
-  recipients: Array<{
+  recipients: {
     email: string;
     id: string;
     token: string;
-  }>;
+  }[];
   project_id: string;
   project_name: string;
   environment_id: string;

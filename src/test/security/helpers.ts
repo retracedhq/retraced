@@ -20,12 +20,13 @@ import {
         expect(token).to.equal("abcdef");
     }
     @test public async "helpers.checkAdminAccessUnwrapped(undefined)"() {
-      await checkAdminAccessUnwrapped(undefined as any)
-        .then(() => { throw new Error("Error not thrown"); })
-        .catch((err) => {
-          expect(err.status).to.deep.equal(401);
-          expect(err.err.message).to.deep.equal("Missing Authorization header");
-        });
+        try {
+            await checkAdminAccessUnwrapped(undefined as any);
+            throw new Error("Error not thrown");
+        } catch(err) {
+            expect(err.status).to.deep.equal(401);
+            expect(err.err.message).to.deep.equal("Missing Authorization header");
+        }
     }
 }
 

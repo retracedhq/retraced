@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { offsetsWithLocalTimeDuringUTCHour } from "../common";
 
 describe("common.offsetsWithLocalTimeDuringUTCHour", () => {
-  const tests: Array<[number, number, number[]]> = [
+  const tests: [number, number, number[]][] = [
     // UTC Hour, local hour, answer
     [16, 7, [-9]],
     [17, 7, [-10, 14]],

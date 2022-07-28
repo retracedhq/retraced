@@ -25,7 +25,6 @@ import { QueryResult } from "pg";
 
         expect(token.projectId).to.equal("a-project");
         expect(token.environmentId).to.equal("an-environment");
-
     }
     @test public async "Authenticator#getApiTokenOr401() with invalid token"() {
         const pool = TypeMoq.Mock.ofType(pg.Pool);

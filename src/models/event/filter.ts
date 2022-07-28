@@ -20,7 +20,7 @@ export interface Result {
 
 export interface Filter {
     where: string;
-    values: Array<string | number>;
+    values: (string | number)[];
 }
 
 const pgPool = getPgPool();

@@ -20,11 +20,11 @@ interface Opts {
   date: string;
   // minutes
   offset: number;
-  recipients: Array<{
+  recipients: {
     email: string;
     id: string;
     token: string;
-  }>;
+  }[];
 }
 
 export default async function analyzeDay(job) {
