@@ -3,7 +3,7 @@ import { expect } from "chai";
 import createInvite from "../../../handlers/admin/createInvite";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import { deprecated } from "../../../handlers/admin/createInvite";
-import safeQuery from "../../seederHelper";
+import safeQuery from "../../../test/seederHelper";
 
 @suite class CreateInvite {
     @test public async "CreateInvite#createInvite()"() {

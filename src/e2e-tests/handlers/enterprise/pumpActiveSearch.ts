@@ -4,7 +4,7 @@ import { defaultEventCreater } from "../../../handlers/createEvent";
 import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
-import safeQuery from "../../seederHelper";
+import safeQuery from "../../../test/seederHelper";
 
 @suite class PumpActiveSearch {
     @test public async "PumpActiveSearch#pumpActiveSearch()"() {

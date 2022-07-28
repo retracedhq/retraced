@@ -1,6 +1,6 @@
 import { suite, test } from "mocha-typescript";
 import searchAdHoc from "../../../handlers/enterprise/searchAdHoc";
-import safeQuery from "../../seederHelper";
+import safeQuery from "../../../test/seederHelper";
 import { defaultEventCreater } from "../../../handlers/createEvent";
 import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";

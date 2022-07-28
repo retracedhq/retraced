@@ -5,7 +5,7 @@ import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
 // import CustReq from "../../mock-classes/CustomRequest";
-import safeQuery from "../../seederHelper";
+import safeQuery from "../../../test/seederHelper";
 
 // @suite class CreateSavedSearch {
 //     @test public async "CreateSavedSearch#createSavedSearch()"() {
