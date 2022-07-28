@@ -39,6 +39,9 @@ RUN make build
 # this one is a little janky, mostly for local dev
 ARG skip_pkg
 
+RUN echo $(ls -lisa /src/node_modules/@napi-rs)
+RUN echo $(ls -lisa /src/node_modules/@napi-rs/snappy-linux-arm64-gnu)
+
 RUN make pkg SKIP=${skip_pkg}
 
 
