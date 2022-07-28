@@ -4911,10 +4911,10 @@ nodemailer-mandrill-transport@1.2.0:
     extend "^3.0.0"
     mandrill-api "^1.0.45"
 
-nodemailer@6.7.5:
-  version "6.7.5"
-  resolved "https://registry.npmjs.org/nodemailer/-/nodemailer-6.7.5.tgz"
-  integrity sha512-6VtMpwhsrixq1HDYSBBHvW0GwiWawE75dS3oal48VqRhUvKJNnKnJo2RI/bCVQubj1vgrgscMNW4DHaD6xtMCg==
+nodemailer@6.7.7:
+  version "6.7.7"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.7.7.tgz#e522fbd7507b81c51446d3f79c4603bf00083ddd"
+  integrity sha512-pOLC/s+2I1EXuSqO5Wa34i3kXZG3gugDssH+ZNCevHad65tc8vQlCQpOLaUjopvkRQKm2Cki2aME7fEOPRy3bA==
 
 nopt@3.x:
   version "3.0.6"

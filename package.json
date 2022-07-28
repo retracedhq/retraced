@@ -42,7 +42,7 @@
     "node-gyp": "9.0.0",
     "node-localstorage": "2.2.1",
     "node-statsd-client": "1.0.4",
-    "nodemailer": "6.7.5",
+    "nodemailer": "6.7.7",
     "nodemailer-mandrill-transport": "1.2.0",
     "nsqjs": "0.13.0",
     "nyc": "15.1.0",
