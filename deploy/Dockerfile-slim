@@ -39,9 +39,6 @@ RUN make build
 # this one is a little janky, mostly for local dev
 ARG skip_pkg
 
-RUN echo $(ls -lisa /src/node_modules/@napi-rs)
-RUN echo $(ls -lisa /src/node_modules/@napi-rs/snappy-linux-arm64-gnu)
-
 RUN make pkg SKIP=${skip_pkg}
 
 
@@ -68,7 +65,7 @@ COPY --from=node /src/migrations/es /src/migrations/es
 COPY --from=node /src/api /src/api
 COPY --from=node /src/retracedctl /src/bin/retracedctl
 COPY --from=node /src/processor /src/processor
-COPY --from=node /src/node_modules/@napi-rs/snappy-linux-arm64-gnu/snappy.linux-arm64-gnu.node /src/node_modules/@napi-rs/snappy-linux-arm64-gnu/snappy.linux-arm64-gnu.node
+COPY --from=node /src/node_modules/@napi-rs/snappy-linux-x64-gnu/snappy.linux-x64-gnu.node /src/node_modules/@napi-rs/snappy-linux-x64-gnu/snappy.linux-x64-gnu.node
 # COPY --from=node /src/node_modules/@node-rs/crc32/build/Release/crc32c.node /src/node_modules/sse4_crc32/build/Release/crc32c.node
 COPY --from=node /src/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node /src/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node
 COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercronic-linux-amd64
