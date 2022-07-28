@@ -54,7 +54,7 @@
     "postgrator": "3.0.0",
     "progress": "2.0.3",
     "prom-client": "14.0.1",
-    "redis": "4.1.0",
+    "redis": "4.2.0",
     "request": "2.76.0",
     "request-promise": "4.2.2",
     "retraced": "0.4.1",
