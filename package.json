@@ -11,7 +11,7 @@
     "aws-sdk": "2.1122.0",
     "bcrypt": "5.0.1",
     "bugsnag": "1.9.1",
-    "cassandra-driver": "4.6.3",
+    "cassandra-driver": "4.6.4",
     "chai": "4.3.6",
     "chai-as-promised": "7.1.1",
     "chai-http": "4.3.0",

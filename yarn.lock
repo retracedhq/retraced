@@ -753,15 +753,15 @@
   resolved "https://registry.npmjs.org/@types/mocha/-/mocha-5.2.3.tgz"
   integrity sha512-C1wVVr7xhKu6c3Mb27dFzNYR05qvHwgtpN+JOYTGc1pKA7dCEDDYpscn7kul+bCUwa3NoGDbzI1pdznSOa397w==
 
-"@types/node@*", "@types/node@17.0.29":
-  version "17.0.29"
-  resolved "https://registry.npmjs.org/@types/node/-/node-17.0.29.tgz"
-  integrity sha512-tx5jMmMFwx7wBwq/V7OohKDVb/JwJU5qCVkeLMh1//xycAJ/ESuw9aJ9SEtlCZDYi2pBfe4JkisSoAtbOsBNAA==
-
-"@types/node@>=8":
+"@types/node@*", "@types/node@>=8":
   version "17.0.31"
   resolved "https://registry.npmjs.org/@types/node/-/node-17.0.31.tgz"
   integrity sha512-AR0x5HbXGqkEx9CadRH3EBYx/VkiUgZIhP4wvPn/+5KIsgpNoyFaRlVe0Zlx9gRtg8fA06a9tskE2MSN7TcG4Q==
+
+"@types/node@17.0.29":
+  version "17.0.29"
+  resolved "https://registry.npmjs.org/@types/node/-/node-17.0.29.tgz"
+  integrity sha512-tx5jMmMFwx7wBwq/V7OohKDVb/JwJU5qCVkeLMh1//xycAJ/ESuw9aJ9SEtlCZDYi2pBfe4JkisSoAtbOsBNAA==
 
 "@types/pg-types@1.11.5":
   version "1.11.5"
@@ -1627,10 +1627,10 @@ caseless@~0.12.0:
   resolved "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-cassandra-driver@4.6.3:
-  version "4.6.3"
-  resolved "https://registry.npmjs.org/cassandra-driver/-/cassandra-driver-4.6.3.tgz"
-  integrity sha512-npW670TXjTHrdb15LUFN01wssb9vvz6SuNYcppesoKcUXx3Q29nXVhRtnvsnkG0BaSnDGvCCR4udrzYLsbh+sg==
+cassandra-driver@4.6.4:
+  version "4.6.4"
+  resolved "https://registry.yarnpkg.com/cassandra-driver/-/cassandra-driver-4.6.4.tgz#a916018d2dfee73d00e51cedac84c44aff07bcbd"
+  integrity sha512-SksbIK0cZ2QZRx8ti7w+PnLqldyY+6kU2gRWFChwXFTtrD/ce8cQICDEHxyPwx+DeILwRnMrPf9cjUGizYw9Vg==
   dependencies:
     "@types/long" "^4.0.0"
     "@types/node" ">=8"
