@@ -1,9 +1,9 @@
 {
-  "name": "api",
+  "name": "retraced",
   "version": "1.4.6",
-  "description": "Retraced API",
+  "description": "A fully open source audit log service and embeddable UI easily deployed to your own Kubernetes cluster",
   "main": "./build/index.js",
-  "license": "UNLICENSED",
+  "license": "Apache 2.0",
   "dependencies": {
     "@elastic/elasticsearch": "7.8.0",
     "analytics-node": "6.0.0",
