@@ -6,6 +6,8 @@ retracedctl
 api
 retraceddb
 retraceddb4G
+retraceddb8G
+retraceddb16G
 processor
 *.snyk-patch
 build/

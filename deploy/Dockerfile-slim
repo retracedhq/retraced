@@ -60,6 +60,8 @@ EXPOSE 3000
 
 COPY --from=node /src/retraceddb /src/retraceddb
 COPY --from=node /src/retraceddb4G /src/retraceddb4G
+COPY --from=node /src/retraceddb8G /src/retraceddb8G
+COPY --from=node /src/retraceddb16G /src/retraceddb16G
 copy --from=node /src/migrations/pg /src/migrations/pg
 copy --from=node /src/migrations/pg10 /src/migrations/pg10
 copy --from=node /src/migrations/pg /src/migrations/pg10
