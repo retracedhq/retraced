@@ -45,16 +45,16 @@ report-coverage:
 # 	sed -i.bak 's/function ESAPI/const path = require("path");\nfunction ESAPI/g' node_modules/@elastic/elasticsearch/api/index.js && cat node_modules/@elastic/elasticsearch/api/index.js && 
 pkg:
 	if [ -n "$(SKIP)" ]; then exit 0; else \
-	sed -i.bak "s/__dirname + '/'.\//g" node_modules/pg-format/lib/index.js && \
-	sed -i.bak 's/lazyLoad(.\(.\+\).\, opts)/require(".\/api\/\1.js")(opts)/g' node_modules/@elastic/elasticsearch/api/index.js && \
+	 sed -i.bak "s/__dirname + '/'.\//g" node_modules/pg-format/lib/index.js && \
+	 sed -i.bak 's/lazyLoad(.\(.\+\).\, opts)/require(".\/api\/\1.js")(opts)/g' node_modules/@elastic/elasticsearch/api/index.js && \
 	 `yarn bin`/pkg -t node10-linux --options no-deprecation --output api ./build/index.js && \
 	 `yarn bin`/pkg -t node10-linux --options no-deprecation --output retracedctl ./build/retracedctl.js && \
 	 `yarn bin`/pkg -t node10-linux --options no-deprecation --output processor ./build/_processor/index.js && \
 	 `yarn bin`/pkg -t node10-linux --options no-deprecation --output retraceddb ./build/_db/runner-lite.js && \
-	 `yarn bin`/pkg -t node10-linux --options "max_old_space_size=4096,no-deprecation" --output retraceddb4G ./build/_db/runner-lite.js; && \
-	 `yarn bin`/pkg -t node16-linux --options "max_old_space_size=8192,no-deprecation" --output retraceddb8G ./build/src/_db/runner-lite.js; && \
-	 `yarn bin`/pkg -t node16-linux --options "max_old_space_size=16384,no-deprecation" --output retraceddb16G ./build/src/_db/runner-lite.js; \
-	 fi
+	 `yarn bin`/pkg -t node10-linux --options "max_old_space_size=4096,no-deprecation" --output retraceddb4G ./build/_db/runner-lite.js && \
+	 `yarn bin`/pkg -t node10-linux --options "max_old_space_size=8192,no-deprecation" --output retraceddb8G ./build/_db/runner-lite.js && \
+	 `yarn bin`/pkg -t node10-linux --options "max_old_space_size=16384,no-deprecation" --output retraceddb16G ./build/_db/runner-lite.js; \
+	fi
 
 run:
 	node --no-deprecation ./build/index.js
