@@ -51,8 +51,8 @@ pkg:
 	 `yarn bin`/pkg -t node10-linux --options no-deprecation --output retracedctl ./build/retracedctl.js && \
 	 `yarn bin`/pkg -t node10-linux --options no-deprecation --output processor ./build/_processor/index.js && \
 	 `yarn bin`/pkg -t node10-linux --options no-deprecation --output retraceddb ./build/_db/runner-lite.js && \
-	 `yarn bin`/pkg -t node10-linux --options "max_old_space_size=4096,no-deprecation" --output retraceddb4G ./build/_db/runner-lite.js; \
-	 `yarn bin`/pkg -t node16-linux --options "max_old_space_size=8192,no-deprecation" --output retraceddb8G ./build/src/_db/runner-lite.js; \
+	 `yarn bin`/pkg -t node10-linux --options "max_old_space_size=4096,no-deprecation" --output retraceddb4G ./build/_db/runner-lite.js; && \
+	 `yarn bin`/pkg -t node16-linux --options "max_old_space_size=8192,no-deprecation" --output retraceddb8G ./build/src/_db/runner-lite.js; && \
 	 `yarn bin`/pkg -t node16-linux --options "max_old_space_size=16384,no-deprecation" --output retraceddb16G ./build/src/_db/runner-lite.js; \
 	 fi
 
