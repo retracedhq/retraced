@@ -25,6 +25,7 @@ x-common-variables: &common-variables
   NSQD_HOST: nsqd
   HOSTNAME: retraced-api-67856674bf-kwq7f
   NSQD_TCP_PORT: 4150
+  ADMIN_ROOT_TOKEN: roottoken
   # PG_SEARCH: "true"
 
 services:

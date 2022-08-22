@@ -511,6 +511,7 @@ export class AdminAPI extends Controller {
    * @param projectId     The project id
    * @param body          The invite resource with the invitee's email
    */
+  @Route("admin/v1")
   @Post("token")
   @SuccessResponse("201", "Created")
   public async createAdminToken(

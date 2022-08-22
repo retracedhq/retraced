@@ -71,6 +71,6 @@ export default async function anomalyReport(opts: Options): Promise<Record[]> {
       (email, id, token) => ({ email, id, token }),
     );
 
-    return _.omit(r, ["recipient_emails", "recipient_ids", "recipient_tokens"]);
+    return (_.omit(r, ["recipient_emails", "recipient_ids", "recipient_tokens"]) as Record);
   });
 }
