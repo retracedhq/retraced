@@ -605,12 +605,12 @@
   resolved "https://registry.npmjs.org/@tsconfig/node16/-/node16-1.0.2.tgz"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
 
-"@tsoa/cli@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/@tsoa/cli/-/cli-4.0.0.tgz"
-  integrity sha512-/eB9RnslyuVQgmK36EgLSKciMvrP9UIu+Bq7yhDmL72pzFT3hKPUSkxLidHuz5DNa85OBq4eKMfnYIt744AqnQ==
+"@tsoa/cli@^4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@tsoa/cli/-/cli-4.1.1.tgz#9062fd1a4cb1a3aa90b439846aba8b235b5b8929"
+  integrity sha512-cu+c95Uc1a9ImSnxe5W4gMv8DNM9ixzaQp+F3id3yFUNMV5aYylOMrBHZslBVcmh28l+S7myuqw+yhnKYEcROQ==
   dependencies:
-    "@tsoa/runtime" "^4.0.0"
+    "@tsoa/runtime" "^4.1.0"
     deepmerge "^4.2.2"
     fs-extra "^8.1.0"
     glob "^7.1.6"
@@ -622,10 +622,10 @@
     yamljs "^0.3.0"
     yargs "^15.4.1"
 
-"@tsoa/runtime@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/@tsoa/runtime/-/runtime-4.0.0.tgz"
-  integrity sha512-5CB4xqNNzWgQf65fln5CQN2JU6ETiEulZcEspwXlZkmPp97zptEiTWuhLV5nkAxN/skIAn8KGyhN6usib2eQ9A==
+"@tsoa/runtime@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@tsoa/runtime/-/runtime-4.1.0.tgz#ec6ffdfe69e8f9b9dc948ffe982839a42f8ced01"
+  integrity sha512-TdSsbGYOnWNrZd6FG4DMYZNQkuplXVsYFmQOHvuFlzCe1SJhi0HxpsVG6iUjSB3kUteiKGPZc8mm2RjNAWVEPA==
   dependencies:
     promise.any "^2.0.2"
     reflect-metadata "^0.1.13"
@@ -4915,10 +4915,10 @@ nodemailer-mandrill-transport@1.2.0:
     extend "^3.0.0"
     mandrill-api "^1.0.45"
 
-nodemailer@6.7.5:
-  version "6.7.5"
-  resolved "https://registry.npmjs.org/nodemailer/-/nodemailer-6.7.5.tgz"
-  integrity sha512-6VtMpwhsrixq1HDYSBBHvW0GwiWawE75dS3oal48VqRhUvKJNnKnJo2RI/bCVQubj1vgrgscMNW4DHaD6xtMCg==
+nodemailer@6.7.8:
+  version "6.7.8"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.7.8.tgz#9f1af9911314960c0b889079e1754e8d9e3f740a"
+  integrity sha512-2zaTFGqZixVmTxpJRCFC+Vk5eGRd/fYtvIR+dl5u9QXLTQWGIf48x/JXvo58g9sa0bU6To04XUv554Paykum3g==
 
 nopt@3.x:
   version "3.0.6"
@@ -6808,13 +6808,13 @@ tslint@5.20.1:
     tslib "^1.8.0"
     tsutils "^2.29.0"
 
-tsoa@4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/tsoa/-/tsoa-4.0.0.tgz"
-  integrity sha512-+uHE+a99kGfN8MfBZHUkB86p09INmeKFK0sK6rt3+hnQJC9i25nIgffJGF1cZb4bNW79UtPPdqPoWFrEiZLZ7Q==
+tsoa@4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/tsoa/-/tsoa-4.1.1.tgz#ac541380b002ca7c9287253d2a10f139dda1a486"
+  integrity sha512-CndUFJFU87auMMWoFxuMbgxLvM+l2FmnHoHQsPaEvk/7/lcg7+ptndZg1YKIZgYoTS7KjoXY2YJyjm18XwYlYg==
   dependencies:
-    "@tsoa/cli" "^4.0.0"
-    "@tsoa/runtime" "^4.0.0"
+    "@tsoa/cli" "^4.1.1"
+    "@tsoa/runtime" "^4.1.0"
 
 tsutils@^2.29.0:
   version "2.29.0"
