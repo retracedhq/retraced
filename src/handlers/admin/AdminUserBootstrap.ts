@@ -3,6 +3,7 @@ import getUser from "../../models/user/getByExternalAuth";
 import createUser, { ERR_DUPLICATE_EMAIL } from "../../models/user/create";
 import { apiTokenFromAuthHeader } from "../../security/helpers";
 import { createAdminVoucher } from "../../security/vouchers";
+import { AdminTokenStore } from "../../models/admin_token/store";
 import express from "express";
 import config from "../../config";
 
@@ -58,6 +59,8 @@ export class AdminUserBootstrap {
       userId: user.id,
     });
 
+    let admintoken = await AdminTokenStore.default().createAdminToken(user.id)
+
     const response = {
       user: {
         email: user.email,
@@ -65,6 +68,7 @@ export class AdminUserBootstrap {
         timezone: user.timezone,
       },
       token: voucher,
+      adminToken: admintoken
     };
 
     return {
@@ -81,4 +85,3 @@ export class AdminUserBootstrap {
   }
 }
 
-export default AdminUserBootstrap.default().handler();

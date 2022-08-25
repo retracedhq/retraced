@@ -8,7 +8,13 @@ Client libraries are available for [Go](https://github.com/retracedhq/retraced-g
 
 ## Usage
 
-#### Running with Skaffold
+### Running with docker-compose
+
+Set `ADMIN_ROOT_TOKEN` environment variable either in `.env` file or in `docker-compose.yaml` file
+
+> `docker-compose up`
+
+### Running with Skaffold
 
 > `make dev`
 
