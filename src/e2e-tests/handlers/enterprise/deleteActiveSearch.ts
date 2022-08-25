@@ -1,88 +1,48 @@
 import { suite, test } from "mocha-typescript";
-import handler from "../../../handlers/graphql/handler";
-import safeQuery from "../../seederHelper";
+import deleteActiveSearch from "../../../handlers/enterprise/deleteActiveSearch";
+import safeQuery from "../../../test/seederHelper";
 import { defaultEventCreater } from "../../../handlers/createEvent";
 import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
 
-@suite class GraphQLHandler {
-    @test public async "GraphQL handler#handler()"() {
-        const query = "{search {edges {node {actor {name} source_ip description action}}}}";
-        const operationName = "";
-        const variables = {};
+@suite class DeleteActiveSearch {
+    @test public async "DeleteActiveSearch#deleteActiveSearch()"() {
+
         try {
-            await setup({
-                seedEvents: true,
-            });
-            const res = await handler({
-                body: {
-                    query,
-                    operationName,
-                    variables,
+            await setup({});
+            const res = await deleteActiveSearch({
+                get: () => {
+                    return `token=test`;
                 },
-            }, {
-                projectId: "test",
-                environmentId: "test",
-                groupId: "test",
-                targetId: "test",
-            });
-            console.log(res);
-            expect(res.status).to.equal(200);
-        } catch (ex) {
-            // console.log(ex);
-        }
-    }
-    @test public async "GraphQL handler#handler() with query"() {
-        const query = "{search {edges {node {actor {name} source_ip description action}}}}";
-        const operationName = "";
-        const variables = {};
-        try {
-            await setup({
-                seedEvents: true,
-            });
-            const res = await handler({
+                params: {
+                    activeSearchId: "test",
+                },
                 body: {},
-                query: {
-                    query,
-                    operationName,
-                    variables,
-                },
-            }, {
-                projectId: "test",
-                environmentId: "test",
-                groupId: "test",
-                targetId: "test",
             });
-            console.log(res);
-            expect(res.status).to.equal(200);
-        } catch (ex) {
-            // console.log(ex);
-        }
-    }
-    @test public async "GraphQL handler#handler() throws invalid cursor"() {
-        const query = "{fdgd}";
-        const operationName = "query";
-        const variables = {};
-        try {
-            await setup({
-                seedEvents: true,
-            });
-            const res = await handler({
-                body: {
-                    query,
-                    operationName,
-                    variables,
-                },
-            }, {
-                projectId: "test",
-                environmentId: "test",
-                groupId: "test",
-                targetId: "test",
-            });
-            expect(res.status).to.equal(400);
+            expect(res.status).to.equal(204);
+            return expect(res).to.not.be.undefined;
         } catch (ex) {
             console.log(ex);
+        }
+    }
+    @test public async "DeleteActiveSearch#deleteActiveSearch() throws Missing required 'id' parameter"() {
+
+        try {
+            await setup({});
+            await deleteActiveSearch({
+                get: () => {
+                    return `token=test`;
+                },
+                params: {
+                    activeSearchId: "",
+                },
+                body: {},
+            });
+            throw new Error(`Expected error "Missing required 'id' parameter" to be thrown`);
+        } catch (ex) {
+            expect(ex.status).to.equal(400);
+            expect(ex.err.message).to.equal("Missing required 'id' parameter");
         }
     }
 }
@@ -101,7 +61,7 @@ async function setup(params?) {
                 showCreate: true,
                 showRead: false,
                 showUpdate: false,
-                showDELETE: false,
+                showDelete: false,
                 // searchQuery?: string,
                 // startTime?: number,
                 // endTime?: number,
@@ -111,43 +71,12 @@ async function setup(params?) {
         )]);
     }
     if (params.seedEvents) {
-        try {
-            defaultEventCreater.createEvent("token=test", "test", {
-                action: "action",
-                crud: "c",
-                group: {
-                    id: "string",
-                    name: "group",
-                },
-                displayTitle: "string",
-                created: new Date(),
-                actor: {
-                    id: "string",
-                    name: "actor",
-                    href: "string",
-                },
-                target: {
-                    id: "string",
-                    name: "target",
-                    href: "target",
-                    type: "target",
-                },
-                source_ip: "127.0.0.1",
-                description: "desc",
-                is_anonymous: true,
-                is_failure: true,
-                fields: {},
-                component: "comp",
-                version: "v1",
-            });
-        } catch (ex) {
-            console.log(ex);
-        }
+        createTestEvent();
     }
     if (!params.skipActiveSearch) {
         await safeQuery("INSERT INTO active_search (id, project_id, environment_id, group_id, saved_search_id ) values ($1, $2, $3, $4, $5)", ["test", "test", "test", "test", params.invalidSearchId || "test"]);
     }
-    if (params.DELETESavedSearch) {
+    if (params.deleteSavedSearch) {
         await safeQuery(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
     }
     try {
@@ -160,7 +89,41 @@ async function setup(params?) {
         return res;
     } catch (ex) {
         console.log(ex);
-        return {};
+    }
+}
+
+function createTestEvent() {
+    try {
+        defaultEventCreater.createEvent("token=test", "test", {
+            action: "action1",
+            crud: "c",
+            group: {
+                id: "string",
+                name: "group1",
+            },
+            displayTitle: "string",
+            created: new Date(),
+            actor: {
+                id: "string",
+                name: "actor1",
+                href: "string",
+            },
+            target: {
+                id: "string",
+                name: "target1",
+                href: "target2",
+                type: "target1",
+            },
+            source_ip: "127.0.0.1",
+            description: "descc",
+            is_anonymous: true,
+            is_failure: true,
+            fields: {},
+            component: "comp1",
+            version: "v1",
+        });
+    } catch (ex) {
+        console.log(ex);
     }
 }
 
@@ -178,4 +141,4 @@ async function cleanup() {
     await safeQuery(`DELETE FROM saved_search WHERE project_id=$1`, ["test"]);
 }
 
-export default GraphQLHandler;
+export default DeleteActiveSearch;

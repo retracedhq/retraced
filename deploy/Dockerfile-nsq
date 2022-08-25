@@ -1,4 +1,4 @@
-FROM nsqio/nsq:v1.2.1-compat
+FROM nsqio/nsq:v1.2.1
 
 FROM debian:buster-slim
 

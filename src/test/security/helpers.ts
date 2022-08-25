@@ -7,10 +7,13 @@ import {
 } from "../../security/helpers";
 
 @suite class SecurityHelpersTest {
-    @test public "helpers.apiTokenFromAuthHeader(undefined)"() {
-        expect(apiTokenFromAuthHeader)
-        .to
-        .throw({ status: 401, err: new Error("Missing Authorization header")} as any);
+    @test public async "helpers.apiTokenFromAuthHeader(undefined)"() {
+        try {
+            await apiTokenFromAuthHeader(undefined);
+        } catch (err) {
+            expect(err.status).to.deep.equal(401);
+            expect(err.err.message).to.deep.equal("Missing Authorization header");
+        }
     }
     @test public "helpers.apiTokenFromAuthHeader(token=abcdef)"() {
         const token = apiTokenFromAuthHeader("token=abcdef");
@@ -20,9 +23,8 @@ import {
       await checkAdminAccessUnwrapped(undefined as any)
         .then(() => { throw new Error("Error not thrown"); })
         .catch((err) => {
-          expect(err)
-            .to
-            .deep.equal({ status: 401, err: new Error("Missing Authorization header")});
+          expect(err.status).to.deep.equal(401);
+          expect(err.err.message).to.deep.equal("Missing Authorization header");
         });
     }
 }

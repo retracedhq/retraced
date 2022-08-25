@@ -44,7 +44,8 @@ import { QueryResult } from "pg";
             await authenticator.getApiTokenOr401("token=bad-token", "a-project");
             throw new Error(`Expected error ${expected} to be thrown`);
         } catch (err) {
-            expect(err).to.deep.equal(expected);
+            expect(err.status).to.deep.equal(expected.status);
+            expect(err.err.message).to.deep.equal(expected.err.message);
         }
     }
 
@@ -65,9 +66,9 @@ import { QueryResult } from "pg";
             await authenticator.getApiTokenOr401("token=bad-token", "another-project");
             throw new Error(`Expected error ${expected} to be thrown`);
         } catch (err) {
-            expect(err).to.deep.equal(expected);
+            expect(err.status).to.deep.equal(expected.status);
+            expect(err.err.message).to.deep.equal(expected.err.message);
         }
-
     }
 }
 
