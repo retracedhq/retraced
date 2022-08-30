@@ -27,7 +27,6 @@ x-common-variables: &common-variables
   NSQD_TCP_PORT: 4150
   # Set admin root token here
   # ADMIN_ROOT_TOKEN: <admin_token>
-  # PG_SEARCH: "true"
 
 services:
   retraced-api:

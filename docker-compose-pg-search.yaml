@@ -26,6 +26,8 @@ x-common-variables: &common-variables
   HOSTNAME: retraced-api-67856674bf-kwq7f
   NSQD_TCP_PORT: 4150
   PG_SEARCH: "true"
+  # Set admin root token here
+  # ADMIN_ROOT_TOKEN: <admin_token>
 
 services:
   retraced-api:
