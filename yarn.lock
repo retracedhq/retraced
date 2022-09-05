@@ -605,27 +605,27 @@
   resolved "https://registry.npmjs.org/@tsconfig/node16/-/node16-1.0.2.tgz"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
 
-"@tsoa/cli@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/@tsoa/cli/-/cli-4.0.0.tgz"
-  integrity sha512-/eB9RnslyuVQgmK36EgLSKciMvrP9UIu+Bq7yhDmL72pzFT3hKPUSkxLidHuz5DNa85OBq4eKMfnYIt744AqnQ==
+"@tsoa/cli@^4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@tsoa/cli/-/cli-4.1.2.tgz#5ee5231a6661cb23a6d3a6882e3ccf294e4105f7"
+  integrity sha512-0Q7c0oygbmzksPAqtXTlc8Ta8oj8Zo5VjOtQA9SvHFkWwgtJ0rpm+S0Ia90G6lFznLO/3vuxjfxMIvRYQ5JiGA==
   dependencies:
-    "@tsoa/runtime" "^4.0.0"
+    "@tsoa/runtime" "^4.1.2"
     deepmerge "^4.2.2"
     fs-extra "^8.1.0"
     glob "^7.1.6"
     handlebars "^4.7.7"
     merge "^2.1.0"
     minimatch "^3.0.4"
-    typescript "^4.5.4"
+    typescript "<4.8.0"
     validator "^13.6.0"
     yamljs "^0.3.0"
     yargs "^15.4.1"
 
-"@tsoa/runtime@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/@tsoa/runtime/-/runtime-4.0.0.tgz"
-  integrity sha512-5CB4xqNNzWgQf65fln5CQN2JU6ETiEulZcEspwXlZkmPp97zptEiTWuhLV5nkAxN/skIAn8KGyhN6usib2eQ9A==
+"@tsoa/runtime@^4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@tsoa/runtime/-/runtime-4.1.2.tgz#6e9872cb8da12e690b997c59f17842ef2f2c30f0"
+  integrity sha512-vOQkh9ujvUsR5Orwho9FZbXIAXLUKRFyIygU6t2kdrMcNiOHYemKGAJjyHcgJrpAGix3cmTF1RwsyCDbZEtP4g==
   dependencies:
     promise.any "^2.0.2"
     reflect-metadata "^0.1.13"
@@ -6650,13 +6650,13 @@ tslint@5.20.1:
     tslib "^1.8.0"
     tsutils "^2.29.0"
 
-tsoa@4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/tsoa/-/tsoa-4.0.0.tgz"
-  integrity sha512-+uHE+a99kGfN8MfBZHUkB86p09INmeKFK0sK6rt3+hnQJC9i25nIgffJGF1cZb4bNW79UtPPdqPoWFrEiZLZ7Q==
+tsoa@4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/tsoa/-/tsoa-4.1.2.tgz#abd0575eedbb8c836909fa5baea9505970e7d42e"
+  integrity sha512-7U6ecH4iLhdIyYDBNyR7IufInMlCcIt3mZA5cmII1QcTV1K9Xr/I33PLijXCujzx21lQVUwLBWjZlvPikKJcPw==
   dependencies:
-    "@tsoa/cli" "^4.0.0"
-    "@tsoa/runtime" "^4.0.0"
+    "@tsoa/cli" "^4.1.2"
+    "@tsoa/runtime" "^4.1.2"
 
 tsutils@^2.29.0:
   version "2.29.0"
@@ -6733,10 +6733,15 @@ typemoq@2.1.0:
     lodash "^4.17.4"
     postinstall-build "^5.0.1"
 
-typescript@4.6, typescript@^4.5.4:
+typescript@4.6:
   version "4.6.4"
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.6.4.tgz"
   integrity sha512-9ia/jWHIEbo49HfjrLGfKbZSuWo9iTMwXO+Ca3pRsSpbsMbc7/IU8NKdCZVRRBafVPGnoJeFL76ZOAA84I9fEg==
+
+typescript@<4.8.0:
+  version "4.7.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.4.tgz#1a88596d1cf47d59507a1bcdfb5b9dfe4d488235"
+  integrity sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==
 
 uglify-js@^2.6:
   version "2.8.18"
