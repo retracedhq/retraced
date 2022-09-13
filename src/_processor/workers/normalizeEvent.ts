@@ -105,7 +105,7 @@ export default async function normalizeEvent(job) {
     // TODO(zhaytee): Add typing
     const normalizedEvent: any = processEvent(
       origEvent,
-      task.received,
+      parseInt(task.received),
       Object.assign({}, group),
       Object.assign({}, actor),
       Object.assign({}, target),
