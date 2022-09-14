@@ -205,5 +205,5 @@ services:
       - "3307:3306"
     restart: always
     # environment:
-    #   MYSQL_DATABASE: mysql
-    #   MYSQL_ROOT_PASSWORD: mysql
+    #   MYSQL_DATABASE:
+    #   MYSQL_ROOT_PASSWORD:
