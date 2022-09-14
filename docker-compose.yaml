@@ -163,3 +163,47 @@ services:
     depends_on:
       elasticsearch:
         condition: service_started
+
+  jackson:
+    image: jackson_jackson
+    ports:
+      - "5225:5225"
+    networks:
+      - retraced
+    links:
+      - retraced-api
+    # environment:
+    #   -  SAML_AUDIENCE=
+    #   -  JACKSON_API_KEYS=
+    #   -  DB_TYPE=
+    #   -  DB_URL=
+    #   -  DB_TTL=
+    #   -  DB_CLEANUP_LIMIT=
+    #   -  DB_ENCRYPTION_KEY=
+    #   -  SMTP_HOST=
+    #   -  SMTP_PORT=
+    #   -  SMTP_USER=
+    #   -  SMTP_PASSWORD=
+    #   -  SMTP_FROM=
+    #   -  NEXTAUTH_JWT_SIGNING_PRIVATE_KEY=
+    #   -  NEXTAUTH_URL=
+    #   -  NEXTAUTH_SECRET=
+    #   -  NEXTAUTH_ACL=
+    #   -  RETRACED_HOST=
+    #   -  NEXT_PUBLIC_RETRACED_HOST=
+    #   -  ADMIN_ROOT_TOKEN=
+    depends_on:
+      - "retraced-api"
+    restart: "always"
+    
+  mysql:
+    image: mysql:5.7
+    platform: linux/amd64
+    networks:
+      - retraced
+    ports:
+      - "3307:3306"
+    restart: always
+    # environment:
+    #   MYSQL_DATABASE: mysql
+    #   MYSQL_ROOT_PASSWORD: mysql
