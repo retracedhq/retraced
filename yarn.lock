@@ -6075,10 +6075,10 @@ sntp@1.x.x:
   dependencies:
     hoek "2.x.x"
 
-snyk@1.928.0:
-  version "1.928.0"
-  resolved "https://registry.npmjs.org/snyk/-/snyk-1.928.0.tgz"
-  integrity sha512-5Surqm2iWk6sAC0i0JrBw4qPKBTW2YQ8f3s4YDuuLFUinEaDbit2DNqPgFESIRWUVWp7j+g1OT+K2KA7K3RM7Q==
+snyk@1.1041.0:
+  version "1.1041.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1041.0.tgz#19d2d28fccf7318e5b598ff7096c64e4cc0535b2"
+  integrity sha512-rIKDbppZV0uRa3sbdcSoN+anbbl7RvzDrsV+/n8Yi5zEtbYAR0aCq07k4hD/QjBQ/EavZ05/ok29dLYqmJqbMQ==
 
 socks-proxy-agent@^6.1.1:
   version "6.2.0"
