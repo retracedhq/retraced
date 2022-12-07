@@ -5527,9 +5527,9 @@ qs@6.10.3, qs@^6.10.1, qs@^6.5.1, qs@^6.9.4:
     side-channel "^1.0.4"
 
 qs@~6.2.0:
-  version "6.2.3"
-  resolved "https://registry.npmjs.org/qs/-/qs-6.2.3.tgz"
-  integrity sha1-HPyyXBCpsrSDBT/zn138kjOQjP4=
+  version "6.2.4"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.4.tgz#d90821bb8537cecc140e6c34f54ec76e54b39b22"
+  integrity sha512-E57gmgKXqDda+qWTkUJgIwgJICK7zgMfqZZopTRKZ6mY9gzLlmJN9EpXNnDrTxXFlOM/a+I28kJkF/60rqgnYw==
 
 qs@~6.5.2:
   version "6.5.2"
