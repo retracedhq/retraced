@@ -90,7 +90,7 @@ jobs:
           paths:
             - ./retraced-nsq.tar
 
-  deploy_unstable:
+  deploy_beta:
     <<: *defaults
     steps:
       - checkout
@@ -192,7 +192,7 @@ jobs:
 
 workflows:
   version: 2
-  unstable:
+  beta:
     jobs:
       - test
       - build_docker:
@@ -208,7 +208,7 @@ workflows:
           filters:
             branches:
               only: /master/
-      - deploy_unstable:
+      - deploy_beta:
           requires:
             - build_docker
             - build_postgres

@@ -5,7 +5,7 @@ import _ from "lodash";
 import Chance from "chance";
 import util from "util";
 import jwt from "jsonwebtoken";
-import Retraced from "retraced";
+import Retraced from "@retraced-hq/retraced";
 import ProgressBar from "progress";
 
 const adminHmacSecret = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -60,12 +60,12 @@ exports.builder = {
     description: "Use specific group id for new events",
   },
   envId: {
-    description: "Use specific api token associated with this env id for new events",
+    description:
+      "Use specific api token associated with this env id for new events",
   },
 };
 
 exports.handler = async (argv) => {
-
   const r = rp.defaults({
     forever: true,
     pool: { maxSockets: 1 },
@@ -76,13 +76,21 @@ exports.handler = async (argv) => {
   };
   const jwtToken = jwt.sign(claims, adminHmacSecret);
 
-  const resp: any = await getProject(r, argv.apiEndpoint, jwtToken, argv.projectId);
+  const resp: any = await getProject(
+    r,
+    argv.apiEndpoint,
+    jwtToken,
+    argv.projectId
+  );
   const project = resp.project;
 
   let apiToken = project.tokens[1];
 
   if (argv.envId) {
-    const maybe = _.find(project.tokens, (t: any) => t.environment_id === argv.envId);
+    const maybe = _.find(
+      project.tokens,
+      (t: any) => t.environment_id === argv.envId
+    );
     if (maybe) {
       apiToken = maybe;
     }
@@ -95,7 +103,15 @@ exports.handler = async (argv) => {
     console.log(util.inspect(groups, false, 100, true));
   }
 
-  await createEvents(r, argv.apiEndpoint, argv.projectId, argv.eventcount, apiToken, argv.bulk, argv.groupId);
+  await createEvents(
+    r,
+    argv.apiEndpoint,
+    argv.projectId,
+    argv.eventcount,
+    apiToken,
+    argv.bulk,
+    argv.groupId
+  );
   console.log(chalk.green("Done!"));
 };
 
@@ -106,7 +122,7 @@ function getProject(r, endpoint, jwtToken, projectId) {
       uri: `${endpoint}/admin/v1/project/${projectId}`,
       headers: {
         "User-Agent": "Retraced-Dev/1.0.0",
-        "Authorization": jwtToken,
+        Authorization: jwtToken,
       },
     };
     r(options)
@@ -126,7 +142,6 @@ function createEvents(r, endpoint, projectId, count, apiToken, bulk, groupId) {
     projectId,
   });
   return new Promise((resolve, reject) => {
-
     const events = generateEvents(count, groupId);
 
     const pbar = new ProgressBar("[:bar] :percent :etas", {
@@ -136,15 +151,21 @@ function createEvents(r, endpoint, projectId, count, apiToken, bulk, groupId) {
     });
 
     if (bulk) {
-      Promise.all(_.map(_.chunk(events, 10), (someEvents) => {
-        return client.reportEvents(someEvents).then(() => pbar.tick(someEvents.length));
-      }))
+      Promise.all(
+        _.map(_.chunk(events, 10), (someEvents) => {
+          return client
+            .reportEvents(someEvents)
+            .then(() => pbar.tick(someEvents.length));
+        })
+      )
         .then(resolve)
         .catch(reject);
     } else {
-      Promise.all(_.map(events, (e) => {
-        return client.reportEvent(e).then(() => pbar.tick(1));
-      }))
+      Promise.all(
+        _.map(events, (e) => {
+          return client.reportEvent(e).then(() => pbar.tick(1));
+        })
+      )
         .then(() => pbar.terminate())
         .then(() => resolve(true))
         .catch(reject);
@@ -175,7 +196,8 @@ function generateEvents(count, groupId) {
         name: chance.name(),
       };
     } else {
-      actor = group.actors[chance.integer({ min: 0, max: group.actors.length - 1 })];
+      actor =
+        group.actors[chance.integer({ min: 0, max: group.actors.length - 1 })];
     }
 
     let target: any;

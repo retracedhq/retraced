@@ -1,6 +1,4 @@
-import {
-  RawEventNode,
-} from "retraced";
+import { RawEventNode } from "@retraced-hq/retraced";
 
 export interface EventEdge {
   node?: RawEventNode;

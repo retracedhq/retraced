@@ -1,7 +1,7 @@
 import Auth0 from "auth0-js";
 import { LocalStorage } from "node-localstorage";
 import _ from "lodash";
-import { Event } from "retraced";
+import { Event } from "@retraced-hq/retraced";
 
 import getUser from "../models/user/getByExternalAuth";
 import createUser, { ERR_DUPLICATE_EMAIL } from "../models/user/create";
@@ -39,12 +39,14 @@ export default async function handler(req) {
     throw { status: 400, err: new Error("Missing required auth") };
   }
 
-  const externalAuth: ExternalAuth = await validateExternalAuth(req.body.external_auth);
+  const externalAuth: ExternalAuth = await validateExternalAuth(
+    req.body.external_auth
+  );
 
   const result = await createSession(externalAuth);
 
   // Headless Audit Logs
-  const projects = await listProjects({user_id: result.user.id});
+  const projects = await listProjects({ user_id: result.user.id });
   const auditEvents: Event[] = projects.map((project) => ({
     action: "user.login",
     crud: "c",
@@ -108,7 +110,9 @@ export interface CreateSessionResult {
   commit: () => Promise<void>;
 }
 
-export async function createSession(externalAuth: ExternalAuth): Promise<CreateSessionResult> {
+export async function createSession(
+  externalAuth: ExternalAuth
+): Promise<CreateSessionResult> {
   const pg = await pgPool.connect();
   const rollback = async () => {
     await pg.query("ROLLBACK");
@@ -162,22 +166,35 @@ export async function createSession(externalAuth: ExternalAuth): Promise<CreateS
     }
 
     if (result.invite) {
-      logger.info(`Found invite for user: ${externalAuth.email} / ${externalAuth.upstreamToken}, adding them to project '${result.invite.project_id}'`);
-      await deleteInvite({
-        inviteId: result.invite.id,
-        projectId: result.invite.project_id,
-      }, pg);
+      logger.info(
+        `Found invite for user: ${externalAuth.email} / ${externalAuth.upstreamToken}, adding them to project '${result.invite.project_id}'`
+      );
+      await deleteInvite(
+        {
+          inviteId: result.invite.id,
+          projectId: result.invite.project_id,
+        },
+        pg
+      );
 
       // It's possible a user is invited to a project they're already on. If so delete result.invite.
-      const userprojects = await listProjects({user_id: result.user.id});
+      const userprojects = await listProjects({ user_id: result.user.id });
 
-      if (_.some(userprojects, (project) => project.id === result.invite.project_id)) {
+      if (
+        _.some(
+          userprojects,
+          (project) => project.id === result.invite.project_id
+        )
+      ) {
         delete result.invite;
       } else {
-        await addUserToProject({
-          userId: result.user.id,
-          projectId: result.invite.project_id,
-        }, pg);
+        await addUserToProject(
+          {
+            userId: result.user.id,
+            projectId: result.invite.project_id,
+          },
+          pg
+        );
       }
     }
 
