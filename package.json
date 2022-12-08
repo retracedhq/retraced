@@ -15,7 +15,7 @@
     "chai-as-promised": "7.1.1",
     "chai-http": "4.3.0",
     "chalk": "4.1.2",
-    "chance": "1.1.8",
+    "chance": "1.1.9",
     "cli-spinner": "0.2.10",
     "cors": "2.8.5",
     "csv": "6.2.0",
