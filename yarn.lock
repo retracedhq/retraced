@@ -572,6 +572,14 @@
   resolved "https://registry.yarnpkg.com/@redis/time-series/-/time-series-1.0.3.tgz#4cfca8e564228c0bddcdf4418cba60c20b224ac4"
   integrity sha512-OFp0q4SGrTH0Mruf6oFsHGea58u8vS/iI5+NpYdicaM+7BgqBZH8FFvNZ8rYYLrUO/QRqMq72NpXmxLVNcdmjA==
 
+"@retraced-hq/retraced@0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@retraced-hq/retraced/-/retraced-0.4.3.tgz#c75aef41962397aeccfa6d70c6a708dc037c8a88"
+  integrity sha512-u6R9i9iqfD0eXvvmTp0ZWxrF01OSCIgh3RxV82MtiGnYJFpmFWvzYCmquGFV9DE+YOjsm2mJLHbz1JyHZu2sFA==
+  dependencies:
+    lodash "4.17.21"
+    node-fetch "2.6.7"
+
 "@segment/loosely-validate-event@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@segment/loosely-validate-event/-/loosely-validate-event-2.0.0.tgz"
@@ -4763,7 +4771,7 @@ node-addon-api@^3.1.0:
   resolved "https://registry.npmjs.org/node-addon-api/-/node-addon-api-3.2.1.tgz"
   integrity sha512-mmcei9JghVNDYydghQmeDX8KoAm0FAiYyIcUt/N4nhyAipB17pllZQDOJD2fotxABnt4Mdz+dKTO7eftLg4d0A==
 
-node-fetch@^2.6.1, node-fetch@^2.6.5, node-fetch@^2.6.6, node-fetch@^2.6.7:
+node-fetch@2.6.7, node-fetch@^2.6.1, node-fetch@^2.6.5, node-fetch@^2.6.6:
   version "2.6.7"
   resolved "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.7.tgz"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
@@ -5791,14 +5799,6 @@ restore-cursor@^3.1.0:
   dependencies:
     onetime "^5.1.0"
     signal-exit "^3.0.2"
-
-retraced@0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/retraced/-/retraced-0.4.2.tgz#491a19d3b94517368c8d2e442f8e03d00e9bcd92"
-  integrity sha512-qa5VYnxlAWJyI5nEhcrqZyLq4ge6idI7HCVk/3bC9x3w1O8SexYFJR5op7GA7vnKUQMLHtLPcOaH930a3ssRig==
-  dependencies:
-    lodash "4.17.21"
-    node-fetch "^2.6.7"
 
 retry@^0.12.0:
   version "0.12.0"
