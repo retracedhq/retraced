@@ -1,6 +1,5 @@
 version: 2.1
 
-
 experimental:
   notify:
     branches:
@@ -9,7 +8,7 @@ experimental:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:16.16
+    - image: cimg/node:18.12.1
   working_directory: ~/repo
 
 jobs:
@@ -22,15 +21,15 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - v1-dependencies-node16-{{ checksum "package.json" }}
-          - v1-dependencies-node16-
+            - v1-dependencies-node18-{{ checksum "package.json" }}
+            - v1-dependencies-node18-
       - run: make deps swagger cover
       - store_test_results:
           path: results
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-node16-{{ checksum "package.json" }}
+          key: v1-dependencies-node18-{{ checksum "package.json" }}
 
   build_docker:
     <<: *defaults
@@ -40,8 +39,8 @@ jobs:
           version: 20.10.14
       - restore_cache:
           keys:
-          - v1-dependencies-node16-{{ checksum "package.json" }}
-          - v1-dependencies-node16-
+            - v1-dependencies-node18-{{ checksum "package.json" }}
+            - v1-dependencies-node18-
       - run: docker build --pull -t registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
       # - run:
       #     name: Run local image vulnerability scan
@@ -119,7 +118,7 @@ jobs:
       - setup_remote_docker:
           version: 20.10.14
       - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
-      - run:  |
+      - run: |
           docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
           docker pull registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
           docker pull registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
@@ -132,8 +131,8 @@ jobs:
           version: 20.10.14
       - restore_cache:
           keys:
-          - v1-dependencies-node16-{{ checksum "package.json" }}
-          - v1-dependencies-node16-
+            - v1-dependencies-node18-{{ checksum "package.json" }}
+            - v1-dependencies-node18-
       - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
       # the original idea here was:
       #
@@ -189,7 +188,6 @@ jobs:
             echo nope nope nope
             exit 1
           fi
-
 
 workflows:
   version: 2

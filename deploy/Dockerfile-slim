@@ -4,8 +4,8 @@
 FROM debian:buster-slim as cron
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
+  ca-certificates \
+  curl \
   && rm -rf /var/lib/apt/lists/*
 
 
@@ -13,16 +13,16 @@ ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.
 ENV SUPERCRONIC=supercronic-linux-amd64
 ENV SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
 RUN curl -fsSLO "$SUPERCRONIC_URL" \
-    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
-    && chmod +x "$SUPERCRONIC" \
-    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
-    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/replicated-auditlog-cron
+  && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
+  && chmod +x "$SUPERCRONIC" \
+  && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+  && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/replicated-auditlog-cron
 COPY deploy/crontab /crontab
 
 # # #
 # Node build
 #
-FROM node:16.16.0 as node
+FROM node:18.12.1 as node
 
 WORKDIR /src
 ADD package.json /src
@@ -49,11 +49,11 @@ RUN make pkg SKIP=${skip_pkg}
 FROM debian:buster-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    \
-    \
-    libp11-kit0 \
+  ca-certificates \
+  curl \
+  \
+  \
+  libp11-kit0 \
   && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000
