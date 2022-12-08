@@ -1,6 +1,6 @@
 # Retraced Audit Log
 
-[![CircleCI](https://circleci.com/gh/retracedhq/retraced/tree/master.svg?style=svg)](https://circleci.com/gh/retracedhq/retraced/tree/master)
+[![CircleCI](https://circleci.com/gh/retracedhq/retraced/tree/main.svg?style=svg)](https://circleci.com/gh/retracedhq/retraced/tree/main)
 
 Retraced is the easiest way to integrate a compliant audit log into your application.
 It provides a searchable, exportable record of read/write events.
