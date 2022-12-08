@@ -82,7 +82,7 @@
     "@types/express": "4.17.13",
     "@types/form-data": "2.2.1",
     "@types/inquirer": "8.2.1",
-    "@types/lodash": "4.14.182",
+    "@types/lodash": "4.14.191",
     "@types/mocha": "5.2.3",
     "@types/node": "17.0.29",
     "@types/pg": "8.6.5",
