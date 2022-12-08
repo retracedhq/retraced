@@ -49,7 +49,7 @@
     "pg": "8.7.3",
     "pg-cursor": "2.7.3",
     "pg-format": "1.0.4",
-    "pino": "7.11.0",
+    "pino": "8.7.0",
     "postgrator": "3.0.0",
     "progress": "2.0.3",
     "prom-client": "14.1.0",
