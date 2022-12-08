@@ -1,6 +1,5 @@
 version: 2.1
 
-
 experimental:
   notify:
     branches:
@@ -8,6 +7,7 @@ experimental:
         - master
 
 defaults: &defaults
+  resource_class: large
   docker:
     - image: cimg/node:16.16
   working_directory: ~/repo
@@ -22,8 +22,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - v1-dependencies-node16-{{ checksum "package.json" }}
-          - v1-dependencies-node16-
+            - v1-dependencies-node16-{{ checksum "package.json" }}
+            - v1-dependencies-node16-
       - run: make deps swagger cover
       - store_test_results:
           path: results
@@ -40,8 +40,8 @@ jobs:
           version: 20.10.14
       - restore_cache:
           keys:
-          - v1-dependencies-node16-{{ checksum "package.json" }}
-          - v1-dependencies-node16-
+            - v1-dependencies-node16-{{ checksum "package.json" }}
+            - v1-dependencies-node16-
       - run: docker build --pull -t registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
       # - run:
       #     name: Run local image vulnerability scan
@@ -119,7 +119,7 @@ jobs:
       - setup_remote_docker:
           version: 20.10.14
       - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
-      - run:  |
+      - run: |
           docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
           docker pull registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
           docker pull registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
@@ -132,8 +132,8 @@ jobs:
           version: 20.10.14
       - restore_cache:
           keys:
-          - v1-dependencies-node16-{{ checksum "package.json" }}
-          - v1-dependencies-node16-
+            - v1-dependencies-node16-{{ checksum "package.json" }}
+            - v1-dependencies-node16-
       - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
       # the original idea here was:
       #
@@ -189,7 +189,6 @@ jobs:
             echo nope nope nope
             exit 1
           fi
-
 
 workflows:
   version: 2
