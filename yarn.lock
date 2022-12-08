@@ -572,10 +572,10 @@
   resolved "https://registry.yarnpkg.com/@redis/time-series/-/time-series-1.0.3.tgz#4cfca8e564228c0bddcdf4418cba60c20b224ac4"
   integrity sha512-OFp0q4SGrTH0Mruf6oFsHGea58u8vS/iI5+NpYdicaM+7BgqBZH8FFvNZ8rYYLrUO/QRqMq72NpXmxLVNcdmjA==
 
-"@retraced-hq/retraced@0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@retraced-hq/retraced/-/retraced-0.4.3.tgz#c75aef41962397aeccfa6d70c6a708dc037c8a88"
-  integrity sha512-u6R9i9iqfD0eXvvmTp0ZWxrF01OSCIgh3RxV82MtiGnYJFpmFWvzYCmquGFV9DE+YOjsm2mJLHbz1JyHZu2sFA==
+"@retraced-hq/retraced@0.4.6":
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/@retraced-hq/retraced/-/retraced-0.4.6.tgz#bdd52c7e4bfb8066d2478df5f667220b04763a8d"
+  integrity sha512-BwjBcdJHf9ZBr7hkSAcYss2cxV6+b46acoS/tjMs5s6pv27QfeORpfZJGRnxaLoWGiY1W/0C73FUb0bLR8hAuw==
   dependencies:
     lodash "4.17.21"
     node-fetch "2.6.7"
