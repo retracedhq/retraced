@@ -1,11 +1,10 @@
 import { expect } from "chai";
 import * as Retraced from "@retraced-hq/retraced";
-import { tv4 } from "tv4";
 import "mocha";
 import "chai-http";
-import { CreateEventSchema, GraphQLQuery, search } from "../pkg/specs";
+import { search } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
-import { sleep, isoDate } from "../pkg/util";
+import { sleep } from "../pkg/util";
 import * as Env from "../env";
 import * as util from "util";
 import * as chalk from "chalk";
