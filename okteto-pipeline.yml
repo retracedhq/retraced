@@ -1,0 +1,36 @@
+icon: https://github.com/okteto/polling/raw/master/icon.png
+deploy:
+  # - envsubst < vendor-web/env/composer.tmpl.js > vendor-web/env/composer.js
+
+  # - okteto build -f ./migrations/Dockerfile -t okteto.dev/migrations:${OKTETO_GIT_COMMIT} migrations
+  # - okteto build -f ./util/s3/Dockerfile -t okteto.dev/fake-s3:${OKTETO_GIT_COMMIT} util/s3
+  # - okteto build -f ./vendor-api/Dockerfile.skaffold -t okteto.dev/vendor-api:${OKTETO_GIT_COMMIT} vendor-api
+  # - okteto build -f ./license-api/Dockerfile.skaffold -t okteto.dev/license-api:${OKTETO_GIT_COMMIT} license-api
+  # - okteto build -f ./vendor-web/Dockerfile.skaffold -t okteto.dev/vendor-web:${OKTETO_GIT_COMMIT} vendor-web
+  # - okteto build -f ./id/Dockerfile.skaffold -t okteto.dev/id:${OKTETO_GIT_COMMIT} id
+  # - okteto build -f ./graphql-api/Dockerfile.skaffold -t okteto.dev/graphql-api:${OKTETO_GIT_COMMIT} graphql-api
+  # - okteto build -f ./entitlements/Dockerfile.skaffold -t okteto.dev/entitlements:${OKTETO_GIT_COMMIT} entitlements
+  # - okteto build -f ./integration-api/Dockerfile.skaffold -t okteto.dev/integration-api:${OKTETO_GIT_COMMIT} integration-api
+
+  # - cd kustomize/overlays/dev && kustomize edit set image migrations=okteto.dev/migrations:${OKTETO_GIT_COMMIT}
+  # - cd kustomize/overlays/dev && kustomize edit set image fake-s3=okteto.dev/fake-s3:${OKTETO_GIT_COMMIT}
+  # - cd kustomize/overlays/dev && kustomize edit set image replicated-vendor-api=okteto.dev/vendor-api:${OKTETO_GIT_COMMIT}
+  # - cd kustomize/overlays/dev && kustomize edit set image replicated-license-api=okteto.dev/license-api:${OKTETO_GIT_COMMIT}
+  # - cd kustomize/overlays/dev && kustomize edit set image replicated-vendor-web=okteto.dev/vendor-web:${OKTETO_GIT_COMMIT}
+  # - cd kustomize/overlays/dev && kustomize edit set image replicated-id=okteto.dev/id:${OKTETO_GIT_COMMIT}
+  # - cd kustomize/overlays/dev && kustomize edit set image replicated-graphql-api=okteto.dev/graphql-api:${OKTETO_GIT_COMMIT}
+  # - cd kustomize/overlays/dev && kustomize edit set image replicated-entitlements=okteto.dev/entitlements:${OKTETO_GIT_COMMIT}
+  # - cd kustomize/overlays/dev && kustomize edit set image replicated-integration-api=okteto.dev/integration-api:${OKTETO_GIT_COMMIT}
+
+  - kubectl -n divolgin apply -k kustomize/overlays/skaffold
+devs:
+  # - analyze-api/okteto.yml
+  # - enterprise-api/okteto.yml
+  # - entitlements/okteto.yml
+  # - graphql-api/okteto.yml
+  # - id/okteto.yml
+  # - integration-api/okteto.yml
+  # - license-api/okteto.yml
+  # - replicated-app/okteto.yml
+  # - vendor-api/okteto.yml
+  # - vendor-web/okteto.yml

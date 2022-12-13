@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dbutil
-  namespace: '{{repl ConfigOption "namespace"}}'
+  namespace: 'divolgin'
   labels:
     app: retraced
     tier: dbutil

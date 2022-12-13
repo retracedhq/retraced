@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: processor
-  namespace: '{{repl ConfigOption "namespace"}}'
+  namespace: 'divolgin'
 spec:
   selector:
     matchLabels:
