@@ -6,6 +6,7 @@
   "license": "Apache 2.0",
   "dependencies": {
     "@elastic/elasticsearch": "7.8.0",
+    "@retraced-hq/retraced": "0.4.6",
     "analytics-node": "6.0.0",
     "auth0-js": "9.19.0",
     "aws-sdk": "2.1186.0",
@@ -38,6 +39,7 @@
     "moment": "2.29.4",
     "moment-timezone": "0.5.39",
     "monkit": "0.4.0",
+    "node-fetch": "^3.3.0",
     "node-gyp": "9.0.0",
     "node-localstorage": "2.2.1",
     "node-statsd-client": "1.0.4",
@@ -56,7 +58,6 @@
     "redis": "4.2.0",
     "request": "2.88.2",
     "request-promise": "4.2.6",
-    "@retraced-hq/retraced": "0.4.6",
     "ruler": "1.0.0",
     "sanitize-filename": "1.6.3",
     "search-query-parser": "1.6.0",
