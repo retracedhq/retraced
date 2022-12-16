@@ -1,0 +1,22 @@
+build:
+  retraced:
+    context: .
+    dockerfile: Dockerfile.okteto
+
+deploy:
+  - envsubst < kustomize/overlays/okteto/kustomization.tmpl.yaml > kustomize/overlays/okteto/kustomization.yaml
+  - cd kustomize/overlays/okteto && kustomize edit set image registry.replicated.com/shipretraced/retraced=${OKTETO_BUILD_RETRACED_IMAGE}
+  - kubectl apply -k kustomize/overlays/okteto
+
+dev:
+  retraced-api:
+    command: make deps && bash
+    workdir: /src
+    sync: 
+      - .:/src
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4Gi
+    forward:
+      - 9229:9229

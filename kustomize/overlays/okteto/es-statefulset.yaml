@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: file-permissions
+          image: busybox:1.28
+          command: ['chown', '-R', '1000:1000', '/usr/share/elasticsearch/']
+          volumeMounts:
+            - name: esdatadir
+              mountPath: /usr/share/elasticsearch/data

@@ -1,0 +1,101 @@
+---
+bases:
+  - ../dev
+  - ../dbs
+
+patchesStrategicMerge:
+  - ./api-deployment.yaml
+  - ./cron-deployment.yaml
+  - ./dbutil-deployment.yaml
+  - ./es-statefulset.yaml
+  - ./integrationtest.yaml
+  - ./migratees-job.yaml
+  - ./migratepg-job.yaml
+  - ./processor-deployment.yaml
+
+patchesJson6902:
+  - patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: ${OKTETO_NAMESPACE}
+      - op: replace
+        path: /metadata/name
+        value: retraced-api
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: api
+  - patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: ${OKTETO_NAMESPACE}
+      - op: replace
+        path: /metadata/name
+        value: retraced-api
+    target:
+      version: v1
+      kind: Service
+      name: api
+  - patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: ${OKTETO_NAMESPACE}
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: cron
+  - patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: ${OKTETO_NAMESPACE}
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: dbutil
+  - patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: ${OKTETO_NAMESPACE}
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: nsqd
+  - patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: ${OKTETO_NAMESPACE}
+    target:
+      version: v1
+      kind: Service
+      name: nsqd
+  - patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: ${OKTETO_NAMESPACE}
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: processor
+  - patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: ${OKTETO_NAMESPACE}
+    target:
+      group: batch
+      version: v1
+      kind: Job
+      name: migrate-es-1-4-6
+  - patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: ${OKTETO_NAMESPACE}
+    target:
+      group: batch
+      version: v1
+      kind: Job
+      name: migrate-pg-1-4-6

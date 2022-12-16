@@ -30,9 +30,9 @@ in your pull request.
 
 > `docker-compose -f ../composer/docker-compose.yml up api`
 
-#### Running with Skaffold
+#### Running with Okteto
 
-> `skaffold dev -f skaffold.yaml`
+> Push to GitHub and `okteto pipeline deploy`
 
 ## Swagger Documentation
 
