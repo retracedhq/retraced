@@ -165,7 +165,7 @@ services:
         condition: service_started
 
   jackson:
-    image: jackson_jackson
+    image: boxyhq/jackson
     ports:
       - "5225:5225"
     networks:
@@ -195,15 +195,3 @@ services:
     depends_on:
       - "retraced-api"
     restart: "always"
-    
-  mysql:
-    image: mysql:5.7
-    platform: linux/amd64
-    networks:
-      - retraced
-    ports:
-      - "3307:3306"
-    restart: always
-    # environment:
-    #   MYSQL_DATABASE:
-    #   MYSQL_ROOT_PASSWORD:
