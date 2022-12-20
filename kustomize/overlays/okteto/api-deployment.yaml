@@ -5,6 +5,10 @@ metadata:
 spec:
   template:
     spec:
+      imagePullSecrets:
+        - $patch: delete
+      affinity:
+        $patch: delete
       initContainers:
         - name: bootstrap
           image: registry.replicated.com/shipretraced/retraced
