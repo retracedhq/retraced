@@ -17,19 +17,22 @@ import { AdminTokenStore } from "../models/admin_token/store";
 export function apiTokenFromAuthHeader(authHeader?: string): string {
   if (!authHeader) {
     throw {
-      status: 401, err: new Error("Missing Authorization header"),
+      status: 401,
+      err: new Error("Missing Authorization header"),
     };
   }
 
   const parts = authHeader.match(/token=(.+)/);
   if (!parts) {
     throw {
-      status: 401, err: new Error("Invalid Authorization header form"),
+      status: 401,
+      err: new Error("Invalid Authorization header form"),
     };
   }
   if (parts.length < 2 || _.isEmpty(parts[1])) {
     throw {
-      status: 401, err: new Error("Missing token in Authorization header"),
+      status: 401,
+      err: new Error("Missing token in Authorization header"),
     };
   }
 
@@ -38,13 +41,17 @@ export function apiTokenFromAuthHeader(authHeader?: string): string {
 
 async function parseClaims(authHeader: string) {
   let claims;
-  const tokenParts = authHeader.match(/id=(.+) token=(.+)/);
+  const tokenParts = authHeader.match(/id=(.+) token=(.+) admin_token=(.+)/);
 
-  if (tokenParts && tokenParts.length === 3) {
+  if (tokenParts && tokenParts.length >= 3) {
     logger.debug("validating admin against token");
     // tslint:disable-next-line
-    const [__, id, token] = tokenParts;
-    claims = await AdminTokenStore.default().verifyTokenOr401(id, token);
+    const [__, id, token, adminToken] = tokenParts;
+    claims = await AdminTokenStore.default().verifyTokenOr401(
+      id,
+      token,
+      adminToken
+    );
   } else {
     logger.debug("validating jwt voucher");
     claims = await validateAdminVoucher(authHeader);
@@ -53,26 +60,34 @@ async function parseClaims(authHeader: string) {
 }
 
 async function checkEnvAccess(environmentId: string, claims: AdminClaims) {
-  if (!await verifyEnvironmentAccess({ environmentId, ...claims })) {
+  if (!(await verifyEnvironmentAccess({ environmentId, ...claims }))) {
     logger.child({ environmentId, ...claims }).debug("checking project access");
     throw { status: 404, err: new Error("Not found") };
   }
 }
 
 async function checkProjectAccess(projectId: string, claims) {
-  if (!await verifyProjectAccess({ projectId, ...claims })) {
+  if (!(await verifyProjectAccess({ projectId, ...claims }))) {
     logger.child({ projectId, ...claims }).debug("checking project access");
     throw { status: 404, err: new Error("Not found") };
   }
 }
 
-export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: string, environmentId?: string): Promise<AdminClaims> {
-
+export async function checkAdminAccessUnwrapped(
+  authHeader: string,
+  projectId?: string,
+  environmentId?: string
+): Promise<AdminClaims> {
   logger.debug("checking admin access");
   if (_.isEmpty(authHeader)) {
     throw { status: 401, err: new Error("Missing Authorization header") };
   }
   const claims = await parseClaims(authHeader);
+
+  // If we have an admin token, we're done
+  if (claims.adminToken) {
+    return claims;
+  }
 
   // Some endpoints don't reference a project (such as list projects)
   if (projectId) {
@@ -88,7 +103,11 @@ export async function checkAdminAccessUnwrapped(authHeader: string, projectId?: 
 }
 
 export async function checkAdminAccess(req): Promise<AdminClaims> {
-  return checkAdminAccessUnwrapped(req.get("Authorization"), req.params.projectId, req.params.environment_id);
+  return checkAdminAccessUnwrapped(
+    req.get("Authorization"),
+    req.params.projectId,
+    req.params.environment_id
+  );
 }
 
 export async function adminIdentity(req): Promise<[string | null, boolean]> {
@@ -110,7 +129,9 @@ export async function checkEitapiAccess(req): Promise<EnterpriseToken> {
   return checkEitapiAccessUnwrapped(req.get("Authorization"));
 }
 
-export async function checkEitapiAccessUnwrapped(auth: string): Promise<EnterpriseToken> {
+export async function checkEitapiAccessUnwrapped(
+  auth: string
+): Promise<EnterpriseToken> {
   const eitapiTokenId = apiTokenFromAuthHeader(auth);
   const eitapiToken: EnterpriseToken | null = await getEitapiToken({
     eitapiTokenId,

@@ -53,7 +53,6 @@ import viewerUpdateEitapiToken from "./handlers/viewer/updateEitapiToken";
 import viewerUpdateExport from "./handlers/viewer/updateExport";
 
 export default {
-
   publisherGraphQLGet: {
     path: "/publisher/v1/graphql",
     method: "get",
@@ -288,12 +287,12 @@ export default {
     handler: enterpriseSearchAdHoc,
   },
 
-//
   //
-    // OLD ROUTES -- DONT DOCUMENT, DEPRECATE SOON
-      //
-        //
-          //
+  //
+  // OLD ROUTES -- DONT DOCUMENT, DEPRECATE SOON
+  //
+  //
+  //
 
   //
   // core

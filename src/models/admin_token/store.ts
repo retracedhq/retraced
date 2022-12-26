@@ -9,16 +9,12 @@ import { AdminClaims } from "../../security/vouchers";
 import { logger } from "../../logger";
 
 export class AdminTokenStore {
-
   public static default(): AdminTokenStore {
     if (AdminTokenStore.instance) {
       return AdminTokenStore.instance;
     }
 
-    AdminTokenStore.instance = new AdminTokenStore(
-      uuidNoDashes,
-      getPgPool(),
-    );
+    AdminTokenStore.instance = new AdminTokenStore(uuidNoDashes, getPgPool());
     return AdminTokenStore.instance;
   }
 
@@ -26,18 +22,16 @@ export class AdminTokenStore {
 
   constructor(
     private readonly idSource: () => string,
-    private readonly pool: pg.Pool,
-  ) {
-  }
+    private readonly pool: pg.Pool
+  ) {}
 
   @instrumented
   public async createAdminToken(userId: string): Promise<AdminToken> {
     const id = this.idSource();
     const token = this.idSource();
 
-    const tokenBcrypt = await instrument(
-      "adminToken.bcrypt",
-      () => bcrypt.hash(token, 12),
+    const tokenBcrypt = await instrument("adminToken.bcrypt", () =>
+      bcrypt.hash(token, 12)
     );
     const created = new Date();
 
@@ -49,12 +43,7 @@ INSERT INTO admin_token (
   created
 ) VALUES ($1, $2, $3, $4)`;
 
-    const v = [
-      id,
-      userId,
-      tokenBcrypt,
-      created,
-    ];
+    const v = [id, userId, tokenBcrypt, created];
 
     await this.pool.query(q, v);
 
@@ -69,13 +58,23 @@ INSERT INTO admin_token (
   }
 
   @instrumented
-  public async verifyTokenOr401(id: string, plaintextToken: string): Promise<AdminClaims> {
+  public async verifyTokenOr401(
+    id: string,
+    plaintextToken: string,
+    adminToken?: string
+  ): Promise<AdminClaims> {
+    if (adminToken) {
+      const q = `SELECT * from token WHERE token = $1 AND disabled = FALSE`;
+      const v = [adminToken];
+      const res = await this.pool.query(q, v);
+      if (_.isEmpty(res.rows)) {
+        throw { status: 401, err: new Error("Invalid admin_token") };
+      }
+    }
 
     const q = `SELECT * FROM admin_token WHERE id = $1 AND disabled = FALSE`;
 
-    const v = [
-      id,
-    ];
+    const v = [id];
 
     const res = await this.pool.query(q, v);
     if (_.isEmpty(res.rows)) {
@@ -90,8 +89,16 @@ INSERT INTO admin_token (
       throw { status: 401, err: new Error("Invalid ID or token") };
     }
 
-    return {
+    const claims: {
+      userId: string;
+      adminToken?: string;
+    } = {
       userId: user_id,
     };
+    if (adminToken) {
+      claims.adminToken = adminToken;
+    }
+
+    return claims;
   }
 }
