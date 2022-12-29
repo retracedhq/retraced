@@ -2,10 +2,6 @@ import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
-export interface Options {
-  user_id: string;
-}
-
 /**
  * Asynchronously returns all projects for a user from the database
  */
