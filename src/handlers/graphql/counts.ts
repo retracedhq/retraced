@@ -21,7 +21,7 @@ export default async function counts(
   // root query object provided by graphql, not used
   q: any,
   args: Args,
-  context: Scope,
+  context: Scope
 ) {
   const begin = args.after ? decodeCursor(args.after) + 1 : 0;
   const limit = _.isNumber(args.first) ? args.first : defaultPageSize;
@@ -29,10 +29,7 @@ export default async function counts(
 
   let crud = ["c", "r", "u", "d"];
   if (_.isString(args.crud)) {
-    crud = args.crud
-      .trim()
-      .toLowerCase()
-      .split("");
+    crud = args.crud.trim().toLowerCase().split("");
   }
 
   let startTime = moment(0);
@@ -52,14 +49,14 @@ export default async function counts(
 
   let groupBy: "action" | "group.id" = "action";
   switch (args.type) {
-  case "action":
-    groupBy = "action";
-    break;
-  case "group":
-    groupBy = "group.id";
-    break;
-  default:
-    throw { status: 400, err: new Error("Invalid type") };
+    case "action":
+      groupBy = "action";
+      break;
+    case "group":
+      groupBy = "group.id";
+      break;
+    default:
+      throw { status: 400, err: new Error("Invalid type") };
   }
 
   const countsResult = await countBy({
@@ -112,11 +109,11 @@ export default async function counts(
 }
 
 function encodeCursor(pos: number): string {
-  return new Buffer(pos.toString()).toString("base64");
+  return Buffer.from(pos.toString()).toString("base64");
 }
 
 function decodeCursor(cursor: string): number {
-  const pos = parseInt(new Buffer(cursor, "base64").toString("utf8"), 10);
+  const pos = parseInt(Buffer.from(cursor, "base64").toString("utf8"), 10);
 
   if (_.isNaN(pos)) {
     throw { status: 400, err: new Error("Invalid cursor") };

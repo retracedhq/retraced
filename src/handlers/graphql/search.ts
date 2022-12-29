@@ -8,7 +8,7 @@ import { Scope } from "../../security/scope";
 import getGroups from "../../models/group/gets";
 import config from "../../config";
 
-const PG_SEARCH = !!(config.PG_SEARCH);
+const PG_SEARCH = !!config.PG_SEARCH;
 const searcher = PG_SEARCH ? filterEvents : queryEvents;
 
 export interface Args {
@@ -19,16 +19,18 @@ export interface Args {
   before?: string;
 }
 
-export default async function search(
-  q: any,
-  args: Args,
-  context: Scope,
-) {
+export default async function search(q: any, args: Args, context: Scope) {
   if (args.first && args.last) {
-    throw { status: 400, err: new Error("Arguments 'first' and 'last' are exclusive") };
+    throw {
+      status: 400,
+      err: new Error("Arguments 'first' and 'last' are exclusive"),
+    };
   }
   if (args.before && args.after) {
-    throw { status: 400, err: new Error("Arguments 'before' and 'after' are exclusive") };
+    throw {
+      status: 400,
+      err: new Error("Arguments 'before' and 'after' are exclusive"),
+    };
   }
   const opts: Options = {
     query: args.query,
@@ -107,17 +109,18 @@ export default async function search(
     edges,
     pageInfo: {
       hasNextPage: opts.sort === "asc" && totalCount > results.events.length,
-      hasPreviousPage: opts.sort === "desc" && totalCount > results.events.length,
+      hasPreviousPage:
+        opts.sort === "desc" && totalCount > results.events.length,
     },
   };
 }
 
 function encodeCursor(timestamp: number, id: string): string {
-  return new Buffer(`${timestamp},${id}`).toString("base64");
+  return Buffer.from(`${timestamp},${id}`).toString("base64");
 }
 
 function decodeCursor(cursor: string): [number, string] {
-  const parts = new Buffer(cursor, "base64").toString("utf8").split(",");
+  const parts = Buffer.from(cursor, "base64").toString("utf8").split(",");
   const ts = parseInt(parts[0], 10);
   const id = parts[1];
 
