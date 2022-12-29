@@ -1,23 +1,8 @@
-import { pino } from "pino";
-import fs from "fs";
 import config from "../config";
+import { initLogger } from "../logger";
 
 function initLoggerFromEnv(): any {
-  let p;
-  if (config.RETRACED_PROCESSOR_LOG_FILE) {
-    p = pino(
-        fs.createWriteStream(config.RETRACED_PROCESSOR_LOG_FILE),
-    );
-  } else {
-    p = pino();
-  }
-
-  p.level = config.LOG_LEVEL || "warn";
-  return p;
+  return initLogger(config.RETRACED_PROCESSOR_LOG_FILE, config.LOG_LEVEL);
 }
 
 export const logger = initLoggerFromEnv();
-
-export function log(...msg: any[]) {
-  logger.info(...msg);
-}
