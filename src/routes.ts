@@ -1,6 +1,5 @@
 // core
 import createAdminSession from "./handlers/createAdminSession";
-import createViewerDescriptor from "./handlers/createViewerDescriptor";
 import createViewerSession from "./handlers/createViewerSession";
 import getInvite from "./handlers/getInvite";
 import graphQL from "./handlers/graphql";
@@ -8,14 +7,12 @@ import graphQL from "./handlers/graphql";
 // admin
 import adminGraphQL from "./handlers/admin/graphql";
 import cancelEmailReport from "./handlers/admin/cancelEmailReport";
-import { deprecated as createApiToken } from "./handlers/admin/createApiToken";
-import { deprecated as createEnvironment } from "./handlers/admin/createEnvironment";
-import { deprecated as createInvite } from "./handlers/admin/createInvite";
+import createEnvironment from "./handlers/admin/createEnvironment";
+import createInvite from "./handlers/admin/createInvite";
 import createProject from "./handlers/admin/createProject";
-import { deprecated as deleteApiToken } from "./handlers/admin/deleteApiToken";
 import deleteTeamMember from "./handlers/admin/deleteTeamMember";
 import listTeamMembers from "./handlers/admin/listTeamMembers";
-import { deprecated as deleteInvite } from "./handlers/admin/deleteInvite";
+import deleteInvite from "./handlers/admin/deleteInvite";
 import searchEvents from "./handlers/admin/searchEvents";
 import getAction from "./handlers/admin/getAction";
 import getActor from "./handlers/admin/getActor";
@@ -23,18 +20,15 @@ import getDashboard from "./handlers/admin/getDashboard";
 import getProject from "./handlers/admin/getProject";
 import listActions from "./handlers/admin/listActions";
 import listActors from "./handlers/admin/listActors";
-import { deprecated as listInvites } from "./handlers/admin/listInvites";
+import listInvites from "./handlers/admin/listInvites";
 import listProjects from "./handlers/admin/listProjects";
 import listTargets from "./handlers/admin/listTargets";
 import updateUser from "./handlers/admin/updateUser";
 import searchGroups from "./handlers/admin/searchGroups";
-import { deprecated as searchTemplates } from "./handlers/admin/searchTemplates";
-import { deprecated as createTemplate } from "./handlers/admin/createTemplate";
-import publicRenderEvent from "./handlers/admin/publicRenderEvent";
 
 // enterprise
-import enterpriseCreateActiveSearch from "./handlers/enterprise/createActiveSearch";
-import enterpriseCreateSavedSearch from "./handlers/enterprise/createSavedSearch";
+// import enterpriseCreateActiveSearch from "./handlers/enterprise/createActiveSearch";
+// import enterpriseCreateSavedSearch from "./handlers/enterprise/createSavedSearch";
 import enterpriseDeleteActiveSearch from "./handlers/enterprise/deleteActiveSearch";
 import enterpriseGraphQL from "./handlers/enterprise/graphql";
 import enterprisePumpActiveSearch from "./handlers/enterprise/pumpActiveSearch";
@@ -285,284 +279,6 @@ export default {
     path: "/enterprise/v1/search/adhoc",
     method: "get",
     handler: enterpriseSearchAdHoc,
-  },
-
-  //
-  //
-  // OLD ROUTES -- DONT DOCUMENT, DEPRECATE SOON
-  //
-  //
-  //
-
-  //
-  // core
-  //
-  createAdminSession: {
-    path: "/v1/user/login",
-    method: "post",
-    handler: createAdminSession,
-  },
-  createViewerDescriptor: {
-    path: "/v1/project/:projectId/viewertoken",
-    method: "get",
-    handler: createViewerDescriptor,
-  },
-  createViewerSession: {
-    path: "/v1/viewersession",
-    method: "post",
-    handler: createViewerSession,
-  },
-  getInvite: {
-    path: "/v1/invite",
-    method: "get",
-    handler: getInvite,
-  },
-  graphQLGet: {
-    path: "/v1/graphql",
-    method: "get",
-    handler: graphQL,
-  },
-  graphQLPost: {
-    path: "/v1/graphql",
-    method: "post",
-    handler: graphQL,
-  },
-
-  //
-  // admin
-  //
-  oldadminGraphQLGet: {
-    path: "/v1/project/:projectId/environment/:environmentId/graphql",
-    method: "get",
-    handler: adminGraphQL,
-  },
-  oldadminGraphQLPost: {
-    path: "/v1/project/:projectId/environment/:environmentId/graphql",
-    method: "post",
-    handler: adminGraphQL,
-  },
-  cancelEmailReport: {
-    path: "/v1/environment/:environmentId/user/:userId/unsubscribe/:report",
-    method: "get",
-    handler: cancelEmailReport,
-  },
-  createApiToken: {
-    path: "/v1/project/:projectId/token",
-    method: "post",
-    handler: createApiToken,
-  },
-  createEnvironment: {
-    path: "/v1/project/:projectId/environment",
-    method: "post",
-    handler: createEnvironment,
-  },
-  createInvite: {
-    path: "/v1/project/:projectId/invite",
-    method: "post",
-    handler: createInvite,
-  },
-  createProject: {
-    path: "/v1/project",
-    method: "post",
-    handler: createProject,
-  },
-  deleteApiToken: {
-    path: "/v1/project/:projectId/token/:tokenId",
-    method: "delete",
-    handler: deleteApiToken,
-  },
-  deleteTeamMember: {
-    path: "/v1/project/:projectId/team/member/:userId",
-    method: "delete",
-    handler: deleteTeamMember,
-  },
-  deleteInvite: {
-    path: "/v1/project/:projectId/invite/:inviteId",
-    method: "delete",
-    handler: deleteInvite,
-  },
-  getAction: {
-    path: "/v1/project/:projectId/action/:actionId",
-    method: "get",
-    handler: getAction,
-  },
-  getActor: {
-    path: "/v1/project/:projectId/actor/:actorId",
-    method: "get",
-    handler: getActor,
-  },
-  getDashboard: {
-    path: "/v1/project/:projectId/dashboard",
-    method: "get",
-    handler: getDashboard,
-  },
-  getProject: {
-    path: "/v1/project/:projectId",
-    method: "get",
-    handler: getProject,
-  },
-  listActions: {
-    path: "/v1/project/:projectId/actions",
-    method: "get",
-    handler: listActions,
-  },
-  listActors: {
-    path: "/v1/project/:projectId/actors",
-    method: "get",
-    handler: listActors,
-  },
-  listTeamMembers: {
-    path: "/v1/project/:projectId/team",
-    method: "get",
-    handler: listTeamMembers,
-  },
-  listInvites: {
-    path: "/v1/project/:projectId/invites",
-    method: "get",
-    handler: listInvites,
-  },
-  listProjects: {
-    path: "/v1/projects",
-    method: "get",
-    handler: listProjects,
-  },
-  searchGroups: {
-    path: "/v1/project/:projectId/groups",
-    method: "post",
-    handler: searchGroups,
-  },
-  searchTemplates: {
-    path: "/v1/project/:projectId/templates",
-    method: "post",
-    handler: searchTemplates,
-  },
-  createTemplate: {
-    path: "/v1/project/:projectId/template",
-    method: "post",
-    handler: createTemplate,
-  },
-  listTargets: {
-    path: "/v1/project/:projectId/targets",
-    method: "get",
-    handler: listTargets,
-  },
-  searchEvents: {
-    path: "/v1/project/:projectId/events/search",
-    method: "post",
-    handler: searchEvents,
-  },
-  updateUser: {
-    path: "/v1/user/:userId",
-    method: "put",
-    handler: updateUser,
-  },
-  adminGraphQL: {
-    path: "/v1/graphql",
-    method: "post",
-    handler: adminGraphQL,
-  },
-  publicRenderEvent: {
-    path: "/v1/public/render",
-    method: "post",
-    handler: publicRenderEvent,
-  },
-
-  //
-  // enterprise
-  //
-  oldenterpriseCreateActiveSearch: {
-    path: "/v1/eit/search/active",
-    method: "post",
-    handler: enterpriseCreateActiveSearch,
-  },
-  oldenterpriseCreateSavedSearch: {
-    path: "/v1/eit/search/saved",
-    method: "post",
-    handler: enterpriseCreateSavedSearch,
-  },
-  oldenterpriseDeleteActiveSearch: {
-    path: "/v1/eit/search/active/:activeSearchId",
-    method: "delete",
-    handler: enterpriseDeleteActiveSearch,
-  },
-  oldenterpriseGraphQLGet: {
-    path: "/v1/eit/graphql",
-    method: "get",
-    handler: enterpriseGraphQL,
-  },
-  oldenterpriseGraphQLPost: {
-    path: "/v1/eit/graphql",
-    method: "post",
-    handler: enterpriseGraphQL,
-  },
-  oldenterprisePumpActiveSearch: {
-    path: "/v1/eit/search/active/:activeSearchId",
-    method: "get",
-    handler: enterprisePumpActiveSearch,
-  },
-  oldenterpriseSearchAdHoc: {
-    path: "/v1/eit/search/adhoc",
-    method: "get",
-    handler: enterpriseSearchAdHoc,
-  },
-
-  //
-  /// viewer
-  //
-  oldviewerCreateEitapiToken: {
-    path: "/v1/project/:projectId/eitapi_token",
-    method: "post",
-    handler: viewerCreateEitapiToken,
-  },
-  oldviewerCreateExport: {
-    path: "/v1/project/:projectId/export",
-    method: "post",
-    handler: viewerCreateExport,
-  },
-  oldviewerGraphQLGet: {
-    path: "/v1/viewer/graphql",
-    method: "get",
-    handler: viewerGraphQL,
-  },
-  oldviewerGraphQLPost: {
-    path: "/v1/viewer/graphql",
-    method: "post",
-    handler: viewerGraphQL,
-  },
-  oldviewerSearchEvents: {
-    path: "/v1/viewer/:projectId/events/search",
-    method: "post",
-    handler: viewerSearchEvents,
-  },
-  oldviewerDeleteEitapiToken: {
-    path: "/v1/project/:projectId/eitapi_token/:tokenId",
-    method: "delete",
-    handler: viewerDeleteEitapiToken,
-  },
-  oldviewerListEitapiTokens: {
-    path: "/v1/project/:projectId/eitapi_tokens",
-    method: "get",
-    handler: viewerListEitapiTokens,
-  },
-  oldviewerListExports: {
-    path: "/v1/project/:projectId/exports",
-    method: "get",
-    handler: viewerListExports,
-  },
-  oldviewerRenderSavedExport: {
-    path: "/v1/project/:projectId/export/:exportId/rendered",
-    method: "get",
-    handler: viewerRenderSavedExport,
-  },
-  oldviewerUpdateEitapiToken: {
-    path: "/v1/project/:projectId/eitapi_token/:tokenId",
-    method: "put",
-    handler: viewerUpdateEitapiToken,
-  },
-  oldviewerUpdateExport: {
-    path: "/v1/project/:projectId/export/:exportId",
-    method: "put",
-    handler: viewerUpdateExport,
   },
 };
 
