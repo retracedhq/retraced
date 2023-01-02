@@ -1,5 +1,4 @@
 // core
-import createAdminSession from "./handlers/createAdminSession";
 import createViewerSession from "./handlers/createViewerSession";
 import getInvite from "./handlers/getInvite";
 import graphQL from "./handlers/graphql";
@@ -61,11 +60,6 @@ export default {
   //
   // admin
   //
-  adminCreateAdminSession: {
-    path: "/admin/v1/user/login",
-    method: "post",
-    handler: createAdminSession,
-  },
   adminGetInvite: {
     path: "/admin/v1/invite",
     method: "get",

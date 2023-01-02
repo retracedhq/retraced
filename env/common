@@ -1,7 +1,3 @@
-# auth0
-AUTH0_CLIENT_DOMAIN=retraced.auth0.com
-AUTH0_CLIENT_ID=g3mDItarNXbk1pDrBJ01GjoYBQfLpVq9
-
 # postgres
 POSTGRES_USER=retraced
 POSTGRES_DATABASE=retraced
