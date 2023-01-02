@@ -1,4 +1,3 @@
-import { ExternalAuth } from "../createAdminSession";
 import getUser from "../../models/user/getByExternalAuth";
 import createUser, { ERR_DUPLICATE_EMAIL } from "../../models/user/create";
 import { apiTokenFromAuthHeader } from "../../security/helpers";
@@ -7,17 +6,20 @@ import { AdminTokenStore } from "../../models/admin_token/store";
 import express from "express";
 import config from "../../config";
 
+export interface ExternalAuth {
+  email: string;
+  upstreamToken: string;
+  inviteId?: string;
+}
+
 export class AdminUserBootstrap {
   public static default() {
     return new AdminUserBootstrap(config.ADMIN_ROOT_TOKEN);
   }
 
-  constructor(
-    private readonly sharedSecret?: string,
-  ) { }
+  constructor(private readonly sharedSecret?: string) {}
 
   public async handle(auth: string | undefined, claims: ExternalAuth) {
-
     let token;
     try {
       token = apiTokenFromAuthHeader(auth?.toString());
@@ -30,7 +32,10 @@ export class AdminUserBootstrap {
     }
 
     if (!claims || !claims.email) {
-      throw { status: 400, err: new Error("Missing or invalid parameter: `claims.email`") };
+      throw {
+        status: 400,
+        err: new Error("Missing or invalid parameter: `claims.email`"),
+      };
     }
 
     claims.upstreamToken = "ADMIN_ROOT_TOKEN";
@@ -41,7 +46,10 @@ export class AdminUserBootstrap {
     });
 
     if (user && user.external_auth_id !== "ADMIN_ROOT_TOKEN") {
-      throw { status: 400, err: new Error("User exists and was not created via admin token")};
+      throw {
+        status: 400,
+        err: new Error("User exists and was not created via admin token"),
+      };
     } else if (!user) {
       try {
         user = await createUser({
@@ -59,7 +67,7 @@ export class AdminUserBootstrap {
       userId: user.id,
     });
 
-    let admintoken = await AdminTokenStore.default().createAdminToken(user.id)
+    let admintoken = await AdminTokenStore.default().createAdminToken(user.id);
 
     const response = {
       user: {
@@ -68,7 +76,7 @@ export class AdminUserBootstrap {
         timezone: user.timezone,
       },
       token: voucher,
-      adminToken: admintoken
+      adminToken: admintoken,
     };
 
     return {
@@ -78,10 +86,7 @@ export class AdminUserBootstrap {
   }
 
   public handler() {
-    return (req: express.Request) => this.handle(
-      req.get("Authorization"),
-      req.body && req.body.claims,
-    );
+    return (req: express.Request) =>
+      this.handle(req.get("Authorization"), req.body && req.body.claims);
   }
 }
-

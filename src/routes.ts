@@ -1,5 +1,4 @@
 // core
-import createAdminSession from "./handlers/createAdminSession";
 import createViewerDescriptor from "./handlers/createViewerDescriptor";
 import createViewerSession from "./handlers/createViewerSession";
 import getInvite from "./handlers/getInvite";
@@ -67,11 +66,6 @@ export default {
   //
   // admin
   //
-  adminCreateAdminSession: {
-    path: "/admin/v1/user/login",
-    method: "post",
-    handler: createAdminSession,
-  },
   adminGetInvite: {
     path: "/admin/v1/invite",
     method: "get",
@@ -297,11 +291,6 @@ export default {
   //
   // core
   //
-  createAdminSession: {
-    path: "/v1/user/login",
-    method: "post",
-    handler: createAdminSession,
-  },
   createViewerDescriptor: {
     path: "/v1/project/:projectId/viewertoken",
     method: "get",
