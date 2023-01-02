@@ -2747,12 +2747,10 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0:
   resolved "https://registry.npmjs.org/graceful-readlink/-/graceful-readlink-1.0.1.tgz"
   integrity sha1-TK+tdrxi8C+gObL5Tpo906ORpyU=
 
-graphql@0.9.2:
-  version "0.9.2"
-  resolved "https://registry.npmjs.org/graphql/-/graphql-0.9.2.tgz"
-  integrity sha1-LLXGNd4T95CnfFh5ZJy0AbFYk4Y=
-  dependencies:
-    iterall "1.0.3"
+graphql@16.6.0:
+  version "16.6.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.6.0.tgz#c2dcffa4649db149f6282af726c8c83f1c7c5fdb"
+  integrity sha512-KPIBPDlW7NxrbT/eh4qPXz5FiFdL5UbaA0XUNz2Rp3Z3hqBSkbj0GVjwFDztsWVauZUWsbKHgMg++sk8UX0bkw==
 
 growl@1.10.5:
   version "1.10.5"
@@ -3384,11 +3382,6 @@ istanbul@1.1.0-alpha.1:
     nopt "3.x"
     which "^1.1.1"
     wordwrap "^1.0.0"
-
-iterall@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/iterall/-/iterall-1.0.3.tgz"
-  integrity sha1-4LMZWPg1ATwyP/CxCUOCmsaapLc=
 
 iterate-iterator@^1.0.1:
   version "1.0.2"

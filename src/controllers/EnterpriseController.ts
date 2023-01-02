@@ -26,7 +26,10 @@ import { checkEitapiAccessUnwrapped } from "../security/helpers";
 import { graphql } from "graphql";
 import schema from "../handlers/graphql/schema";
 import { EnterpriseToken } from "../models/eitapi_token";
-import { CreateEventRequest, defaultEventCreater } from "../handlers/createEvent";
+import {
+  CreateEventRequest,
+  defaultEventCreater,
+} from "../handlers/createEvent";
 /*
 import enterpriseCreateSavedSearch from "../handlers/enterprise/createSavedSearch";
 import enterpriseDeleteActiveSearch from "../handlers/enterprise/deleteActiveSearch";
@@ -65,7 +68,6 @@ import enterpriseSearchAdHoc from "../handlers/enterprise/searchAdHoc";
 
 @Route("enterprise/v1")
 export class EnterpriseAPI extends Controller {
-
   /**
    * Query events with GraphQL
    *
@@ -80,9 +82,8 @@ export class EnterpriseAPI extends Controller {
   public async graphqlPost(
     @Header("Authorization") auth: string,
     @Body() graphQLRequest: GraphQLRequest,
-    @Request() req: Req,
+    @Request() req: Req
   ): Promise<GraphQLResp> {
-
     const token: EnterpriseToken = await checkEitapiAccessUnwrapped(auth);
 
     const context: Scope = {
@@ -91,15 +92,16 @@ export class EnterpriseAPI extends Controller {
       groupId: token.group_id,
     };
 
-    // http://graphql.org/graphql-js/graphql/#graphql
-    const result: GraphQLResp = await graphql(
+    const result: GraphQLResp = (await graphql({
       schema,
-      graphQLRequest.query,
-      null,
-      context,
-      graphQLRequest.variables,
-      graphQLRequest.operationName,
-    );
+      source: graphQLRequest.query,
+      rootValue: null,
+      contextValue: context,
+      variableValues: graphQLRequest.variables as {
+        [variable: string]: unknown;
+      },
+      operationName: graphQLRequest.operationName,
+    })) as GraphQLResp;
 
     const thisViewEvent: CreateEventRequest = {
       action: token.view_log_action,
@@ -117,7 +119,7 @@ export class EnterpriseAPI extends Controller {
     defaultEventCreater.saveRawEvent(
       token.project_id,
       token.environment_id,
-      thisViewEvent,
+      thisViewEvent
     );
 
     this.setStatus(result.errors ? 400 : 200);
@@ -143,14 +145,15 @@ export class EnterpriseAPI extends Controller {
   })
   public async createActiveSearch(
     @Header("Authorization") auth: string,
-    @Body() request: CreateActiveSearchRequest,
+    @Body() request: CreateActiveSearchRequest
   ): Promise<ActiveSearchId> {
-
-    const result: ActiveSearchId = await enterpriseCreateActiveSearch(auth, request);
+    const result: ActiveSearchId = await enterpriseCreateActiveSearch(
+      auth,
+      request
+    );
 
     this.setStatus(201);
     return result;
-
   }
 
   /**
@@ -169,13 +172,11 @@ export class EnterpriseAPI extends Controller {
   })
   public async createSavedSearch(
     @Header("Authorization") auth: string,
-    @Body() request: CreateSavedSearchRequest,
+    @Body() request: CreateSavedSearchRequest
   ): Promise<SavedSearch> {
-
     const result: SavedSearch = await createSavedSearchHandler(auth, request);
 
     this.setStatus(201);
     return result;
-
   }
 }
