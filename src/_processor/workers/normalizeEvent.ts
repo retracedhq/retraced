@@ -9,6 +9,7 @@ import getPgPool from "../persistence/pg";
 import getLocationByIP from "../persistence/geoip";
 import nsq from "../persistence/nsq";
 import { logger } from "../logger";
+import { mapValues } from "../../common/mapper";
 
 const pgPool = getPgPool();
 
@@ -21,7 +22,10 @@ export default async function normalizeEvent(job) {
     const fields = `id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres,
       saved_to_elasticsearch, project_id, environment_id, new_event_id,
       extract(epoch from received) * 1000 as received`;
-    const pgResp = await pg.query(`select ${fields} from ingest_task where id = $1`, [taskId]);
+    const pgResp = await pg.query(
+      `select ${fields} from ingest_task where id = $1`,
+      [taskId]
+    );
     if (!pgResp.rows.length) {
       throw new Error(`Couldn't find ingestion task with id '${taskId}'`);
     }
@@ -32,12 +36,16 @@ export default async function normalizeEvent(job) {
 
     // id is mandatory!
     if (_.isEmpty(newEventId) || _.isNil(newEventId)) {
-      throw new Error("No canonical event id was given to the event normalization function");
+      throw new Error(
+        "No canonical event id was given to the event normalization function"
+      );
     }
 
     let processingNewEvent = true;
     if (task.normalized_event) {
-      logger.info(`Ingestion task with id '${taskId}' has already been normalized (processing it again, though!)`);
+      logger.info(
+        `Ingestion task with id '${taskId}' has already been normalized (processing it again, though!)`
+      );
       processingNewEvent = false;
       // Since this is a re-processing of a task which has already had its event normalized,
       // we grab the event id out of the existing normalized event (if any).
@@ -62,40 +70,52 @@ export default async function normalizeEvent(job) {
 
     let group;
     if (groupToUpsert) {
-      group = await upsertGroup({
-        group: groupToUpsert,
-        projectId: task.project_id,
-        environmentId: task.environment_id,
-        updateOnConflict: processingNewEvent,
-      }, pg);
+      group = await upsertGroup(
+        {
+          group: groupToUpsert,
+          projectId: task.project_id,
+          environmentId: task.environment_id,
+          updateOnConflict: processingNewEvent,
+        },
+        pg
+      );
     }
 
     let actor;
     if (origEvent.actor) {
-      actor = await upsertActor({
-        actor: origEvent.actor,
-        projectId: task.project_id,
-        environmentId: task.environment_id,
-        updateOnConflict: processingNewEvent,
-      }, pg);
+      actor = await upsertActor(
+        {
+          actor: origEvent.actor,
+          projectId: task.project_id,
+          environmentId: task.environment_id,
+          updateOnConflict: processingNewEvent,
+        },
+        pg
+      );
     }
 
     let target;
     if (origEvent.target) {
-      target = await upsertTarget({
-        target: origEvent.target,
+      target = await upsertTarget(
+        {
+          target: origEvent.target,
+          projectId: task.project_id,
+          environmentId: task.environment_id,
+          updateOnConflict: processingNewEvent === true,
+        },
+        pg
+      );
+    }
+
+    await upsertAction(
+      {
+        action: origEvent.action,
         projectId: task.project_id,
         environmentId: task.environment_id,
         updateOnConflict: processingNewEvent === true,
-      }, pg);
-    }
-
-    await upsertAction({
-      action: origEvent.action,
-      projectId: task.project_id,
-      environmentId: task.environment_id,
-      updateOnConflict: processingNewEvent === true,
-    }, pg);
+      },
+      pg
+    );
 
     let locInfo;
     if (origEvent.source_ip) {
@@ -110,7 +130,7 @@ export default async function normalizeEvent(job) {
       Object.assign({}, actor),
       Object.assign({}, target),
       locInfo,
-      newEventId,
+      newEventId
     );
 
     const updateStmt = `update ingest_task
@@ -132,10 +152,24 @@ export default async function normalizeEvent(job) {
   }
 }
 
-function processEvent(origEvent, received, group, actor, target, locInfo, newEventId: string) {
+function processEvent(
+  origEvent,
+  received,
+  group,
+  actor,
+  target,
+  locInfo,
+  newEventId: string
+) {
   const result: any = _.pick(origEvent, [
-    "created", "description", "source_ip", "action",
-    "is_failure", "is_anonymous", "crud", "fields",
+    "created",
+    "description",
+    "source_ip",
+    "action",
+    "is_failure",
+    "is_anonymous",
+    "crud",
+    "fields",
   ]);
 
   result.id = newEventId;
@@ -169,31 +203,15 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
   if (group) {
     group.id = group.group_id;
     _.unset(group, "group_id");
-    result.group = group;
+    result.group = mapValues(group);
   }
 
   if (actor) {
-    result.actor = _.mapValues(actor, (val, key) => {
-      if (key === "created" || key === "first_active" || key === "last_active") {
-        return moment(val).valueOf();
-      }
-      if (key === "event_count") {
-        return Number(val);
-      }
-      return val;
-    });
+    result.actor = mapValues(actor);
   }
 
   if (target) {
-    result.target = _.mapValues(target, (val, key) => {
-      if (key === "created" || key === "first_active" || key === "last_active") {
-        return moment(val).valueOf();
-      }
-      if (key === "event_count") {
-        return Number(val);
-      }
-      return val;
-    });
+    result.target = mapValues(target);
   }
 
   if (locInfo) {

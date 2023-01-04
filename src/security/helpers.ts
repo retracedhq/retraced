@@ -1,10 +1,6 @@
 import _ from "lodash";
 
-import {
-  AdminClaims,
-  validateAdminVoucher,
-  validateViewerDescriptorVoucher,
-} from "./vouchers";
+import { AdminClaims, validateAdminVoucher, validateViewerDescriptorVoucher } from "./vouchers";
 import verifyProjectAccess from "./verifyProjectAccess";
 import verifyEnvironmentAccess from "./verifyEnvironmentAccess";
 import getEitapiToken from "../models/eitapi_token/get";
@@ -41,17 +37,13 @@ export function apiTokenFromAuthHeader(authHeader?: string): string {
 
 async function parseClaims(authHeader: string) {
   let claims;
-  const tokenParts = authHeader.match(/id=(.+) token=(.+) admin_token=(.+)/);
+  const tokenParts = authHeader.match(/id=(.+) token=(.+) (admin_token=(.+))?/);
 
   if (tokenParts && tokenParts.length >= 3) {
     logger.debug("validating admin against token");
     // tslint:disable-next-line
-    const [__, id, token, adminToken] = tokenParts;
-    claims = await AdminTokenStore.default().verifyTokenOr401(
-      id,
-      token,
-      adminToken
-    );
+    const [__, id, token, _, adminToken] = tokenParts;
+    claims = await AdminTokenStore.default().verifyTokenOr401(id, token, adminToken);
   } else {
     logger.debug("validating jwt voucher");
     claims = await validateAdminVoucher(authHeader);
@@ -103,11 +95,7 @@ export async function checkAdminAccessUnwrapped(
 }
 
 export async function checkAdminAccess(req): Promise<AdminClaims> {
-  return checkAdminAccessUnwrapped(
-    req.get("Authorization"),
-    req.params.projectId,
-    req.params.environment_id
-  );
+  return checkAdminAccessUnwrapped(req.get("Authorization"), req.params.projectId, req.params.environment_id);
 }
 
 export async function adminIdentity(req): Promise<[string | null, boolean]> {
@@ -129,9 +117,7 @@ export async function checkEitapiAccess(req): Promise<EnterpriseToken> {
   return checkEitapiAccessUnwrapped(req.get("Authorization"));
 }
 
-export async function checkEitapiAccessUnwrapped(
-  auth: string
-): Promise<EnterpriseToken> {
+export async function checkEitapiAccessUnwrapped(auth: string): Promise<EnterpriseToken> {
   const eitapiTokenId = apiTokenFromAuthHeader(auth);
   const eitapiToken: EnterpriseToken | null = await getEitapiToken({
     eitapiTokenId,

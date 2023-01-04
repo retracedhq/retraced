@@ -20,7 +20,7 @@ x-common-variables: &common-variables
   RETRACED_API_BASE: http://localhost:3000/auditlog
   POSTGRES_DATABASE: retraced
   SUPERCRONIC: supercronic-linux-amd64
-  LOG_LEVEL: debug
+  LOG_LEVEL: warn
   ELASTICSEARCH_NODES: http://elasticsearch:9200
   NSQD_HOST: nsqd
   HOSTNAME: retraced-api-67856674bf-kwq7f
