@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM node:16.18.1 as node
+FROM --platform=$BUILDPLATFORM node:19.3.0 as node
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
