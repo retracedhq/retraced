@@ -4,7 +4,7 @@ experimental:
   notify:
     branches:
       only:
-        - master
+        - main
 
 defaults: &defaults
   resource_class: large
@@ -207,7 +207,7 @@ workflows:
       - is_retracedhq:
           filters:
             branches:
-              only: /master/
+              only: /main/
       - deploy_beta:
           requires:
             - build_docker
@@ -216,7 +216,7 @@ workflows:
             - is_retracedhq
           filters:
             branches:
-              only: /master/
+              only: /main/
 
   stable_prod:
     jobs:
