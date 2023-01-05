@@ -7,30 +7,30 @@ spec:
   template:
     spec:
       initContainers:
-      - name: bootstrap
-        image: registry.replicated.com/library/retraced:1.4.6
-        command:
-        - /bin/sh
-        args:
-        - -c
-        - node -r ts-node/register src/retracedctl.ts
-            bootstrap
-            --projectName   "$BOOTSTRAP_PROJECT_NAME"
-            --projectId     "$BOOTSTRAP_PROJECT_ID"
-            --environmentId "$BOOTSTRAP_ENVIRONMENT_ID"
-            --apiKey        "$BOOTSTRAP_API_TOKEN"
-        envFrom:
-          - secretRef:
-              name: auditlog
-        env:
-        - name: BOOTSTRAP_PROJECT_NAME
-          value: dev
-        - name: BOOTSTRAP_PROJECT_ID
-          value: dev
-        - name: BOOTSTRAP_ENVIRONMENT_ID
-          value: dev
-        - name: BOOTSTRAP_API_TOKEN
-          value: dev
+        - name: bootstrap
+          image: retracedhq/retraced:1.4.6
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - node -r ts-node/register src/retracedctl.ts
+              bootstrap
+              --projectName   "$BOOTSTRAP_PROJECT_NAME"
+              --projectId     "$BOOTSTRAP_PROJECT_ID"
+              --environmentId "$BOOTSTRAP_ENVIRONMENT_ID"
+              --apiKey        "$BOOTSTRAP_API_TOKEN"
+          envFrom:
+            - secretRef:
+                name: auditlog
+          env:
+            - name: BOOTSTRAP_PROJECT_NAME
+              value: dev
+            - name: BOOTSTRAP_PROJECT_ID
+              value: dev
+            - name: BOOTSTRAP_ENVIRONMENT_ID
+              value: dev
+            - name: BOOTSTRAP_API_TOKEN
+              value: dev
       containers:
         - name: api
           readinessProbe:
@@ -44,7 +44,7 @@ spec:
             - ts-node/register
             - src/index.ts
           ports:
-          - containerPort: 9229
+            - containerPort: 9229
           env:
-          - name: EXPORT_PAGE_SIZE_INTERNAL
-            value: "2"
+            - name: EXPORT_PAGE_SIZE_INTERNAL
+              value: "2"

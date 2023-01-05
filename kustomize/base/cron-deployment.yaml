@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: cron
-          image: registry.replicated.com/library/retraced:1.4.6
+          image: retracedhq/retraced:1.4.6
           imagePullPolicy: IfNotPresent
           command:
             - /bin/bash
@@ -42,6 +42,3 @@ spec:
               cpu: 10m
             limits:
               cpu: 100m
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
-

@@ -18,14 +18,12 @@ spec:
         app: retraced
         tier: dbutil
     spec:
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
       containers:
-      - name: dbutil
-        image: registry.replicated.com/library/retraced:1.4.6
-        command:
-        - /bin/sleep
-        - infinity
-        envFrom:
-          - secretRef:
-              name: auditlog
+        - name: dbutil
+          image: retracedhq/retraced:1.4.6
+          command:
+            - /bin/sleep
+            - infinity
+          envFrom:
+            - secretRef:
+                name: auditlog

@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: dbutil
-          image: registry.replicated.com/library/retraced
+          image: retracedhq/retraced

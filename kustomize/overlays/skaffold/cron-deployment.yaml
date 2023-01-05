@@ -7,5 +7,4 @@ spec:
     spec:
       containers:
         - name: cron
-          image: registry.replicated.com/library/retraced
-
+          image: retracedhq/retraced

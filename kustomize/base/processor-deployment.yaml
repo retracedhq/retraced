@@ -17,25 +17,25 @@ spec:
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 2
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - auditlog
-                - key: tier
-                  operator: In
-                  values:
-                  - processor
-              topologyKey: "kubernetes.io/hostname"
+            - weight: 2
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - auditlog
+                    - key: tier
+                      operator: In
+                      values:
+                        - processor
+                topologyKey: "kubernetes.io/hostname"
       volumes:
         - name: tmpdir
           emptyDir: {}
       containers:
         - name: processor
-          image: registry.replicated.com/library/retraced:1.4.6
+          image: retracedhq/retraced:1.4.6
           imagePullPolicy: IfNotPresent
 
           command:
@@ -68,10 +68,9 @@ spec:
             - mountPath: /tmp
               name: tmpdir
           envFrom:
-          - secretRef:
-              name: auditlog
+            - secretRef:
+                name: auditlog
           env:
-
             - name: TMPDIR
               value: /tmp
             - name: NO_WARP_PIPE
@@ -83,6 +82,3 @@ spec:
                   key: PROCESSOR_TOKEN
             - name: PG_SEARCH
               value: ""
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
-

@@ -6,5 +6,5 @@ spec:
   template:
     spec:
       containers:
-      - name: db
-        image: registry.replicated.com/library/retraced
+        - name: db
+          image: retracedhq/retraced

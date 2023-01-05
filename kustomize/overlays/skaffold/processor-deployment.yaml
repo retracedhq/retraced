@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
         - name: processor
-          image: registry.replicated.com/library/retraced
+          image: retracedhq/retraced
           env:
             - name: PG_SEARCH
               value: ""
