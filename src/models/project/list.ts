@@ -1,11 +1,12 @@
+import { is_numeric } from "../../common/helpers";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
 export interface Options {
   user_id: string;
-  page: string;
-  count: string;
+  offset: string;
+  limit: string;
 }
 
 /**
@@ -13,7 +14,7 @@ export interface Options {
  */
 export default async function listProjects(opts: Options) {
   const q =
-    opts.page && opts.count
+    is_numeric(opts.offset) && is_numeric(opts.limit)
       ? `select project.* from project
     inner join projectuser
     on project.id = projectuser.project_id
@@ -24,8 +25,8 @@ export default async function listProjects(opts: Options) {
     on project.id = projectuser.project_id
     where projectuser.user_id = $1`;
   const v =
-    opts.page && opts.count
-      ? [opts.user_id, Number(opts.page) > 1 ? (Number(opts.page) - 1) * Number(opts.count) : 0, Number(opts.count)]
+    is_numeric(opts.offset) && is_numeric(opts.limit)
+      ? [opts.user_id, Number(opts.offset), Number(opts.limit)]
       : [opts.user_id];
 
   const result = await pgPool.query(q, v);
