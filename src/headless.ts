@@ -3,7 +3,7 @@ import express from "express";
 import { crud, EventFields } from "./models/event";
 import { adminIdentity } from "./security/helpers";
 import _ from "lodash";
-import { Client, Event } from "@retraced-hq/retraced";
+import { Client, Event } from "@retracedhq/retraced";
 import getProject from "./models/project/get";
 import hydrateProject from "./models/project/hydrate";
 import createProject from "./models/project/create";

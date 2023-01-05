@@ -26,9 +26,9 @@ FROM node:16.18.1 as node
 
 WORKDIR /src
 ADD package.json /src
-ADD yarn.lock /src
+ADD package-lock.json /src
 ADD Makefile /src
-RUN yarn install --force
+RUN npm install
 ADD .snyk /src
 RUN npm run snyk-protect
 

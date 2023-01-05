@@ -1,6 +1,6 @@
 import * as querystring from "querystring";
 import { expect } from "chai";
-import * as Retraced from "@retraced-hq/retraced";
+import * as Retraced from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";

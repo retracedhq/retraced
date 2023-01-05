@@ -44,7 +44,7 @@
     "redis": "4.2.0",
     "request": "2.88.2",
     "request-promise": "4.2.6",
-    "@retraced-hq/retraced": "0.4.6",
+    "@retracedhq/retraced": "0.5.1",
     "ruler": "1.0.0",
     "sanitize-filename": "1.6.3",
     "search-query-parser": "1.6.0",

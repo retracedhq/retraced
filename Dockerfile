@@ -18,9 +18,9 @@ COPY deploy/crontab /crontab
 
 EXPOSE 3000 9229
 ADD ./package.json /src/package.json
-ADD ./yarn.lock /src/yarn.lock
+ADD ./package-lock.json /src/package-lock.json
 WORKDIR /src
-RUN yarn install
+RUN npm install
 
 ADD . /src
 ADD migrations/pg /src/migrations/pg

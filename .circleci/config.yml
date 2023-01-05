@@ -101,7 +101,7 @@ jobs:
       - run: docker load -i /tmp/workspace/retraced.tar
       - run: docker load -i /tmp/workspace/retraced-postgres.tar
       - run: docker load -i /tmp/workspace/retraced-nsq.tar
-      - run: docker tag retracedhq/retraced:${CIRCLE_SHA1:0:7} retracedhq/retraced:alpha
+      - run: docker tag retracedhq/retraced:${CIRCLE_SHA1:0:7} retracedhq/retraced:beta
       - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
       - deploy:
           command: docker push retracedhq/retraced:${CIRCLE_SHA1:0:7}
@@ -110,7 +110,7 @@ jobs:
       - deploy:
           command: docker push retracedhq/retraced-nsq:${CIRCLE_SHA1:0:7}
       - deploy:
-          command: docker push retracedhq/retraced:alpha
+          command: docker push retracedhq/retraced:beta
 
   ensure_image_exists:
     <<: *defaults
