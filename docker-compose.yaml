@@ -189,8 +189,8 @@ services:
     #   -  NEXTAUTH_URL=
     #   -  NEXTAUTH_SECRET=
     #   -  NEXTAUTH_ACL=
-    #   -  RETRACED_HOST=
-    #   -  NEXT_PUBLIC_RETRACED_HOST=
+    #   -  RETRACED_HOST_URL=
+    #   -  RETRACED_EXTERNAL_URL=
     #   -  ADMIN_ROOT_TOKEN=
     depends_on:
       - "retraced-api"
