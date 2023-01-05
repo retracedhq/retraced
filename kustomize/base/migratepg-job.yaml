@@ -8,23 +8,21 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-      - name: db
-        image: registry.replicated.com/library/retraced:1.4.6
-        imagePullPolicy: IfNotPresent
-        command:
-        - /src/retraceddb
-        - pg
-        - up
-        envFrom:
-        - secretRef:
-            name: auditlog
-        env:
-        - name: BUGSNAG_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: auditlog
-              key: DB_TOKEN
-        - name: SCHEMA_PATH
-          value: "/src/migrations/pg"
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
+        - name: db
+          image: retracedhq/retraced:1.4.6
+          imagePullPolicy: IfNotPresent
+          command:
+            - /src/retraceddb
+            - pg
+            - up
+          envFrom:
+            - secretRef:
+                name: auditlog
+          env:
+            - name: BUGSNAG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: auditlog
+                  key: DB_TOKEN
+            - name: SCHEMA_PATH
+              value: "/src/migrations/pg"

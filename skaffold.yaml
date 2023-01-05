@@ -5,12 +5,12 @@ build:
     push: false
 
   artifacts:
-  - image: registry.replicated.com/library/retraced
-    context: ./
-    docker:
-      dockerfile: ./Dockerfile
+    - image: retracedhq/retraced
+      context: ./
+      docker:
+        dockerfile: ./Dockerfile
 
 deploy:
   kustomize:
     paths:
-    - ./kustomize/overlays/skaffold
+      - ./kustomize/overlays/skaffold

@@ -14,24 +14,22 @@ spec:
         app: auditlog
         tier: api
     spec:
-      imagePullSecrets:
-        - name: auditlog-imagepull-secret
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - auditlog
-                - key: tier
-                  operator: In
-                  values:
-                  - api
-              topologyKey: "kubernetes.io/hostname"
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - auditlog
+                    - key: tier
+                      operator: In
+                      values:
+                        - api
+                topologyKey: "kubernetes.io/hostname"
       containers:
         - name: api
           readinessProbe:
@@ -42,7 +40,7 @@ spec:
             periodSeconds: 30
             failureThreshold: 2
             successThreshold: 2
-          image: registry.replicated.com/library/retraced:1.4.6
+          image: retracedhq/retraced:1.4.6
           imagePullPolicy: IfNotPresent
           command:
             - /src/api

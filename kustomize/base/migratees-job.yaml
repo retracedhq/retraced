@@ -6,23 +6,20 @@ metadata:
 spec:
   template:
     spec:
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
       restartPolicy: Never
       containers:
-      - name: db
-        image: registry.replicated.com/library/retraced:1.4.6
-        command:
-        - /src/retraceddb
-        - es
-        - up
-        envFrom:
-        - secretRef:
-            name: auditlog
-        env:
-        - name: BUGSNAG_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: auditlog
-              key: DB_TOKEN
-
+        - name: db
+          image: retracedhq/retraced:1.4.6
+          command:
+            - /src/retraceddb
+            - es
+            - up
+          envFrom:
+            - secretRef:
+                name: auditlog
+          env:
+            - name: BUGSNAG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: auditlog
+                  key: DB_TOKEN

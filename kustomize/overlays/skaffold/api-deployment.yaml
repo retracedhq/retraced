@@ -7,10 +7,10 @@ spec:
     spec:
       initContainers:
         - name: bootstrap
-          image: registry.replicated.com/library/retraced
+          image: retracedhq/retraced
       containers:
         - name: api
-          image: registry.replicated.com/library/retraced
+          image: retracedhq/retraced
           env:
             - name: PG_SEARCH
               value: ""

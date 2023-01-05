@@ -42,13 +42,13 @@ jobs:
           keys:
             - v1-dependencies-node16-{{ checksum "package.json" }}
             - v1-dependencies-node16-
-      - run: docker build --pull -t registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
+      - run: docker build --pull -t retracedhq/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
       # - run:
       #     name: Run local image vulnerability scan
       #     command: |
       #       curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
-      #       ./grype --fail-on=medium  --only-fixed --config=.circleci/.anchore/grype.yaml -vv registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
-      - run: docker save -o retraced.tar registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+      #       ./grype --fail-on=medium  --only-fixed --config=.circleci/.anchore/grype.yaml -vv retracedhq/retraced:${CIRCLE_SHA1:0:7}
+      - run: docker save -o retraced.tar retracedhq/retraced:${CIRCLE_SHA1:0:7}
       - persist_to_workspace:
           root: .
           paths:
@@ -60,13 +60,13 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 20.10.14
-      - run: docker build --pull -t registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-postgres .
+      - run: docker build --pull -t retracedhq/retraced-postgres:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-postgres .
       # - run:
       #     name: Run local image vulnerability scan
       #     command: |
       #       curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
-      #       ./grype --fail-on=medium  --only-fixed --config=.circleci/.anchore/grype.yaml -vv registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
-      - run: docker save -o retraced-postgres.tar registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
+      #       ./grype --fail-on=medium  --only-fixed --config=.circleci/.anchore/grype.yaml -vv retracedhq/retraced-postgres:${CIRCLE_SHA1:0:7}
+      - run: docker save -o retraced-postgres.tar retracedhq/retraced-postgres:${CIRCLE_SHA1:0:7}
       - persist_to_workspace:
           root: .
           paths:
@@ -78,13 +78,13 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 20.10.14
-      - run: docker build --pull -t registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-nsq .
+      - run: docker build --pull -t retracedhq/retraced-nsq:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-nsq .
       # - run:
       #     name: Run local image vulnerability scan
       #     command: |
       #       curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
-      #       ./grype --fail-on=medium  --only-fixed --config=.circleci/.anchore/grype.yaml -vv registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
-      - run: docker save -o retraced-nsq.tar registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
+      #       ./grype --fail-on=medium  --only-fixed --config=.circleci/.anchore/grype.yaml -vv retracedhq/retraced-nsq:${CIRCLE_SHA1:0:7}
+      - run: docker save -o retraced-nsq.tar retracedhq/retraced-nsq:${CIRCLE_SHA1:0:7}
       - persist_to_workspace:
           root: .
           paths:
@@ -101,16 +101,16 @@ jobs:
       - run: docker load -i /tmp/workspace/retraced.tar
       - run: docker load -i /tmp/workspace/retraced-postgres.tar
       - run: docker load -i /tmp/workspace/retraced-nsq.tar
-      - run: docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:alpha
-      - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
+      - run: docker tag retracedhq/retraced:${CIRCLE_SHA1:0:7} retracedhq/retraced:alpha
+      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
       - deploy:
-          command: docker push registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+          command: docker push retracedhq/retraced:${CIRCLE_SHA1:0:7}
       - deploy:
-          command: docker push registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
+          command: docker push retracedhq/retraced-postgres:${CIRCLE_SHA1:0:7}
       - deploy:
-          command: docker push registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
+          command: docker push retracedhq/retraced-nsq:${CIRCLE_SHA1:0:7}
       - deploy:
-          command: docker push registry.replicated.com/library/retraced:alpha
+          command: docker push retracedhq/retraced:alpha
 
   ensure_image_exists:
     <<: *defaults
@@ -118,11 +118,11 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 20.10.14
-      - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
+      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
       - run: |
-          docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
-          docker pull registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
-          docker pull registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
+          docker pull retracedhq/retraced:${CIRCLE_SHA1:0:7}
+          docker pull retracedhq/retraced-postgres:${CIRCLE_SHA1:0:7}
+          docker pull retracedhq/retraced-nsq:${CIRCLE_SHA1:0:7}
 
   deploy_stable:
     <<: *defaults
@@ -134,7 +134,7 @@ jobs:
           keys:
             - v1-dependencies-node16-{{ checksum "package.json" }}
             - v1-dependencies-node16-
-      - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
+      - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
       # the original idea here was:
       #
       #    don't build, just pull. This ensures we're releasing the SHA that we just built and tested
@@ -142,9 +142,9 @@ jobs:
       # but since we don't really have a SaaS env to test this in right now, we're going to need
       # to come up with some other way to integration test this, ideally as part of tagged build
       - run: |
-          docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
-          docker pull registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
-          docker pull registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
+          docker pull retracedhq/retraced:${CIRCLE_SHA1:0:7}
+          docker pull retracedhq/retraced-postgres:${CIRCLE_SHA1:0:7}
+          docker pull retracedhq/retraced-nsq:${CIRCLE_SHA1:0:7}
       - run: |
           function semverParseInto() { # thanks cloudflare
               local RE='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z-]*\)'
@@ -158,28 +158,28 @@ jobs:
           if [ -n "$SPECIAL" ]; then
               echo "pre-release != release, so just push the tag and exit"
 
-              docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${CIRCLE_TAG}
-              docker push registry.replicated.com/library/retraced:${CIRCLE_TAG}
+              docker tag retracedhq/retraced:${CIRCLE_SHA1:0:7} retracedhq/retraced:${CIRCLE_TAG}
+              docker push retracedhq/retraced:${CIRCLE_TAG}
               exit 0
           fi
 
-          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:stable
-          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:latest
-          docker push registry.replicated.com/library/retraced:stable
-          docker push registry.replicated.com/library/retraced:latest
+          docker tag retracedhq/retraced:${CIRCLE_SHA1:0:7} retracedhq/retraced:stable
+          docker tag retracedhq/retraced:${CIRCLE_SHA1:0:7} retracedhq/retraced:latest
+          docker push retracedhq/retraced:stable
+          docker push retracedhq/retraced:latest
 
-          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}
-          docker push registry.replicated.com/library/retraced:${MAJOR}
-          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}
-          docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}
-          docker tag registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
-          docker push registry.replicated.com/library/retraced:${MAJOR}.${MINOR}.${PATCH}
+          docker tag retracedhq/retraced:${CIRCLE_SHA1:0:7} retracedhq/retraced:${MAJOR}
+          docker push retracedhq/retraced:${MAJOR}
+          docker tag retracedhq/retraced:${CIRCLE_SHA1:0:7} retracedhq/retraced:${MAJOR}.${MINOR}
+          docker push retracedhq/retraced:${MAJOR}.${MINOR}
+          docker tag retracedhq/retraced:${CIRCLE_SHA1:0:7} retracedhq/retraced:${MAJOR}.${MINOR}.${PATCH}
+          docker push retracedhq/retraced:${MAJOR}.${MINOR}.${PATCH}
 
-          docker tag registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
-          docker push registry.replicated.com/library/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
+          docker tag retracedhq/retraced-postgres:${CIRCLE_SHA1:0:7} retracedhq/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
+          docker push retracedhq/retraced-postgres:${MAJOR}.${MINOR}.${PATCH}
 
-          docker tag registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
-          docker push registry.replicated.com/library/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
+          docker tag retracedhq/retraced-nsq:${CIRCLE_SHA1:0:7} retracedhq/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
+          docker push retracedhq/retraced-nsq:${MAJOR}.${MINOR}.${PATCH}
 
   is_retracedhq:
     <<: *defaults

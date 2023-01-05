@@ -5,4 +5,4 @@ metadata:
 spec:
   containers:
     - name: tests
-      image: registry.replicated.com/library/retraced
+      image: retracedhq/retraced
