@@ -5,17 +5,17 @@ import hydrateProject from "../../models/project/hydrate";
 
 export default async function (req) {
   const claims = await checkAdminAccess(req);
-  const page = req.query.page;
-  const count = req.query.count;
+  const offset = req.query.offset;
+  const limit = req.query.limit;
   const projects = claims.adminToken
     ? await listAllProjects({
-        page,
-        count,
+        offset,
+        limit,
       })
     : await listProjects({
         user_id: claims.userId,
-        page,
-        count,
+        offset,
+        limit,
       });
 
   const hydratedProjects: any[] = [];

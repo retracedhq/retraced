@@ -1,10 +1,11 @@
+import { is_numeric } from "../../common/helpers";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
 export interface Options {
-  page: string;
-  count: string;
+  offset: string;
+  limit: string;
 }
 
 /**
@@ -12,13 +13,10 @@ export interface Options {
  */
 export default async function listAllProjects(opts: Options) {
   const q =
-    opts.page && opts.count
+    opts.offset && opts.limit
       ? `select project.* from project order by created desc offset $1 limit $2`
       : `select project.* from project`;
-  const v =
-    opts.page && opts.count
-      ? [Number(opts.page) > 1 ? (Number(opts.page) - 1) * Number(opts.count) : 0, Number(opts.count)]
-      : [];
+  const v = is_numeric(opts.offset) && is_numeric(opts.limit) ? [Number(opts.offset), Number(opts.limit)] : [];
   const result = await pgPool.query(q, v);
 
   return result.rowCount > 0 ? result.rows : [];
