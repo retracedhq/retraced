@@ -26,7 +26,7 @@ x-common-variables: &common-variables
   HOSTNAME: retraced-api-67856674bf-kwq7f
   NSQD_TCP_PORT: 4150
   # Set admin root token here
-  # ADMIN_ROOT_TOKEN: <admin_token>
+  ADMIN_ROOT_TOKEN: dev
 
 services:
   retraced-api:
@@ -165,33 +165,34 @@ services:
         condition: service_started
 
   jackson:
-    image: boxyhq/jackson
+    image: boxyhq/jackson:1.5.0
     ports:
       - "5225:5225"
     networks:
       - retraced
     links:
       - retraced-api
-    # environment:
-    #   -  SAML_AUDIENCE=
-    #   -  JACKSON_API_KEYS=
-    #   -  DB_TYPE=
-    #   -  DB_URL=
-    #   -  DB_TTL=
-    #   -  DB_CLEANUP_LIMIT=
-    #   -  DB_ENCRYPTION_KEY=
-    #   -  SMTP_HOST=
-    #   -  SMTP_PORT=
-    #   -  SMTP_USER=
-    #   -  SMTP_PASSWORD=
-    #   -  SMTP_FROM=
-    #   -  NEXTAUTH_JWT_SIGNING_PRIVATE_KEY=
-    #   -  NEXTAUTH_URL=
-    #   -  NEXTAUTH_SECRET=
-    #   -  NEXTAUTH_ACL=
-    #   -  RETRACED_HOST_URL=
-    #   -  RETRACED_EXTERNAL_URL=
-    #   -  ADMIN_ROOT_TOKEN=
+    environment:
+    #   - SAML_AUDIENCE=
+        - JACKSON_API_KEYS=${JACKSON_API_KEYS}
+    #   - DB_TYPE=
+        - DB_URL=postgres://retraced:password@postgres:5432/postgres
+    #   - DB_TTL=
+    #   - DB_CLEANUP_LIMIT=
+    #   - DB_ENCRYPTION_KEY=
+        - SMTP_HOST=${SMTP_HOST}
+        - SMTP_PORT=${SMTP_PORT}
+        - SMTP_USER=${SMTP_USER}
+        - SMTP_PASSWORD=${SMTP_PASSWORD}
+        - SMTP_FROM=${SMTP_FROM}
+    #   - NEXTAUTH_JWT_SIGNING_PRIVATE_KEY=
+        - NEXTAUTH_URL=http://localhost:5225
+        - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+        - NEXTAUTH_ACL=${NEXTAUTH_ACL}
+        - RETRACED_HOST_URL=http://retraced-api:3000/auditlog
+        - RETRACED_EXTERNAL_URL=http://localhost:3000/auditlog
+        - ADMIN_ROOT_TOKEN=dev
+        - BOXYHQ_LICENSE_KEY=${BOXYHQ_LICENSE_KEY}
     depends_on:
       - "retraced-api"
     restart: "always"
