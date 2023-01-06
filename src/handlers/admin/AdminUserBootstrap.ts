@@ -24,7 +24,7 @@ export class AdminUserBootstrap {
     try {
       token = apiTokenFromAuthHeader(auth?.toString());
     } catch (err) {
-      throw { status: 401, err: new Error("Not Found") };
+      throw { status: 401, err: new Error("Invalid token") };
     }
 
     if (token !== this.sharedSecret) {
