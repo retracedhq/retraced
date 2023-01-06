@@ -191,7 +191,7 @@ services:
         - NEXTAUTH_ACL=${NEXTAUTH_ACL}
         - RETRACED_HOST_URL=http://retraced-api:3000/auditlog
         - RETRACED_EXTERNAL_URL=http://localhost:3000/auditlog
-        - ADMIN_ROOT_TOKEN=dev
+        - RETRACED_ADMIN_ROOT_TOKEN=dev
         - BOXYHQ_LICENSE_KEY=${BOXYHQ_LICENSE_KEY}
     depends_on:
       - "retraced-api"
