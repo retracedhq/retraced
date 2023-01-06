@@ -6,6 +6,8 @@ FROM debian:buster-slim as cron
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   curl \
+  && apt-get clean \
+  && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/*
 
 
@@ -48,6 +50,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   \
   \
   libp11-kit0 \
+  && apt-get clean \
+  && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000

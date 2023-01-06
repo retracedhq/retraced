@@ -1,4 +1,4 @@
-.PHONY: clean prebuild deps lint swagger routes build cover test report-coverage pkg build run run-processor run-debug
+.PHONY: clean prebuild deps lint swagger routes build cover test report-coverage build run run-processor run-debug
 SKIP :=
 REPO := retracedhq/retraced
 PATH := $(shell pwd):${PATH}
