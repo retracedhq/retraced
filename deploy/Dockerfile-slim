@@ -24,7 +24,7 @@ COPY deploy/crontab /crontab
 # # #
 # Node build
 #
-FROM node:16.19.0 as node
+FROM node:18.13.0 as node
 
 WORKDIR /src
 ADD package.json /src
@@ -42,7 +42,7 @@ RUN make build
 # Main build
 #
 # curl must be included for cron
-FROM node:16.19.0
+FROM node:18.13.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
