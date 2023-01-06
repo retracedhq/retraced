@@ -24,11 +24,11 @@ export class AdminUserBootstrap {
     try {
       token = apiTokenFromAuthHeader(auth?.toString());
     } catch (err) {
-      throw { status: 404, err: new Error("Not Found") };
+      throw { status: 401, err: new Error("Invalid token") };
     }
 
     if (token !== this.sharedSecret) {
-      throw { status: 404, err: new Error("Not Found") };
+      throw { status: 401, err: new Error("Invalid token") };
     }
 
     if (!claims || !claims.email) {
@@ -86,7 +86,6 @@ export class AdminUserBootstrap {
   }
 
   public handler() {
-    return (req: express.Request) =>
-      this.handle(req.get("Authorization"), req.body && req.body.claims);
+    return (req: express.Request) => this.handle(req.get("Authorization"), req.body && req.body.claims);
   }
 }
