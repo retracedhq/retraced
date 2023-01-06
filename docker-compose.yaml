@@ -39,10 +39,10 @@ services:
     environment: *common-variables
     networks:
       - retraced
-    command: node --inspect=0.0.0.0 build/src/index.js
     depends_on:
       - postgres-migration
     restart: "always"
+    command: node --inspect=0.0.0.0 build/src/index.js
 
   # retraced-dbutil:
   #   build: 
@@ -65,8 +65,8 @@ services:
       - retraced
     depends_on:
       - postgres
-    command: node --inspect=0.0.0.0 build/src/_processor/index.js
     restart: "always"
+    command: node --inspect=0.0.0.0 build/src/_processor/index.js
 
   retraced-cron:
     build: 
@@ -77,8 +77,8 @@ services:
       - retraced
     depends_on:
       - postgres
-    command: /usr/local/bin/retraced-auditlog-cron /crontab
     restart: "always"
+    command: /usr/local/bin/retraced-auditlog-cron /crontab
 
   nsqd:
     image: nsqio/nsq:v1.2.1 
@@ -90,10 +90,10 @@ services:
       - POSTGRES_USER=retraced
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=retraced
-    command: nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd."
     networks:
       - retraced
     restart: "always"
+    command: nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd."
 
   postgres:
     image: postgres:14.2
@@ -149,8 +149,10 @@ services:
     networks:
       - retraced
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
     command: node --inspect=0.0.0.0 build/src/_db/runner-lite.js pg
+    restart: "on-failure"
 
   elastic-migration:
     build: 
@@ -159,10 +161,11 @@ services:
     environment: *common-variables
     networks:
       - retraced
-    command: node --inspect=0.0.0.0 build/src/_db/runner-lite.js es
     depends_on:
       elasticsearch:
         condition: service_started
+    command: node --inspect=0.0.0.0 build/src/_db/runner-lite.js es
+    restart: "on-failure"
 
   jackson:
     image: boxyhq/jackson:1.5.0
