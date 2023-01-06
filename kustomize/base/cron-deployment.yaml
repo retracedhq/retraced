@@ -23,7 +23,7 @@ spec:
           command:
             - /bin/bash
             - -c
-            - /usr/local/bin/replicated-auditlog-cron /crontab | grep ERRO
+            - /usr/local/bin/retraced-auditlog-cron /crontab | grep ERRO
           env:
             - name: NSQD_HOST
               valueFrom:
