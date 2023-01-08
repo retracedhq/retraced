@@ -66,7 +66,7 @@ INSERT INTO admin_token (
     if (adminToken) {
       const qAdmin = `SELECT * from token WHERE token = $1 AND disabled = FALSE`;
       const vAdmin = [adminToken];
-      const resAdmin = await this.pool.query(q, v);
+      const resAdmin = await this.pool.query(qAdmin, vAdmin);
       if (_.isEmpty(resAdmin.rows)) {
         throw { status: 401, err: new Error("Invalid admin_token") };
       }
