@@ -1,4 +1,4 @@
-import { is_numeric } from "../../common/helpers";
+import { isNumeric } from "../../common/helpers";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -14,7 +14,7 @@ export interface Options {
  */
 export default async function listProjects(opts: Options) {
   const q =
-    is_numeric(opts.offset) && is_numeric(opts.limit)
+    isNumeric(opts.offset) && isNumeric(opts.limit)
       ? `select project.* from project
     inner join projectuser
     on project.id = projectuser.project_id
@@ -25,7 +25,7 @@ export default async function listProjects(opts: Options) {
     on project.id = projectuser.project_id
     where projectuser.user_id = $1`;
   const v =
-    is_numeric(opts.offset) && is_numeric(opts.limit)
+    isNumeric(opts.offset) && isNumeric(opts.limit)
       ? [opts.user_id, Number(opts.offset), Number(opts.limit)]
       : [opts.user_id];
 

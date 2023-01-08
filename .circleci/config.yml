@@ -24,7 +24,7 @@ jobs:
           keys:
             - v1-dependencies-node16-{{ checksum "package.json" }}
             - v1-dependencies-node16-
-      - run: make deps swagger cover
+      - run: make deps lint swagger cover
       - store_test_results:
           path: results
       - save_cache:

@@ -36,11 +36,7 @@ export default function createProject(opts) {
       ) values (
         $1, to_timestamp($2), $3
       )`;
-      const v = [
-        project.id,
-        project.created,
-        project.name,
-      ];
+      const v = [project.id, project.created, project.name];
       pg.query(q, v, (qerr, result) => {
         done();
         if (qerr) {
@@ -60,24 +56,28 @@ export default function createProject(opts) {
           });
         }
 
-        const createEnvPromises = [] as Array<Promise<Environment>>;
+        const createEnvPromises = [] as Promise<Environment>[];
         project.environments.forEach((environment) => {
-          createEnvPromises.push(createEnvironment({
-            name: environment.name,
-            projectId: project.id,
-          }));
+          createEnvPromises.push(
+            createEnvironment({
+              name: environment.name,
+              projectId: project.id,
+            })
+          );
         });
 
         Promise.all(createEnvPromises)
           .then((envs) => {
-            const createTokenPromises = [] as Array<Promise<ApiToken>>;
+            const createTokenPromises = [] as Promise<ApiToken>[];
             project.environments = envs;
             project.environments.forEach((environment: Environment) => {
               const newApiToken = {
                 name: `Default ${environment.name} Token`,
                 disabled: false,
               };
-              createTokenPromises.push(createApiToken(project.id, environment.id, newApiToken));
+              createTokenPromises.push(
+                createApiToken(project.id, environment.id, newApiToken)
+              );
             });
             return Promise.all(createTokenPromises);
           })
