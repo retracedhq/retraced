@@ -11,11 +11,11 @@ interface Options {
 }
 
 export interface Record {
-  recipients: Array<{
+  recipients: {
     email: string;
     id: string;
     token: string;
-  }>;
+  }[];
   project_id: string;
   project_name: string;
   environment_id: string;
@@ -69,9 +69,13 @@ export default async function anomalyReport(opts: Options): Promise<Record[]> {
       r.recipient_emails,
       r.recipient_ids,
       r.recipient_tokens,
-      (email, id, token) => ({ email, id, token }),
+      (email, id, token) => ({ email, id, token })
     );
 
-    return (_.omit(r, ["recipient_emails", "recipient_ids", "recipient_tokens"]) as Record);
+    return _.omit(r, [
+      "recipient_emails",
+      "recipient_ids",
+      "recipient_tokens",
+    ]) as Record;
   });
 }

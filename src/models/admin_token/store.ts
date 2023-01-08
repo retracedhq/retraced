@@ -64,10 +64,10 @@ INSERT INTO admin_token (
     adminToken?: string
   ): Promise<AdminClaims> {
     if (adminToken) {
-      const q = `SELECT * from token WHERE token = $1 AND disabled = FALSE`;
-      const v = [adminToken];
-      const res = await this.pool.query(q, v);
-      if (_.isEmpty(res.rows)) {
+      const qAdmin = `SELECT * from token WHERE token = $1 AND disabled = FALSE`;
+      const vAdmin = [adminToken];
+      const resAdmin = await this.pool.query(q, v);
+      if (_.isEmpty(resAdmin.rows)) {
         throw { status: 401, err: new Error("Invalid admin_token") };
       }
     }

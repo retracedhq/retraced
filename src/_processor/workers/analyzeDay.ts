@@ -20,11 +20,11 @@ interface Opts {
   date: string;
   // minutes
   offset: number;
-  recipients: Array<{
+  recipients: {
     email: string;
     id: string;
     token: string;
-  }>;
+  }[];
 }
 
 export default async function analyzeDay(job) {
@@ -64,16 +64,22 @@ export default async function analyzeDay(job) {
     topGroups: stat.topGroups,
   };
 
-  logger.info(`analyze_day job completed for ${opts.environmentId} ${opts.date} ${opts.offset}: ${JSON.stringify(context)}`);
+  logger.info(
+    `analyze_day job completed for ${opts.environmentId} ${opts.date} ${
+      opts.offset
+    }: ${JSON.stringify(context)}`
+  );
 
   // TODO(areed) schedule for 7AM
-  Emailer.getDefault().send({
-    context,
-    template: "retraced/report-day",
-    subject: "Retraced Daily Report",
-    to: recipients.map(({ email }) => email),
-  }).catch((e) => {
-    logger.error(util.inspect(e));
-    throw e;
-  });
+  Emailer.getDefault()
+    .send({
+      context,
+      template: "retraced/report-day",
+      subject: "Retraced Daily Report",
+      to: recipients.map(({ email }) => email),
+    })
+    .catch((e) => {
+      logger.error(util.inspect(e));
+      throw e;
+    });
 }
