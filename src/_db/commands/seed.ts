@@ -1,4 +1,4 @@
-import rp from "request-promise";
+import axios from "axios";
 import chalk from "chalk";
 import _ from "lodash";
 import Chance from "chance";
@@ -6,6 +6,7 @@ import util from "util";
 import jwt from "jsonwebtoken";
 import Retraced from "@retracedhq/retraced";
 import ProgressBar from "progress";
+import http from "http";
 
 const adminHmacSecret = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 const chance = new Chance();
@@ -65,18 +66,12 @@ exports.builder = {
 };
 
 exports.handler = async (argv) => {
-  const r = rp.defaults({
-    forever: true,
-    pool: { maxSockets: 1 },
-  });
-
   const claims = {
     userId: argv.userId,
   };
   const jwtToken = jwt.sign(claims, adminHmacSecret);
 
   const resp: any = await getProject(
-    r,
     argv.apiEndpoint,
     jwtToken,
     argv.projectId
@@ -103,7 +98,6 @@ exports.handler = async (argv) => {
   }
 
   await createEvents(
-    r,
     argv.apiEndpoint,
     argv.projectId,
     argv.eventcount,
@@ -114,27 +108,22 @@ exports.handler = async (argv) => {
   console.log(chalk.green("Done!"));
 };
 
-function getProject(r, endpoint, jwtToken, projectId) {
-  return new Promise((resolve, reject) => {
-    const options = {
-      method: "GET",
-      uri: `${endpoint}/admin/v1/project/${projectId}`,
+async function getProject(endpoint, jwtToken, projectId) {
+  const { data } = await axios.get<any>(
+    `${endpoint}/admin/v1/project/${projectId}`,
+    {
       headers: {
         "User-Agent": "Retraced-Dev/1.0.0",
         Authorization: jwtToken,
       },
-    };
-    r(options)
-      .then((resp) => {
-        resolve(JSON.parse(resp));
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+      httpAgent: new http.Agent({ keepAlive: true }),
+    }
+  );
+
+  return data;
 }
 
-function createEvents(r, endpoint, projectId, count, apiToken, bulk, groupId) {
+function createEvents(endpoint, projectId, count, apiToken, bulk, groupId) {
   const client = new Retraced.Client({
     endpoint,
     apiKey: apiToken.token,
