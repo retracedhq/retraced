@@ -6,6 +6,8 @@ FROM debian:buster-slim as cron
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   curl \
+  && apt-get clean \
+  && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/*
 
 
@@ -16,19 +18,19 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
   && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
   && chmod +x "$SUPERCRONIC" \
   && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
-  && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/replicated-auditlog-cron
+  && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/retraced-auditlog-cron
 COPY deploy/crontab /crontab
 
 # # #
 # Node build
 #
-FROM node:16.18.1 as node
+FROM node:18.13.0 as node
 
 WORKDIR /src
 ADD package.json /src
-ADD yarn.lock /src
+ADD package-lock.json /src
 ADD Makefile /src
-RUN yarn install --force
+RUN npm install
 ADD .snyk /src
 RUN npm run snyk-protect
 
@@ -36,17 +38,11 @@ ADD . /src
 
 RUN make build
 
-# this one is a little janky, mostly for local dev
-ARG skip_pkg
-
-RUN make pkg SKIP=${skip_pkg}
-
-
 # # #
 # Main build
 #
 # curl must be included for cron
-FROM debian:buster-slim
+FROM node:18.13.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
@@ -54,34 +50,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   \
   \
   libp11-kit0 \
+  && apt-get clean \
+  && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000
 
-COPY --from=node /src/retraceddb /src/retraceddb
-COPY --from=node /src/retraceddb4G /src/retraceddb4G
-COPY --from=node /src/retraceddb8G /src/retraceddb8G
-COPY --from=node /src/retraceddb16G /src/retraceddb16G
-COPY --from=node /src/migrations/pg /src/migrations/pg
-COPY --from=node /src/migrations/es /src/migrations/es
-COPY --from=node /src/api /src/api
-COPY --from=node /src/retracedctl /src/bin/retracedctl
-COPY --from=node /src/processor /src/processor
-COPY --from=node /src/node_modules/@napi-rs/snappy-linux-x64-gnu/snappy.linux-x64-gnu.node /src/node_modules/@napi-rs/snappy-linux-x64-gnu/snappy.linux-x64-gnu.node
-# COPY --from=node /src/node_modules/@node-rs/crc32/build/Release/crc32c.node /src/node_modules/sse4_crc32/build/Release/crc32c.node
-COPY --from=node /src/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node /src/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node
+WORKDIR /app
+
+ADD .env /app
+ADD package.json /app
+ADD package-lock.json /app
+COPY --from=node /src/migrations /app/build/migrations
+COPY --from=node /src/build /app/build
+COPY --from=node /src/bin /app/bin
 COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercronic-linux-amd64
-COPY --from=cron /usr/local/bin/replicated-auditlog-cron /usr/local/bin/replicated-auditlog-cron
+COPY --from=cron /usr/local/bin/retraced-auditlog-cron /usr/local/bin/retraced-auditlog-cron
 COPY --from=cron /crontab /crontab
 
+RUN npm install --omit=dev
 
-RUN ln -s /src/api /src/replicated-auditlog-api
-RUN ln -s /src/processor /src/replicated-auditlog-processor
-RUN ln -s /src/bin/retracedctl /src/replicated-auditlog-retracedctl
-RUN ln -s /src/retraceddb /src/replicated-auditlog-migrations
-
-WORKDIR /src
-
-RUN chmod a+rwx /src # auth0 writes to pwd
-
-CMD ["/src/replicated-auditlog-api"]
+CMD ["node", "build/src/index.js"]

@@ -5,7 +5,7 @@ import _ from "lodash";
 import Chance from "chance";
 import util from "util";
 import jwt from "jsonwebtoken";
-import Retraced from "@retraced-hq/retraced";
+import Retraced from "@retracedhq/retraced";
 import ProgressBar from "progress";
 
 const adminHmacSecret = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";

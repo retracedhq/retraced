@@ -1,4 +1,4 @@
-version: "3.6"
+version: "3.8"
 
 services:
   nsqd:
@@ -36,5 +36,5 @@ services:
     environment:
       - NSQD_HOST=nsqd
       - NSQD_TCP_PORT=4150
-    command: /usr/local/bin/replicated-auditlog-cron /crontab
+    command: /usr/local/bin/retraced-auditlog-cron /crontab
     restart: "always"
