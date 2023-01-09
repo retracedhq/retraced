@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import chalk from "chalk";
 import fs from "fs";
 import path from "path";
@@ -33,9 +32,13 @@ exports.handler = (argv) => {
   const name = argv.name.replace(" ", "-");
   const timestamp = (new Date().getTime() / 1000).toFixed();
 
-  if (argv.db === "pg" || argv.db === "pg10" ) {
+  if (argv.db === "pg" || argv.db === "pg10") {
     _.forEach(["do", "undo"], (action) => {
-      const dest = path.join("migrations", argv.db, `${timestamp}.${action}.${name}.sql`);
+      const dest = path.join(
+        "migrations",
+        argv.db,
+        `${timestamp}.${action}.${name}.sql`
+      );
       fs.writeFileSync(dest, "-- SQL goes here");
       console.log(chalk.green(dest));
     });

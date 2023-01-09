@@ -1,5 +1,3 @@
-import "source-map-support/register";
-
 import { Scope } from "../../security/scope";
 import schema from "./schema";
 import { graphql } from "graphql";

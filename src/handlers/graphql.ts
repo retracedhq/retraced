@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import { graphql } from "graphql";
 
 import { apiTokenFromAuthHeader } from "../security/helpers";

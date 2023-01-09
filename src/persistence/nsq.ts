@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import nsq from "nsqjs";
 import { histogram, instrumented, meter, timer } from "../metrics";
 import { logger } from "../logger";
@@ -10,7 +9,7 @@ export class NSQClient {
     return new NSQClient(
       config.NSQD_HOST || "",
       Number(config.NSQD_TCP_PORT),
-      Number(circuitBreakerThreshold),
+      Number(circuitBreakerThreshold)
     );
   }
 
@@ -26,7 +25,7 @@ export class NSQClient {
   constructor(
     private readonly host: string,
     private readonly port: number,
-    private readonly circuitBreakerThreshold: number,
+    private readonly circuitBreakerThreshold: number
   ) {
     this.circuitBreakerThreshold = circuitBreakerThreshold || -1;
   }
@@ -52,8 +51,7 @@ export class NSQClient {
   // but it seems a little heavy for what we need at this point.
   private checkCircuitBreaker() {
     const shouldCheck =
-      this.circuitBreakerThreshold >= 0 &&
-      this.circuitBreakerThreshold <= 1;
+      this.circuitBreakerThreshold >= 0 && this.circuitBreakerThreshold <= 1;
 
     if (!shouldCheck) {
       return;
@@ -70,15 +68,17 @@ export class NSQClient {
   private computeErrorPercentage() {
     const errorRate = meter("NSQClient.produce.errors").fifteenMinuteRate();
     const callRate = timer("NSQClient.produce.timer").fifteenMinuteRate();
-    const errorPct = callRate ? (errorRate / callRate) : 0;
+    const errorPct = callRate ? errorRate / callRate : 0;
     return errorPct;
   }
 
   // Destroy the writer, forcing a reconnect on the next produce operation.
   private forceReconnect(errorPct: number) {
-    logger.warn(`Error Percentage ${errorPct} is greater than threshold` +
-      `${this.circuitBreakerThreshold}, reconnecting to nsq at` +
-      `${this.host}:${this.port}`);
+    logger.warn(
+      `Error Percentage ${errorPct} is greater than threshold` +
+        `${this.circuitBreakerThreshold}, reconnecting to nsq at` +
+        `${this.host}:${this.port}`
+    );
     if (this.writer) {
       this.writer.then((w) => w.close());
       delete this.writer;
@@ -92,7 +92,9 @@ export class NSQClient {
       let connected = false;
 
       w.connect();
-      logger.info(`NSQ writer attempting to connect to nsqd at ${this.host}:${this.port}`);
+      logger.info(
+        `NSQ writer attempting to connect to nsqd at ${this.host}:${this.port}`
+      );
 
       w.on("ready", () => {
         connected = true;

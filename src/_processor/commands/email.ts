@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import moment from "moment";
 
 import nsq from "../persistence/nsq";
@@ -31,7 +30,7 @@ export const builder = {
     default: "Test Environment",
   },
   utcOffset: {
-    default:  -420, // PDT
+    default: -420, // PDT
     type: "number",
   },
   recipient: {
@@ -42,21 +41,27 @@ export const builder = {
 };
 
 export const handler = (argv) => {
-      const jobBody = JSON.stringify({
-        projectId: argv.projectId,
-        projectName: argv.projectName,
-        environmentId: argv.environmentId,
-        environmentName: argv.environmentName,
-        date: moment.utc()
-          .add(argv.utcOffset, "minutes")
-          .add(1, "day")
-          .format("YYYY-MM-DD"),
-        offset: argv.utcOffset,
-        recipients: [{email: argv.recipient, id: "test id", token: "fake-token"}],
-      });
-      logger.info(`scheduling analyze_day reporting job for environment ${argv.environmentId} at UTC offset ${argv.utcOffset} with recipients ${JSON.stringify([argv.recipient])}`);
-      nsq.produce("environment_day", jobBody)
-        .catch((err) => logger.info(err));
-      setTimeout(() => process.exit(0), 2000);
-      return argv;
+  const jobBody = JSON.stringify({
+    projectId: argv.projectId,
+    projectName: argv.projectName,
+    environmentId: argv.environmentId,
+    environmentName: argv.environmentName,
+    date: moment
+      .utc()
+      .add(argv.utcOffset, "minutes")
+      .add(1, "day")
+      .format("YYYY-MM-DD"),
+    offset: argv.utcOffset,
+    recipients: [{ email: argv.recipient, id: "test id", token: "fake-token" }],
+  });
+  logger.info(
+    `scheduling analyze_day reporting job for environment ${
+      argv.environmentId
+    } at UTC offset ${argv.utcOffset} with recipients ${JSON.stringify([
+      argv.recipient,
+    ])}`
+  );
+  nsq.produce("environment_day", jobBody).catch((err) => logger.info(err));
+  setTimeout(() => process.exit(0), 2000);
+  return argv;
 };

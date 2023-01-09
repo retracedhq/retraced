@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import getPgPool from "../../persistence/pg";
 import { EnvironmentTimeRange } from "../../common";
 
@@ -9,7 +8,9 @@ interface ActorCount {
   action_count: number;
 }
 
-export default async function selectTop(opts: EnvironmentTimeRange): Promise<ActorCount[]> {
+export default async function selectTop(
+  opts: EnvironmentTimeRange
+): Promise<ActorCount[]> {
   const select = `
   select
       active_actor.actor_id,
@@ -33,7 +34,7 @@ export default async function selectTop(opts: EnvironmentTimeRange): Promise<Act
     opts.range[1].format(),
   ]);
 
-  return results.rows.map(({actor_id, name, action_count}) => ({
+  return results.rows.map(({ actor_id, name, action_count }) => ({
     actor_id,
     name,
     action_count: parseInt(action_count, 10),

@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import elasticsearch from "elasticsearch";
 import _ from "lodash";
 import request from "request-promise";
@@ -20,13 +19,11 @@ export default function getElasticsearch(): elasticsearch.Client {
       sslSettings.rejectUnauthorized = true;
     }
 
-    es = new elasticsearch.Client(
-      {
-        hosts,
-        apiVersion: "7.x",
-        ssl: sslSettings,
-      },
-    );
+    es = new elasticsearch.Client({
+      hosts,
+      apiVersion: "7.x",
+      ssl: sslSettings,
+    });
   }
 
   return es;

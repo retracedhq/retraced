@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import moment from "moment";
 import util from "util";
 import countActions from "../models/active_actor/count";

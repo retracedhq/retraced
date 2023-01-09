@@ -1,14 +1,12 @@
-import "source-map-support/register";
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
 
-import {
-  scope,
-} from "../../persistence/elasticsearch";
+import { scope } from "../../persistence/elasticsearch";
 
-@suite class ElasticsearchTest {
-
-  @test public "scope(projectId=p1, environemntId=e1, groupId=g1, targetId=t1)"() {
+@suite
+class ElasticsearchTest {
+  @test
+  public "scope(projectId=p1, environemntId=e1, groupId=g1, targetId=t1)"() {
     const [index, filters] = scope({
       projectId: "p1",
       environmentId: "e1",
@@ -20,8 +18,8 @@ import {
     expect(filters[0]).to.deep.equal({
       bool: {
         should: [
-          { match: {"group.id": { query: "g1", operator: "and" }}},
-          { match: {team_id: { query: "g1", operator: "and" }}},
+          { match: { "group.id": { query: "g1", operator: "and" } } },
+          { match: { team_id: { query: "g1", operator: "and" } } },
         ],
       },
     });

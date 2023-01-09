@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import process from "process";
 import moment from "moment";
 import monkit from "monkit";
@@ -8,7 +7,7 @@ import nsq from "../persistence/nsq";
 import getRedis from "../persistence/redis";
 import config from "../../config";
 
-export default async function(job) {
+export default async function (job) {
   const redis = getRedis(config.WARP_PIPE_REDIS_DB);
   const jobObj = JSON.parse(job.body);
   const groupId = jobObj.event.group && jobObj.event.group.id;
@@ -42,7 +41,11 @@ export default async function(job) {
   const now = moment.utc().valueOf();
 
   if (normalizedEvent.created) {
-    monkit.histogram("workers.streamEvent.latencyCreated").update(now - normalizedEvent.created);
+    monkit
+      .histogram("workers.streamEvent.latencyCreated")
+      .update(now - normalizedEvent.created);
   }
-  monkit.histogram("workers.streamEvent.latencyReceived").update(now - normalizedEvent.received);
+  monkit
+    .histogram("workers.streamEvent.latencyReceived")
+    .update(now - normalizedEvent.received);
 }

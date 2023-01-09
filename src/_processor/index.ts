@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import _ from "lodash";
 import bugsnag from "bugsnag";
 import * as monkit from "monkit";
@@ -33,7 +32,9 @@ import getPgPool from "../persistence/pg";
 startHealthz();
 
 if (!config.BUGSNAG_TOKEN) {
-  logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
+  logger.error(
+    "BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag"
+  );
 } else {
   bugsnag.register(config.BUGSNAG_TOKEN || "", {
     releaseStage: config.STAGE,
@@ -43,20 +44,20 @@ if (!config.BUGSNAG_TOKEN) {
 
 let PG_SEARCH = false;
 if (config.PG_SEARCH) {
-    logger.info("PG_SEARCH  set, using Postgres search");
-    PG_SEARCH = true;
+  logger.info("PG_SEARCH  set, using Postgres search");
+  PG_SEARCH = true;
 } else {
-    logger.info("PG_SEARCH not set, using ElasticSearch");
+  logger.info("PG_SEARCH not set, using ElasticSearch");
 }
 let NO_WARP_PIPE = false;
 if (config.NO_WARP_PIPE) {
-    NO_WARP_PIPE = true;
-    logger.info("NO_WARP_PIPE set, disabling Warp Pipe jobs");
+  NO_WARP_PIPE = true;
+  logger.info("NO_WARP_PIPE set, disabling Warp Pipe jobs");
 } else {
-    logger.info("NO_WARP_PIPE not set - Warp Pipe jobs enabled");
+  logger.info("NO_WARP_PIPE not set - Warp Pipe jobs enabled");
 }
 
-const leftPad = (s, n) => n > s.length ? " ".repeat(n - s.length) + s : s;
+const leftPad = (s, n) => (n > s.length ? " ".repeat(n - s.length) + s : s);
 const registry = monkit.getRegistry();
 
 metrics.bootstrapFromEnv();
@@ -101,12 +102,12 @@ const esConsumers: Consumer[] = [
 
 const pgSearchConsumers: Consumer[] = [
   {
-      topic: "normalized_events",
-      channel: "index_events",
-      worker: indexEvent,
-      maxAttempts: 3,
-      timeoutSeconds: 20,
-      maxInFlight: 10,
+    topic: "normalized_events",
+    channel: "index_events",
+    worker: indexEvent,
+    maxAttempts: 3,
+    timeoutSeconds: 20,
+    maxInFlight: 10,
   },
 ];
 
@@ -176,12 +177,12 @@ const nsqConsumers: Consumer[] = [
     maxInFlight: 1,
   },
   {
-      topic: "every_ten_minutes",
-      channel: "prune_viewer_descriptors",
-      worker: pruneViewerDescriptors,
-      maxAttempts: 1,
-      timeoutSeconds: 60,
-      maxInFlight: 1,
+    topic: "every_ten_minutes",
+    channel: "prune_viewer_descriptors",
+    worker: pruneViewerDescriptors,
+    maxAttempts: 1,
+    timeoutSeconds: 60,
+    maxInFlight: 1,
   },
   {
     topic: "first_wed_of_month",
@@ -234,21 +235,25 @@ const nsqConsumers: Consumer[] = [
 ];
 
 if (!PG_SEARCH) {
-    elasticsearchAliasVerify();
+  elasticsearchAliasVerify();
 }
 
 for (const consumer of nsqConsumers) {
-  const { topic, channel, worker, maxAttempts, timeoutSeconds, maxInFlight } = consumer;
+  const { topic, channel, worker, maxAttempts, timeoutSeconds, maxInFlight } =
+    consumer;
 
   const receive = async (msg) => {
     const doAck = () => msg.finish();
     const requeue = () => msg.requeue(15000, true);
-    const attempt = msg.attempt > 1 ? ` attempt ${msg.attempts} of ${maxAttempts}` : "";
+    const attempt =
+      msg.attempt > 1 ? ` attempt ${msg.attempts} of ${maxAttempts}` : "";
 
-    logger.debug(`-> ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${attempt}...`);
+    logger.debug(
+      `-> ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${attempt}...`
+    );
     await monkit.instrument(
-        `processor.${topic}__${channel}`,
-        handle(topic, channel, worker, msg, doAck, requeue),
+      `processor.${topic}__${channel}`,
+      handle(topic, channel, worker, msg, doAck, requeue)
     );
   };
 
@@ -267,10 +272,11 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
     logger.debug(`✓  ${leftPad(topic, 20)} ${leftPad(channel, 25)}`);
     await doAck(job);
     if (elapsed >= slowElapsedThreshold) {
-      logger.warn(`[${jobDesc(job)}] completed (slowly) in ${elapsed.toFixed(3)}ms`);
+      logger.warn(
+        `[${jobDesc(job)}] completed (slowly) in ${elapsed.toFixed(3)}ms`
+      );
     }
     updateLastNSQ();
-
   } catch (err) {
     registry.meter("processor.waitForJobs.errors").mark();
     bugsnag.notify(err);
@@ -279,8 +285,14 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
     if (_.has(err, "retry")) {
       retry = err.retry;
     }
-    logger.error(`✘  ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${jobDesc(job)}`);
-    logger.error(`[${jobDesc(job)}] failed (took ${elapsed.toFixed(3)}ms): ${errToLog(err)}`);
+    logger.error(
+      `✘  ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${jobDesc(job)}`
+    );
+    logger.error(
+      `[${jobDesc(job)}] failed (took ${elapsed.toFixed(3)}ms): ${errToLog(
+        err
+      )}`
+    );
     if (retry === true) {
       logger.info(`[${jobDesc(job)}] this job will be retried later`);
       requeue();
@@ -289,7 +301,6 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
       logger.error(`[${jobDesc(job)}] this job will NOT be retried`);
     }
   }
-
 };
 
 logger.info("retraced-processor");

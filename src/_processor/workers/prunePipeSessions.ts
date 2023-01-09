@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import moment from "moment";
 
 import nsq from "../persistence/nsq";
@@ -6,7 +5,7 @@ import getRedis from "../persistence/redis";
 import { logger } from "../logger";
 import config from "../../config";
 
-export default async function(job) {
+export default async function (job) {
   const redis = getRedis(config.WARP_PIPE_REDIS_DB);
   const allSessionIds = await redis.smembersAsync("all.session.ids");
   for (const sessionId of allSessionIds) {

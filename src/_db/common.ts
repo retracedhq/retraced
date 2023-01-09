@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import getPgPool from "./persistence/pg";
 import bugsnag from "bugsnag";
 import config from "../config";

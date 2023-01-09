@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import chalk from "chalk";
 import walk from "walk";
 import path from "path";
@@ -12,7 +11,8 @@ import { setupBugsnag } from "../../common";
 setupBugsnag();
 
 export const command = "es";
-export const describe = "migrate the elasticsearch database to the current schema";
+export const describe =
+  "migrate the elasticsearch database to the current schema";
 
 export const builder = {
   elasticsearchNodes: {
@@ -64,12 +64,16 @@ export const handler = (argv) => {
       const timestamp = Number(tokens[0]);
       const name = tokens[1].slice(0, -3);
 
-      pg.query(`create table if not exists es_migration_meta (
+      pg.query(
+        `create table if not exists es_migration_meta (
         id int primary key,
         created timestamp
-      )`)
+      )`
+      )
         .then(() => {
-          return pg.query("select * from es_migration_meta where id = $1", [timestamp]);
+          return pg.query("select * from es_migration_meta where id = $1", [
+            timestamp,
+          ]);
         })
         .then((result) => {
           if (result.rowCount > 0) {
@@ -107,11 +111,14 @@ export const handler = (argv) => {
         })
         .then(((shouldSave) => {
           if (shouldSave) {
-            return pg.query(`insert into es_migration_meta (
+            return pg.query(
+              `insert into es_migration_meta (
             id, created
           ) values (
             $1, now()
-          ) on conflict do nothing`, [timestamp]);
+          ) on conflict do nothing`,
+              [timestamp]
+            );
           }
           return Promise.resolve({});
         }) as any)
