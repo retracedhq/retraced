@@ -11,8 +11,6 @@ spec:
           command:
             - node
             - --inspect=0.0.0.0
-            - -r
-            - ts-node/register
-            - src/_processor/index.ts
+            - build/src/_processor/index.js
 #          ports:
 #          - containerPort: 9229

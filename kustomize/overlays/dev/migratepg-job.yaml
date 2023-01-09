@@ -10,7 +10,5 @@ spec:
           command:
             - node
             - --inspect=0.0.0.0
-            - -r
-            - ts-node/register
-            - src/_db/runner-lite.ts
+            - build/src/_db/runner-lite.js
             - pg

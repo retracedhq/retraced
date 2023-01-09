@@ -8,7 +8,7 @@ build:
     - image: retracedhq/retraced
       context: ./
       docker:
-        dockerfile: ./Dockerfile
+        dockerfile: ./deploy/Dockerfile-slim
 
 deploy:
   kustomize:

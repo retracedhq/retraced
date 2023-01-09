@@ -8,9 +8,9 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: postgres
-    port: 5432
-    targetPort: postgres
+    - name: postgres
+      port: 5432
+      targetPort: postgres
   selector:
     app: postgres
 ---
@@ -29,59 +29,59 @@ spec:
         app: postgres
     spec:
       containers:
-      - name: postgres
-        image: postgres:14.2
-        imagePullPolicy: IfNotPresent
-        env:
-        - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
-        - name: POSTGRES_USER
-          value: retraced
-        - name: POSTGRES_PASSWORD
-          value: password
-        - name: POSTGRES_DB
-          value: retraced
-        ports:
         - name: postgres
-          containerPort: 5432
-        livenessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -i
-            - -c
-            - /bin/sh
-            - -i
-            - -c
-            - pg_isready -h 127.0.0.1 -p 5432
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -i
-            - -c
-            - pg_isready -h 127.0.0.1 -p 5432
-          initialDelaySeconds: 5
-          timeoutSeconds: 1
-          periodSeconds: 10
-        volumeMounts:
-        - name: retraced-datadir
-          mountPath: /var/lib/postgresql/data
+          image: postgres:14.2
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_USER
+              value: retraced
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: POSTGRES_DB
+              value: retraced
+          ports:
+            - name: postgres
+              containerPort: 5432
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -i
+                - -c
+                - /bin/sh
+                - -i
+                - -c
+                - pg_isready -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -i
+                - -c
+                - pg_isready -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 10
+          volumeMounts:
+            - name: retraced-datadir
+              mountPath: /var/lib/postgresql/data
 
       volumes:
-      - name: retraced-datadir
-        persistentVolumeClaim:
-          claimName: retraced-datadir
+        - name: retraced-datadir
+          persistentVolumeClaim:
+            claimName: retraced-datadir
 
   volumeClaimTemplates:
-  - metadata:
-      name: retraced-datadir
-    spec:
-      accessModes:
-      - "ReadWriteOnce"
-      resources:
-        requests:
-          storage: 1Gi
+    - metadata:
+        name: retraced-datadir
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 1Gi

@@ -13,7 +13,7 @@ spec:
             - /bin/sh
           args:
             - -c
-            - node -r ts-node/register src/retracedctl.ts
+            - ./build/src/retracedctl
               bootstrap
               --projectName   "$BOOTSTRAP_PROJECT_NAME"
               --projectId     "$BOOTSTRAP_PROJECT_ID"
@@ -40,9 +40,7 @@ spec:
           command:
             - node
             - --inspect=0.0.0.0
-            - -r
-            - ts-node/register
-            - src/index.ts
+            - build/src/index.js
           ports:
             - containerPort: 9229
           env:

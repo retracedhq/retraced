@@ -12,9 +12,10 @@ spec:
           image: retracedhq/retraced:1.4.6
           imagePullPolicy: IfNotPresent
           command:
-            - /src/retraceddb
-            - pg
-            - up
+            - node
+            - --inspect=0.0.0.0
+            - build/src/_db/runner-lite.js
+            - pgs
           envFrom:
             - secretRef:
                 name: auditlog

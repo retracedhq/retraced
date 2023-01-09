@@ -11,9 +11,10 @@ spec:
         - name: db
           image: retracedhq/retraced:1.4.6
           command:
-            - /src/retraceddb
+            - node
+            - --inspect=0.0.0.0
+            - build/src/_db/runner-lite.js
             - es
-            - up
           envFrom:
             - secretRef:
                 name: auditlog
