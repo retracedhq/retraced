@@ -7,9 +7,9 @@ export function initLogger(logFile?: string, logLevel?: string): any {
     return pino(fs.createWriteStream(logFile));
   }
 
-  const p = pino();
-  p.level = logLevel || "warn";
-  return p;
+  return pino({
+    level: logLevel || "warn",
+  });
 }
 
 function initLoggerFromEnv(): any {
