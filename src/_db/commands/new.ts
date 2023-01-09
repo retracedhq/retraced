@@ -13,7 +13,7 @@ exports.builder = {
   },
   db: {
     alias: "d",
-    choices: ["pg", "pg10", "es"],
+    choices: ["pg", "es"],
     demand: true,
   },
 };
@@ -32,7 +32,7 @@ exports.handler = (argv) => {
   const name = argv.name.replace(" ", "-");
   const timestamp = (new Date().getTime() / 1000).toFixed();
 
-  if (argv.db === "pg" || argv.db === "pg10") {
+  if (argv.db === "pg") {
     _.forEach(["do", "undo"], (action) => {
       const dest = path.join(
         "migrations",
