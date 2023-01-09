@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import nsq from "nsqjs";
 import request from "request";
 import { logger } from "../logger";
@@ -13,7 +12,7 @@ interface Message {
   json: () => any;
   timeUntilTimeout: (hard: boolean) => number;
   finish: () => void;
-  requeue: (delay?: null|number, backoff?: boolean) => void;
+  requeue: (delay?: null | number, backoff?: boolean) => void;
   touch: () => void;
 }
 
@@ -31,14 +30,18 @@ export interface NSQ {
     topic: string,
     channel: string,
     handler: (Message) => void,
-    opts: ConsumerOptions,
+    opts: ConsumerOptions
   ) => void;
   deleteTopic: (topic: string) => Promise<void>;
 }
 
 export class NSQClient {
   public static fromEnv(): NSQClient {
-    return new NSQClient(config.NSQD_HOST || "", Number(config.NSQD_TCP_PORT) || 4150, Number(config.NSQD_HTTP_PORT) || 4151);
+    return new NSQClient(
+      config.NSQD_HOST || "",
+      Number(config.NSQD_TCP_PORT) || 4150,
+      Number(config.NSQD_HTTP_PORT) || 4151
+    );
   }
 
   private readonly nsqdTCPAddresses: string[];
@@ -47,7 +50,7 @@ export class NSQClient {
   constructor(
     private readonly host: string,
     private readonly tcpPort: number,
-    private readonly httpPort: number,
+    private readonly httpPort: number
   ) {
     this.nsqdTCPAddresses = [`${host}:${tcpPort}`];
   }
@@ -62,11 +65,15 @@ export class NSQClient {
         resolve(w);
       });
       w.on("closed", () => {
-        logger.error(`NSQ writer disconnected from ${this.host}:${this.tcpPort}`);
+        logger.error(
+          `NSQ writer disconnected from ${this.host}:${this.tcpPort}`
+        );
         delete this.writer;
       });
       w.on("error", (err) => {
-        logger.error(`NSQ writer ${this.host}:${this.tcpPort} : ${err.message}`);
+        logger.error(
+          `NSQ writer ${this.host}:${this.tcpPort} : ${err.message}`
+        );
         reject(err); // no-op if already resolved
       });
     });
@@ -78,7 +85,7 @@ export class NSQClient {
     topic: string,
     channel: string,
     handle: (msg: Message) => void,
-    opts: ConsumerOptions,
+    opts: ConsumerOptions
   ) {
     // nsqjs passes to discard handler on attempt == maxAttempts, but expect
     // to wait until attempt > maxAttempts.
@@ -95,13 +102,19 @@ export class NSQClient {
       logger.warn(`NSQ consumer ${topic}.${channel}: ${err.message}`);
     });
     reader.on("discard", (msg) => {
-      logger.warn(`NSQ discarding message on ${topic}.${channel} after ${opts.maxAttempts} attempts`);
+      logger.warn(
+        `NSQ discarding message on ${topic}.${channel} after ${opts.maxAttempts} attempts`
+      );
     });
     reader.on("nsqd_connected", () => {
-      logger.info(`NSQ consumer ${topic}:${channel} connected to ${this.host}:${this.tcpPort}`);
+      logger.info(
+        `NSQ consumer ${topic}:${channel} connected to ${this.host}:${this.tcpPort}`
+      );
     });
     reader.on("nsqd_closed", () => {
-      logger.warn(`NSQ consumer ${topic}:${channel} disconnected from ${this.host}:${this.tcpPort}`);
+      logger.warn(
+        `NSQ consumer ${topic}:${channel} disconnected from ${this.host}:${this.tcpPort}`
+      );
       // The closed event is limited by the heartbeat of 30s, so no need for backoff
       this.consume(topic, channel, handle, opts);
     });
@@ -127,21 +140,26 @@ export class NSQClient {
 
   public deleteTopic(topic: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      request({
-        method: "POST",
-        uri: `http://${this.host}:${this.httpPort}/topic/delete?topic=${topic}`,
-      }, (err, resp, body) => {
-        if (err) {
-          reject(err);
-          return;
+      request(
+        {
+          method: "POST",
+          uri: `http://${this.host}:${this.httpPort}/topic/delete?topic=${topic}`,
+        },
+        (err, resp, body) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          if (
+            (resp.statusCode! < 200 || resp.statusCode! >= 300) &&
+            resp.statusCode !== 404
+          ) {
+            reject(body);
+            return;
+          }
+          resolve();
         }
-        if ((resp.statusCode! < 200 || resp.statusCode! >= 300)
-          && resp.statusCode !== 404) {
-          reject(body);
-          return;
-        }
-        resolve();
-      });
+      );
     });
   }
 }
@@ -159,7 +177,7 @@ export default {
     topic: string,
     channel: string,
     handler: (Message) => void,
-    opts: ConsumerOptions,
+    opts: ConsumerOptions
   ) => {
     if (!client) {
       client = NSQClient.fromEnv();

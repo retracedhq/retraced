@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import url from "url";
 import express from "express";
 import cors from "cors";
@@ -26,7 +25,9 @@ import https from "https";
 import sslConf from "ssl-config";
 
 if (!config.BUGSNAG_TOKEN) {
-  logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
+  logger.error(
+    "BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag"
+  );
 } else {
   bugsnag.register(config.BUGSNAG_TOKEN || "", {
     releaseStage: config.STAGE,
@@ -45,7 +46,9 @@ logger.info(`listening on basePath ${basePath}`);
 
 // Sigsci middleware has to be installed before routes and other middleware
 if (!config.SIGSCI_RPC_ADDRESS) {
-  logger.error("SIGSCI_RPC_ADDRESS not set, Signal Sciences module will not be installed");
+  logger.error(
+    "SIGSCI_RPC_ADDRESS not set, Signal Sciences module will not be installed"
+  );
 } else {
   const sigsci = new Sigsci({
     path: config.SIGSCI_RPC_ADDRESS,
@@ -68,7 +71,6 @@ serve();
 metrics.bootstrapFromEnv();
 
 function buildRoutes() {
-
   registerHealthchecks();
 
   swaggerSpecs.forEach((spec) => {
@@ -78,7 +80,11 @@ function buildRoutes() {
       res.setHeader("ContentType", "application/json");
       res.send(spec.swagger);
     });
-    router.use(`${spec.path}/swagger`, swaggerUI.serve, swaggerUI.setup(spec.swagger));
+    router.use(
+      `${spec.path}/swagger`,
+      swaggerUI.serve,
+      swaggerUI.setup(spec.swagger)
+    );
   });
 
   RegisterRoutes(router);
@@ -90,7 +96,10 @@ function buildRoutes() {
 
   if (config.ADMIN_ROOT_TOKEN) {
     const route = { method: "post", path: "/admin/v1/user/_login" };
-    const handler = wrapRoute({ handler: AdminUserBootstrap.default().handler() }, "_login");
+    const handler = wrapRoute(
+      { handler: AdminUserBootstrap.default().handler() },
+      "_login"
+    );
     register(route, handler, router);
   }
 
@@ -110,7 +119,6 @@ function buildRoutes() {
     logger.error(`[${req.ip}] ${req.path} ${errMsg}`);
     res.status(404).send(errMsg);
   });
-
 }
 
 export function registerHealthchecks() {
@@ -134,14 +142,15 @@ export function registerHealthchecks() {
   app.get("/metricz", (req, res) => {
     setTimeout(() => res.send("{}"), 200);
   });
-
 }
 
 function serve() {
   const sslCertPath = config.SSL_SERVER_CERT_PATH;
   const sslKeyPath = config.SSL_SERVER_KEY_PATH;
   if (!sslCertPath || !sslKeyPath) {
-    logger.info("SSL_SERVER_CERT_PATH or SSL_SERVER_KEY_PATH unset, serving HTTP");
+    logger.info(
+      "SSL_SERVER_CERT_PATH or SSL_SERVER_KEY_PATH unset, serving HTTP"
+    );
     serveHTTP();
   } else {
     logger.info("Found SSL parameters, serving with HTTPS");
@@ -163,16 +172,20 @@ function serveHTTPS(sslCertPath: string, sslKeyPath: string) {
 
   const sslConfig = sslConf("modern");
 
-  https.createServer({
-    key: privateKey,
-    cert: certificate,
-    ciphers: sslConfig.ciphers,
-    honorCipherOrder: true,
-    secureOptions: sslConfig.minimumTLSVersion,
-  }, app).listen(3000, "0.0.0.0", () => {
-    logger.info("Retraced API listening on port 3000...");
-  });
-
+  https
+    .createServer(
+      {
+        key: privateKey,
+        cert: certificate,
+        ciphers: sslConfig.ciphers,
+        honorCipherOrder: true,
+        secureOptions: sslConfig.minimumTLSVersion,
+      },
+      app
+    )
+    .listen(3000, "0.0.0.0", () => {
+      logger.info("Retraced API listening on port 3000...");
+    });
 }
 
 ensureHeadlessProject();

@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import { expect } from "chai";
 import { offsetsWithLocalTimeDuringUTCHour } from "../common";
 

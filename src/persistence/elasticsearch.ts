@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import elasticsearch from "elasticsearch";
 import _ from "lodash";
 import moment from "moment";
@@ -145,8 +144,12 @@ export function scope(scopeInfo: Scope): [string, any[]] {
     filters.push({
       bool: {
         should: [
-          { match: { "group.id": { query: scopeInfo.groupId, operator: "and" } }},
-          { match: { team_id: { query: scopeInfo.groupId, operator: "and" } }},
+          {
+            match: {
+              "group.id": { query: scopeInfo.groupId, operator: "and" },
+            },
+          },
+          { match: { team_id: { query: scopeInfo.groupId, operator: "and" } } },
         ],
       },
     });

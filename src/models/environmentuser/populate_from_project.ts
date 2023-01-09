@@ -1,7 +1,7 @@
 // Given a project_id and an environment_id, add all project users to that
 // environment.
 // Given a project_id and a user_id, add that user to all project environments.
-import "source-map-support/register";
+
 import getPgPool, { Querier } from "../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -16,7 +16,10 @@ interface ByUser {
   user_id: string;
 }
 
-export default async function populateFromProject(opts: ByEnv | ByUser, pg: Querier = pgPool): Promise<void> {
+export default async function populateFromProject(
+  opts: ByEnv | ByUser,
+  pg: Querier = pgPool
+): Promise<void> {
   if ((opts as ByEnv).environment_id) {
     const insertQuery = `
       insert into environmentuser (
@@ -26,7 +29,10 @@ export default async function populateFromProject(opts: ByEnv | ByUser, pg: Quer
       from projectuser
       where project_id = $2`;
 
-    await pg.query(insertQuery, [(opts as ByEnv).environment_id, opts.project_id]);
+    await pg.query(insertQuery, [
+      (opts as ByEnv).environment_id,
+      opts.project_id,
+    ]);
     return;
   }
 

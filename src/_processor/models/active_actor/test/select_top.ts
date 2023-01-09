@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import { expect } from "chai";
 import * as uuid from "uuid";
 import moment from "moment";
@@ -49,15 +48,23 @@ describe("models.active_actor.select_top", () => {
     ];
 
     actions.forEach(([actorID, created]) => {
-      before(() => pgPool.query(`
+      before(() =>
+        pgPool.query(
+          `
         insert into active_actor (
           actor_id, project_id, environment_id, created_at
         ) values (
           $1, $2, $3, $4
-        )`, [actorID, projectId, environmentId, created]),
+        )`,
+          [actorID, projectId, environmentId, created]
+        )
       );
     });
-    after(() => pgPool.query("delete from active_actor where project_id = $1", [projectId]));
+    after(() =>
+      pgPool.query("delete from active_actor where project_id = $1", [
+        projectId,
+      ])
+    );
 
     describe("search 2017-03-29 00:00:00 to 2017-03-30 00:00:00", () => {
       it("should return the counts for the five actors active during the search period", () => {
@@ -65,17 +72,16 @@ describe("models.active_actor.select_top", () => {
           projectId,
           environmentId,
           range: [ref, ref.clone().add(1, "day")],
-        })
-        .then((results) => {
+        }).then((results) => {
           expect(results).to.have.length(5);
 
-          const actor0 = results.find(({actor_id}) => actor_id === actors[0]);
-          const actor1 = results.find(({actor_id}) => actor_id === actors[1]);
-          const actor2 = results.find(({actor_id}) => actor_id === actors[2]);
-          const actor3 = results.find(({actor_id}) => actor_id === actors[3]);
-          const actor4 = results.find(({actor_id}) => actor_id === actors[4]);
-          const actor5 = results.find(({actor_id}) => actor_id === actors[5]);
-          const actor6 = results.find(({actor_id}) => actor_id === actors[6]);
+          const actor0 = results.find(({ actor_id }) => actor_id === actors[0]);
+          const actor1 = results.find(({ actor_id }) => actor_id === actors[1]);
+          const actor2 = results.find(({ actor_id }) => actor_id === actors[2]);
+          const actor3 = results.find(({ actor_id }) => actor_id === actors[3]);
+          const actor4 = results.find(({ actor_id }) => actor_id === actors[4]);
+          const actor5 = results.find(({ actor_id }) => actor_id === actors[5]);
+          const actor6 = results.find(({ actor_id }) => actor_id === actors[6]);
 
           expect(actor0).to.equal(undefined);
           expect(actor6).to.equal(undefined);

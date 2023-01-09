@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -8,7 +7,7 @@ interface Opts {
   timezone: string;
 }
 
-export default async function(opts: Opts): Promise<any> {
+export default async function (opts: Opts): Promise<any> {
   // validate the timezone
   const tzQuery = `
     select count(1)
@@ -17,7 +16,9 @@ export default async function(opts: Opts): Promise<any> {
   const tzResult = await pgPool.query(tzQuery, [opts.timezone]);
 
   if (!tzResult.rows[0]) {
-    throw new Error(`update user ${opts.user_id}: invalid timezone "${opts.timezone}"`);
+    throw new Error(
+      `update user ${opts.user_id}: invalid timezone "${opts.timezone}"`
+    );
   }
 
   const q = `
@@ -28,10 +29,7 @@ export default async function(opts: Opts): Promise<any> {
       id = $2
     returning *`;
 
-  const v = [
-    opts.timezone,
-    opts.user_id,
-  ];
+  const v = [opts.timezone, opts.user_id];
 
   const result = await pgPool.query(q, v);
 

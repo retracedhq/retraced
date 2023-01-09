@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import _ from "lodash";
 
 import getPgPool from "../../persistence/pg";

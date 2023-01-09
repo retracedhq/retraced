@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import _ from "lodash";
 
 import queryEvents, { Options } from "../../models/event/query";

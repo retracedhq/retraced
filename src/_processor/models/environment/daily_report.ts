@@ -2,7 +2,7 @@
  * Find all the emails of users that belong to a timezone with a given offset
  * and are subscribed to daily reports for an environment.
  */
-import "source-map-support/register";
+
 import _ from "lodash";
 import getPgPool from "../../persistence/pg";
 

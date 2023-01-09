@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -16,7 +15,9 @@ interface Record {
   email_token: string;
 }
 
-export default async function getEnvironmentUser(opts: Opts): Promise<null | Record> {
+export default async function getEnvironmentUser(
+  opts: Opts
+): Promise<null | Record> {
   const q = `
     select
       environment_id, user_id, daily_report, anomaly_report, email_token
@@ -25,10 +26,7 @@ export default async function getEnvironmentUser(opts: Opts): Promise<null | Rec
     where
       environment_id = $1 and
       user_id = $2`;
-  const v = [
-    opts.environment_id,
-    opts.user_id,
-  ];
+  const v = [opts.environment_id, opts.user_id];
 
   const result = await pgPool.query(q, v);
   if (result.rowCount === 1) {

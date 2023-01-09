@@ -1,11 +1,10 @@
-import "source-map-support/register";
 import querystring from "querystring";
 import { checkViewerAccess } from "../../security/helpers";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 
 import handler from "../graphql/handler";
 
-export default async function(req) {
+export default async function (req) {
   const claims = await checkViewerAccess(req);
   const thisViewEvent: CreateEventRequest = {
     action: claims.viewLogAction,
@@ -39,7 +38,7 @@ export default async function(req) {
   await defaultEventCreater.saveRawEvent(
     claims.projectId,
     claims.environmentId,
-    thisViewEvent,
+    thisViewEvent
   );
 
   return results;

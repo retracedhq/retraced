@@ -1,9 +1,7 @@
-import "source-map-support/register";
-
 import { checkAdminAccess } from "../../security/helpers";
 import handler from "../graphql/handler";
 
-export default async function(req) {
+export default async function (req) {
   await checkAdminAccess(req);
 
   return await handler(req, {
