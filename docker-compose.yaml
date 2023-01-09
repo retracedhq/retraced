@@ -14,7 +14,6 @@ x-common-variables: &common-variables
   POSTGRES_PASSWORD: password
   POSTGRES_POOL_SIZE: 10
   HMAC_SECRET_VIEWER: xxxxxxxxx
-  SUPERCRONIC_URL: https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
   POSTGRES_PORT: 5432
   API_BASE_URL_PATH: /auditlog
   RETRACED_API_BASE: http://localhost:3000/auditlog
