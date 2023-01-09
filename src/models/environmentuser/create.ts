@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import * as uuid from "uuid";
 
 import getPgPool from "../../persistence/pg";
@@ -12,8 +11,8 @@ interface Opts {
 }
 
 export default async function createEnvironmentUser(opts: Opts) {
-  const dailyReport = typeof opts.daily_report === "boolean"
-    ? opts.daily_report : true;
+  const dailyReport =
+    typeof opts.daily_report === "boolean" ? opts.daily_report : true;
   const emailTkn = uuid.v4();
 
   const q = `
@@ -22,12 +21,7 @@ export default async function createEnvironmentUser(opts: Opts) {
     ) values (
       $1, $2, $3, $4
     )`;
-  const v = [
-    opts.environment_id,
-    opts.user_id,
-    dailyReport,
-    emailTkn,
-  ];
+  const v = [opts.environment_id, opts.user_id, dailyReport, emailTkn];
 
   await pgPool.query(q, v);
 

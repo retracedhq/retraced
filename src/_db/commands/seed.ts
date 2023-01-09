@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import rp from "request-promise";
 import chalk from "chalk";
 import _ from "lodash";

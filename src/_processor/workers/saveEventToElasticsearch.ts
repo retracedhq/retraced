@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import _ from "lodash";
 import moment from "moment";
 import elasticsearch from "elasticsearch";
@@ -13,7 +12,7 @@ export class ElasticsearchSaver {
       ElasticsearchSaver.instance = new ElasticsearchSaver(
         getEs(),
         getRegistry(),
-        moment.utc,
+        moment.utc
       );
     }
     return ElasticsearchSaver.instance;
@@ -24,8 +23,8 @@ export class ElasticsearchSaver {
   constructor(
     private readonly es: elasticsearch.Client,
     private readonly registry: Registry,
-    private readonly clock: Clock,
-  ) { }
+    private readonly clock: Clock
+  ) {}
 
   public async saveEventToElasticsearch(job): Promise<void> {
     const jobObj = JSON.parse(job.body);
@@ -49,7 +48,13 @@ export class ElasticsearchSaver {
       event.group = _.pick(event.group, ["id", "name"]);
     }
     if (event.actor) {
-      event.actor = _.pick(event.actor, ["id", "foreign_id", "name", "url", "fields"]);
+      event.actor = _.pick(event.actor, [
+        "id",
+        "foreign_id",
+        "name",
+        "url",
+        "fields",
+      ]);
 
       if (event.actor.foreign_id) {
         event.actor.id = event.actor.foreign_id;
@@ -57,7 +62,14 @@ export class ElasticsearchSaver {
       }
     }
     if (event.target) {
-      event.target = _.pick(event.target, ["id", "foreign_id", "name", "url", "type", "fields"]);
+      event.target = _.pick(event.target, [
+        "id",
+        "foreign_id",
+        "name",
+        "url",
+        "type",
+        "fields",
+      ]);
 
       if (event.target.foreign_id) {
         event.target.id = event.target.foreign_id;
@@ -69,12 +81,13 @@ export class ElasticsearchSaver {
 
   @instrumented
   private async esIndex(event: any, alias: string) {
-
     const resp = await this.es.index({
       index: alias,
       type: "_doc",
       body: event,
-      id: event.id ? event.canonical_time.toString() + "-" + event.id : undefined,
+      id: event.id
+        ? event.canonical_time.toString() + "-" + event.id
+        : undefined,
     });
 
     if (resp.errors === true) {
@@ -83,12 +96,19 @@ export class ElasticsearchSaver {
     return resp;
   }
 
-  private trackTimeUntilSearchable(created: number | undefined, received: number) {
+  private trackTimeUntilSearchable(
+    created: number | undefined,
+    received: number
+  ) {
     const now = this.clock().valueOf();
     if (created) {
-      this.registry.histogram("workers.saveEventToElasticSearch.latencyCreated").update(now - created);
+      this.registry
+        .histogram("workers.saveEventToElasticSearch.latencyCreated")
+        .update(now - created);
     }
-    this.registry.histogram("workers.saveEventToElasticSearch.latencyReceived").update(now - received);
+    this.registry
+      .histogram("workers.saveEventToElasticSearch.latencyReceived")
+      .update(now - received);
   }
 
   private buildErrorString(resp: any): string {
@@ -103,7 +123,6 @@ export class ElasticsearchSaver {
 
     return errString;
   }
-
 }
 
 export default async function saveEventToElasticsearch(job): Promise<void> {

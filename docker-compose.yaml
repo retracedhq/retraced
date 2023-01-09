@@ -14,7 +14,6 @@ x-common-variables: &common-variables
   POSTGRES_PASSWORD: password
   POSTGRES_POOL_SIZE: 10
   HMAC_SECRET_VIEWER: xxxxxxxxx
-  SUPERCRONIC_URL: https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
   POSTGRES_PORT: 5432
   API_BASE_URL_PATH: /auditlog
   RETRACED_API_BASE: http://localhost:3000/auditlog
@@ -42,7 +41,7 @@ services:
     depends_on:
       - postgres-migration
     restart: "always"
-    command: node --inspect=0.0.0.0 build/src/index.js
+    command: node --inspect=0.0.0.0 --enable-source-maps build/src/index.js
 
   # retraced-dbutil:
   #   build: 
@@ -66,7 +65,7 @@ services:
     depends_on:
       - postgres
     restart: "always"
-    command: node --inspect=0.0.0.0 build/src/_processor/index.js
+    command: node --inspect=0.0.0.0 --enable-source-maps build/src/_processor/index.js
 
   retraced-cron:
     build: 
@@ -151,7 +150,7 @@ services:
     depends_on:
       postgres:
         condition: service_started
-    command: node --inspect=0.0.0.0 build/src/_db/runner-lite.js pg
+    command: node --inspect=0.0.0.0 --enable-source-maps build/src/_db/runner-lite.js pg
     restart: "on-failure"
 
   elastic-migration:
@@ -164,7 +163,7 @@ services:
     depends_on:
       elasticsearch:
         condition: service_started
-    command: node --inspect=0.0.0.0 build/src/_db/runner-lite.js es
+    command: node --inspect=0.0.0.0 --enable-source-maps build/src/_db/runner-lite.js es
     restart: "on-failure"
 
   jackson:

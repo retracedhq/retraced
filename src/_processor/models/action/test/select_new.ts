@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import { expect } from "chai";
 import * as uuid from "uuid";
 import moment from "moment";
@@ -25,13 +24,18 @@ describe("models.action.select_new", () => {
     ];
 
     actions.forEach(([action, firstActive]) => {
-      before(() => pgPool.query(`
+      before(() =>
+        pgPool.query(
+          `
         insert into action (id, project_id, environment_id, action, first_active)
         values ($1, $2, $3, $4, $5)`,
-        [uuid.v4(), projectId, environmentId, action, firstActive]),
+          [uuid.v4(), projectId, environmentId, action, firstActive]
+        )
       );
     });
-    after(() => pgPool.query("delete from action where project_id = $1", [projectId]));
+    after(() =>
+      pgPool.query("delete from action where project_id = $1", [projectId])
+    );
 
     describe("searching 2017-03-29 00:00:00 to 2017-03-30 00:00:00", () => {
       it('should return "a.update" and "a.get".', () => {
@@ -39,8 +43,7 @@ describe("models.action.select_new", () => {
           projectId,
           environmentId,
           range: [ref, ref.clone().add(1, "day")],
-        })
-        .then((acts) => {
+        }).then((acts) => {
           expect(acts).to.have.length(2);
           expect(acts).to.include("a.update");
           expect(acts).to.include("a.get");

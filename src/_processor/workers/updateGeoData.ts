@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import fs from "fs";
 import path from "path";
 import readline from "readline";
@@ -15,7 +14,8 @@ import config from "../../config";
 const pgPool = getPgPool();
 
 // The zip archive has a folder named e.g. GeoLite2-City-CSV-20170404/
-const source = "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City-CSV.zip";
+const source =
+  "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City-CSV.zip";
 const locFileName = "GeoLite2-City-Locations-en.csv";
 const ipv4FileName = "GeoLite2-City-Blocks-IPv4.csv";
 const ipv6FileName = "GeoLite2-City-Blocks-IPv6.csv";
@@ -90,7 +90,8 @@ async function download() {
 
 async function write(pathname, stream) {
   return new Promise((resolve, reject) => {
-    stream.pipe(fs.createWriteStream(pathname))
+    stream
+      .pipe(fs.createWriteStream(pathname))
       .on("error", reject)
       .on("finish", resolve);
   });
@@ -126,10 +127,12 @@ async function parseLocationData(csvReadStream) {
 
         if (first) {
           first = false;
-          if (geonameId === "geoname_id"
-            && countryName === "country_name"
-            && subdivision1Name === "subdivision_1_name"
-            && subdivision2Name === "subdivision_2_name") {
+          if (
+            geonameId === "geoname_id" &&
+            countryName === "country_name" &&
+            subdivision1Name === "subdivision_1_name" &&
+            subdivision2Name === "subdivision_2_name"
+          ) {
             return;
           }
           throw new Error("Unexpected CSV headers in locations file:" + line);
@@ -176,7 +179,12 @@ async function translateIPBlockData(csvReadStream, locations, date) {
 
         if (first) {
           first = false;
-          if (network === "network" && geonameId === "geoname_id" && latitude === "latitude" && longitude === "longitude") {
+          if (
+            network === "network" &&
+            geonameId === "geoname_id" &&
+            latitude === "latitude" &&
+            longitude === "longitude"
+          ) {
             return;
           }
           throw new Error("Unexpected CSV headers in block file: " + line);
@@ -215,10 +223,14 @@ async function translateIPBlockData(csvReadStream, locations, date) {
       .on("error", reject);
 
     function flush() {
-      const valuesString = queuedValues.map((v, i) => {
-        const offset = i * 8;
-        return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${offset + 6}, $${offset + 7}, $${offset + 8})`;
-      }).join(",");
+      const valuesString = queuedValues
+        .map((v, i) => {
+          const offset = i * 8;
+          return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${
+            offset + 4
+          }, $${offset + 5}, $${offset + 6}, $${offset + 7}, $${offset + 8})`;
+        })
+        .join(",");
 
       const ultraString = `insert into geoip (network, lat, lon, country, subdiv1, subdiv2, timezone, synced) values ${valuesString} on conflict (network) do update set lat = excluded.lat, lon = excluded.lon, country = excluded.country, subdiv1 = excluded.subdiv1, subdiv2 = excluded.subdiv2, timezone = excluded.timezone, synced = excluded.synced;`;
 
@@ -232,5 +244,8 @@ async function translateIPBlockData(csvReadStream, locations, date) {
 // Delete geoip records not synced within two days of date. (If the job is
 // running at midnight some records from this bactch could be 1 day old.)
 async function clean(date) {
-  await pgPool.query(`delete from geoip where synced is null or synced < ($1::date - interval '2 days')`, [date]);
+  await pgPool.query(
+    `delete from geoip where synced is null or synced < ($1::date - interval '2 days')`,
+    [date]
+  );
 }

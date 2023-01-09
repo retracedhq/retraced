@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import _ from "underscore";
 import { instrument } from "../../metrics";
 import Elasticsearch from "elasticsearch";
@@ -22,7 +21,10 @@ interface Result {
   count: number;
 }
 
-export async function countBy(es: Elasticsearch.Client, opts: Options): Promise<Result[]> {
+export async function countBy(
+  es: Elasticsearch.Client,
+  opts: Options
+): Promise<Result[]> {
   const [index, scopeFilters] = scope(opts.scope);
   const filters: any[] = [];
 
@@ -67,7 +69,7 @@ export async function countBy(es: Elasticsearch.Client, opts: Options): Promise<
   const data = _.map(response.aggregations.groupedBy.buckets, (bucket: any) => {
     const row: Result = {
       value: bucket.key,
-      count:  bucket.doc_count,
+      count: bucket.doc_count,
     };
 
     return row;
@@ -76,7 +78,7 @@ export async function countBy(es: Elasticsearch.Client, opts: Options): Promise<
   return data;
 }
 
-export default async function(opts: Options): Promise<Result[]> {
+export default async function (opts: Options): Promise<Result[]> {
   return await instrument("Elasticsearch.countBy", async () => {
     return await countBy(esClient, opts);
   });

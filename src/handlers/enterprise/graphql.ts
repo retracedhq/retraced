@@ -1,11 +1,10 @@
-import "source-map-support/register";
 import { crud } from "../../models/event";
 import { checkEitapiAccess } from "../../security/helpers";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 
 import handler from "../graphql/handler";
 
-export default async function(req) {
+export default async function (req) {
   const eitapiToken = await checkEitapiAccess(req);
 
   const results = await handler(req, {
@@ -30,7 +29,7 @@ export default async function(req) {
   defaultEventCreater.saveRawEvent(
     eitapiToken.project_id,
     eitapiToken.environment_id,
-    thisViewEvent,
+    thisViewEvent
   );
 
   return results;

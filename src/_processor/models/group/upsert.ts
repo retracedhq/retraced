@@ -1,8 +1,7 @@
-import "source-map-support/register";
 import moment from "moment";
 import { PoolClient } from "pg";
 
-export default async function(opts, pg: PoolClient) {
+export default async function (opts, pg: PoolClient) {
   const now = moment().valueOf();
 
   let onConflict = `do update set

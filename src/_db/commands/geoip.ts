@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import chalk from "chalk";
 import readline from "readline";
 import fs from "fs";
@@ -48,12 +47,20 @@ export const handler = (argv) => {
     if (argv.blockfile && argv.locationfile) {
       doUpload(argv);
     } else {
-      console.log(chalk.red('Both "locationfile" and "blockfile" parameters are required to upload'));
+      console.log(
+        chalk.red(
+          'Both "locationfile" and "blockfile" parameters are required to upload'
+        )
+      );
     }
     return;
   }
 
-  console.log(chalk.red("Specify either -q (for a geoip query) or --blockfile and --locationfile (for geoip upload)"));
+  console.log(
+    chalk.red(
+      "Specify either -q (for a geoip query) or --blockfile and --locationfile (for geoip upload)"
+    )
+  );
 };
 
 function doQuery(argv) {
@@ -63,12 +70,13 @@ function doQuery(argv) {
 
   const startTime = new Date().getTime();
 
-  pgPool.query(`select * from geoip where network >> '${argv.query}'`)
+  pgPool
+    .query(`select * from geoip where network >> '${argv.query}'`)
     .then((results) => {
       sp.stop();
       console.log();
       console.log(util.inspect(results.rows[0]));
-      console.log(`Operation took ${(new Date().getTime()) - startTime}ms`);
+      console.log(`Operation took ${new Date().getTime() - startTime}ms`);
       process.exit(0);
     })
     .catch((err) => {
@@ -104,10 +112,7 @@ function parseLocationData(filename) {
         first = false;
         return;
       }
-      const tokens = line
-        .replace(/"/g, "")
-        .replace(/'/g, `''`)
-        .split(",");
+      const tokens = line.replace(/"/g, "").replace(/'/g, `''`).split(",");
       result[tokens[0]] = {
         geonameId: tokens[0],
         country: tokens[5],
@@ -179,8 +184,11 @@ function translateIPBlockData(filename, locations) {
       queuedValues.push(values);
       if (queuedValues.length === insertBatchSize) {
         blockReader.pause();
-        const ultraString = `insert into geoip (network, lat, lon, country, subdiv1, subdiv2, timezone) values ${queuedValues.join(",")};`;
-        pgPool.query(ultraString)
+        const ultraString = `insert into geoip (network, lat, lon, country, subdiv1, subdiv2, timezone) values ${queuedValues.join(
+          ","
+        )};`;
+        pgPool
+          .query(ultraString)
           .then(() => {
             queuedValues = [];
             blockReader.resume();
@@ -194,8 +202,11 @@ function translateIPBlockData(filename, locations) {
 
     blockReader.on("close", () => {
       // Final insert.
-      const ultraString = `insert into geoip (network, lat, lon, country, subdiv1, subdiv2, timezone) values ${queuedValues.join(",")};`;
-      pgPool.query(ultraString)
+      const ultraString = `insert into geoip (network, lat, lon, country, subdiv1, subdiv2, timezone) values ${queuedValues.join(
+        ","
+      )};`;
+      pgPool
+        .query(ultraString)
         .then(() => {
           resolve({});
         })

@@ -1,22 +1,15 @@
-import "source-map-support/register";
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
 
-import {
-  parse,
-  searchParams,
-  Options,
-} from "../../../models/event/query";
+import { parse, searchParams, Options } from "../../../models/event/query";
 import { RequestParams } from "@elastic/elasticsearch";
 
-@suite class QueryEventsTest {
-
+@suite
+class QueryEventsTest {
   @test public "parse(action:user.get)"() {
     expect(parse("action:user.get")).to.deep.equal({
       bool: {
-        filter: [
-          {match: {action: { query: "user.get", operator: "and" }}},
-        ],
+        filter: [{ match: { action: { query: "user.get", operator: "and" } } }],
       },
     });
   }
@@ -25,13 +18,10 @@ import { RequestParams } from "@elastic/elasticsearch";
     expect(parse("action:user.* crud:c,d")).to.deep.equal({
       bool: {
         filter: [
-          {prefix: {action: "user."}},
+          { prefix: { action: "user." } },
           {
             bool: {
-              should: [
-                {match: {crud: "c"}},
-                {match: {crud: "d"}},
-              ],
+              should: [{ match: { crud: "c" } }, { match: { crud: "d" } }],
             },
           },
         ],
@@ -42,9 +32,7 @@ import { RequestParams } from "@elastic/elasticsearch";
   @test public "parse(crud:r)"() {
     expect(parse("crud:r")).to.deep.equal({
       bool: {
-        filter: [
-          { match: { crud: "r" }},
-        ],
+        filter: [{ match: { crud: "r" } }],
       },
     });
   }
@@ -87,10 +75,11 @@ import { RequestParams } from "@elastic/elasticsearch";
     expect(parse("actor.id:b82c4cfa428342ac822c42c1f6b89200")).to.deep.equal({
       bool: {
         filter: [
-          { match: {
-            "actor.id": {
-              query: "b82c4cfa428342ac822c42c1f6b89200",
-              operator: "and",
+          {
+            match: {
+              "actor.id": {
+                query: "b82c4cfa428342ac822c42c1f6b89200",
+                operator: "and",
               },
             },
           },
@@ -99,27 +88,23 @@ import { RequestParams } from "@elastic/elasticsearch";
     });
   }
 
-  @test public "parse(actor.name:\"Mario Nguyen\")"() {
+  @test public 'parse(actor.name:"Mario Nguyen")'() {
     expect(parse(`actor.name:"Mario Nguyen"`)).to.deep.equal({
       bool: {
-        filter: [
-          { match: { "actor.name": "Mario Nguyen" }},
-        ],
+        filter: [{ match: { "actor.name": "Mario Nguyen" } }],
       },
     });
   }
 
-  @test public "parse(description:\"debit credt\")"() {
+  @test public 'parse(description:"debit credt")'() {
     expect(parse(`description:"debit credit"`)).to.deep.equal({
       bool: {
-        filter: [
-          { match: { description: "debit credit" }},
-        ],
+        filter: [{ match: { description: "debit credit" } }],
       },
     });
   }
 
-  @test public "parse(location:\"Los Angeles\")"() {
+  @test public 'parse(location:"Los Angeles")'() {
     expect(parse(`location:"Los Angeles"`)).to.deep.equal({
       bool: {
         filter: [
@@ -153,7 +138,7 @@ import { RequestParams } from "@elastic/elasticsearch";
     expect(parse("action:login plus some free text")).to.deep.equal({
       bool: {
         filter: [
-          {match: {action: { query: "login", operator: "and" }}},
+          { match: { action: { query: "login", operator: "and" } } },
           {
             query_string: {
               query: "plus some free text",
@@ -165,7 +150,7 @@ import { RequestParams } from "@elastic/elasticsearch";
     });
   }
 
-  @test public "searchParams"() {
+  @test public searchParams() {
     const input: Options = {
       query: "action:user.get",
       size: 10,
@@ -188,18 +173,18 @@ import { RequestParams } from "@elastic/elasticsearch";
           bool: {
             filter: [
               // user's query filters
-              {match: {action: { query: "user.get", operator: "and" }}},
+              { match: { action: { query: "user.get", operator: "and" } } },
               // group scope filters
               {
                 bool: {
                   should: [
-                    { match: {"group.id": { query: "g1", operator: "and" }}},
-                    { match: {team_id: { query: "g1", operator: "and" }}},
+                    { match: { "group.id": { query: "g1", operator: "and" } } },
+                    { match: { team_id: { query: "g1", operator: "and" } } },
                   ],
                 },
               },
               {
-                match: {"target.id": { query: "t1", operator: "and" }},
+                match: { "target.id": { query: "t1", operator: "and" } },
               },
               // target scope filters
               {
@@ -236,9 +221,7 @@ import { RequestParams } from "@elastic/elasticsearch";
             ],
           },
         },
-        sort: [
-          {canonical_time: "asc"},
-        ],
+        sort: [{ canonical_time: "asc" }],
       },
     };
     expect(output).to.deep.equal(answer);

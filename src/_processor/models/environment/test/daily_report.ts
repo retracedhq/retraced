@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import { expect } from "chai";
 import * as uuid from "uuid";
 import moment from "moment-timezone";
@@ -20,25 +19,29 @@ describe("models.environment.daily_report", () => {
       name: "Alpha",
       prodEnvID: uuid.v4(),
       stageEnvID: uuid.v4(),
-      users: [{
-        id: uuid.v4(),
-        email: "bob@example.com",
-        timezone: "America/Los_Angeles",
-        prod: true,
-        stage: false,
-      }, {
-        id: uuid.v4(),
-        email: "ann@example.com",
-        timezone: "US/Pacific",
-        prod: true,
-        stage: true,
-      }, {
-        id: uuid.v4(),
-        email: "sam@example.com",
-        timezone: "America/Chicago",
-        prod: true,
-        stage: false,
-      }],
+      users: [
+        {
+          id: uuid.v4(),
+          email: "bob@example.com",
+          timezone: "America/Los_Angeles",
+          prod: true,
+          stage: false,
+        },
+        {
+          id: uuid.v4(),
+          email: "ann@example.com",
+          timezone: "US/Pacific",
+          prod: true,
+          stage: true,
+        },
+        {
+          id: uuid.v4(),
+          email: "sam@example.com",
+          timezone: "America/Chicago",
+          prod: true,
+          stage: false,
+        },
+      ],
     };
     /* tslint:disable */
     const [bob, ann, sam] = alpha.users;
@@ -48,20 +51,23 @@ describe("models.environment.daily_report", () => {
       name: "Beta",
       prodEnvID: uuid.v4(),
       stageEnvID: uuid.v4(),
-      users: [{
-        id: uuid.v4(),
-        email: "charlie@example.com",
-        timezone: "US/Pacific",
-        prod: true,
-        stage: true,
-      }],
+      users: [
+        {
+          id: uuid.v4(),
+          email: "charlie@example.com",
+          timezone: "US/Pacific",
+          prod: true,
+          stage: true,
+        },
+      ],
     };
     const charlie = beta.users[0];
 
     fixProject(alpha);
     fixProject(beta);
 
-    const offset = -moment.tz.zone("America/Los_Angeles")!.parse(Date.now()) / 60;
+    const offset =
+      -moment.tz.zone("America/Los_Angeles")!.parse(Date.now()) / 60;
     describe(`Search for offset ${offset}`, () => {
       it(`
         Should return a record for Alpha.Prod with recipients Bob and Ann.
@@ -69,47 +75,63 @@ describe("models.environment.daily_report", () => {
         Should return a record for Beta.Prod with recipient Charlie.
         Should return a record for Beta.Stage with recipient Charlie.
         `, () => {
-        return dailyReport({ offsetHour: offset })
-          .then((records) => {
-            const alphaProd = records.find(({ project_name, environment_name }) =>
-              project_name === "Alpha" && environment_name === "Prod") as Record;
-            const alphaStage = records.find(({ project_name, environment_name }) =>
-              project_name === "Alpha" && environment_name === "Stage") as Record;
-            const betaProd = records.find(({ project_name, environment_name }) =>
-              project_name === "Beta" && environment_name === "Prod") as Record;
-            const betaStage = records.find(({ project_name, environment_name }) =>
-              project_name === "Beta" && environment_name === "Stage") as Record;
+        return dailyReport({ offsetHour: offset }).then((records) => {
+          const alphaProd = records.find(
+            ({ project_name, environment_name }) =>
+              project_name === "Alpha" && environment_name === "Prod"
+          ) as Record;
+          const alphaStage = records.find(
+            ({ project_name, environment_name }) =>
+              project_name === "Alpha" && environment_name === "Stage"
+          ) as Record;
+          const betaProd = records.find(
+            ({ project_name, environment_name }) =>
+              project_name === "Beta" && environment_name === "Prod"
+          ) as Record;
+          const betaStage = records.find(
+            ({ project_name, environment_name }) =>
+              project_name === "Beta" && environment_name === "Stage"
+          ) as Record;
 
-            expect(alphaProd).not.to.equal(undefined);
-            expect(alphaProd.recipients).to.have.length(2);
-            expect(alphaProd.recipients).to.deep.include.members([{
+          expect(alphaProd).not.to.equal(undefined);
+          expect(alphaProd.recipients).to.have.length(2);
+          expect(alphaProd.recipients).to.deep.include.members([
+            {
               email: bob.email,
               id: bob.id,
               token: "xyz",
-            }, {
+            },
+            {
               email: ann.email,
               id: ann.id,
               token: "xyz",
-            }]);
-            expect(alphaStage).not.to.equal(undefined);
-            expect(alphaStage.recipients).to.deep.equal([{
+            },
+          ]);
+          expect(alphaStage).not.to.equal(undefined);
+          expect(alphaStage.recipients).to.deep.equal([
+            {
               email: ann.email,
               id: ann.id,
               token: "xyz",
-            }]);
-            expect(betaProd).not.to.equal(undefined);
-            expect(betaProd.recipients).to.deep.equal([{
+            },
+          ]);
+          expect(betaProd).not.to.equal(undefined);
+          expect(betaProd.recipients).to.deep.equal([
+            {
               email: charlie.email,
               id: charlie.id,
               token: "xyz",
-            }]);
-            expect(betaStage).not.to.equal(undefined);
-            expect(betaStage.recipients).to.deep.equal([{
+            },
+          ]);
+          expect(betaStage).not.to.equal(undefined);
+          expect(betaStage.recipients).to.deep.equal([
+            {
               email: charlie.email,
               id: charlie.id,
               token: "xyz",
-            }]);
-          });
+            },
+          ]);
+        });
       });
     });
   });
@@ -123,25 +145,29 @@ describe("models.environment.daily_report", () => {
       name: "Gamma",
       prodEnvID: uuid.v4(),
       stageEnvID: uuid.v4(),
-      users: [{
-        id: uuid.v4(),
-        email: "dan@example.com",
-        timezone: "Asia/Dhaka",
-        prod: true,
-        stage: true,
-      }, {
-        id: uuid.v4(),
-        email: "esther@example.com",
-        timezone: "Asia/Calcutta",
-        prod: true,
-        stage: true,
-      }, {
-        id: uuid.v4(),
-        email: "frank@example.com",
-        timezone: "Asia/Kathmandu",
-        prod: true,
-        stage: true,
-      }],
+      users: [
+        {
+          id: uuid.v4(),
+          email: "dan@example.com",
+          timezone: "Asia/Dhaka",
+          prod: true,
+          stage: true,
+        },
+        {
+          id: uuid.v4(),
+          email: "esther@example.com",
+          timezone: "Asia/Calcutta",
+          prod: true,
+          stage: true,
+        },
+        {
+          id: uuid.v4(),
+          email: "frank@example.com",
+          timezone: "Asia/Kathmandu",
+          prod: true,
+          stage: true,
+        },
+      ],
     };
     const [dan, esther, frank] = gamma.users;
 
@@ -149,58 +175,75 @@ describe("models.environment.daily_report", () => {
 
     describe("Searching for +6", () => {
       it("Should return records for all six environment/offsets", () => {
-        return dailyReport({ offsetHour: 6 })
-          .then((records) => {
-            const prod6 = records.find(({ environment_name, utc_offset }) =>
-              environment_name === "Prod" && utc_offset === 360,
-            ) as Record;
-            const stage6 = records.find(({ environment_name, utc_offset }) =>
-              environment_name === "Stage" && utc_offset === 360,
-            ) as Record;
-            const prod530 = records.find(({ environment_name, utc_offset }) =>
-              environment_name === "Prod" && utc_offset === 330,
-            ) as Record;
-            const stage530 = records.find(({ environment_name, utc_offset }) =>
-              environment_name === "Stage" && utc_offset === 330,
-            ) as Record;
-            const prod545 = records.find(({ environment_name, utc_offset }) =>
-              environment_name === "Prod" && utc_offset === 345,
-            ) as Record;
-            const stage545 = records.find(({ environment_name, utc_offset }) =>
-              environment_name === "Stage" && utc_offset === 345,
-            ) as Record;
+        return dailyReport({ offsetHour: 6 }).then((records) => {
+          const prod6 = records.find(
+            ({ environment_name, utc_offset }) =>
+              environment_name === "Prod" && utc_offset === 360
+          ) as Record;
+          const stage6 = records.find(
+            ({ environment_name, utc_offset }) =>
+              environment_name === "Stage" && utc_offset === 360
+          ) as Record;
+          const prod530 = records.find(
+            ({ environment_name, utc_offset }) =>
+              environment_name === "Prod" && utc_offset === 330
+          ) as Record;
+          const stage530 = records.find(
+            ({ environment_name, utc_offset }) =>
+              environment_name === "Stage" && utc_offset === 330
+          ) as Record;
+          const prod545 = records.find(
+            ({ environment_name, utc_offset }) =>
+              environment_name === "Prod" && utc_offset === 345
+          ) as Record;
+          const stage545 = records.find(
+            ({ environment_name, utc_offset }) =>
+              environment_name === "Stage" && utc_offset === 345
+          ) as Record;
 
-            expect(prod6.recipients).to.deep.equal([{
+          expect(prod6.recipients).to.deep.equal([
+            {
               email: dan.email,
               id: dan.id,
               token: "xyz",
-            }]);
-            expect(stage6.recipients).to.deep.equal([{
+            },
+          ]);
+          expect(stage6.recipients).to.deep.equal([
+            {
               email: dan.email,
               id: dan.id,
               token: "xyz",
-            }]);
-            expect(prod530.recipients).to.deep.equal([{
+            },
+          ]);
+          expect(prod530.recipients).to.deep.equal([
+            {
               email: esther.email,
               id: esther.id,
               token: "xyz",
-            }]);
-            expect(stage530.recipients).to.deep.equal([{
+            },
+          ]);
+          expect(stage530.recipients).to.deep.equal([
+            {
               email: esther.email,
               id: esther.id,
               token: "xyz",
-            }]);
-            expect(prod545.recipients).to.deep.equal([{
+            },
+          ]);
+          expect(prod545.recipients).to.deep.equal([
+            {
               email: frank.email,
               id: frank.id,
               token: "xyz",
-            }]);
-            expect(stage545.recipients).to.deep.equal([{
+            },
+          ]);
+          expect(stage545.recipients).to.deep.equal([
+            {
               email: frank.email,
               id: frank.id,
               token: "xyz",
-            }]);
-          });
+            },
+          ]);
+        });
       });
     });
   });

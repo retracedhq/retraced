@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import getPgPool from "../../persistence/pg";
 import { EnvironmentTimeRange } from "../../common";
 
@@ -9,7 +8,9 @@ interface GroupCount {
   action_count: number;
 }
 
-export default async function selectTop(opts: EnvironmentTimeRange): Promise<GroupCount[]> {
+export default async function selectTop(
+  opts: EnvironmentTimeRange
+): Promise<GroupCount[]> {
   const select = `
   select
       active_group.group_id,
@@ -32,7 +33,7 @@ export default async function selectTop(opts: EnvironmentTimeRange): Promise<Gro
     opts.range[1].format(),
   ]);
 
-  return results.rows.map(({group_id, name, action_count}) => ({
+  return results.rows.map(({ group_id, name, action_count }) => ({
     group_id,
     name,
     action_count: parseInt(action_count, 10),

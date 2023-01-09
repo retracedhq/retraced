@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import chalk from "chalk";
 import path from "path";
 import _ from "lodash";

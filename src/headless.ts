@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import express from "express";
 import { crud, EventFields } from "./models/event";
 import { adminIdentity } from "./security/helpers";
