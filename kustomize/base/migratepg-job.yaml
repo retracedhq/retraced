@@ -6,7 +6,7 @@ metadata:
 spec:
   template:
     spec:
-      restartPolicy: Never
+      restartPolicy: "OnFailure"
       containers:
         - name: db
           image: retracedhq/retraced:1.4.6
@@ -26,4 +26,4 @@ spec:
                   name: auditlog
                   key: DB_TOKEN
             - name: SCHEMA_PATH
-              value: "/src/migrations/pg"
+              value: "/app/build/migrations/pg"

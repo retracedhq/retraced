@@ -37,7 +37,6 @@ spec:
         - name: processor
           image: retracedhq/retraced:1.4.6
           imagePullPolicy: IfNotPresent
-
           command:
             - node
             - --inspect=0.0.0.0
