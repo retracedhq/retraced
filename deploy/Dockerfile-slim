@@ -31,7 +31,6 @@ ADD package.json /src
 ADD package-lock.json /src
 ADD Makefile /src
 RUN npm install
-ADD .snyk /src
 RUN npm run snyk-protect
 
 ADD . /src
