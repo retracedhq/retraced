@@ -75,7 +75,6 @@
     "@types/uuid": "8.3.4",
     "@types/yargs": "17.0.17",
     "handlebars-cmd": "0.1.4",
-    "istanbul": "1.1.0-alpha.1",
     "mocha-jenkins-reporter": "0.4.8",
     "mocha-junit-reporter": "2.2.0",
     "nyc": "15.1.0",
