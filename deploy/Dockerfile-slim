@@ -61,7 +61,6 @@ ADD package.json /app
 ADD package-lock.json /app
 COPY --from=node /src/migrations /app/build/migrations
 COPY --from=node /src/build /app/build
-COPY --from=node /src/bin /app/bin
 COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercronic-linux-amd64
 COPY --from=cron /usr/local/bin/retraced-auditlog-cron /usr/local/bin/retraced-auditlog-cron
 COPY --from=cron /crontab /crontab
