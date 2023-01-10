@@ -6,7 +6,6 @@ import ProgressBar from "progress";
 import clispinner from "cli-spinner";
 
 import getPgPool from "../persistence/pg";
-import { pick } from "lodash";
 
 const pgPool = getPgPool();
 const Spinner = clispinner.Spinner;
