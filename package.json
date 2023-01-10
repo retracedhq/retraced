@@ -74,8 +74,6 @@
     "@types/swagger-jsdoc": "6.0.1",
     "@types/uuid": "8.3.4",
     "@types/yargs": "17.0.17",
-    "codeclimate-test-reporter": "0.5.1",
-    "coveralls": "3.1.1",
     "handlebars-cmd": "0.1.4",
     "istanbul": "1.1.0-alpha.1",
     "mocha-jenkins-reporter": "0.4.8",
@@ -93,7 +91,6 @@
     "test": "mocha --recursive -r ts-node/register src/test/**/*.ts",
     "cover": "nyc mocha",
     "mintest": "mocha --recursive -r ts-node/register --reporter 'min' src/test/**/*.ts",
-    "report-coverage": "coveralls < ./coverage/lcov.info && codeclimate-test-reporter < ./coverage/lcov.info",
     "snyk-protect": "snyk protect",
     "start:api": "node --inspect=0.0.0.0 -r ts-node/register src/index.ts",
     "start:processor": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts"

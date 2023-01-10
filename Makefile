@@ -1,4 +1,4 @@
-.PHONY: clean prebuild deps lint swagger routes build cover test report-coverage build run run-processor run-debug
+.PHONY: clean prebuild deps lint swagger routes build cover test build run run-processor run-debug
 SKIP :=
 REPO := retracedhq/retraced
 PATH := $(shell pwd):${PATH}
@@ -26,15 +26,12 @@ routes:
 
 build: swagger routes
 	`npm bin`/tsc
-	mkdir -p bin && cp build/src/retracedctl.js build/src/retracedctl && chmod +x build/src/retracedctl
+	cp build/src/retracedctl.js build/src/retracedctl && chmod +x build/src/retracedctl
 
 cover:
 	npm run cover
 test:
 	npm test
-
-report-coverage:
-	npm run report-coverage
 
 run:
 	node --no-deprecation ./build/index.js
