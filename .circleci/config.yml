@@ -9,7 +9,7 @@ experimental:
 defaults: &defaults
   resource_class: large
   docker:
-    - image: cimg/node:18.13.0
+    - image: cimg/node:18.12.1
   working_directory: ~/repo
 
 jobs:
