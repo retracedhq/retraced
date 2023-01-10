@@ -70,7 +70,6 @@
     "@types/yargs": "17.0.17",
     "chai": "4.3.6",
     "chai-http": "4.3.0",
-    "handlebars-cmd": "0.1.4",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
     "snyk": "1.1069.0",
