@@ -1,4 +1,4 @@
-apiVersion: skaffold/v2beta27
+apiVersion: skaffold/v4beta1
 kind: Config
 build:
   local:
@@ -8,9 +8,9 @@ build:
     - image: retracedhq/retraced
       context: ./
       docker:
-        dockerfile: ./Dockerfile
+        dockerfile: ./deploy/Dockerfile-slim
 
-deploy:
+manifests:
   kustomize:
     paths:
       - ./kustomize/overlays/skaffold

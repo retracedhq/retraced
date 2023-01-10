@@ -15,9 +15,6 @@ defaults: &defaults
 jobs:
   test:
     <<: *defaults
-    environment:
-      MOCHA_FILE: results/my-test-output.xml
-      JUNIT_REPORT_PATH: results/my-test-output.xml
     steps:
       - checkout
       - restore_cache:

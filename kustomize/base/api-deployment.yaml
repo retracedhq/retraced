@@ -40,10 +40,12 @@ spec:
             periodSeconds: 30
             failureThreshold: 2
             successThreshold: 2
-          image: retracedhq/retraced:1.4.6
+          image: retracedhq/retraced
           imagePullPolicy: IfNotPresent
           command:
-            - /src/api
+            - node
+            - --inspect=0.0.0.0
+            - build/src/index.js
           ports:
             - containerPort: 3000
               name: http

@@ -11,5 +11,3 @@ spec:
           env:
             - name: PG_SEARCH
               value: ""
-            - name: LOG_LEVEL
-              value: debug

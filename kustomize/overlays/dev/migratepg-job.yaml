@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: retraced-migrate-pg-1-4-6
+  name: retraced-migrate-pg
 spec:
   template:
     spec:
@@ -10,7 +10,5 @@ spec:
           command:
             - node
             - --inspect=0.0.0.0
-            - -r
-            - ts-node/register
-            - src/_db/runner-lite.ts
+            - build/src/_db/runner-lite.js
             - pg
