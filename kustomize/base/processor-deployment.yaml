@@ -35,11 +35,12 @@ spec:
           emptyDir: {}
       containers:
         - name: processor
-          image: retracedhq/retraced:1.4.6
+          image: retracedhq/retraced
           imagePullPolicy: IfNotPresent
-
           command:
-            - /src/processor
+            - node
+            - --inspect=0.0.0.0
+            - build/src/_processor/index.js
           ports:
             - containerPort: 3000
               name: http

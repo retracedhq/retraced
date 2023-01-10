@@ -24,9 +24,6 @@ Swagger spec is generated from source using [TSOA](https://github.com/lukeautry/
 
 By default, a swagger spec is built as part of `make build`, and is served by express at `/publisher/v1/swagger.json`.
 
-In staging/production, these specs are fed to [readme.io](https://readme.io), but it is possible to generate/preview them locally.
-
-
 #### Generating a spec
 
 To generate swagger.json from Typescript sources use
