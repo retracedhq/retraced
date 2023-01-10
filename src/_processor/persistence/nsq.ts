@@ -1,5 +1,5 @@
 import nsq from "nsqjs";
-import request from "request";
+import axios from "axios";
 import { logger } from "../logger";
 import config from "../../config";
 
@@ -138,29 +138,10 @@ export class NSQClient {
     });
   }
 
-  public deleteTopic(topic: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      request(
-        {
-          method: "POST",
-          uri: `http://${this.host}:${this.httpPort}/topic/delete?topic=${topic}`,
-        },
-        (err, resp, body) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          if (
-            (resp.statusCode! < 200 || resp.statusCode! >= 300) &&
-            resp.statusCode !== 404
-          ) {
-            reject(body);
-            return;
-          }
-          resolve();
-        }
-      );
-    });
+  public async deleteTopic(topic: string): Promise<void> {
+    await axios.post(
+      `http://${this.host}:${this.httpPort}/topic/delete?topic=${topic}`
+    );
   }
 }
 

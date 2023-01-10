@@ -7,6 +7,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "7.17.0",
     "analytics-node": "6.0.0",
+    "axios": "1.2.2",
     "bcrypt": "5.0.1",
     "bugsnag": "1.9.1",
     "chance": "1.1.9",
@@ -37,8 +38,6 @@
     "progress": "2.0.3",
     "prom-client": "14.1.0",
     "redis": "4.2.0",
-    "request": "2.88.2",
-    "request-promise": "4.2.6",
     "@retracedhq/retraced": "0.5.1",
     "ruler": "1.0.0",
     "sanitize-filename": "1.6.3",
@@ -62,7 +61,6 @@
     "@types/node": "18.11.13",
     "@types/pg": "8.6.5",
     "@types/pg-types": "1.11.5",
-    "@types/request": "2.48.8",
     "@types/statsd-client": "0.4.3",
     "@types/swagger-jsdoc": "6.0.1",
     "@types/uuid": "8.3.4",
@@ -85,8 +83,9 @@
     "cover": "nyc mocha",
     "mintest": "mocha --recursive -r ts-node/register --reporter 'min' src/test/**/*.ts",
     "snyk-protect": "snyk protect",
-    "start:api": "node --inspect=0.0.0.0 -r ts-node/register src/index.ts",
-    "start:processor": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts"
+    "dev:api": "node --inspect=0.0.0.0 -r ts-node/register src/index.ts",
+    "dev:processor": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts",
+    "dev:geo": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/workers/updateGeoData.ts"
   },
   "author": "",
   "snyk": true,
