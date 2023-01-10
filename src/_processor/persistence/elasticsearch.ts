@@ -5,8 +5,30 @@ import axios from "axios";
 import https from "https";
 import { readFileSync } from "fs";
 import config from "../../config";
+import { Client } from "@elastic/elasticsearch";
 
-let es;
+let es: elasticsearch.Client;
+let newEs: Client;
+
+export function getNewElasticsearch(): Client {
+  if (!newEs) {
+    const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
+    if ((config.ELASTICSEARCH_NODES || "") !== "") {
+      const sslSettings: any = {};
+      if (config.ELASTICSEARCH_CAFILE) {
+        sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
+        sslSettings.rejectUnauthorized = true;
+      }
+
+      newEs = new Client({
+        nodes: hosts,
+        ssl: sslSettings,
+        maxRetries: 5,
+      });
+    }
+  }
+  return newEs;
+}
 
 // see api for documentation
 const requestRetries = intFromEnv("ELASTICSEARCH_REQUEST_RETRIES", 1);
@@ -89,15 +111,9 @@ export interface AliasDesc {
   alias: string;
 }
 
-export type AliasRotator = (
-  toAdd: AliasDesc[],
-  toRemove: AliasDesc[]
-) => Promise<any>;
+export type AliasRotator = (toAdd: AliasDesc[], toRemove: AliasDesc[]) => Promise<any>;
 
-export async function putAliases(
-  toAdd: AliasDesc[],
-  toRemove: AliasDesc[]
-): Promise<any> {
+export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]): Promise<any> {
   const payload = {
     actions: [
       ...toAdd.map((v) => ({ add: { index: v.index, alias: v.alias } })),
