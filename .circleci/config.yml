@@ -9,7 +9,7 @@ experimental:
 defaults: &defaults
   resource_class: large
   docker:
-    - image: cimg/node:16.18
+    - image: cimg/node:18.13.0
   working_directory: ~/repo
 
 jobs:
@@ -19,15 +19,15 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-node16-{{ checksum "package.json" }}
-            - v1-dependencies-node16-
+            - v1-dependencies-node18-{{ checksum "package.json" }}
+            - v1-dependencies-node18-
       - run: make deps lint swagger cover
       - store_test_results:
           path: results
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-node16-{{ checksum "package.json" }}
+          key: v1-dependencies-node18-{{ checksum "package.json" }}
 
   build_docker:
     <<: *defaults
@@ -37,8 +37,8 @@ jobs:
           version: 20.10.14
       - restore_cache:
           keys:
-            - v1-dependencies-node16-{{ checksum "package.json" }}
-            - v1-dependencies-node16-
+            - v1-dependencies-node18-{{ checksum "package.json" }}
+            - v1-dependencies-node18-
       - run: docker build --pull -t retracedhq/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
       # - run:
       #     name: Run local image vulnerability scan
@@ -129,8 +129,8 @@ jobs:
           version: 20.10.14
       - restore_cache:
           keys:
-            - v1-dependencies-node16-{{ checksum "package.json" }}
-            - v1-dependencies-node16-
+            - v1-dependencies-node18-{{ checksum "package.json" }}
+            - v1-dependencies-node18-
       - run: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
       # the original idea here was:
       #
