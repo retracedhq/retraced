@@ -26,7 +26,7 @@
     "moment": "2.29.4",
     "moment-timezone": "0.5.39",
     "monkit": "0.4.0",
-    "nodemailer": "6.7.8",
+    "nodemailer": "6.8.0",
     "nodemailer-mandrill-transport": "1.2.0",
     "nsqjs": "0.13.0",
     "pg": "8.7.3",
