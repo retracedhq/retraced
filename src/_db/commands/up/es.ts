@@ -4,15 +4,15 @@ import path from "path";
 import util from "util";
 import bugsnag from "bugsnag";
 
-import getElasticsearch from "../../persistence/elasticsearch";
+import { getNewElasticsearch } from "../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
 import { setupBugsnag } from "../../common";
+import { Client } from "@elastic/elasticsearch";
 
 setupBugsnag();
 
 export const command = "es";
-export const describe =
-  "migrate the elasticsearch database to the current schema";
+export const describe = "migrate the elasticsearch database to the current schema";
 
 export const builder = {
   elasticsearchNodes: {
@@ -40,7 +40,7 @@ function getSchemaPath() {
 }
 
 export const handler = (argv) => {
-  const es = getElasticsearch();
+  const newEs: Client = getNewElasticsearch();
   const pgPool = getPgPool();
 
   pgPool.connect((err, pg, done) => {
@@ -71,9 +71,7 @@ export const handler = (argv) => {
       )`
       )
         .then(() => {
-          return pg.query("select * from es_migration_meta where id = $1", [
-            timestamp,
-          ]);
+          return pg.query("select * from es_migration_meta where id = $1", [timestamp]);
         })
         .then((result) => {
           if (result.rowCount > 0) {
@@ -95,7 +93,7 @@ export const handler = (argv) => {
                     break;
 
                   case "putTemplate": {
-                    es.indices.putTemplate(esQuery.params, (err2, resp) => {
+                    newEs.indices.putTemplate(esQuery.params, (err2, resp) => {
                       if (err2) {
                         reject(err2);
                         return;
