@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: dbutil
-          image: retracedhq/retraced:1.4.6
+          image: retracedhq/retraced
           command:
             - /bin/sleep
             - infinity

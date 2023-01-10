@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: retraced-migrate-pg-1-4-6
+  name: retraced-migrate-pg
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   template:
@@ -9,7 +9,7 @@ spec:
       restartPolicy: "OnFailure"
       containers:
         - name: db
-          image: retracedhq/retraced:1.4.6
+          image: retracedhq/retraced
           imagePullPolicy: IfNotPresent
           command:
             - node

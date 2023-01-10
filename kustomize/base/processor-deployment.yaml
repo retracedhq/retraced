@@ -35,7 +35,7 @@ spec:
           emptyDir: {}
       containers:
         - name: processor
-          image: retracedhq/retraced:1.4.6
+          image: retracedhq/retraced
           imagePullPolicy: IfNotPresent
           command:
             - node
