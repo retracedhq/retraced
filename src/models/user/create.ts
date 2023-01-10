@@ -1,7 +1,7 @@
 import * as uuid from "uuid";
 import moment from "moment";
 
-import getPgPool, { Querier } from "../../persistence/pg";
+import getPgPool from "../../persistence/pg";
 import { RetracedUser } from "./index";
 
 const pgPool = getPgPool();

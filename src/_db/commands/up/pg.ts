@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import picocolors from "picocolors";
 import path from "path";
 import _ from "lodash";
 import postgrator from "postgrator";
@@ -51,7 +51,7 @@ export const handler = (argv) => {
     logger.info("executing migration");
     migrator.migrate("max").then((migrations) => {
       _.forEach(migrations, (m) => {
-        console.log(chalk.green(m.name));
+        console.log(picocolors.green(m.name));
       });
       process.exit(0);
     });
