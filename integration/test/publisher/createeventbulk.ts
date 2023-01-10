@@ -7,7 +7,7 @@ import { retracedUp } from "../pkg/retracedUp";
 import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
 import * as util from "util";
-import chalk from "chalk";
+import picocolors from "picocolors";
 
 // tslint:disable-next-line
 const chai = require("chai"),
@@ -117,7 +117,7 @@ describe("Bulk Create Events", function () {
                     responseBody = JSON.parse(res.text);
                     if (err && Env.Debug) {
                       console.log(
-                        chalk.red(
+                        picocolors.red(
                           util.inspect(err.response.body, false, 100, false)
                         )
                       );

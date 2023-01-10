@@ -1,5 +1,5 @@
 import rp from "request-promise";
-import chalk from "chalk";
+import picocolors from "picocolors";
 import _ from "lodash";
 import Chance from "chance";
 import util from "util";
@@ -111,7 +111,7 @@ exports.handler = async (argv) => {
     argv.bulk,
     argv.groupId
   );
-  console.log(chalk.green("Done!"));
+  console.log(picocolors.green("Done!"));
 };
 
 function getProject(r, endpoint, jwtToken, projectId) {
