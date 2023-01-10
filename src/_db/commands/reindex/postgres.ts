@@ -2,11 +2,12 @@ import chalk from "chalk";
 import * as uuid from "uuid";
 import util from "util";
 
-import getElasticsearch, { putAliases } from "../../persistence/elasticsearch";
+import { putAliases, getNewElasticsearch } from "../../persistence/elasticsearch";
 import PostgresEventSource from "../../persistence/PostgresEventSource";
 import getPgPool from "../../persistence/pg";
 import { logger } from "../../../logger";
 import { makePageIndexer } from "./shared/page";
+import { Client } from "@elastic/elasticsearch";
 
 export const command = "postgres";
 export const desc = "reindex all events from postgres into elasticsearch";
@@ -51,45 +52,25 @@ export const builder: any = {
 export const handler = async (argv) => {
   logger.info({ msg: "starting handler" });
   const pgPool = getPgPool();
-  const es: any = getElasticsearch();
+  const newEs: Client = getNewElasticsearch();
 
   let pgPreResults;
   if (argv.startDate && argv.endDate) {
     console.log(
       chalk.yellow(
-        `Reindexing time range: [${new Date(
-          argv.startTime
-        ).toISOString()}, ${new Date(argv.endTime).toISOString()}`
+        `Reindexing time range: [${new Date(argv.startDate).toISOString()}, ${new Date(argv.endDate).toISOString()}`
       )
     );
-    pgPreResults = await pgPool.query(
-      "SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received",
-      [
-        `[${new Date(argv.startTime).toISOString()}, ${new Date(
-          argv.endTime
-        ).toISOString()})`,
-      ]
-    );
-    console.log(
-      chalk.yellow(
-        `Postgres source events in range: ${pgPreResults.rows[0].count}`
-      )
-    );
+    pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received", [
+      `[${new Date(argv.startDate).toISOString()}, ${new Date(argv.endDate).toISOString()})`,
+    ]);
+    console.log(chalk.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
   } else {
     pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task");
-    console.log(
-      chalk.yellow(
-        `Postgres source events in range: ${pgPreResults.rows[0].count}`
-      )
-    );
+    console.log(chalk.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
   }
 
-  const eventSource = new PostgresEventSource(
-    pgPool,
-    argv.startDate,
-    argv.endDate,
-    argv.pageSize
-  );
+  const eventSource = new PostgresEventSource(pgPool, argv.startDate, argv.endDate, argv.pageSize);
 
   const esTempIndex = `retraced.reindex.${uuid.v4()}`;
   const esTargetIndex = `retraced.${argv.projectId}.${argv.environmentId}`;
@@ -102,12 +83,12 @@ export const handler = async (argv) => {
     esTargetWriteIndex,
   });
 
-  const aliasesBlob = await es.cat.aliases({ name: esTargetIndex });
+  const aliasesBlob = await newEs.cat.aliases({ name: esTargetIndex });
   const currentIndices: string[] = [];
   if (!aliasesBlob) {
     logger.error({ msg: "no aliasesBlob" });
   }
-  aliasesBlob.split("\n").forEach((aliasDesc) => {
+  aliasesBlob.body.split("\n").forEach((aliasDesc) => {
     const parts = aliasDesc.split(" ");
     if (parts.length >= 2) {
       currentIndices.push(parts[1]);
@@ -118,12 +99,12 @@ export const handler = async (argv) => {
     count: currentIndices.length,
   });
 
-  const aliasesBlobWrite = await es.cat.aliases({ name: esTargetWriteIndex });
+  const aliasesBlobWrite = await newEs.cat.aliases({ name: esTargetWriteIndex });
   const currentIndicesWrite: string[] = [];
-  if (!aliasesBlobWrite) {
+  if (!aliasesBlobWrite.body) {
     logger.error({ msg: "no aliasesBlobWrite" });
   } else {
-    aliasesBlobWrite.split("\n").forEach((aliasDesc) => {
+    aliasesBlobWrite.body.split("\n").forEach((aliasDesc) => {
       const parts = aliasDesc.split(" ");
       if (parts.length >= 2) {
         currentIndicesWrite.push(parts[1]);
@@ -136,7 +117,7 @@ export const handler = async (argv) => {
     count: currentIndicesWrite.length,
   });
 
-  await es.indices.create({ index: esTempIndex });
+  await newEs.indices.create({ index: esTempIndex });
 
   logger.info({ msg: "created temp index", esTempIndex });
 
@@ -153,14 +134,7 @@ export const handler = async (argv) => {
     esTargetWriteIndex,
     currentIndicesWrite,
   });
-  finalize(
-    argv.dryRun,
-    esTempIndex,
-    esTargetIndex,
-    currentIndices,
-    esTargetWriteIndex,
-    currentIndicesWrite
-  );
+  finalize(argv.dryRun, esTempIndex, esTargetIndex, currentIndices, esTargetWriteIndex, currentIndicesWrite);
 };
 
 function finalize(
@@ -212,11 +186,7 @@ function finalize(
       console.log(`index: ${esTempIndex}`);
       console.log(`alias: ${esTargetIndex}`);
       if (currentIndices.length > 0) {
-        console.log(
-          `note: aliases were removed from the following indices: ${util.inspect(
-            currentIndices
-          )}`
-        );
+        console.log(`note: aliases were removed from the following indices: ${util.inspect(currentIndices)}`);
         console.log(`they can probably be safely deleted now.`);
       }
       process.exit(0);
