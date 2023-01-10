@@ -1,8 +1,9 @@
 import elasticsearch from "elasticsearch";
 import _ from "lodash";
-import request from "request-promise";
+import axios from "axios";
 import { readFileSync } from "fs";
 import config from "../../config";
+import https from "https";
 
 let es: elasticsearch.Client;
 
@@ -34,7 +35,10 @@ export interface AliasDesc {
   alias: string;
 }
 
-export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]) {
+export async function putAliases(
+  toAdd: AliasDesc[],
+  toRemove: AliasDesc[]
+): Promise<any> {
   const payload = {
     actions: [
       ...toAdd.map((v) => ({ add: { index: v.index, alias: v.alias } })),
@@ -47,18 +51,22 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]) {
     throw new Error("Need at least one item in ELASTICSEARCH_NODES");
   }
   const uri = `${hosts[0]}/_aliases`;
-  const params: request.CoreOptions = {
-    json: true,
-    body: payload,
-    insecure: true,
+  const httpsAgentParams: https.AgentOptions = {
     rejectUnauthorized: false,
-    strictSSL: false,
   };
 
   if (config.ELASTICSEARCH_CAFILE) {
-    params.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
+    httpsAgentParams.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
   }
 
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
-  return await request.post(uri, params);
+
+  const { data } = await axios.post<any>(uri, payload, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    httpsAgent: new https.Agent(httpsAgentParams),
+  });
+
+  return data;
 }

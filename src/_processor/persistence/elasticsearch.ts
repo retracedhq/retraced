@@ -1,7 +1,8 @@
 import elasticsearch from "elasticsearch";
 import _ from "lodash";
 import moment from "moment";
-import request from "request";
+import axios from "axios";
+import https from "https";
 import { readFileSync } from "fs";
 import config from "../../config";
 
@@ -109,22 +110,22 @@ export async function putAliases(
     throw new Error("Need at least one item in ELASTICSEARCH_NODES");
   }
   const uri = `${hosts[0]}/_aliases`;
-  const params: request.CoreOptions = {
-    json: true,
-    body: payload,
+  const httpsAgentParams: https.AgentOptions = {
+    rejectUnauthorized: false,
   };
 
   if (config.ELASTICSEARCH_CAFILE) {
-    params.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
+    httpsAgentParams.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
   }
 
-  return new Promise((res, rej) => {
-    request.post(uri, params, (err, resp, body) => {
-      if (err) {
-        rej(err);
-      }
+  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
 
-      res({ resp, body });
-    });
+  const { data } = await axios.post<any>(uri, payload, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    httpsAgent: new https.Agent(httpsAgentParams),
   });
+
+  return data;
 }
