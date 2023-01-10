@@ -35,6 +35,8 @@ spec:
                 secretKeyRef:
                   key: NSQD_HTTP_PORT
                   name: auditlog
+            - name: RETRACED_DISABLE_GEOSYNC
+              value: "1"
           resources:
             requests:
               cpu: 10m

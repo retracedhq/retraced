@@ -26,7 +26,6 @@ x-common-variables: &common-variables
   NSQD_TCP_PORT: 4150
   # Set admin root token here
   ADMIN_ROOT_TOKEN: dev
-  MAXMIND_GEOLITE2_LICENSE_KEY: ${MAXMIND_GEOLITE2_LICENSE_KEY}
 
 services:
   retraced-api:
