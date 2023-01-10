@@ -7,7 +7,7 @@ import { retracedUp } from "../pkg/retracedUp";
 import { sleep } from "../pkg/util";
 import * as Env from "../env";
 import * as util from "util";
-import * as chalk from "chalk";
+import chalk from "chalk";
 
 // tslint:disable-next-line
 const chai = require("chai"),
