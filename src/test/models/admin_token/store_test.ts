@@ -1,10 +1,9 @@
 import bcrypt from "bcrypt";
-import { suite, test } from "mocha-typescript";
+import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 
 @suite
 class BcryptLearning {
-
   @test
   public async "Bcrypt happy path"() {
     const token = "100";
