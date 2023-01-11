@@ -3,20 +3,23 @@ import moment from "moment";
 import { Registry, getRegistry, instrumented } from "monkit";
 
 import { Clock } from "../common";
-import { getElasticsearch } from "../../persistence/elasticsearch";
-import { Client } from "@elastic/elasticsearch";
+import { ClientWithRetry, getESWithRetry } from "../../persistence/elasticsearch";
 
 export class ElasticsearchSaver {
   public static getDefault(): ElasticsearchSaver {
     if (!ElasticsearchSaver.instance) {
-      ElasticsearchSaver.instance = new ElasticsearchSaver(getElasticsearch(), getRegistry(), moment.utc);
+      ElasticsearchSaver.instance = new ElasticsearchSaver(getESWithRetry(), getRegistry(), moment.utc);
     }
     return ElasticsearchSaver.instance;
   }
 
   private static instance: ElasticsearchSaver;
 
-  constructor(private readonly es: Client, private readonly registry: Registry, private readonly clock: Clock) {}
+  constructor(
+    private readonly es: ClientWithRetry,
+    private readonly registry: Registry,
+    private readonly clock: Clock
+  ) {}
 
   public async saveEventToElasticsearch(job): Promise<void> {
     const jobObj = JSON.parse(job.body);

@@ -4,7 +4,7 @@ import path from "path";
 import util from "util";
 import bugsnag from "bugsnag";
 
-import { getElasticsearch } from "../../../persistence/elasticsearch";
+import { getESWithoutRetry } from "../../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
 import { setupBugsnag } from "../../common";
 import { Client } from "@elastic/elasticsearch";
@@ -40,7 +40,7 @@ function getSchemaPath() {
 }
 
 export const handler = (argv) => {
-  const es: Client = getElasticsearch(true);
+  const es: Client = getESWithoutRetry();
   const pgPool = getPgPool();
 
   pgPool.connect((err, pg, done) => {

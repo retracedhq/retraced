@@ -1,11 +1,10 @@
 import _ from "lodash";
-import { getElasticsearch } from "../../persistence/elasticsearch";
+import { getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
 import getsGroup from "../../models/group/gets";
 
 import { DashboardTile, DashboardOptions } from "../interfaces";
-import { Client } from "@elastic/elasticsearch";
 
-const es: Client = getElasticsearch();
+const es: ClientWithRetry = getESWithRetry();
 
 interface GroupRow {
   name?: string;

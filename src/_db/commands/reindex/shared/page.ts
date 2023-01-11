@@ -4,7 +4,7 @@ import util from "util";
 import ProgressBar from "progress";
 import { mapValues } from "../../../../common/mapper";
 
-import { getElasticsearch } from "../../../../persistence/elasticsearch";
+import { getESWithoutRetry } from "../../../../persistence/elasticsearch";
 import { Event } from "../../../persistence/EventSource";
 import common from "../../../common";
 import { logger } from "../../../../logger";
@@ -14,7 +14,7 @@ let totalIndexed: number = 0;
 
 export const makePageIndexer = (writeIndex: string) => async (result: Event[]) => {
   logger.info(`processing page with count ${result.length}`);
-  const es: Client = getElasticsearch(true);
+  const es: Client = getESWithoutRetry();
   const pbar = new ProgressBar("[:bar] :percent :etas", {
     incomplete: " ",
     width: 40,

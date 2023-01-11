@@ -4,10 +4,10 @@ import moment from "moment";
 import { ApiResponse, Client, RequestParams } from "@elastic/elasticsearch";
 
 import { Scope } from "../../security/scope";
-import { scope, getElasticsearch } from "../../persistence/elasticsearch";
+import { scope, getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
 
-const es: Client = getElasticsearch();
+const es: ClientWithRetry = getESWithRetry();
 
 // An empty list for groupIds or targetIds means unrestricted.
 export const unrestricted = Object.seal([]);

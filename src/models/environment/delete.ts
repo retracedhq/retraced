@@ -1,10 +1,10 @@
 import getPgPool from "../../persistence/pg";
-import { getElasticsearch } from "../../persistence/elasticsearch";
+import { getESWithoutRetry } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
 import { Client } from "@elastic/elasticsearch";
 
 const pgPool = getPgPool();
-const es: Client = getElasticsearch();
+const es: Client = getESWithoutRetry();
 
 interface Options {
   projectId: string;

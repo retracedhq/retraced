@@ -1,7 +1,7 @@
 import { Client } from "@elastic/elasticsearch";
-import { getElasticsearch } from "../../persistence/elasticsearch";
+import { getESWithoutRetry } from "../../persistence/elasticsearch";
 
-const es: Client = getElasticsearch();
+const es: Client = getESWithoutRetry();
 
 interface Options {
   projectId: string;

@@ -2,10 +2,9 @@ import _ from "lodash";
 import { instrument } from "../../metrics";
 
 import { Scope } from "../../security/scope";
-import { scope, getElasticsearch } from "../../persistence/elasticsearch";
-import { Client } from "@elastic/elasticsearch";
+import { scope, getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
 
-const client: Client = getElasticsearch();
+const client: ClientWithRetry = getESWithRetry();
 
 interface Options {
   groupBy: "action" | "group.id";
@@ -21,7 +20,7 @@ interface Result {
   count: number;
 }
 
-export async function countBy(es: Client, opts: Options): Promise<Result[]> {
+export async function countBy(es: ClientWithRetry, opts: Options): Promise<Result[]> {
   const [index, scopeFilters] = scope(opts.scope);
   const filters: any[] = [];
 

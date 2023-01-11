@@ -50,7 +50,7 @@ function intFromEnv(key, defaultN) {
   return _.isNaN(env) ? defaultN : env;
 }
 
-export function getElasticsearch(raw = false): Client {
+function getElasticsearch(noRetry = false): Client {
   if (!es) {
     const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
     if ((config.ELASTICSEARCH_NODES || "") !== "") {
@@ -66,6 +66,10 @@ export function getElasticsearch(raw = false): Client {
         maxRetries: 5,
       });
     }
+  }
+
+  if (noRetry) {
+    return es;
   }
 
   function withRetry(fn) {
@@ -90,24 +94,33 @@ export function getElasticsearch(raw = false): Client {
     return action;
   }
 
-  return raw
-    ? es
-    : Object.assign({}, es, {
-        index: withRetry((params) => es.index(params)),
-        cat: Object.assign({}, es.cat, {
-          aliases: withRetry((params) => es.cat.aliases(params)),
-        }),
-        search: withRetry((params) => es.search(params)),
-        bulk: withRetry((params) => es.bulk(params)),
-        scroll: withRetry((params) => es.scroll(params)),
-        count: withRetry((params) => es.count(params)),
-        indices: Object.assign({}, es.indices, {
-          create: withRetry((params) => es.indices.create(params)),
-          putTemplate: withRetry((params) => es.indices.putTemplate(params)),
-          deleteAlias: withRetry((params) => es.indices.deleteAlias(params)),
-          delete: withRetry((params) => es.indices.delete(params)),
-        }),
-      });
+  return Object.assign({}, es, {
+    count: es.count,
+    index: withRetry((params) => es.index(params)),
+    search: withRetry((params) => es.search(params)),
+    scroll: withRetry((params) => es.scroll(params)),
+    indices: Object.assign({}, es.indices, {
+      create: withRetry((params) => es.indices.create(params)),
+    }),
+  });
+}
+
+export type ClientWithRetry = {
+  count: any;
+  index: any;
+  search: any;
+  scroll: any;
+  indices: {
+    create: any;
+  };
+};
+
+export function getESWithRetry(): ClientWithRetry {
+  return getElasticsearch();
+}
+
+export function getESWithoutRetry(): Client {
+  return getElasticsearch(true);
 }
 
 // sleep for ms

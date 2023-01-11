@@ -1,8 +1,8 @@
 import _ from "lodash";
-import { getElasticsearch } from "../../persistence/elasticsearch";
+import { getESWithRetry } from "../../persistence/elasticsearch";
 import { DashboardTile, DashboardOptions } from "../interfaces";
 
-const es = getElasticsearch();
+const es = getESWithRetry();
 
 interface ActionRow {
   action: string;

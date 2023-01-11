@@ -1,8 +1,7 @@
-import { getElasticsearch } from "../../persistence/elasticsearch";
+import { getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
-import { Client } from "@elastic/elasticsearch";
 
-const es: Client = getElasticsearch();
+const es: ClientWithRetry = getESWithRetry();
 
 export interface Options {
   index: string;

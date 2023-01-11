@@ -4,10 +4,11 @@ import * as uuid from "uuid";
 import pg from "pg";
 import { histogram, instrumented, meter } from "monkit";
 
-import { AliasDesc, AliasRotator, putAliases, getElasticsearch } from "../../persistence/elasticsearch";
+import { AliasDesc, AliasRotator, putAliases, getESWithoutRetry } from "../../persistence/elasticsearch";
 import getPg from "../persistence/pg";
 import { logger } from "../logger";
 import config from "../../config";
+import { Client } from "@elastic/elasticsearch";
 
 export type IndexNamer = (newDate: moment.Moment) => string;
 
@@ -32,15 +33,12 @@ export interface Environment {
  * The second alias will add the new index to the collection of indices
  * that are searched by the graphql search endpoints.
  */
+
 export class ElasticsearchIndexRotator {
   public static default(): ElasticsearchIndexRotator {
+    const es: Client = getESWithoutRetry();
     if (!ElasticsearchIndexRotator.instance) {
-      ElasticsearchIndexRotator.instance = new ElasticsearchIndexRotator(
-        getElasticsearch().indices,
-        getElasticsearch().cat,
-        getPg(),
-        putAliases
-      );
+      ElasticsearchIndexRotator.instance = new ElasticsearchIndexRotator(es.indices, es.cat, getPg(), putAliases);
     }
 
     return ElasticsearchIndexRotator.instance;
@@ -64,6 +62,8 @@ export class ElasticsearchIndexRotator {
   ) {
     this.indicesApi = indicesApi;
     this.catApi = catApi;
+    this.pool = pool;
+    this.aliasRotator = aliasRotator;
     this.indexNamer = indexNamer || ElasticsearchIndexRotator.defaultIndexNamer;
   }
 

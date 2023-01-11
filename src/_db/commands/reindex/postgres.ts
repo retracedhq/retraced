@@ -2,7 +2,7 @@ import picocolors from "picocolors";
 import * as uuid from "uuid";
 import util from "util";
 
-import { putAliases, getElasticsearch } from "../../../persistence/elasticsearch";
+import { putAliases, getESWithoutRetry } from "../../../persistence/elasticsearch";
 import PostgresEventSource from "../../persistence/PostgresEventSource";
 import getPgPool from "../../persistence/pg";
 import { logger } from "../../../logger";
@@ -52,7 +52,7 @@ export const builder: any = {
 export const handler = async (argv) => {
   logger.info({ msg: "starting handler" });
   const pgPool = getPgPool();
-  const es: Client = getElasticsearch(true);
+  const es: Client = getESWithoutRetry();
 
   let pgPreResults;
   if (argv.startDate && argv.endDate) {

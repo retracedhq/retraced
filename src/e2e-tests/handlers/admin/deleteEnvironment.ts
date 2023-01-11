@@ -3,14 +3,14 @@ import { expect } from "chai";
 import deleteEnvironment from "../../../handlers/admin/deleteEnvironment";
 import getPgPool from "../../../persistence/pg";
 import { AdminTokenStore } from "../../../models/admin_token/store";
-import { getElasticsearch } from "../../../persistence/elasticsearch";
+import { getESWithoutRetry } from "../../../persistence/elasticsearch";
 import { Client } from "@elastic/elasticsearch";
 
 @suite
 class DeleteEnvironment {
   @test public async "DeleteEnvironment#deleteEnvironment()"() {
     const pool = getPgPool();
-    const es: Client = getElasticsearch();
+    const es: Client = getESWithoutRetry();
     try {
       await cleanup(pool, es);
       const res = await setup(pool, es);
@@ -25,7 +25,7 @@ class DeleteEnvironment {
   @test
   public async "DeleteEnvironment#deleteEnvironment() with preDeleteHook"() {
     const pool = getPgPool();
-    const es: Client = getElasticsearch();
+    const es: Client = getESWithoutRetry();
     try {
       await cleanup(pool, es);
       const res = await setup(pool, es);
