@@ -344,7 +344,7 @@ describe("Create Events", function () {
         specify(
           "The API should return a 400 response code.",
           async function () {
-            expect(resultBody).to.be.empty;
+            expect(resultBody).to.be.undefined;
             expect(httpResponse).to.contain("400");
           }
         );
