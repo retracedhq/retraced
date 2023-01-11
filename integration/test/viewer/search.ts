@@ -1,7 +1,7 @@
 import * as querystring from "querystring";
 import { expect } from "chai";
 import * as Retraced from "@retracedhq/retraced";
-import { tv4 } from "tv4";
+import tv4 from "tv4";
 import "mocha";
 import "chai-http";
 import { CreateEventSchema, search } from "../pkg/specs";
