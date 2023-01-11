@@ -80,7 +80,7 @@
   "scripts": {
     "lint": "tslint --project ./tsconfig.json",
     "test": "mocha --recursive -r ts-node/register src/test/**/*.ts",
-    "integration:test": "mocha --timeout 100000 -r ts-node/register integration/test/**/*.ts",
+    "integration:test": "mocha -r ts-node/register integration/test/**/*.ts",
     "cover": "nyc mocha",
     "mintest": "mocha --recursive -r ts-node/register --reporter 'min' src/test/**/*.ts",
     "snyk-protect": "snyk protect",
