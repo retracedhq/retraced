@@ -1,8 +1,8 @@
-
-import getEs from "../../persistence/elasticsearch";
+import { getNewElasticsearch } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
+import { Client } from "@elastic/elasticsearch";
 
-const es: any = getEs();
+const newEs: Client = getNewElasticsearch();
 
 export interface Options {
   index: string;
@@ -41,28 +41,27 @@ export interface Result {
   scrollId?: string;
 }
 
-export default async function(opts: Options): Promise<Result> {
+export default async function (opts: Options): Promise<Result> {
   if (!opts.newScroll && opts.scrollId && opts.scrollLifetime) {
     // This isn't a normal query: it's a request for another page of results.
     const scrollParams = {
       scroll_id: opts.scrollId,
       scroll: opts.scrollLifetime,
     };
-    const resp = await es.scroll(scrollParams);
-    if (!resp) {
+    const resp = await newEs.scroll(scrollParams);
+    if (!resp.body) {
       logger.info(`continue scroll resp nil with params ${JSON.stringify(scrollParams)}`);
     }
     const results: Result = {
-      totalHits: resp.hits.total,
-      count: resp.hits.hits ? resp.hits.hits.length : 0,
+      totalHits: resp.body.hits.total,
+      count: resp.body.hits.hits ? resp.body.hits.hits.length : 0,
       events: [],
     };
     if (results.count > 0) {
-      for (const hit of resp.hits.hits) {
+      for (const hit of resp.body.hits.hits) {
         results.events!.push(hit["_source"]);
       }
-      results.scrollId = resp._scroll_id;
-
+      results.scrollId = resp.body._scroll_id;
     }
     return results;
   }
@@ -202,25 +201,24 @@ export default async function(opts: Options): Promise<Result> {
 
   if (!opts.fetchAll) {
     // Normal search.
-    const resp = await es.search(params);
-    if (!resp) {
+    const resp = await newEs.search(params);
+    if (!resp.body) {
       logger.info();
     }
     const results: Result = {
-      totalHits: resp.hits.total,
-      count: resp.hits.hits ? resp.hits.hits.length : 0,
+      totalHits: resp.body.hits.total,
+      count: resp.body.hits.hits ? resp.body.hits.hits.length : 0,
       events: [],
     };
     if (results.count > 0) {
-      for (const hit of resp.hits.hits) {
+      for (const hit of resp.body.hits.hits) {
         results.events!.push(hit["_source"]);
       }
     }
-    if (resp._scroll_id) {
-      results.scrollId = resp._scroll_id;
+    if (resp.body._scroll_id) {
+      results.scrollId = resp.body._scroll_id;
     }
     return results;
-
   } else {
     // Here we use the scrolling API to pull every single event from the index.
     // TODO: Stream this data to disk for later serving. Could be huge.
@@ -230,34 +228,34 @@ export default async function(opts: Options): Promise<Result> {
       events: [],
     };
     params.scroll = "1m";
-    const initialResp = await es.search(params);
-    if (!initialResp) {
+    const initialResp = await newEs.search(params);
+    if (!initialResp.body) {
       logger.info(`initialResp nil with params ${JSON.stringify(params)}`);
     }
-    if (initialResp.hits.total > 0) {
+    if (initialResp.body.hits.total > 0) {
       const scrollParams = {
-        scroll_id: initialResp._scroll_id,
+        scroll_id: initialResp.body._scroll_id,
         scroll: "1m",
       };
-      results.totalHits = results.count = initialResp.hits.total;
-      for (const hit of initialResp.hits.hits) {
+      results.totalHits = results.count = initialResp.body.hits.total;
+      for (const hit of initialResp.body.hits.hits) {
         results.events!.push(hit["_source"]);
       }
       while (true) {
-        const resp = await es.scroll({
+        const resp = await newEs.scroll({
           scroll: scrollParams.scroll,
           body: scrollParams.scroll_id,
         });
-        if (!resp) {
+        if (!resp.body) {
           logger.info(`scroll resp nil with params ${JSON.stringify(params)}`);
         }
-        if (resp.hits.hits.length === 0) {
+        if (resp.body.hits.hits.length === 0) {
           break;
         }
-        for (const hit of resp.hits.hits) {
+        for (const hit of resp.body.hits.hits) {
           results.events!.push(hit["_source"]);
         }
-        scrollParams.scroll_id = resp._scroll_id;
+        scrollParams.scroll_id = resp.body._scroll_id;
       }
     }
     return results;
