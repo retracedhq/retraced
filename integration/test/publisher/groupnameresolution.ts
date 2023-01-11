@@ -99,15 +99,15 @@ describe("Group Name Resolution", function () {
                 specify(
                   "Then the response should contain a non-null group.id, and the second event's group.name should be populated",
                   function () {
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.action",
                       "integration" + FIRST_EVENT
                     );
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.group.id",
                       "rtrcdqa1234" + GROUP_ID
                     );
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.group.name",
                       "group number " + GROUP_ID
                     );
@@ -148,15 +148,15 @@ describe("Group Name Resolution", function () {
                 specify(
                   "Then the response should contain a non-null group.id, and the second event's group.name should be populated",
                   function () {
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.action",
                       "integration" + SECOND_EVENT
                     );
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.group.id",
                       "rtrcdqa1234" + GROUP_ID
                     );
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.group.name",
                       "group number " + GROUP_ID
                     );
