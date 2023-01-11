@@ -20,7 +20,7 @@ class DeleteEnvironment {
       );
       return expect(result).to.be.undefined;
     } catch (ex) {
-      // console.log(ex);
+      console.log(ex);
     } finally {
       await cleanup(pool, es);
     }
@@ -42,7 +42,7 @@ class DeleteEnvironment {
       );
       return expect(result).to.be.undefined;
     } catch (ex) {
-      // console.log(ex);
+      console.log(ex);
     } finally {
       await cleanup(pool, es);
     }
