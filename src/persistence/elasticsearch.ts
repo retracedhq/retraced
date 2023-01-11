@@ -1,4 +1,4 @@
-import elasticsearch from "elasticsearch";
+// import elasticsearch from "elasticsearch";
 import _ from "lodash";
 import moment from "moment";
 import { Scope } from "../security/scope";
@@ -6,7 +6,7 @@ import { Client } from "@elastic/elasticsearch";
 import { readFileSync } from "fs";
 import config from "../config";
 
-let es: elasticsearch.Client; // the legacy elasticsearch client library
+// let es: elasticsearch.Client; // the legacy elasticsearch client library
 let newEs: Client; // the elasticsearch 7.6+ client library
 
 /*
@@ -68,55 +68,55 @@ export function getNewElasticsearch(): Client {
   return newEs;
 }
 
-export default function getElasticsearch(): elasticsearch.Client {
-  if (!es) {
-    const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
+// export default function getElasticsearch(): elasticsearch.Client {
+//   if (!es) {
+//     const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
 
-    const sslSettings: any = {};
-    if (config.ELASTICSEARCH_CAFILE) {
-      sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
-      sslSettings.rejectUnauthorized = true;
-    }
+//     const sslSettings: any = {};
+//     if (config.ELASTICSEARCH_CAFILE) {
+//       sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
+//       sslSettings.rejectUnauthorized = true;
+//     }
 
-    es = new elasticsearch.Client({
-      hosts,
-      requestTimeout,
-      maxRetries: requestRetries,
-      ssl: sslSettings,
-    });
-  }
+//     es = new elasticsearch.Client({
+//       hosts,
+//       requestTimeout,
+//       maxRetries: requestRetries,
+//       ssl: sslSettings,
+//     });
+//   }
 
-  function withRetry(fn) {
-    const action = async (params: any, tries = 0, timeout = totalTimeout) => {
-      const start = moment().valueOf();
+//   function withRetry(fn) {
+//     const action = async (params: any, tries = 0, timeout = totalTimeout) => {
+//       const start = moment().valueOf();
 
-      try {
-        return await fn(params);
-      } catch (err) {
-        const elapsed = moment().valueOf() - start;
-        const delay = backoff * Math.pow(2, tries);
-        const remaining = timeout - elapsed;
+//       try {
+//         return await fn(params);
+//       } catch (err) {
+//         const elapsed = moment().valueOf() - start;
+//         const delay = backoff * Math.pow(2, tries);
+//         const remaining = timeout - elapsed;
 
-        if (remaining > delay && shouldRetry(err)) {
-          await wait(delay);
-          return await action(params, tries + 1, remaining - delay);
-        }
-        throw err;
-      }
-    };
+//         if (remaining > delay && shouldRetry(err)) {
+//           await wait(delay);
+//           return await action(params, tries + 1, remaining - delay);
+//         }
+//         throw err;
+//       }
+//     };
 
-    return action;
-  }
+//     return action;
+//   }
 
-  return Object.assign({}, es, {
-    raw: es,
-    search: withRetry((params) => es.search(params)),
-    scroll: withRetry((params) => es.scroll(params)),
-    indices: Object.assign({}, es.indices, {
-      create: withRetry((params) => es.indices.create(params)),
-    }),
-  });
-}
+//   return Object.assign({}, es, {
+//     raw: es,
+//     search: withRetry((params) => es.search(params)),
+//     scroll: withRetry((params) => es.scroll(params)),
+//     indices: Object.assign({}, es.indices, {
+//       create: withRetry((params) => es.indices.create(params)),
+//     }),
+//   });
+// }
 
 // sleep for ms
 async function wait(ms: number) {

@@ -1,4 +1,4 @@
-import elasticsearch from "elasticsearch";
+// import elasticsearch from "elasticsearch";
 import _ from "lodash";
 import moment from "moment";
 import axios from "axios";
@@ -7,7 +7,7 @@ import { readFileSync } from "fs";
 import config from "../../config";
 import { Client } from "@elastic/elasticsearch";
 
-let es: elasticsearch.Client;
+// let es: elasticsearch.Client;
 let newEs: Client;
 
 export function getNewElasticsearch(): Client {
@@ -42,53 +42,53 @@ function intFromEnv(key, defaultN) {
   return _.isNaN(env) ? defaultN : env;
 }
 
-export default function getElasticsearch(): elasticsearch.Client {
-  if (!es) {
-    const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
-    if (hosts.length < 1 || !hosts[0]) {
-      throw new Error("Need at least one item in ELASTICSEARCH_NODES");
-    }
+// export default function getElasticsearch(): elasticsearch.Client {
+//   if (!es) {
+//     const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
+//     if (hosts.length < 1 || !hosts[0]) {
+//       throw new Error("Need at least one item in ELASTICSEARCH_NODES");
+//     }
 
-    const sslSettings: any = {};
-    if (config.ELASTICSEARCH_CAFILE) {
-      sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
-      sslSettings.rejectUnauthorized = true;
-    }
+//     const sslSettings: any = {};
+//     if (config.ELASTICSEARCH_CAFILE) {
+//       sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
+//       sslSettings.rejectUnauthorized = true;
+//     }
 
-    es = new elasticsearch.Client({
-      hosts,
-      requestTimeout,
-      maxRetries: requestRetries,
-      ssl: sslSettings,
-    });
-  }
+//     es = new elasticsearch.Client({
+//       hosts,
+//       requestTimeout,
+//       maxRetries: requestRetries,
+//       ssl: sslSettings,
+//     });
+//   }
 
-  function withRetry(fn) {
-    const action = async (params: any, tries = 0, timeout = totalTimeout) => {
-      const start = moment().valueOf();
+//   function withRetry(fn) {
+//     const action = async (params: any, tries = 0, timeout = totalTimeout) => {
+//       const start = moment().valueOf();
 
-      try {
-        return await fn(params);
-      } catch (err) {
-        const elapsed = moment().valueOf() - start;
-        const delay = backoff * Math.pow(2, tries);
-        const remaining = timeout - elapsed;
+//       try {
+//         return await fn(params);
+//       } catch (err) {
+//         const elapsed = moment().valueOf() - start;
+//         const delay = backoff * Math.pow(2, tries);
+//         const remaining = timeout - elapsed;
 
-        if (remaining > delay && shouldRetry(err)) {
-          await wait(delay);
-          return await action(params, tries + 1, remaining - delay);
-        }
-        throw err;
-      }
-    };
+//         if (remaining > delay && shouldRetry(err)) {
+//           await wait(delay);
+//           return await action(params, tries + 1, remaining - delay);
+//         }
+//         throw err;
+//       }
+//     };
 
-    return action;
-  }
+//     return action;
+//   }
 
-  return Object.assign({}, es, {
-    index: withRetry((params) => es.index(params)),
-  });
-}
+//   return Object.assign({}, es, {
+//     index: withRetry((params) => es.index(params)),
+//   });
+// }
 
 // sleep for ms
 async function wait(ms: number) {

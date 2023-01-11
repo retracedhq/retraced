@@ -18,7 +18,6 @@
     "csv-string": "4.1.0",
     "csv-stringify": "6.2.3",
     "dotenv": "16.0.1",
-    "elasticsearch": "16.7.3",
     "express": "4.18.1",
     "graphql": "16.6.0",
     "handlebars": "4.7.7",

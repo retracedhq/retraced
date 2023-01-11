@@ -1,4 +1,4 @@
-import elasticsearch from "elasticsearch";
+// import elasticsearch from "elasticsearch";
 import _ from "lodash";
 import axios from "axios";
 import { readFileSync } from "fs";
@@ -6,7 +6,7 @@ import config from "../../config";
 import https from "https";
 import { Client } from "@elastic/elasticsearch";
 
-let es: elasticsearch.Client;
+// let es: elasticsearch.Client;
 let newEs: Client;
 
 export function getNewElasticsearch(): Client {
@@ -29,28 +29,28 @@ export function getNewElasticsearch(): Client {
   return newEs;
 }
 
-export default function getElasticsearch(): elasticsearch.Client {
-  if (!es) {
-    const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
-    if (hosts.length < 1 || !hosts[0]) {
-      throw new Error("Need at least one item in ELASTICSEARCH_NODES");
-    }
+// export default function getElasticsearch(): elasticsearch.Client {
+//   if (!es) {
+//     const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
+//     if (hosts.length < 1 || !hosts[0]) {
+//       throw new Error("Need at least one item in ELASTICSEARCH_NODES");
+//     }
 
-    const sslSettings: any = {};
-    if (config.ELASTICSEARCH_CAFILE) {
-      sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
-      sslSettings.rejectUnauthorized = true;
-    }
+//     const sslSettings: any = {};
+//     if (config.ELASTICSEARCH_CAFILE) {
+//       sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
+//       sslSettings.rejectUnauthorized = true;
+//     }
 
-    es = new elasticsearch.Client({
-      hosts,
-      apiVersion: "7.x",
-      ssl: sslSettings,
-    });
-  }
+//     es = new elasticsearch.Client({
+//       hosts,
+//       apiVersion: "7.x",
+//       ssl: sslSettings,
+//     });
+//   }
 
-  return es;
-}
+//   return es;
+// }
 
 export interface AliasDesc {
   index: string;
