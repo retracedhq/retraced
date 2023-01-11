@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import picocolors from "picocolors";
 import _ from "lodash";
 import util from "util";
 import ProgressBar from "progress";
@@ -78,7 +78,7 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
   pbar.terminate();
   console.log();
   if (_.isEmpty(toBeIndexed)) {
-    console.log(chalk.yellow("No valid rows to index!"));
+    console.log(picocolors.yellow("No valid rows to index!"));
     return;
   }
 
@@ -108,7 +108,7 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
   await new Promise<void>((resolve, reject) => {
     newEs.bulk({ body }, (errr, resp) => {
       if (errr) {
-        console.log(chalk.red(errr.stack));
+        console.log(picocolors.red(errr.stack));
         process.exit(1);
       }
 
@@ -116,12 +116,12 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
         _.forEach(resp.body.items, (item) => {
           _.forIn(item, (innerItem) => {
             if (innerItem.error) {
-              console.log(chalk.red(util.inspect(innerItem.error)));
+              console.log(picocolors.red(util.inspect(innerItem.error)));
               console.log(util.inspect(innerItem.error, false, 100, true));
             }
           });
         });
-        console.log(chalk.red("Errors returned by bulk op, unable to continue"));
+        console.log(picocolors.red("Errors returned by bulk op, unable to continue"));
         process.exit(1);
       }
 

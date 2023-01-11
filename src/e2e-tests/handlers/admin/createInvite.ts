@@ -1,4 +1,4 @@
-import { suite, test } from "mocha-typescript";
+import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 import createInvite from "../../../handlers/admin/createInvite";
 import { AdminTokenStore } from "../../../models/admin_token/store";

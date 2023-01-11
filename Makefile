@@ -15,11 +15,11 @@ deps:
 	npm install
 
 lint:
-	`npm bin`/tslint --project ./tsconfig.json --fix
+	`npm bin`/tslint --project ./tsconfig.json
 
 
 swagger:
-	`npm bin`/tsoa swagger
+	`npm bin`/tsoa spec
 
 routes:
 	`npm bin`/tsoa routes

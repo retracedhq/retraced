@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import picocolors from "picocolors";
 import walk from "walk";
 import path from "path";
 import util from "util";
@@ -46,8 +46,8 @@ export const handler = (argv) => {
   pgPool.connect((err, pg, done) => {
     if (err) {
       bugsnag.notify(err);
-      console.log(chalk.red("Couldn't connect to postgres"));
-      console.log(chalk.red(util.inspect(err)));
+      console.log(picocolors.red("Couldn't connect to postgres"));
+      console.log(picocolors.red(util.inspect(err)));
       process.exit(1);
     }
     const walker = walk.walk(getSchemaPath(), {
@@ -75,7 +75,7 @@ export const handler = (argv) => {
         })
         .then((result) => {
           if (result.rowCount > 0) {
-            console.log(chalk.dim(`${timestamp} ${name}`));
+            console.log(picocolors.dim(`${timestamp} ${name}`));
             return Promise.resolve(false);
           }
 
@@ -98,7 +98,7 @@ export const handler = (argv) => {
                         reject(err2);
                         return;
                       }
-                      console.log(chalk.green(stat.name));
+                      console.log(picocolors.green(stat.name));
                       resolve(true);
                     });
                   }
@@ -125,7 +125,7 @@ export const handler = (argv) => {
         })
         .catch((err2) => {
           bugsnag.notify(err2);
-          console.log(chalk.red(err2.stack));
+          console.log(picocolors.red(err2.stack));
           process.exit(1);
         });
     });

@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import picocolors from "picocolors";
 import readline from "readline";
 import fs from "fs";
 import util from "util";
@@ -48,7 +48,7 @@ export const handler = (argv) => {
       doUpload(argv);
     } else {
       console.log(
-        chalk.red(
+        picocolors.red(
           'Both "locationfile" and "blockfile" parameters are required to upload'
         )
       );
@@ -57,7 +57,7 @@ export const handler = (argv) => {
   }
 
   console.log(
-    chalk.red(
+    picocolors.red(
       "Specify either -q (for a geoip query) or --blockfile and --locationfile (for geoip upload)"
     )
   );
@@ -80,7 +80,7 @@ function doQuery(argv) {
       process.exit(0);
     })
     .catch((err) => {
-      console.log(chalk.red(err));
+      console.log(picocolors.red(err));
       process.exit(1);
     });
 }
@@ -89,11 +89,11 @@ function doUpload(argv) {
   parseLocationData(argv.locationfile)
     .then((locations) => translateIPBlockData(argv.blockfile, locations))
     .then(() => {
-      console.log(chalk.green("Done!"));
+      console.log(picocolors.green("Done!"));
       process.exit(0);
     })
     .catch((err) => {
-      console.log(chalk.red(err), chalk.red(err.stack));
+      console.log(picocolors.red(err), picocolors.red(err.stack));
       process.exit(1);
     });
 }

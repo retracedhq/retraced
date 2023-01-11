@@ -1,4 +1,4 @@
-import { suite, test } from "mocha-typescript";
+import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 import deleteEnvironment from "../../../handlers/admin/deleteEnvironment";
 import getPgPool from "../../../persistence/pg";
@@ -10,30 +10,33 @@ import { Client } from "@elastic/elasticsearch";
 class DeleteEnvironment {
   @test public async "DeleteEnvironment#deleteEnvironment()"() {
     const pool = getPgPool();
-    const newEs = getNewElasticsearch();
+    const es: Client = getNewElasticsearch();
     try {
-      await cleanup(pool, newEs);
-      const res = await setup(pool, newEs);
+      await cleanup(pool, es);
+      const res = await setup(pool, es);
       const result = await deleteEnvironment(`id=${res.id} token=${res.token}`, "tests", "tests");
       return expect(result).to.be.undefined;
     } catch (ex) {
+      // console.log(ex);
     } finally {
-      await cleanup(pool, newEs);
+      await cleanup(pool, es);
     }
   }
-  @test public async "DeleteEnvironment#deleteEnvironment() with preDeleteHook"() {
+  @test
+  public async "DeleteEnvironment#deleteEnvironment() with preDeleteHook"() {
     const pool = getPgPool();
-    const newEs = getNewElasticsearch();
+    const es: Client = getNewElasticsearch();
     try {
-      await cleanup(pool, newEs);
-      const res = await setup(pool, newEs);
+      await cleanup(pool, es);
+      const res = await setup(pool, es);
       const result = await deleteEnvironment(`id=${res.id} token=${res.token}`, "tests", "tests", async () => {
         console.log("Running PreDeleteHook!");
       });
       return expect(result).to.be.undefined;
     } catch (ex) {
+      // console.log(ex);
     } finally {
-      await cleanup(pool, newEs);
+      await cleanup(pool, es);
     }
   }
 }
@@ -108,7 +111,13 @@ async function setup(pool, es: Client) {
 }
 
 async function cleanup(pool, es: Client) {
-  await protectedRun(async () => await es.indices.deleteAlias({ index: `retraced.tests.tests`, name: "_all" }));
+  await protectedRun(
+    async () =>
+      await es.indices.deleteAlias({
+        index: `retraced.tests.tests`,
+        name: "_all",
+      })
+  );
   await protectedRun(async () => await pool.query(`DELETE FROM environmentuser WHERE environment_id=$1`, ["tests"]));
   await protectedRun(async () => await pool.query(`DELETE FROM admin_token WHERE user_id=$1`, ["tests"]));
   await protectedRun(async () => await pool.query(`DELETE FROM projectuser WHERE project_id=$1`, ["tests"]));

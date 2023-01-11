@@ -1,5 +1,5 @@
 import util from "util";
-import { suite, test } from "mocha-typescript";
+import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 
 import { parseQuery } from "../../../models/event";

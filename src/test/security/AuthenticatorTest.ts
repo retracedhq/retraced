@@ -1,6 +1,5 @@
-
 import { expect } from "chai";
-import { suite, test } from "mocha-typescript";
+import { suite, test } from "@testdeck/mocha";
 import * as TypeMoq from "typemoq";
 
 import pg from "pg";
@@ -8,68 +7,95 @@ import Authenticator from "../../security/Authenticator";
 import { getApiTokenQuery } from "../../models/api_token/get";
 import { QueryResult } from "pg";
 
-@suite class AuthenticatorTest {
-    @test public async "Authenticator#getApiTokenOr401() with valid token"() {
-        const pool = TypeMoq.Mock.ofType(pg.Pool);
+@suite
+class AuthenticatorTest {
+  @test public async "Authenticator#getApiTokenOr401() with valid token"() {
+    const pool = TypeMoq.Mock.ofType(pg.Pool);
 
-        const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "some-token");
-        const tokenRows = { rowCount: 1, rows: [{ token: "some-token", project_id: "a-project", environment_id: "an-environment" }] };
+    const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "some-token");
+    const tokenRows = {
+      rowCount: 1,
+      rows: [
+        {
+          token: "some-token",
+          project_id: "a-project",
+          environment_id: "an-environment",
+        },
+      ],
+    };
 
-        pool.setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
-            .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
-            .verifiable(TypeMoq.Times.once());
+    pool
+      .setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
+      .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
+      .verifiable(TypeMoq.Times.once());
 
-        const authenticator = new Authenticator(pool.object);
+    const authenticator = new Authenticator(pool.object);
 
-        const token = await authenticator.getApiTokenOr401("token=some-token", "a-project");
+    const token = await authenticator.getApiTokenOr401(
+      "token=some-token",
+      "a-project"
+    );
 
-        expect(token.projectId).to.equal("a-project");
-        expect(token.environmentId).to.equal("an-environment");
+    expect(token.projectId).to.equal("a-project");
+    expect(token.environmentId).to.equal("an-environment");
+  }
+  @test public async "Authenticator#getApiTokenOr401() with invalid token"() {
+    const pool = TypeMoq.Mock.ofType(pg.Pool);
+    // set up postgres pool
+    const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "bad-token");
+    const tokenRows = { rowCount: 0, rows: [] as any[] };
+    pool
+      .setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
+      .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
+      .verifiable(TypeMoq.Times.once());
 
+    const authenticator = new Authenticator(pool.object);
+
+    const expected = { status: 401, err: new Error("Unauthorized") };
+
+    try {
+      await authenticator.getApiTokenOr401("token=bad-token", "a-project");
+      throw new Error(`Expected error ${expected} to be thrown`);
+    } catch (err) {
+      expect(err.status).to.deep.equal(expected.status);
+      expect(err.err.message).to.deep.equal(expected.err.message);
     }
-    @test public async "Authenticator#getApiTokenOr401() with invalid token"() {
-        const pool = TypeMoq.Mock.ofType(pg.Pool);
-        // set up postgres pool
-        const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "bad-token");
-        const tokenRows = { rowCount: 0, rows: [] as any[] };
-        pool.setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
-            .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
-            .verifiable(TypeMoq.Times.once());
+  }
 
-        const authenticator = new Authenticator(pool.object);
+  @test public async "Authenticator#getApiTokenOr401() with wrong project"() {
+    const pool = TypeMoq.Mock.ofType(pg.Pool);
+    // set up postgres pool
+    const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "bad-token");
+    const tokenRows = {
+      rowCount: 1,
+      rows: [
+        {
+          token: "some-token",
+          project_id: "a-project",
+          environment_id: "an-environment",
+        },
+      ],
+    };
+    pool
+      .setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
+      .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
+      .verifiable(TypeMoq.Times.once());
 
-        const expected = { status: 401, err: new Error("Unauthorized")};
+    const authenticator = new Authenticator(pool.object);
 
-        try {
-            await authenticator.getApiTokenOr401("token=bad-token", "a-project");
-            throw new Error(`Expected error ${expected} to be thrown`);
-        } catch (err) {
-            expect(err.status).to.deep.equal(expected.status);
-            expect(err.err.message).to.deep.equal(expected.err.message);
-        }
+    const expected = { status: 401, err: new Error("Unauthorized") };
+
+    try {
+      await authenticator.getApiTokenOr401(
+        "token=bad-token",
+        "another-project"
+      );
+      throw new Error(`Expected error ${expected} to be thrown`);
+    } catch (err) {
+      expect(err.status).to.deep.equal(expected.status);
+      expect(err.err.message).to.deep.equal(expected.err.message);
     }
-
-    @test public async "Authenticator#getApiTokenOr401() with wrong project"() {
-        const pool = TypeMoq.Mock.ofType(pg.Pool);
-        // set up postgres pool
-        const tokenIdArgMatcher = TypeMoq.It.is((a: any) => a[0] === "bad-token");
-        const tokenRows = { rowCount: 1, rows: [{ token: "some-token", project_id: "a-project", environment_id: "an-environment" }] };
-        pool.setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
-            .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
-            .verifiable(TypeMoq.Times.once());
-
-        const authenticator = new Authenticator(pool.object);
-
-        const expected = { status: 401, err: new Error("Unauthorized")};
-
-        try {
-            await authenticator.getApiTokenOr401("token=bad-token", "another-project");
-            throw new Error(`Expected error ${expected} to be thrown`);
-        } catch (err) {
-            expect(err.status).to.deep.equal(expected.status);
-            expect(err.err.message).to.deep.equal(expected.err.message);
-        }
-    }
+  }
 }
 
 export default AuthenticatorTest;

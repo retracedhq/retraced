@@ -1,4 +1,4 @@
-import _ from "underscore";
+import _ from "lodash";
 import { instrument } from "../../metrics";
 
 import { Scope } from "../../security/scope";

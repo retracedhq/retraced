@@ -1,4 +1,4 @@
-import { suite, test } from "mocha-typescript";
+import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 import listInvites from "../../../handlers/admin/listInvites";
 import getPgPool from "../../../persistence/pg";

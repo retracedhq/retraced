@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import picocolors from "picocolors";
 import * as uuid from "uuid";
 import util from "util";
 
@@ -57,17 +57,21 @@ export const handler = async (argv) => {
   let pgPreResults;
   if (argv.startDate && argv.endDate) {
     console.log(
-      chalk.yellow(
+      picocolors.yellow(
         `Reindexing time range: [${new Date(argv.startDate).toISOString()}, ${new Date(argv.endDate).toISOString()}`
       )
     );
     pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received", [
       `[${new Date(argv.startDate).toISOString()}, ${new Date(argv.endDate).toISOString()})`,
     ]);
-    console.log(chalk.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
+    console.log(picocolors.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
+    pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received", [
+      `[${new Date(argv.startDate).toISOString()}, ${new Date(argv.endDate).toISOString()})`,
+    ]);
+    console.log(picocolors.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
   } else {
     pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task");
-    console.log(chalk.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
+    console.log(picocolors.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
   }
 
   const eventSource = new PostgresEventSource(pgPool, argv.startDate, argv.endDate, argv.pageSize);
@@ -171,7 +175,7 @@ function finalize(
 
   if (dryRun) {
     console.log(
-      chalk.yellow(`
+      picocolors.yellow(`
     --dryRun was set, skipping final index rotation.
     Index changes for completing the reindex manually are shown above. If you'd like to use these indices, you should:
         - remove aliases from the indices listed in toRemove,

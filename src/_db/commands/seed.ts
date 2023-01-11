@@ -1,5 +1,5 @@
 import axios from "axios";
-import chalk from "chalk";
+import picocolors from "picocolors";
 import _ from "lodash";
 import Chance from "chance";
 import util from "util";
@@ -105,7 +105,7 @@ exports.handler = async (argv) => {
     argv.bulk,
     argv.groupId
   );
-  console.log(chalk.green("Done!"));
+  console.log(picocolors.green("Done!"));
 };
 
 async function getProject(endpoint, jwtToken, projectId) {
