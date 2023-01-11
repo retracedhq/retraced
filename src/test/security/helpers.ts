@@ -8,9 +8,9 @@ import {
 
 @suite
 class SecurityHelpersTest {
-  @test public async "helpers.apiTokenFromAuthHeader(undefined)"() {
+  @test public "helpers.apiTokenFromAuthHeader(undefined)"() {
     try {
-      await apiTokenFromAuthHeader(undefined);
+      apiTokenFromAuthHeader(undefined);
     } catch (err) {
       expect(err.status).to.deep.equal(401);
       expect(err.err.message).to.deep.equal("Missing Authorization header");

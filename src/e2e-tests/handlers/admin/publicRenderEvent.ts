@@ -11,7 +11,7 @@ class PublicRenderEvent {
     try {
       await cleanup(pool);
       await setup(pool);
-      const result = await publicRenderEvent({
+      const result = publicRenderEvent({
         body: {
           rule: "test",
           template: "test",
@@ -33,7 +33,7 @@ class PublicRenderEvent {
     try {
       await cleanup(pool);
       await setup(pool);
-      const result = await publicRenderEvent({
+      const result = publicRenderEvent({
         body: {},
       });
       expect(result.status).to.equal(200);

@@ -6,7 +6,6 @@ import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
 
-// tslint:disable-next-line
 const chai = require("chai"),
   chaiHttp = require("chai-http");
 chai.use(chaiHttp);

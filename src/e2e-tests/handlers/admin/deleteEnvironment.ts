@@ -36,6 +36,7 @@ class DeleteEnvironment {
         `id=${res.id} token=${res.token}`,
         "tests",
         "tests",
+        // eslint-disable-next-line @typescript-eslint/require-await
         async () => {
           console.log("Running PreDeleteHook!");
         }

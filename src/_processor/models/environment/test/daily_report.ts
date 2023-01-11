@@ -43,9 +43,9 @@ describe("models.environment.daily_report", () => {
         },
       ],
     };
-    /* tslint:disable */
+    /* eslint-disable */
     const [bob, ann, sam] = alpha.users;
-    /* tslint:enable */
+    /* eslint-enable */
     const beta = {
       id: uuid.v4(),
       name: "Beta",

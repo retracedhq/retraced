@@ -1,4 +1,4 @@
-/* tslint:disable */
+/* eslint:disable */
 import _ from "lodash";
 import leftPad from "left-pad";
 {{#if canImportByAlias}}

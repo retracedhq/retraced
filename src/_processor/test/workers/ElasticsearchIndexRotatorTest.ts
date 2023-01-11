@@ -11,7 +11,7 @@ import { QueryResult } from "pg";
 
 @suite
 class ElasticsearchIndexRotatorTest {
-  @test public async "worker(moment.Moment)"() {
+  @test public "worker(moment.Moment)"() {
     const projectId = "kfbr392";
     const environmentId = "abcdef123456";
     const nextDay = moment.utc("2017-05-09");
@@ -56,7 +56,7 @@ class ElasticsearchIndexRotatorTest {
       cat.object,
       pool.object,
       async () => {
-        /*ignore for now, still need to test this*/
+        /* ignore for now, still need to test this */
       },
       (date) => `${date}`
     );

@@ -11,13 +11,12 @@ function list(): Promise<any> {
 }
 
 export const handler = async (argv) => {
-  list()
-      .then((res) => {
-        console.log(`rows: ${util.inspect(res.rows)}`);
-        process.exit(0);
-      })
-      .catch((err) => {
-        console.log(util.inspect(err));
-        process.exit(1);
-      });
+  try {
+    const res = await list();
+    console.log(`rows: ${util.inspect(res.rows)}`);
+    process.exit(0);
+  } catch (err: any) {
+    console.log(util.inspect(err));
+    process.exit(1);
+  }
 };

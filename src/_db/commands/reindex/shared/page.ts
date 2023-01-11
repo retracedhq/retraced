@@ -9,7 +9,7 @@ import { Event } from "../../../persistence/EventSource";
 import common from "../../../common";
 import { logger } from "../../../../logger";
 
-let totalIndexed: number = 0;
+let totalIndexed = 0;
 
 export const makePageIndexer =
   (writeIndex: string) => async (result: Event[]) => {
