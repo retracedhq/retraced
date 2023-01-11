@@ -6,7 +6,6 @@ networks:
 x-common-variables: &common-variables
   POSTGRES_HOST: postgres
   HMAC_SECRET_ADMIN: xxxxxxx
-  SUPERCRONIC_SHA1SUM: 96960ba3207756bb01e6892c978264e5362e117e
   NSQD_HTTP_PORT: 4151
   SHLVL: 1
   POSTGRES_USER: retraced
@@ -18,7 +17,6 @@ x-common-variables: &common-variables
   API_BASE_URL_PATH: /auditlog
   RETRACED_API_BASE: http://localhost:3000/auditlog
   POSTGRES_DATABASE: retraced
-  SUPERCRONIC: supercronic-linux-amd64
   LOG_LEVEL: warn
   ELASTICSEARCH_NODES: http://elasticsearch:9200
   NSQD_HOST: nsqd
