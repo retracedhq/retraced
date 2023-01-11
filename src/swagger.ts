@@ -25,13 +25,15 @@ const specs: ApiSpec[] = [
     match: /^\/admin\/v1/,
     path: "/admin/v1",
     title: "Admin API",
-    description: "APIs used by the [Retraced Admin Site](https://app.retraced.io)",
+    description:
+      "APIs used by the [Retraced Admin Site](https://app.retraced.io)",
   },
   {
     match: /^\/enterprise\/v1/,
     path: "/enterprise/v1",
     title: "Enterprise API",
-    description: "Retraced's Enteriprise IT Integration API, allowing end customers to ingest and export audit data",
+    description:
+      "Retraced's Enteriprise IT Integration API, allowing end customers to ingest and export audit data",
   },
 ];
 
@@ -48,7 +50,6 @@ function removeEmptyRequired(json: any) {
     }
     return def;
   });
-
 }
 
 // exported for testing
@@ -60,7 +61,7 @@ export function removeRoutesNotMatching(json: any, pattern: RegExp) {
   }
 }
 
-export function replacePrefixWithBasePath(json: any, pattern: RegExp) {
+function replacePrefixWithBasePath(json: any, pattern: RegExp) {
   for (const path of Object.keys(json.paths)) {
     const prefixFreePath = path.replace(pattern, "");
     json.paths[prefixFreePath] = json.paths[path];
