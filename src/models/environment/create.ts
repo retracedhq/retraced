@@ -1,12 +1,12 @@
 import * as uuid from "uuid";
-import { getNewElasticsearch } from "../../persistence/elasticsearch";
+import { getElasticsearch } from "../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
 import { Environment } from "./index";
 import config from "../../config";
 
 const pgPool = getPgPool();
 
-const newEs = getNewElasticsearch();
+const es = getElasticsearch();
 
 interface Opts {
   name: string;
@@ -37,7 +37,7 @@ export default async function createEnvironment(opts: Opts): Promise<Environment
       },
     };
 
-    await newEs.indices.create(params);
+    await es.indices.create(params);
   }
 
   const q = `insert into environment (

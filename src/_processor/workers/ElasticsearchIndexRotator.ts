@@ -4,7 +4,7 @@ import * as uuid from "uuid";
 import pg from "pg";
 import { histogram, instrumented, meter } from "monkit";
 
-import { AliasDesc, AliasRotator, getNewElasticsearch, putAliases } from "../persistence/elasticsearch";
+import { AliasDesc, AliasRotator, putAliases, getElasticsearch } from "../../persistence/elasticsearch";
 import getPg from "../persistence/pg";
 import { logger } from "../logger";
 import config from "../../config";
@@ -36,8 +36,8 @@ export class ElasticsearchIndexRotator {
   public static default(): ElasticsearchIndexRotator {
     if (!ElasticsearchIndexRotator.instance) {
       ElasticsearchIndexRotator.instance = new ElasticsearchIndexRotator(
-        getNewElasticsearch().indices,
-        getNewElasticsearch().cat,
+        getElasticsearch().indices,
+        getElasticsearch().cat,
         getPg(),
         putAliases
       );
@@ -63,6 +63,7 @@ export class ElasticsearchIndexRotator {
     indexNamer?: IndexNamer
   ) {
     this.indicesApi = indicesApi;
+    this.catApi = catApi;
     this.indexNamer = indexNamer || ElasticsearchIndexRotator.defaultIndexNamer;
   }
 

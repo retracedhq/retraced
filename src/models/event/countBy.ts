@@ -2,10 +2,10 @@ import _ from "lodash";
 import { instrument } from "../../metrics";
 
 import { Scope } from "../../security/scope";
-import { scope, getNewElasticsearch } from "../../persistence/elasticsearch";
+import { scope, getElasticsearch } from "../../persistence/elasticsearch";
 import { Client } from "@elastic/elasticsearch";
 
-const newClient: Client = getNewElasticsearch();
+const client: Client = getElasticsearch();
 
 interface Options {
   groupBy: "action" | "group.id";
@@ -77,6 +77,6 @@ export async function countBy(es: Client, opts: Options): Promise<Result[]> {
 
 export default async function (opts: Options): Promise<Result[]> {
   return await instrument("Elasticsearch.countBy", async () => {
-    return await countBy(newClient, opts);
+    return await countBy(client, opts);
   });
 }

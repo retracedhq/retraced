@@ -4,7 +4,7 @@ import path from "path";
 import util from "util";
 import bugsnag from "bugsnag";
 
-import { getNewElasticsearch } from "../../persistence/elasticsearch";
+import { getElasticsearch } from "../../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
 import { setupBugsnag } from "../../common";
 import { Client } from "@elastic/elasticsearch";
@@ -40,7 +40,7 @@ function getSchemaPath() {
 }
 
 export const handler = (argv) => {
-  const newEs: Client = getNewElasticsearch();
+  const es: Client = getElasticsearch(true);
   const pgPool = getPgPool();
 
   pgPool.connect((err, pg, done) => {
@@ -93,7 +93,7 @@ export const handler = (argv) => {
                     break;
 
                   case "putTemplate": {
-                    newEs.indices.putTemplate(esQuery.params, (err2, resp) => {
+                    es.indices.putTemplate(esQuery.params, (err2, resp) => {
                       if (err2) {
                         reject(err2);
                         return;

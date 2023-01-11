@@ -4,10 +4,10 @@ import moment from "moment";
 import { ApiResponse, Client, RequestParams } from "@elastic/elasticsearch";
 
 import { Scope } from "../../security/scope";
-import { scope, getNewElasticsearch } from "../../persistence/elasticsearch";
+import { scope, getElasticsearch } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
 
-const newEs: Client = getNewElasticsearch();
+const es: Client = getElasticsearch();
 
 // An empty list for groupIds or targetIds means unrestricted.
 export const unrestricted = Object.seal([]);
@@ -63,7 +63,7 @@ async function doQuery(opts: Options): Promise<Result> {
 
   logger.debug(`raw newParams: ${JSON.stringify(params)}\n`);
 
-  const newResp = await newEs.search(params);
+  const newResp = await es.search(params);
 
   if (!newResp.body || !newResp.body.hits) {
     logger.info(`raw newParams: ${JSON.stringify(params)}\n`);
@@ -79,7 +79,7 @@ async function doQuery(opts: Options): Promise<Result> {
       query: bodyAny.query,
     },
   };
-  const newCount = await newEs.count(countParams);
+  const newCount = await es.count(countParams);
 
   return {
     totalHits: { value: newCount.body.count },
@@ -99,7 +99,7 @@ export async function doAllQuery(opts: Options): Promise<Result> {
 
   logger.debug(`raw newParams: ${JSON.stringify(params)}\n`);
 
-  const newResp = await newEs.search(params);
+  const newResp = await es.search(params);
 
   if (!newResp.body || !newResp.body.hits) {
     logger.info(`raw newParams: ${JSON.stringify(params)}\n`);
@@ -113,7 +113,7 @@ export async function doAllQuery(opts: Options): Promise<Result> {
     const oneResp = responseQueue.shift(); // get a response from the queue
     allHits = allHits.concat(oneResp!.body.hits.hits); // append hits to the list of all hits
 
-    const nextEvent = await newEs.scroll({
+    const nextEvent = await es.scroll({
       // use the scroll API to get another response
       scroll_id: oneResp!.body._scroll_id,
       scroll: "30s",

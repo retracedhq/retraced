@@ -1,10 +1,10 @@
 import getPgPool from "../../persistence/pg";
-import { getNewElasticsearch } from "../../persistence/elasticsearch";
+import { getElasticsearch } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
 import { Client } from "@elastic/elasticsearch";
 
 const pgPool = getPgPool();
-const newEs: Client = getNewElasticsearch();
+const es: Client = getElasticsearch();
 
 interface Options {
   projectId: string;
@@ -69,7 +69,7 @@ export default async function (opts: Options) {
   try {
     await new Promise((resolve, reject) => {
       const aliasName = `retraced.${opts.projectId}.${opts.environmentId}`;
-      newEs.cat.aliases({ format: "json", name: aliasName }, (err, resp) => {
+      es.cat.aliases({ format: "json", name: aliasName }, (err, resp) => {
         if (err) {
           reject(err);
           return;
@@ -86,14 +86,14 @@ export default async function (opts: Options) {
         const indexName = resp[0].index;
 
         // Delete all aliases attached to the soon-to-be-deleted index
-        newEs.indices.deleteAlias({ index: indexName, name: "_all" }, (err2, resp2) => {
+        es.indices.deleteAlias({ index: indexName, name: "_all" }, (err2, resp2) => {
           if (err2) {
             reject(err2);
             return;
           }
 
           // Finally, delete the index itself
-          newEs.indices.delete({ index: indexName }, (err3, resp3) => {
+          es.indices.delete({ index: indexName }, (err3, resp3) => {
             if (err3) {
               reject(err3);
               return;

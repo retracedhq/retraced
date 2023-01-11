@@ -1,11 +1,11 @@
 import _ from "lodash";
-import { getNewElasticsearch } from "../../persistence/elasticsearch";
+import { getElasticsearch } from "../../persistence/elasticsearch";
 import getsGroup from "../../models/group/gets";
 
 import { DashboardTile, DashboardOptions } from "../interfaces";
 import { Client } from "@elastic/elasticsearch";
 
-const newEs: Client = getNewElasticsearch();
+const es: Client = getElasticsearch();
 
 interface GroupRow {
   name?: string;
@@ -58,7 +58,7 @@ export default async function (opts: DashboardOptions): Promise<any> {
     },
   };
 
-  const response = await newEs.search(params);
+  const response = await es.search(params);
   const rows = _.map(response.body.aggregations.group.buckets, (bucket: any) => {
     const row: GroupRow = {
       id: bucket.key,

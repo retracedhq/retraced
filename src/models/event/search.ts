@@ -1,8 +1,8 @@
-import { getNewElasticsearch } from "../../persistence/elasticsearch";
+import { getElasticsearch } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
 import { Client } from "@elastic/elasticsearch";
 
-const newEs: Client = getNewElasticsearch();
+const es: Client = getElasticsearch();
 
 export interface Options {
   index: string;
@@ -48,7 +48,7 @@ export default async function (opts: Options): Promise<Result> {
       scroll_id: opts.scrollId,
       scroll: opts.scrollLifetime,
     };
-    const resp = await newEs.scroll(scrollParams);
+    const resp = await es.scroll(scrollParams);
     if (!resp.body) {
       logger.info(`continue scroll resp nil with params ${JSON.stringify(scrollParams)}`);
     }
@@ -201,7 +201,7 @@ export default async function (opts: Options): Promise<Result> {
 
   if (!opts.fetchAll) {
     // Normal search.
-    const resp = await newEs.search(params);
+    const resp = await es.search(params);
     if (!resp.body) {
       logger.info();
     }
@@ -228,7 +228,7 @@ export default async function (opts: Options): Promise<Result> {
       events: [],
     };
     params.scroll = "1m";
-    const initialResp = await newEs.search(params);
+    const initialResp = await es.search(params);
     if (!initialResp.body) {
       logger.info(`initialResp nil with params ${JSON.stringify(params)}`);
     }
@@ -242,7 +242,7 @@ export default async function (opts: Options): Promise<Result> {
         results.events!.push(hit["_source"]);
       }
       while (true) {
-        const resp = await newEs.scroll({
+        const resp = await es.scroll({
           scroll: scrollParams.scroll,
           body: scrollParams.scroll_id,
         });

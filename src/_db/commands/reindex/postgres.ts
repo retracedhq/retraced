@@ -2,7 +2,7 @@ import picocolors from "picocolors";
 import * as uuid from "uuid";
 import util from "util";
 
-import { putAliases, getNewElasticsearch } from "../../persistence/elasticsearch";
+import { putAliases, getElasticsearch } from "../../../persistence/elasticsearch";
 import PostgresEventSource from "../../persistence/PostgresEventSource";
 import getPgPool from "../../persistence/pg";
 import { logger } from "../../../logger";
@@ -52,7 +52,7 @@ export const builder: any = {
 export const handler = async (argv) => {
   logger.info({ msg: "starting handler" });
   const pgPool = getPgPool();
-  const newEs: Client = getNewElasticsearch();
+  const es: Client = getElasticsearch(true);
 
   let pgPreResults;
   if (argv.startDate && argv.endDate) {
@@ -87,7 +87,7 @@ export const handler = async (argv) => {
     esTargetWriteIndex,
   });
 
-  const aliasesBlob = await newEs.cat.aliases({ name: esTargetIndex });
+  const aliasesBlob = await es.cat.aliases({ name: esTargetIndex });
   const currentIndices: string[] = [];
   if (!aliasesBlob) {
     logger.error({ msg: "no aliasesBlob" });
@@ -103,7 +103,7 @@ export const handler = async (argv) => {
     count: currentIndices.length,
   });
 
-  const aliasesBlobWrite = await newEs.cat.aliases({ name: esTargetWriteIndex });
+  const aliasesBlobWrite = await es.cat.aliases({ name: esTargetWriteIndex });
   const currentIndicesWrite: string[] = [];
   if (!aliasesBlobWrite.body) {
     logger.error({ msg: "no aliasesBlobWrite" });
@@ -121,7 +121,7 @@ export const handler = async (argv) => {
     count: currentIndicesWrite.length,
   });
 
-  await newEs.indices.create({ index: esTempIndex });
+  await es.indices.create({ index: esTempIndex });
 
   logger.info({ msg: "created temp index", esTempIndex });
 

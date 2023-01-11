@@ -1,8 +1,8 @@
 import _ from "lodash";
-import { getNewElasticsearch } from "../../persistence/elasticsearch";
+import { getElasticsearch } from "../../persistence/elasticsearch";
 import { DashboardTile, DashboardOptions } from "../interfaces";
 
-const newEs = getNewElasticsearch();
+const es = getElasticsearch();
 
 interface ActionRow {
   action: string;
@@ -54,7 +54,7 @@ export default async function (opts: DashboardOptions): Promise<any> {
     },
   };
 
-  const response = await newEs.search(params);
+  const response = await es.search(params);
   const data = _.map(response.body.aggregations.action.buckets, (bucket: any) => {
     const row: ActionRow = {
       action: bucket.key,

@@ -1,7 +1,7 @@
 import { Client } from "@elastic/elasticsearch";
-import { getNewElasticsearch } from "../../persistence/elasticsearch";
+import { getElasticsearch } from "../../persistence/elasticsearch";
 
-const newEs: Client = getNewElasticsearch();
+const es: Client = getElasticsearch();
 
 interface Options {
   projectId: string;
@@ -11,7 +11,7 @@ interface Options {
 export default async function (opts: Options): Promise<boolean> {
   return await new Promise<boolean>((resolve, reject) => {
     const aliasName = `retraced.${opts.projectId}.${opts.environmentId}`;
-    newEs.cat.aliases({ format: "json", name: aliasName }, (err, resp) => {
+    es.cat.aliases({ format: "json", name: aliasName }, (err, resp) => {
       if (err) {
         reject(err);
         return;
@@ -23,7 +23,7 @@ export default async function (opts: Options): Promise<boolean> {
       }
 
       // See if index has any items in it.
-      newEs.count({ index: aliasName }, (err2, resp2) => {
+      es.count({ index: aliasName }, (err2, resp2) => {
         if (err2) {
           reject(err2);
           return;

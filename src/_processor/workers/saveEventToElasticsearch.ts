@@ -3,13 +3,13 @@ import moment from "moment";
 import { Registry, getRegistry, instrumented } from "monkit";
 
 import { Clock } from "../common";
-import { getNewElasticsearch } from "../persistence/elasticsearch";
+import { getElasticsearch } from "../../persistence/elasticsearch";
 import { Client } from "@elastic/elasticsearch";
 
 export class ElasticsearchSaver {
   public static getDefault(): ElasticsearchSaver {
     if (!ElasticsearchSaver.instance) {
-      ElasticsearchSaver.instance = new ElasticsearchSaver(getNewElasticsearch(), getRegistry(), moment.utc);
+      ElasticsearchSaver.instance = new ElasticsearchSaver(getElasticsearch(), getRegistry(), moment.utc);
     }
     return ElasticsearchSaver.instance;
   }

@@ -4,7 +4,7 @@ import util from "util";
 import ProgressBar from "progress";
 import { mapValues } from "../../../../common/mapper";
 
-import { getNewElasticsearch } from "../../../persistence/elasticsearch";
+import { getElasticsearch } from "../../../../persistence/elasticsearch";
 import { Event } from "../../../persistence/EventSource";
 import common from "../../../common";
 import { logger } from "../../../../logger";
@@ -14,7 +14,7 @@ let totalIndexed: number = 0;
 
 export const makePageIndexer = (writeIndex: string) => async (result: Event[]) => {
   logger.info(`processing page with count ${result.length}`);
-  const newEs: Client = getNewElasticsearch();
+  const es: Client = getElasticsearch(true);
   const pbar = new ProgressBar("[:bar] :percent :etas", {
     incomplete: " ",
     width: 40,
@@ -106,7 +106,7 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
   logger.info(`indexing page with size ${result.length}`);
   totalIndexed += result.length;
   await new Promise<void>((resolve, reject) => {
-    newEs.bulk({ body }, (errr, resp) => {
+    es.bulk({ body }, (errr, resp) => {
       if (errr) {
         console.log(picocolors.red(errr.stack));
         process.exit(1);
