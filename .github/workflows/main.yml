@@ -29,4 +29,5 @@ jobs:
       - run: make build
       - run: npm run test
       - run: npm run cover
-      - run: docker build .
+      - run: docker-compose build
+      - run: skaffold build
