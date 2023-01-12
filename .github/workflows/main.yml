@@ -26,6 +26,6 @@ jobs:
       - uses: actions/checkout@v3
       - run: npm install
       - run: npm run lint
-      - run: npm run build
+      - run: make build
       - run: npm run test
       - run: npm run cover
