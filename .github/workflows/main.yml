@@ -25,17 +25,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: npm install
+
       - run: npm run lint
+
       - run: make build
+
       - run: npm run test
+
       - run: npm run cover
+
       - run: docker-compose build
-      - name: Skaffold Docker build
-        runs-on: ubuntu-20.04
-          steps:
-          - name: Build Docker images
-            uses: hiberbee/github-action-skaffold@1.20.0
-            with:
-              command: build
-              repository: ghcr.io/hiberbee/docker
-              image: nodejs
