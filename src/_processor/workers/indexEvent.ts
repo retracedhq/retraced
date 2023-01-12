@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { logger } from "../logger";
 import getPgPool from "../persistence/pg";
 
 const pgPool = getPgPool();
@@ -16,7 +17,7 @@ export default async function indexEvent(job): Promise<void> {
     jobObj.environmentId,
     JSON.stringify(event),
   ]);
-  console.log(result);
+  logger.info("Indexed event", result);
 }
 
 function cleanEvent(event: any): any {

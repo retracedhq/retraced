@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import * as Retraced from "@retracedhq/retraced";
-import { tv4 } from "tv4";
+import tv4 from "tv4";
 import "mocha";
 import "chai-http";
 import { CreateEventSchema } from "../pkg/specs";
@@ -15,7 +15,6 @@ const chai = require("chai"),
 chai.use(chaiHttp);
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
-const currentTime = new Date();
 
 describe("Publisher Search", function () {
   describe("Given the Retraced API is up and running", function () {
@@ -65,7 +64,7 @@ describe("Publisher Search", function () {
         },
       }));
 
-      before(() =>
+      before(async () =>
         Promise.all(
           events.map((event) => {
             const valid = tv4.validate(event, CreateEventSchema);

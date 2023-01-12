@@ -201,7 +201,9 @@ export class EventCreater {
 
       return { id, hash };
     } catch (ex) {
-      console.log(ex);
+      logger.error(ex);
+
+      throw ex;
     }
   }
 

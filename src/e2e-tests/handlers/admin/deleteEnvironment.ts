@@ -17,7 +17,7 @@ class DeleteEnvironment {
       const result = await deleteEnvironment(`id=${res.id} token=${res.token}`, "tests", "tests");
       return expect(result).to.be.undefined;
     } catch (ex) {
-      // console.log(ex);
+      console.log(ex);
     } finally {
       await cleanup(pool, es);
     }
@@ -34,7 +34,7 @@ class DeleteEnvironment {
       });
       return expect(result).to.be.undefined;
     } catch (ex) {
-      // console.log(ex);
+      console.log(ex);
     } finally {
       await cleanup(pool, es);
     }
