@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "*"
+    tags:
+      - "beta-v*"
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  # Schedule
+  schedule:
+    - cron: "0 8 * * MON,THU" # Run every Monday and Thursday at 08:00 UTC
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm run lint
+      - run: npm run build
+      - run: npm run test
+      - run: npm run cover
