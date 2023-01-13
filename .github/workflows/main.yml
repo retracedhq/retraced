@@ -16,7 +16,7 @@ on:
     - cron: "0 8 * * MON,THU" # Run every Monday and Thursday at 08:00 UTC
 
 jobs:
-  build_test:
+  ci:
     runs-on: ubuntu-latest
     strategy:
       matrix:
