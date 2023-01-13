@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jackson-admin-ui
+  name: jackson-admin-portal
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   selector:
     matchLabels:
-      tier: admin-ui
+      tier: admin-portal
   replicas: 1
   template:
     metadata:
       labels:
         app: auditlog
-        tier: admin-ui
+        tier: admin-portal
     spec:
       containers:
         - name: api
