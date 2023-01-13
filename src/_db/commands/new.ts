@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import picocolors from "picocolors";
 import fs from "fs";
 import path from "path";
 import _ from "lodash";
@@ -40,11 +40,11 @@ exports.handler = (argv) => {
         `${timestamp}.${action}.${name}.sql`
       );
       fs.writeFileSync(dest, "-- SQL goes here");
-      console.log(chalk.green(dest));
+      console.log(picocolors.green(dest));
     });
   } else if (argv.db === "es") {
     const dest = path.join("migrations", argv.db, `${timestamp}-${name}.js`);
     fs.writeFileSync(dest, esTemplate);
-    console.log(chalk.green(dest));
+    console.log(picocolors.green(dest));
   }
 };

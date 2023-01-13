@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import picocolors from "picocolors";
 import _ from "lodash";
 import util from "util";
 import ProgressBar from "progress";
@@ -78,7 +78,7 @@ export const makePageIndexer =
     pbar.terminate();
     console.log();
     if (_.isEmpty(toBeIndexed)) {
-      console.log(chalk.yellow("No valid rows to index!"));
+      console.log(picocolors.yellow("No valid rows to index!"));
       return;
     }
 
@@ -108,7 +108,7 @@ export const makePageIndexer =
     await new Promise<void>((resolve, reject) => {
       es.bulk({ body }, (errr, resp) => {
         if (errr) {
-          console.log(chalk.red(errr.stack));
+          console.log(picocolors.red(errr.stack));
           process.exit(1);
         }
 
@@ -116,13 +116,13 @@ export const makePageIndexer =
           _.forEach(resp.items, (item) => {
             _.forIn(item, (innerItem) => {
               if (innerItem.error) {
-                console.log(chalk.red(util.inspect(innerItem.error)));
+                console.log(picocolors.red(util.inspect(innerItem.error)));
                 console.log(util.inspect(innerItem.error, false, 100, true));
               }
             });
           });
           console.log(
-            chalk.red("Errors returned by bulk op, unable to continue")
+            picocolors.red("Errors returned by bulk op, unable to continue")
           );
           process.exit(1);
         }

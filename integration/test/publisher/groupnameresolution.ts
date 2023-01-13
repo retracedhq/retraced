@@ -7,7 +7,7 @@ import { retracedUp } from "../pkg/retracedUp";
 import { sleep } from "../pkg/util";
 import * as Env from "../env";
 import * as util from "util";
-import * as chalk from "chalk";
+import picocolors from "picocolors";
 
 // tslint:disable-next-line
 const chai = require("chai"),
@@ -83,7 +83,7 @@ describe("Group Name Resolution", function () {
                         responseBody = JSON.parse(res.text);
                         if (err && Env.Debug) {
                           console.log(
-                            chalk.red(
+                            picocolors.red(
                               util.inspect(err.response.body, false, 100, false)
                             )
                           );
@@ -100,15 +100,15 @@ describe("Group Name Resolution", function () {
                 specify(
                   "Then the response should contain a non-null group.id, and the second event's group.name should be populated",
                   function () {
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.action",
                       "integration" + FIRST_EVENT
                     );
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.group.id",
                       "rtrcdqa1234" + GROUP_ID
                     );
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.group.name",
                       "group number " + GROUP_ID
                     );
@@ -132,7 +132,7 @@ describe("Group Name Resolution", function () {
                         responseBody = JSON.parse(res.text);
                         if (err && Env.Debug) {
                           console.log(
-                            chalk.red(
+                            picocolors.red(
                               util.inspect(err.response.body, false, 100, false)
                             )
                           );
@@ -149,15 +149,15 @@ describe("Group Name Resolution", function () {
                 specify(
                   "Then the response should contain a non-null group.id, and the second event's group.name should be populated",
                   function () {
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.action",
                       "integration" + SECOND_EVENT
                     );
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.group.id",
                       "rtrcdqa1234" + GROUP_ID
                     );
-                    expect(responseBody).to.have.deep.property(
+                    expect(responseBody).to.have.nested.property(
                       "data.search.edges[0].node.group.name",
                       "group number " + GROUP_ID
                     );

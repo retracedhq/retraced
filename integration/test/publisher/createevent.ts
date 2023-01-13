@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import * as Retraced from "@retracedhq/retraced";
-import { tv4 } from "tv4";
+import tv4 from "tv4";
 import "mocha";
 import "chai-http";
 import { CreateEventSchema, GraphQLQuery, search } from "../pkg/specs";
@@ -8,7 +8,7 @@ import { retracedUp } from "../pkg/retracedUp";
 import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
 import * as util from "util";
-import * as chalk from "chalk";
+import picocolors from "picocolors";
 
 // tslint:disable-next-line
 const chai = require("chai"),
@@ -90,7 +90,7 @@ describe("Create Events", function () {
                     responseBody = JSON.parse(res.text);
                     if (err && Env.Debug) {
                       console.log(
-                        chalk.red(
+                        picocolors.red(
                           util.inspect(err.response.body, false, 100, false)
                         )
                       );
@@ -107,59 +107,59 @@ describe("Create Events", function () {
             specify(
               "Then the response should contain the correct information about the event",
               function () {
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.action",
                   "integration" + randomNumber.toString()
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.created",
                   isoDate(currentTime)
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.description",
                   "Automated integration testing..."
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.actor.fields[0].key",
                   "department"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.actor.fields[0].value",
                   "QA"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.group.id",
                   "rtrcdqa1234"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.target.name",
                   "Retraced API"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.target.fields[0].key",
                   "record_count"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.target.fields[0].value",
                   "100"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.is_failure",
                   false
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.crud",
                   "c"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.source_ip",
                   "192.168.0.1"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.fields[0].key",
                   "quality"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.fields[0].value",
                   "excellent"
                 );
@@ -224,39 +224,39 @@ describe("Create Events", function () {
             specify(
               "Then the response should contain the correct information about the event",
               function () {
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.action",
                   "integrationminimum" + randomNumber.toString()
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.is_anonymous",
                   true
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.crud",
                   "c"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.created",
                   null
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.description",
                   null
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.group.id",
                   null
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.target.name",
                   null
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.is_failure",
                   null
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.source_ip",
                   null
                 );
@@ -344,7 +344,7 @@ describe("Create Events", function () {
         specify(
           "The API should return a 400 response code.",
           async function () {
-            expect(resultBody).to.be.empty;
+            expect(resultBody).to.be.undefined;
             expect(httpResponse).to.contain("400");
           }
         );

@@ -1,5 +1,6 @@
 import getPgPool from "../persistence/pg";
 import nsq from "../persistence/nsq";
+import { logger } from "../logger";
 
 const pgPool = getPgPool();
 
@@ -37,6 +38,6 @@ export default async function ingestFromBacklog() {
       await nsq.produce("raw_events", job);
     }
   } catch (ex) {
-    console.log(ex);
+    logger.error("Error ingesting from backlog:", ex);
   }
 }

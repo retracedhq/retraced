@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import picocolors from "picocolors";
 import PostgresEventSource from "../../persistence/PostgresEventSource";
 import getPgPool from "../../persistence/pg";
 import { logger } from "../../../logger";
@@ -8,7 +8,8 @@ import searchES, { Options } from "../../../models/event/search";
 const pgPool = getPgPool();
 
 export const command = "range";
-export const desc = "reindex a time range of events from postgres into elasticsearch";
+export const desc =
+  "reindex a time range of events from postgres into elasticsearch";
 export const builder = {
   projectId: {
     alias: "p",
@@ -50,13 +51,30 @@ export const builder = {
 };
 
 export const handler = async (argv) => {
-  console.log(chalk.yellow(`Reindexing time range: [${new Date(argv.startTime).toISOString()}, ${new Date(argv.endTime).toISOString()}`));
+  console.log(
+    picocolors.yellow(
+      `Reindexing time range: [${new Date(
+        argv.startTime
+      ).toISOString()}, ${new Date(argv.endTime).toISOString()}`
+    )
+  );
 
-  const pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received", [`[${new Date(argv.startTime).toISOString()}, ${new Date(argv.endTime).toISOString()})`]);
+  const pgPreResults = await pgPool.query(
+    "SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received",
+    [
+      `[${new Date(argv.startTime).toISOString()}, ${new Date(
+        argv.endTime
+      ).toISOString()})`,
+    ]
+  );
 
-  console.log(chalk.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
+  console.log(
+    picocolors.yellow(
+      `Postgres source events in range: ${pgPreResults.rows[0].count}`
+    )
+  );
 
-  const esSearchOpts: Options  = {
+  const esSearchOpts: Options = {
     index: `retraced.${argv.projectId}.${argv.environmentId}`,
     startTime: new Date(argv.startTime).valueOf(),
     endTime: new Date(argv.endTime).valueOf(),
@@ -72,7 +90,11 @@ export const handler = async (argv) => {
   };
   const esPreResults = await searchES(esSearchOpts);
 
-  console.log(chalk.yellow(`ElasticSearch destination events in range: ${esPreResults.totalHits} (approximate)`));
+  console.log(
+    picocolors.yellow(
+      `ElasticSearch destination events in range: ${esPreResults.totalHits} (approximate)`
+    )
+  );
 
   logger.info({
     msg: "reindexing time range",
@@ -83,12 +105,19 @@ export const handler = async (argv) => {
   });
 
   if (argv.dryRun) {
-    console.log(chalk.yellow(`
-    --dryRun was set, skipping range reindex`));
+    console.log(
+      picocolors.yellow(`
+    --dryRun was set, skipping range reindex`)
+    );
     process.exit(0);
   }
 
-  const eventSource = new PostgresEventSource(pgPool, argv.startTime, argv.endTime, argv.pageSize);
+  const eventSource = new PostgresEventSource(
+    pgPool,
+    argv.startTime,
+    argv.endTime,
+    argv.pageSize
+  );
   const esTargetWriteIndex = `retraced.${argv.projectId}.${argv.environmentId}.current`;
   const eachPage = makePageIndexer(esTargetWriteIndex);
 

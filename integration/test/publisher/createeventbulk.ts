@@ -1,14 +1,13 @@
 import { expect } from "chai";
 import * as Retraced from "@retracedhq/retraced";
-import { tv4 } from "tv4";
 import "mocha";
 import "chai-http";
-import { CreateEventSchema, GraphQLQuery, search } from "../pkg/specs";
+import { search } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
 import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
 import * as util from "util";
-import * as chalk from "chalk";
+import picocolors from "picocolors";
 
 // tslint:disable-next-line
 const chai = require("chai"),
@@ -29,7 +28,6 @@ latest.setMilliseconds(0); // api only returns seconds precision
 describe("Bulk Create Events", function () {
   describe("Given the Retraced API is up and running", function () {
     let responseBody: any = {};
-    let resultBody;
     beforeEach(retracedUp(Env));
 
     context(
@@ -100,7 +98,7 @@ describe("Bulk Create Events", function () {
               },
             },
           ];
-          resultBody = await retraced.reportEvents(events);
+          await retraced.reportEvents(events);
         });
 
         context(
@@ -118,7 +116,7 @@ describe("Bulk Create Events", function () {
                     responseBody = JSON.parse(res.text);
                     if (err && Env.Debug) {
                       console.log(
-                        chalk.red(
+                        picocolors.red(
                           util.inspect(err.response.body, false, 100, false)
                         )
                       );
@@ -136,102 +134,102 @@ describe("Bulk Create Events", function () {
               "Then the response should contain all four events",
               function () {
                 expect(responseBody.data.search.edges.length).to.equal(4);
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.action",
                   "integrationbulk" + randomNumber.toString()
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.actor.id",
                   "LATEST@retraced.io"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.created",
                   isoDate(latest)
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.group.id",
                   "rtrcdqa1234"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.crud",
                   "c"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[0].node.source_ip",
                   "192.168.0.1"
                 );
 
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[1].node.action",
                   "integrationbulk" + randomNumber.toString()
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[1].node.actor.id",
                   "LATER@retraced.io"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[1].node.created",
                   isoDate(later)
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[1].node.group.id",
                   "rtrcdqa1234"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[1].node.crud",
                   "c"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[1].node.source_ip",
                   "192.168.0.1"
                 );
 
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[2].node.action",
                   "integrationbulk" + randomNumber.toString()
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[2].node.actor.id",
                   "NEXT@retraced.io"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[2].node.created",
                   isoDate(next)
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[2].node.group.id",
                   "rtrcdqa1234"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[2].node.crud",
                   "c"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[2].node.source_ip",
                   "192.168.0.1"
                 );
 
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[3].node.action",
                   "integrationbulk" + randomNumber.toString()
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[3].node.actor.id",
                   "NOW@retraced.io"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[3].node.created",
                   isoDate(now)
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[3].node.group.id",
                   "rtrcdqa1234"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[3].node.crud",
                   "c"
                 );
-                expect(responseBody).to.have.deep.property(
+                expect(responseBody).to.have.nested.property(
                   "data.search.edges[3].node.source_ip",
                   "192.168.0.1"
                 );
