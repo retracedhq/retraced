@@ -5,6 +5,7 @@ bases:
 
 patchesStrategicMerge:
   - ./api-deployment.yaml
+  - ./jackson-deployment.yaml
   - ./cron-deployment.yaml
   - ./dbutil-deployment.yaml
   # - ./integrationtest.yaml

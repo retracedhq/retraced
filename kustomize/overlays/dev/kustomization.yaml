@@ -10,6 +10,8 @@ commonLabels:
 patchesStrategicMerge:
   - ./api-deployment.yaml
   - ./api-service.yaml
+  - ./jackson-deployment.yaml
+  - ./jackson-service.yaml
   - ./cron-deployment.yaml
   - ./migratepg-job.yaml
   - ./migratees-job.yaml

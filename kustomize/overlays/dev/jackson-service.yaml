@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jackson-admin-ui
+spec:
+  type: LoadBalancer

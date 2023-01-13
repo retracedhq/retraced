@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jackson-admin-ui
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: jackson
+        - image: boxyhq/jackson:1.6.0
+          envFrom:
+            - secretRef:
+              name: auditlog
