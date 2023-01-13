@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jackson-admin-portal
+  name: admin-portal
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   selector:
