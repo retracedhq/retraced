@@ -1,4 +1,3 @@
-// import elasticsearch from "elasticsearch";
 import _ from "lodash";
 import moment from "moment";
 import { Scope } from "../security/scope";
