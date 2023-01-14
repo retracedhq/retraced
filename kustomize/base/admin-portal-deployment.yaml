@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retraced-admin-portal
+  namespace: '{{repl ConfigOption "namespace"}}'
+spec:
+  selector:
+    matchLabels:
+      tier: admin-portal
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        tier: admin-portal
+    spec:
+      containers:
+        - name: api
+          image: boxyhq/jackson:1.6.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5225
+              name: http
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: auditlog
+          resources:
+            requests:
+              cpu: 100m
+            limits:
+              cpu: 500m

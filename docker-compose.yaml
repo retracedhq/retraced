@@ -186,7 +186,7 @@ services:
       - SMTP_FROM=${SMTP_FROM}
       #   - NEXTAUTH_JWT_SIGNING_PRIVATE_KEY=
       - NEXTAUTH_URL=http://localhost:5225
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_SECRET=secret
       - NEXTAUTH_ACL=${NEXTAUTH_ACL}
       - RETRACED_HOST_URL=http://retraced-api:3000/auditlog
       - RETRACED_EXTERNAL_URL=http://localhost:3000/auditlog
