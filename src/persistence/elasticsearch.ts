@@ -174,9 +174,15 @@ export interface AliasDesc {
   alias: string;
 }
 
-export type AliasRotator = (toAdd: AliasDesc[], toRemove: AliasDesc[]) => Promise<any>;
+export type AliasRotator = (
+  toAdd: AliasDesc[],
+  toRemove: AliasDesc[]
+) => Promise<any>;
 
-export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]): Promise<any> {
+export async function putAliases(
+  toAdd: AliasDesc[],
+  toRemove: AliasDesc[]
+): Promise<any> {
   const payload = {
     actions: [
       ...toAdd.map((v) => ({ add: { index: v.index, alias: v.alias } })),
