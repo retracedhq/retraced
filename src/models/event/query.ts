@@ -1,13 +1,13 @@
 import _ from "lodash";
 import searchQueryParser from "search-query-parser";
 import moment from "moment";
-import { ApiResponse, RequestParams } from "@elastic/elasticsearch";
+import { ApiResponse, Client, RequestParams } from "@elastic/elasticsearch";
 
 import { Scope } from "../../security/scope";
-import { scope, getNewElasticsearch } from "../../persistence/elasticsearch";
+import { scope, getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
 
-const newEs = getNewElasticsearch();
+const es: ClientWithRetry = getESWithRetry();
 
 // An empty list for groupIds or targetIds means unrestricted.
 export const unrestricted = Object.seal([]);
@@ -63,9 +63,9 @@ async function doQuery(opts: Options): Promise<Result> {
 
   logger.debug(`raw newParams: ${JSON.stringify(params)}\n`);
 
-  const newResp = await newEs.search(params);
+  const newResp = await es.search(params);
 
-  if (!newResp["body"] || !newResp["body"]["hits"]) {
+  if (!newResp.body || !newResp.body.hits) {
     logger.info(`raw newParams: ${JSON.stringify(params)}\n`);
     logger.info(`raw newResp: ${JSON.stringify(newResp)}\n`);
   } else {
@@ -79,11 +79,11 @@ async function doQuery(opts: Options): Promise<Result> {
       query: bodyAny.query,
     },
   };
-  const newCount = await newEs.count(countParams);
+  const newCount = await es.count(countParams);
 
   return {
-    totalHits: { value: newCount["body"].count },
-    events: _.map(newResp["body"]["hits"].hits, ({ _source }) => _source),
+    totalHits: { value: newCount.body.count },
+    events: _.map(newResp.body.hits.hits, ({ _source }) => _source),
   };
 }
 
@@ -99,9 +99,9 @@ export async function doAllQuery(opts: Options): Promise<Result> {
 
   logger.debug(`raw newParams: ${JSON.stringify(params)}\n`);
 
-  const newResp = await newEs.search(params);
+  const newResp = await es.search(params);
 
-  if (!newResp["body"] || !newResp["body"]["hits"]) {
+  if (!newResp.body || !newResp.body.hits) {
     logger.info(`raw newParams: ${JSON.stringify(params)}\n`);
     logger.info(`raw newResp: ${JSON.stringify(newResp)}\n`);
   } else {
@@ -111,19 +111,15 @@ export async function doAllQuery(opts: Options): Promise<Result> {
   responseQueue.push(newResp);
   while (responseQueue.length) {
     const oneResp = responseQueue.shift(); // get a response from the queue
-    allHits = allHits.concat(oneResp!["body"]["hits"].hits); // append hits to the list of all hits
+    allHits = allHits.concat(oneResp!.body.hits.hits); // append hits to the list of all hits
 
-    const nextEvent = await newEs.scroll({
+    const nextEvent = await es.scroll({
       // use the scroll API to get another response
-      scroll_id: oneResp!["body"]._scroll_id,
+      scroll_id: oneResp!.body._scroll_id,
       scroll: "30s",
     });
 
-    if (
-      nextEvent["body"]["hits"] &&
-      nextEvent["body"]["hits"].hits &&
-      nextEvent["body"]["hits"].hits.length > 0
-    ) {
+    if (nextEvent.body.hits && nextEvent.body.hits.hits && nextEvent.body.hits.hits.length > 0) {
       // if this new response has hits, add it to the queue
       responseQueue.push(nextEvent);
     }
@@ -147,9 +143,7 @@ function scrubDatetimeRange(input: string | string[]): [number, number] {
     };
   }
 
-  const range = (input as [string, string]).map((datetime) =>
-    moment.utc(datetime)
-  );
+  const range = (input as [string, string]).map((datetime) => moment.utc(datetime));
   range.forEach((m) => {
     if (!m.isValid()) {
       throw {
@@ -165,16 +159,7 @@ function scrubDatetimeRange(input: string | string[]): [number, number] {
 // exported for testing
 export function parse(searchQuery: string): any {
   const options = {
-    keywords: [
-      "action",
-      "crud",
-      "received",
-      "created",
-      "actor.id",
-      "actor.name",
-      "description",
-      "location",
-    ],
+    keywords: ["action", "crud", "received", "created", "actor.id", "actor.name", "description", "location"],
   };
   let keywords = searchQueryParser.parse(searchQuery, options);
   const q: any = {

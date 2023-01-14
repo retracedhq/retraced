@@ -1,15 +1,15 @@
 import _ from "lodash";
-import getEs from "../../persistence/elasticsearch";
+import { getESWithRetry } from "../../persistence/elasticsearch";
 import { DashboardTile, DashboardOptions } from "../interfaces";
 
-const es = getEs();
+const es = getESWithRetry();
 
 interface ActionRow {
   action: string;
   count: number;
 }
 
-export default async function(opts: DashboardOptions): Promise<any> {
+export default async function (opts: DashboardOptions): Promise<any> {
   const filters: any = [];
 
   filters.push({
@@ -55,10 +55,10 @@ export default async function(opts: DashboardOptions): Promise<any> {
   };
 
   const response = await es.search(params);
-  const data = _.map(response.aggregations.action.buckets, (bucket: any) => {
+  const data = _.map(response.body.aggregations.action.buckets, (bucket: any) => {
     const row: ActionRow = {
       action: bucket.key,
-      count:  bucket.doc_count,
+      count: bucket.doc_count,
     };
 
     return row;
@@ -66,7 +66,7 @@ export default async function(opts: DashboardOptions): Promise<any> {
 
   const tile: DashboardTile = {
     title: "Actions",
-    type:  "actions",
+    type: "actions",
     data,
   };
 
