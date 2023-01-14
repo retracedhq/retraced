@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: admin-portal
+  name: retraced-admin-portal
 spec:
   replicas: 1
   template:
     spec:
       containers:
-        - name: admin-portal
+        - name: retraced-admin-portal
         - image: boxyhq/jackson:1.6.0
           envFrom:
             - secretRef:

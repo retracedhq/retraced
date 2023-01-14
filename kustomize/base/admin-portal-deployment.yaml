@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: admin-portal
+  name: retraced-admin-portal
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   selector:
     matchLabels:
-      tier: admin-portal
+      tier: retraced-admin-portal
   replicas: 1
   template:
     metadata:
       labels:
         app: auditlog
-        tier: admin-portal
+        tier: retraced-admin-portal
     spec:
       containers:
         - name: api

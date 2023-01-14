@@ -5,10 +5,10 @@ bases:
 
 patchesStrategicMerge:
   - ./api-deployment.yaml
-  - ./jackson-deployment.yaml
   - ./cron-deployment.yaml
   - ./dbutil-deployment.yaml
   # - ./integrationtest.yaml
   - ./migratepg-job.yaml
   - ./migratees-job.yaml
   - ./processor-deployment.yaml
+  - ./admin-portal-deployment.yaml

@@ -1,6 +1,6 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: admin-portal
+  name: retraced-admin-portal
 spec:
   type: LoadBalancer

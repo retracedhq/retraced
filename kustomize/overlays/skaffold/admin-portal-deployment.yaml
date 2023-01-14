@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: admin-portal
+  name: retraced-admin-portal
 spec:
   template:
     spec:
       containers:
-        - name: admin-portal
+        - name: retraced-admin-portal
           image: boxyhq/jackson:1.6.0
           ports:
             - containerPort: 5225

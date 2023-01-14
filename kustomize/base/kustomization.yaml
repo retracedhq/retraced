@@ -1,8 +1,6 @@
 resources:
   - ./api-deployment.yaml
   - ./api-service.yaml
-  - ./jackson-deployment.yaml
-  - ./jackson-service.yaml
   - ./cron-deployment.yaml
   - ./dbutil-deployment.yaml
   - ./migratees-job.yaml
@@ -10,4 +8,6 @@ resources:
   - ./nsqd-deployment.yaml
   - ./nsqd-service.yaml
   - ./processor-deployment.yaml
+  - ./admin-portal-deployment.yaml
+  - ./admin-portal-service.yaml
 namespace: default
