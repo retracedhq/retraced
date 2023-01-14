@@ -165,7 +165,7 @@ services:
     command: node --inspect=0.0.0.0 --enable-source-maps build/src/_db/runner-lite.js es
     restart: "on-failure"
 
-  jackson:
+  admin-portal:
     image: boxyhq/jackson:1.6.0
     ports:
       - "5225:5225"
