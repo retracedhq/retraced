@@ -5,7 +5,7 @@ metadata:
   namespace: '{{repl ConfigOption "namespace"}}'
   labels:
     app: auditlog
-    tier: retraced-admin-portal
+    tier: admin-portal
 spec:
   type: ClusterIP
   ports:
@@ -14,4 +14,4 @@ spec:
       targetPort: 5225
   selector:
     app: auditlog
-    tier: retraced-admin-portal
+    tier: admin-portal

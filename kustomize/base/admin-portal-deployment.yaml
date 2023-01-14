@@ -6,13 +6,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      tier: retraced-admin-portal
+      tier: admin-portal
   replicas: 1
   template:
     metadata:
       labels:
         app: auditlog
-        tier: retraced-admin-portal
+        tier: admin-portal
     spec:
       containers:
         - name: api

@@ -6,7 +6,7 @@ spec:
   template:
     spec:
       containers:
-        - name: retraced-admin-portal
+        - name: admin-portal
           image: boxyhq/jackson:1.6.0
           ports:
             - containerPort: 5225
@@ -40,7 +40,7 @@ spec:
             - name: NEXTAUTH_URL
               value: "http://localhost:5225"
             - name: NEXTAUTH_SECRET
-              value: ""
+              value: "secret"
             - name: NEXTAUTH_ACL
               value: ""
             - name: RETRACED_HOST_URL

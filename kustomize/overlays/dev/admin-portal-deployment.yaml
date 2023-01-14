@@ -7,7 +7,7 @@ spec:
   template:
     spec:
       containers:
-        - name: retraced-admin-portal
+        - name: admin-portal
         - image: boxyhq/jackson:1.6.0
           envFrom:
             - secretRef:
