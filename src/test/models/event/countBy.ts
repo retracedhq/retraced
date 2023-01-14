@@ -1,37 +1,35 @@
 import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
-import elasticsearch from "elasticsearch";
 
 import { countBy } from "../../../models/event/countBy";
+import { Client, ApiResponse } from "@elastic/elasticsearch";
 
 @suite
 class EventsCountByTest {
   @test public async "events.countBy()"() {
-    const es = TypeMoq.Mock.ofType<elasticsearch.Client>();
+    const es = TypeMoq.Mock.ofType<Client>();
     const esResponse = {
-      aggregations: {
-        groupedBy: {
-          buckets: [
-            { key: "user.login", doc_count: 100 },
-            { key: "user.logout", doc_count: 95 },
-          ],
+      body: {
+        aggregations: {
+          groupedBy: {
+            buckets: [
+              { key: "user.login", doc_count: 100 },
+              { key: "user.logout", doc_count: 95 },
+            ],
+          },
         },
       },
-    } as elasticsearch.SearchResponse<any>;
+    } as ApiResponse<any>;
 
-    es.setup((x) => x.search(TypeMoq.It.isAny())).returns((params) => {
+    es.setup((x) => x.search(TypeMoq.It.isAny())).returns((params): any => {
       expect(params.body.query.bool.filter).to.deep.include.members([
         {
           range: { canonical_time: { gte: 1490000000000, lte: 1500000000000 } },
         },
         {
           bool: {
-            should: [
-              { match: { crud: "c" } },
-              { match: { crud: "u" } },
-              { match: { crud: "d" } },
-            ],
+            should: [{ match: { crud: "c" } }, { match: { crud: "u" } }, { match: { crud: "d" } }],
           },
         },
       ]);

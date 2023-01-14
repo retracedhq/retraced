@@ -1,11 +1,10 @@
 import _ from "lodash";
 import { instrument } from "../../metrics";
-import Elasticsearch from "elasticsearch";
 
 import { Scope } from "../../security/scope";
-import getEs, { scope } from "../../persistence/elasticsearch";
+import { scope, getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
 
-const esClient = getEs();
+const client: ClientWithRetry = getESWithRetry();
 
 interface Options {
   groupBy: "action" | "group.id";
@@ -21,10 +20,7 @@ interface Result {
   count: number;
 }
 
-export async function countBy(
-  es: Elasticsearch.Client,
-  opts: Options
-): Promise<Result[]> {
+export async function countBy(es: ClientWithRetry, opts: Options): Promise<Result[]> {
   const [index, scopeFilters] = scope(opts.scope);
   const filters: any[] = [];
 
@@ -66,7 +62,7 @@ export async function countBy(
   };
 
   const response = await es.search(params);
-  const data = _.map(response.aggregations.groupedBy.buckets, (bucket: any) => {
+  const data = _.map(response.body.aggregations.groupedBy.buckets, (bucket: any) => {
     const row: Result = {
       value: bucket.key,
       count: bucket.doc_count,
@@ -80,6 +76,6 @@ export async function countBy(
 
 export default async function (opts: Options): Promise<Result[]> {
   return await instrument("Elasticsearch.countBy", async () => {
-    return await countBy(esClient, opts);
+    return await countBy(client, opts);
   });
 }

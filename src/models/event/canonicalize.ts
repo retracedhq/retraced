@@ -3,10 +3,7 @@ import crypto from "crypto";
 
 import Event from "./";
 
-const requiredFields = [
-  "id",
-  "action",
-];
+const requiredFields = ["id", "action"];
 
 const requiredSubfields = [
   ["group", "group.id"],
@@ -16,18 +13,20 @@ const requiredSubfields = [
 
 // Produces a canonical hash string representation of an event.
 // See the Swagger spec for more details.
-export default function(event: Event): string {
+export default function (event: Event): string {
   for (const fieldName of requiredFields) {
     if (_.isEmpty(_.get(event, fieldName))) {
       throw new Error(`Canonicalization failed: missing required event attribute '${fieldName}'`);
     }
   }
 
-  for (const [field, requiredSubfield] of  requiredSubfields) {
+  for (const [field, requiredSubfield] of requiredSubfields) {
     const hasField = !_.isEmpty(_.get(event, field));
     const missingSubfield = hasField && _.isEmpty(_.get(event, requiredSubfield));
     if (missingSubfield) {
-      throw new Error(`Canonicalization failed: missing attribute '${requiredSubfield}' which is required when '${field}' is present`);
+      throw new Error(
+        `Canonicalization failed: missing attribute '${requiredSubfield}' which is required when '${field}' is present`
+      );
     }
   }
 
@@ -63,11 +62,11 @@ export default function(event: Event): string {
 function encodePassOne(valueIn: string): string {
   // % -> %25
   // : -> %3A
-  return valueIn.replace(/%/g, "%25").replace(/:/g, "%3A");
+  return valueIn ? (valueIn.replace ? valueIn.replace(/%/g, "%25").replace(/:/g, "%3A") : valueIn) : valueIn;
 }
 
 function encodePassTwo(valueIn: string): string {
   // = -> %3D
   // ; -> %3B
-  return valueIn.replace(/=/g, "%3D").replace(/;/g, "%3B");
+  return valueIn ? (valueIn.replace ? valueIn.replace(/=/g, "%3D").replace(/;/g, "%3B") : valueIn) : valueIn;
 }

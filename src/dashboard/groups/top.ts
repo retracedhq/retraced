@@ -1,10 +1,10 @@
 import _ from "lodash";
-import getEs from "../../persistence/elasticsearch";
+import { getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
 import getsGroup from "../../models/group/gets";
 
 import { DashboardTile, DashboardOptions } from "../interfaces";
 
-const es = getEs();
+const es: ClientWithRetry = getESWithRetry();
 
 interface GroupRow {
   name?: string;
@@ -12,7 +12,7 @@ interface GroupRow {
   count: number;
 }
 
-export default async function(opts: DashboardOptions): Promise<any> {
+export default async function (opts: DashboardOptions): Promise<any> {
   const filters: any = [];
 
   filters.push({
@@ -58,7 +58,7 @@ export default async function(opts: DashboardOptions): Promise<any> {
   };
 
   const response = await es.search(params);
-  const rows = _.map(response.aggregations.group.buckets, (bucket: any) => {
+  const rows = _.map(response.body.aggregations.group.buckets, (bucket: any) => {
     const row: GroupRow = {
       id: bucket.key,
       name: "Unknown Group",
