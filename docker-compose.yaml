@@ -28,7 +28,7 @@ x-common-variables: &common-variables
 
 services:
   retraced-api:
-    build: 
+    build:
       context: .
       dockerfile: ./deploy/Dockerfile-slim
     ports:
@@ -43,7 +43,7 @@ services:
     command: node --inspect=0.0.0.0 --enable-source-maps build/src/index.js
 
   # retraced-dbutil:
-  #   build: 
+  #   build:
   #     context: .
   #     dockerfile: ./Dockerfile
   #   environment: *common-variables
@@ -52,7 +52,7 @@ services:
   #   command: /bin/sleep infinity
 
   retraced-processor:
-    build: 
+    build:
       context: .
       dockerfile: ./deploy/Dockerfile-slim
     ports:
@@ -67,7 +67,7 @@ services:
     command: node --inspect=0.0.0.0 --enable-source-maps build/src/_processor/index.js
 
   retraced-cron:
-    build: 
+    build:
       context: .
       dockerfile: ./deploy/Dockerfile-slim
     environment: *common-variables
@@ -79,7 +79,7 @@ services:
     command: /usr/local/bin/retraced-auditlog-cron /crontab
 
   nsqd:
-    image: nsqio/nsq:v1.2.1 
+    image: nsqio/nsq:v1.2.1
     ports:
       - "4150:4150"
       - "4151:4151"
@@ -127,7 +127,7 @@ services:
   #     - 5601:5601
 
   retraced-dev-bootstrap:
-    build: 
+    build:
       context: .
       dockerfile: ./deploy/Dockerfile-slim
     environment: *common-variables
@@ -135,10 +135,10 @@ services:
       - retraced
     depends_on:
       - postgres-migration
-    command: ./build/src/retracedctl bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev 
+    command: ./build/src/retracedctl bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev
 
   postgres-migration:
-    build: 
+    build:
       context: .
       dockerfile: ./deploy/Dockerfile-slim
     environment: *common-variables
@@ -153,7 +153,7 @@ services:
     restart: "on-failure"
 
   elastic-migration:
-    build: 
+    build:
       context: .
       dockerfile: ./deploy/Dockerfile-slim
     environment: *common-variables
@@ -166,32 +166,32 @@ services:
     restart: "on-failure"
 
   jackson:
-    image: boxyhq/jackson:1.5.0
+    image: boxyhq/jackson:1.6.0
     ports:
       - "5225:5225"
     networks:
       - retraced
     environment:
-    #   - SAML_AUDIENCE=
-        - JACKSON_API_KEYS=${JACKSON_API_KEYS}
-    #   - DB_TYPE=
-        - DB_URL=postgres://retraced:password@postgres:5432/postgres
-    #   - DB_TTL=
-    #   - DB_CLEANUP_LIMIT=
-    #   - DB_ENCRYPTION_KEY=
-        - SMTP_HOST=${SMTP_HOST}
-        - SMTP_PORT=${SMTP_PORT}
-        - SMTP_USER=${SMTP_USER}
-        - SMTP_PASSWORD=${SMTP_PASSWORD}
-        - SMTP_FROM=${SMTP_FROM}
-    #   - NEXTAUTH_JWT_SIGNING_PRIVATE_KEY=
-        - NEXTAUTH_URL=http://localhost:5225
-        - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-        - NEXTAUTH_ACL=${NEXTAUTH_ACL}
-        - RETRACED_HOST_URL=http://retraced-api:3000/auditlog
-        - RETRACED_EXTERNAL_URL=http://localhost:3000/auditlog
-        - RETRACED_ADMIN_ROOT_TOKEN=dev
-        - BOXYHQ_LICENSE_KEY=${BOXYHQ_LICENSE_KEY}
+      #   - SAML_AUDIENCE=
+      - JACKSON_API_KEYS=${JACKSON_API_KEYS}
+      #   - DB_TYPE=
+      - DB_URL=postgres://retraced:password@postgres:5432/postgres
+      #   - DB_TTL=
+      #   - DB_CLEANUP_LIMIT=
+      #   - DB_ENCRYPTION_KEY=
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM=${SMTP_FROM}
+      #   - NEXTAUTH_JWT_SIGNING_PRIVATE_KEY=
+      - NEXTAUTH_URL=http://localhost:5225
+      - NEXTAUTH_SECRET=secret
+      - NEXTAUTH_ACL=${NEXTAUTH_ACL}
+      - RETRACED_HOST_URL=http://retraced-api:3000/auditlog
+      - RETRACED_EXTERNAL_URL=http://localhost:3000/auditlog
+      - RETRACED_ADMIN_ROOT_TOKEN=dev
+      - BOXYHQ_LICENSE_KEY=${BOXYHQ_LICENSE_KEY}
     depends_on:
       - "retraced-api"
     restart: "always"

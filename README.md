@@ -16,7 +16,7 @@ Set `ADMIN_ROOT_TOKEN` environment variable either in `.env` file or in `docker-
 
 ### Running with Skaffold
 
-> `make dev`
+> `make dev` or `skaffold dev --status-check=false --force=true`
 
 ## Swagger Documentation
 

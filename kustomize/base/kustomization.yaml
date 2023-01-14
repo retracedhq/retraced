@@ -1,11 +1,13 @@
 resources:
-- ./api-deployment.yaml
-- ./api-service.yaml
-- ./cron-deployment.yaml
-- ./dbutil-deployment.yaml
-- ./migratees-job.yaml
-- ./migratepg-job.yaml
-- ./nsqd-deployment.yaml
-- ./nsqd-service.yaml
-- ./processor-deployment.yaml
+  - ./api-deployment.yaml
+  - ./api-service.yaml
+  - ./cron-deployment.yaml
+  - ./dbutil-deployment.yaml
+  - ./migratees-job.yaml
+  - ./migratepg-job.yaml
+  - ./nsqd-deployment.yaml
+  - ./nsqd-service.yaml
+  - ./processor-deployment.yaml
+  - ./admin-portal-deployment.yaml
+  - ./admin-portal-service.yaml
 namespace: default

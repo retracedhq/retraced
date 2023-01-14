@@ -11,3 +11,4 @@ patchesStrategicMerge:
   - ./migratepg-job.yaml
   - ./migratees-job.yaml
   - ./processor-deployment.yaml
+  - ./admin-portal-deployment.yaml
