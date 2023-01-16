@@ -66,7 +66,7 @@ jobs:
           file: ./deploy/Dockerfile-slim
           platforms: linux/amd64,linux/arm64
           push: false
-          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
+          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
