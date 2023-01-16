@@ -50,7 +50,7 @@ module.exports = {
         },
       },
     ],
-    "prefer-spread": 1,
+    "prefer-spread": 0,
     "@typescript-eslint/consistent-type-assertions": "error",
     "@typescript-eslint/dot-notation": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
