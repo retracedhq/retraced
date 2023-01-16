@@ -24,7 +24,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: token=dev" -
   "teamId": "boxyhq",
   "group": {
     "id": "dev",
-    "name": "BoxyHQ"
+    "name": "dev"
   },
   "crud": "c",
   "created": "2023-01-16T15:48:44.573Z",
