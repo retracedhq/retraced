@@ -72,7 +72,7 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
 
       - name: Login to GitHub Container Registry
-        if: github.ref == 'refs/heads/release'
+        # if: github.ref == 'refs/heads/release'
         run: |
           echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{github.repository_owner}} --password-stdin
 
@@ -89,7 +89,7 @@ jobs:
           COSIGN_KEY: ${{secrets.COSIGN_KEY}}
 
       - name: Sign the image
-        if: github.ref == 'refs/heads/release'
+        # if: github.ref == 'refs/heads/release'
         run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.SHA7 }} || true
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
@@ -144,7 +144,7 @@ jobs:
           rm ./_docker/sbom.json || true
           mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
-        if: github.ref == 'refs/heads/release'
+        # if: github.ref == 'refs/heads/release'
         run: |
           ORAS_VERSION="0.8.1"
           ORAS_FILENAME="oras_0.8.1_linux_amd64.tar.gz"
@@ -157,7 +157,7 @@ jobs:
           cd ..
 
       - name: Sign the sbom images
-        if: github.ref == 'refs/heads/release'
+        # if: github.ref == 'refs/heads/release'
         run: |
           cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/retraced/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} || true
           cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/retraced/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} || true
