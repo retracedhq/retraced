@@ -24,7 +24,6 @@ x-common-variables: &common-variables
   NSQD_TCP_PORT: 4150
   # Set admin root token here
   ADMIN_ROOT_TOKEN: dev
-  MAXMIND_GEOLITE2_LICENSE_KEY: ${MAXMIND_GEOLITE2_LICENSE_KEY}
 
 services:
   retraced-api:
@@ -76,7 +75,7 @@ services:
     depends_on:
       - postgres
     restart: "always"
-    command: /usr/local/bin/retraced-auditlog-cron /crontab
+    command: /usr/local/bin/retraced-auditlog-cron --quiet /crontab
 
   nsqd:
     image: nsqio/nsq:v1.2.1
@@ -91,7 +90,7 @@ services:
     networks:
       - retraced
     restart: "always"
-    command: nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd."
+    command: nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd." -log-level ${LOG_LEVEL}
 
   postgres:
     image: postgres:14.2
@@ -172,26 +171,20 @@ services:
     networks:
       - retraced
     environment:
-      #   - SAML_AUDIENCE=
-      - JACKSON_API_KEYS=${JACKSON_API_KEYS}
-      #   - DB_TYPE=
+      - JACKSON_API_KEYS=secret
       - DB_URL=postgres://retraced:password@postgres:5432/postgres
-      #   - DB_TTL=
-      #   - DB_CLEANUP_LIMIT=
-      #   - DB_ENCRYPTION_KEY=
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_FROM=${SMTP_FROM}
-      #   - NEXTAUTH_JWT_SIGNING_PRIVATE_KEY=
       - NEXTAUTH_URL=http://localhost:5225
       - NEXTAUTH_SECRET=secret
       - NEXTAUTH_ACL=${NEXTAUTH_ACL}
       - RETRACED_HOST_URL=http://retraced-api:3000/auditlog
       - RETRACED_EXTERNAL_URL=http://localhost:3000/auditlog
       - RETRACED_ADMIN_ROOT_TOKEN=dev
-      - BOXYHQ_LICENSE_KEY=${BOXYHQ_LICENSE_KEY}
+      - MAXMIND_GEOLITE2_LICENSE_KEY=${MAXMIND_GEOLITE2_LICENSE_KEY}
     depends_on:
       - "retraced-api"
     restart: "always"
