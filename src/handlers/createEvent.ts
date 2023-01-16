@@ -111,13 +111,7 @@ export interface CreateEventResponse {
 
 export interface EventPersister {
   delayMS: number;
-  persist: (
-    projId: string,
-    envId: string,
-    id: string,
-    received: number,
-    event: CreateEventRequest
-  ) => Promise<void>;
+  persist: (projId: string, envId: string, id: string, received: number, event: CreateEventRequest) => Promise<void>;
 }
 
 export class EventCreater {
@@ -151,16 +145,9 @@ export class EventCreater {
   }
 
   @instrumented
-  public async createEvent(
-    authorization: string,
-    projectId: string,
-    event: CreateEventRequest
-  ) {
+  public async createEvent(authorization: string, projectId: string, event: CreateEventRequest) {
     try {
-      const apiToken = await this.authenticator.getApiTokenOr401(
-        authorization,
-        projectId
-      );
+      const apiToken = await this.authenticator.getApiTokenOr401(authorization, projectId);
       const violations = this.validateEventInput(event);
       if (!_.isEmpty(violations)) {
         throw {
@@ -184,14 +171,7 @@ export class EventCreater {
         },
       ];
 
-      await this.persistEvent(
-        projId,
-        envId,
-        id,
-        moment().valueOf(),
-        event,
-        persisters
-      );
+      await this.persistEvent(projId, envId, id, moment().valueOf(), event, persisters);
 
       // Coerce the input event into a proper Event object.
       // Then, generate an authoritative hash from its contents.
@@ -230,11 +210,9 @@ export class EventCreater {
         }
       };
 
-      persisters.forEach((p, i) => {
+      persisters.forEach((p) => {
         const fn = () => {
-          p.persist(projId, envId, id, received, event)
-            .then(success)
-            .catch(fail);
+          p.persist(projId, envId, id, received, event).then(success).catch(fail);
         };
 
         if (p.delayMS) {
@@ -252,10 +230,7 @@ export class EventCreater {
     projectId: string,
     eventInputs: CreateEventRequest[]
   ): Promise<CreateEventResponse[]> {
-    const apiToken = await this.authenticator.getApiTokenOr401(
-      authorization,
-      projectId
-    );
+    const apiToken = await this.authenticator.getApiTokenOr401(authorization, projectId);
     this.validateEventInputs(eventInputs);
 
     const received = moment().format();
@@ -289,10 +264,7 @@ export class EventCreater {
       events.map(({ values }) => values)
     );
 
-    const pgConn: any = await instrument(
-      "PgPool.connect",
-      this.pgPool.connect.bind(this.pgPool)
-    );
+    const pgConn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
 
     try {
       await instrument("EventCreater.insertMany", async () => {
@@ -321,14 +293,7 @@ export class EventCreater {
     eventInput: CreateEventRequest,
     querier?: Querier
   ): Promise<void> {
-    await this.saveEvent(
-      projectId,
-      envId,
-      this.idSource(),
-      moment().valueOf(),
-      eventInput,
-      querier
-    );
+    await this.saveEvent(projectId, envId, this.idSource(), moment().valueOf(), eventInput, querier);
   }
 
   /**
@@ -346,22 +311,12 @@ export class EventCreater {
     const insertStmt = EventCreater.insertIntoIngestTask;
 
     const newTaskId = this.idSource();
-    const insertVals = [
-      newTaskId,
-      JSON.stringify(eventInput),
-      projectId,
-      envId,
-      newEventId,
-      moment().valueOf(),
-    ];
+    const insertVals = [newTaskId, JSON.stringify(eventInput), projectId, envId, newEventId, moment().valueOf()];
 
     if (querier) {
       await querier.query(insertStmt, insertVals);
     } else {
-      const conn: any = await instrument(
-        "PgPool.connect",
-        this.pgPool.connect.bind(this.pgPool)
-      );
+      const conn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
 
       try {
         await instrument("EventCreater.insertOne", async () => {
@@ -385,19 +340,10 @@ export class EventCreater {
     eventInput: CreateEventRequest
   ): Promise<void> {
     const insertStmt = EventCreater.insertIntoBacklog;
-    const conn: any = await instrument(
-      "PgPool.connect",
-      this.pgPool.connect.bind(this.pgPool)
-    );
+    const conn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
     try {
       await instrument("EventCreater.insertOneIntoBacklog", async () => {
-        return await conn.query(insertStmt, [
-          projectId,
-          envId,
-          newEventId,
-          received,
-          JSON.stringify(eventInput),
-        ]);
+        return await conn.query(insertStmt, [projectId, envId, newEventId, received, JSON.stringify(eventInput)]);
       });
     } finally {
       conn.release();
@@ -441,9 +387,7 @@ export class EventCreater {
         logger.info(`sent task ${job} to raw_events`);
       })
       .catch((err) => {
-        logger.error(
-          `failed to send task ${job} to raw_events: ${util.inspect(err)}`
-        );
+        logger.error(`failed to send task ${job} to raw_events: ${util.inspect(err)}`);
       });
   }
 
@@ -453,9 +397,7 @@ export class EventCreater {
     if (events.length > this.maxEvents) {
       throw {
         status: 400,
-        err: new Error(
-          `A maximum of ${this.maxEvents} events may be created at once, received ${events.length}`
-        ),
+        err: new Error(`A maximum of ${this.maxEvents} events may be created at once, received ${events.length}`),
       };
     }
 
@@ -463,9 +405,7 @@ export class EventCreater {
       const violations = this.validateEventInput(eventInput);
       if (!_.isEmpty(violations)) {
         invalidEvents.push({
-          message: `Invalid event input at index ${index}:\n-- ${violations
-            .map((i) => i.message)
-            .join("\n-- ")}`,
+          message: `Invalid event input at index ${index}:\n-- ${violations.map((i) => i.message).join("\n-- ")}`,
           index,
           violations,
         });
@@ -527,8 +467,7 @@ export class EventCreater {
 
     for (const [field, requiredSubfield] of requiredSubfields) {
       const hasField = !_.isEmpty(_.get(maybeEvent, field));
-      const missingSubfield =
-        hasField && _.isEmpty(_.get(maybeEvent, requiredSubfield));
+      const missingSubfield = hasField && _.isEmpty(_.get(maybeEvent, requiredSubfield));
       if (missingSubfield) {
         violations.push({
           message: `Field '${requiredSubfield}' is required if '${field}' is present`,
@@ -550,10 +489,7 @@ export class EventCreater {
     }
 
     // created timestamp, if present, must be parse-able
-    if (
-      !_.isEmpty(maybeEvent["created"]) &&
-      !moment(maybeEvent["created"]).isValid()
-    ) {
+    if (!_.isEmpty(maybeEvent["created"]) && !moment(maybeEvent["created"]).isValid()) {
       violations.push({
         message: `Unable to parse 'created' field as valid time: ${maybeEvent["created"]}`,
         field: "created",
@@ -572,11 +508,7 @@ export class EventCreater {
       });
     }
 
-    if (
-      maybeEvent.source_ip &&
-      !IPV4_REGEX.test(maybeEvent.source_ip) &&
-      !IPV6_REGEX.test(maybeEvent.source_ip)
-    ) {
+    if (maybeEvent.source_ip && !IPV4_REGEX.test(maybeEvent.source_ip) && !IPV6_REGEX.test(maybeEvent.source_ip)) {
       violations.push({
         message: `Unable to parse 'source_ip' field as valid IPV4 or IPV6 address: ${maybeEvent["source_ip"]}`,
         field: "source_ip",

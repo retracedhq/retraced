@@ -39,11 +39,11 @@ function getSchemaPath() {
   return path.join(__dirname, "../../../../migrations/es");
 }
 
-export const handler = (argv) => {
+export const handler = () => {
   const es: Client = getESWithoutRetry();
   const pgPool = getPgPool();
 
-  pgPool.connect((err, pg, done) => {
+  pgPool.connect((err, pg) => {
     if (err) {
       bugsnag.notify(err);
       console.log(picocolors.red("Couldn't connect to postgres"));
@@ -93,7 +93,7 @@ export const handler = (argv) => {
                     break;
 
                   case "putTemplate": {
-                    es.indices.putTemplate(esQuery.params, (err2, resp) => {
+                    es.indices.putTemplate(esQuery.params, (err2) => {
                       if (err2) {
                         reject(err2);
                         return;

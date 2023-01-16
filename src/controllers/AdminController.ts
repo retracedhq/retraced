@@ -1,15 +1,8 @@
-import {
-  Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse,
-  Controller, Put, Request,
-} from "tsoa";
+import { Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Put, Request } from "tsoa";
 import express from "express";
 import * as uuid from "uuid";
 
-import {
-  TemplateSearchResults,
-  TemplateResponse,
-  TemplateValues,
-} from "../models/template";
+import { TemplateSearchResults, TemplateResponse, TemplateValues } from "../models/template";
 import createTemplate from "../handlers/admin/createTemplate";
 import searchTemplates from "../handlers/admin/searchTemplates";
 import deleteTemplate from "../handlers/admin/deleteTemplate";
@@ -17,11 +10,7 @@ import { InviteResponse, InviteValues, responseFromInvite } from "../models/invi
 import createInvite from "../handlers/admin/createInvite";
 import deleteInvite from "../handlers/admin/deleteInvite";
 import listInvites from "../handlers/admin/listInvites";
-import {
-  EnvironmentValues,
-  EnvironmentResponse,
-  responseFromEnvironment,
-} from "../models/environment";
+import { EnvironmentValues, EnvironmentResponse, responseFromEnvironment } from "../models/environment";
 import createEnvironment from "../handlers/admin/createEnvironment";
 import deleteEnvironment from "../handlers/admin/deleteEnvironment";
 import createDeletionRequest, {
@@ -41,7 +30,6 @@ import { checkAdminAccessUnwrapped } from "../security/helpers";
 import { crud } from "../models/event";
 
 export class AdminAPI extends Controller {
-
   private readonly adminTokenStore: AdminTokenStore;
 
   constructor(adminTokenStore?: AdminTokenStore) {
@@ -63,7 +51,7 @@ export class AdminAPI extends Controller {
     @Header("Authorization") auth: string,
     @Path("projectId") projectId: string,
     @Body() body: InviteValues,
-    @Request() req: express.Request,
+    @Request() req: express.Request
   ): Promise<InviteResponse> {
     const id = uuid.v4().replace(/-/g, "");
 
@@ -74,12 +62,7 @@ export class AdminAPI extends Controller {
       },
     });
 
-    const invite = await createInvite(
-      auth,
-      projectId,
-      body.email,
-      id,
-    );
+    const invite = await createInvite(auth, projectId, body.email, id);
 
     this.setStatus(201);
 
@@ -100,7 +83,7 @@ export class AdminAPI extends Controller {
     @Header("Authorization") auth: string,
     @Path("projectId") projectId: string,
     @Path("inviteId") inviteId: string,
-    @Request() req: express.Request,
+    @Request() req: express.Request
   ): Promise<void> {
     await audit(req, "invite.delete", crud.d, {
       target: {
@@ -125,7 +108,7 @@ export class AdminAPI extends Controller {
   public async listInvites(
     @Header("Authorization") auth: string,
     @Path("projectId") projectId: string,
-    @Request() req: express.Request,
+    @Request() req: express.Request
   ): Promise<InviteResponse[]> {
     const invites = await listInvites(auth, projectId);
 
@@ -152,7 +135,7 @@ export class AdminAPI extends Controller {
     @Path("projectId") projectId: string,
     @Query("environment_id") environmentId: string,
     @Body() body: TemplateValues,
-    @Request() req: express.Request,
+    @Request() req: express.Request
   ): Promise<TemplateResponse> {
     // Generate ID here to audit before creating
     const id = uuid.v4().replace(/-/g, "");
@@ -191,15 +174,9 @@ export class AdminAPI extends Controller {
     @Query("environment_id") environmentId: string,
     @Request() req: express.Request,
     @Query("length") length?: number,
-    @Query("offset") offset?: number,
+    @Query("offset") offset?: number
   ): Promise<TemplateSearchResults> {
-    const results = await searchTemplates(
-      auth,
-      projectId,
-      environmentId,
-      length || 100,
-      offset || 0,
-    );
+    const results = await searchTemplates(auth, projectId, environmentId, length || 100, offset || 0);
 
     await audit(req, "template.search", crud.r);
 
@@ -225,7 +202,7 @@ export class AdminAPI extends Controller {
     @Path("projectId") projectId: string,
     @Path("templateId") templateId: string,
     @Query("environment_id") environmentId: string,
-    @Request() req: express.Request,
+    @Request() req: express.Request
   ): Promise<void> {
     await audit(req, "template.delete", crud.d, {
       target: {
@@ -252,7 +229,7 @@ export class AdminAPI extends Controller {
     @Header("Authorization") auth: string,
     @Path("projectId") projectId: string,
     @Body() body: EnvironmentValues,
-    @Request() req: express.Request,
+    @Request() req: express.Request
   ): Promise<EnvironmentResponse> {
     const id = uuid.v4().replace(/-/g, "");
 
@@ -264,12 +241,7 @@ export class AdminAPI extends Controller {
       },
     });
 
-    const env = await createEnvironment(
-      auth,
-      projectId,
-      body.name,
-      id,
-    );
+    const env = await createEnvironment(auth, projectId, body.name, id);
 
     this.setStatus(201);
 
@@ -294,7 +266,7 @@ export class AdminAPI extends Controller {
     @Header("Authorization") auth: string,
     @Path("projectId") projectId: string,
     @Path("environmentId") environmentId: string,
-    @Request() req: express.Request,
+    @Request() req: express.Request
   ): Promise<void> {
     // Pass in audit function to run after all validations, just before deleting
     const preDeleteHook = async () => {
@@ -325,11 +297,9 @@ export class AdminAPI extends Controller {
     @Header("Authorization") auth: string,
     @Path("projectId") projectId: string,
     @Path("environmentId") environmentId: string,
-    @Body() requestBody: CreateDelReqRequestBody,
+    @Body() requestBody: CreateDelReqRequestBody
   ): Promise<CreateDelReqReport> {
-    const result = await createDeletionRequest(
-      auth, projectId, environmentId, requestBody,
-    );
+    const result = await createDeletionRequest(auth, projectId, environmentId, requestBody);
     this.setStatus(201);
     return result;
   }
@@ -350,11 +320,9 @@ export class AdminAPI extends Controller {
     @Header("Authorization") auth: string,
     @Path("projectId") projectId: string,
     @Path("environmentId") environmentId: string,
-    @Path("deletionRequestId") deletionRequestId: string,
+    @Path("deletionRequestId") deletionRequestId: string
   ): Promise<GetDelReqReport> {
-    const result = await getDeletionRequest(
-      auth, projectId, environmentId, deletionRequestId,
-    );
+    const result = await getDeletionRequest(auth, projectId, environmentId, deletionRequestId);
     this.setStatus(200);
     return result;
   }
@@ -375,11 +343,9 @@ export class AdminAPI extends Controller {
     @Header("Authorization") auth: string,
     @Path("projectId") projectId: string,
     @Path("environmentId") environmentId: string,
-    @Path("code") code: string,
+    @Path("code") code: string
   ): Promise<void> {
-    await approveDeletionConfirmation(
-      auth, projectId, environmentId, code,
-    );
+    await approveDeletionConfirmation(auth, projectId, environmentId, code);
     this.setStatus(200);
   }
 
@@ -399,7 +365,7 @@ export class AdminAPI extends Controller {
     @Path("projectId") projectId: string,
     @Query("environment_id") environmentId: string,
     @Body() body: ApiTokenValues,
-    @Request() req: express.Request,
+    @Request() req: express.Request
   ): Promise<ApiTokenResponse> {
     // generate here so audit event can complete first
     const tokenId = uuid.v4().replace(/-/g, "");
@@ -410,13 +376,7 @@ export class AdminAPI extends Controller {
       },
     });
 
-    const newToken = await createApiToken(
-      auth,
-      projectId,
-      environmentId,
-      tokenId,
-      body,
-    );
+    const newToken = await createApiToken(auth, projectId, environmentId, tokenId, body);
 
     this.setStatus(201);
 
@@ -446,7 +406,7 @@ export class AdminAPI extends Controller {
     @Path("projectId") projectId: string,
     @Path("apiToken") apiToken: string,
     @Body() requestBody: Partial<ApiTokenValues>,
-    @Request() req: express.Request,
+    @Request() req: express.Request
   ): Promise<ApiTokenResponse> {
     await audit(req, "api_token.update", crud.u, {
       target: {
@@ -455,9 +415,7 @@ export class AdminAPI extends Controller {
       fields: requestBody,
     });
 
-    const updatedToken = await updateApiToken(
-      auth, projectId, apiToken, requestBody,
-    );
+    const updatedToken = await updateApiToken(auth, projectId, apiToken, requestBody);
 
     this.setStatus(200);
 
@@ -486,7 +444,7 @@ export class AdminAPI extends Controller {
     @Header("Authorization") auth: string,
     @Path("projectId") projectId: string,
     @Path("tokenId") tokenId: string,
-    @Request() req: express.Request,
+    @Request() req: express.Request
   ): Promise<void> {
     await audit(req, "api_token.delete", crud.d, {
       target: {
@@ -494,11 +452,7 @@ export class AdminAPI extends Controller {
       },
     });
 
-    await deleteApiToken(
-      auth,
-      projectId,
-      tokenId,
-    );
+    await deleteApiToken(auth, projectId, tokenId);
 
     this.setStatus(204);
   }
@@ -516,9 +470,9 @@ export class AdminAPI extends Controller {
   @SuccessResponse("201", "Created")
   public async createAdminToken(
     @Header("Authorization") auth: string,
-    @Request() req: express.Request,
+    @Request() req: express.Request
   ): Promise<AdminToken> {
-    // await audit(req, "admin_token.create", "c");
+    await audit(req, "admin_token.create", crud.c);
     const { userId } = await checkAdminAccessUnwrapped(auth);
     return await this.adminTokenStore.createAdminToken(userId);
   }

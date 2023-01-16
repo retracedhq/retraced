@@ -24,7 +24,7 @@ query: {
   delete: boolean;
 }
 */
-export default async function(req) {
+export default async function (req) {
   const claims = await checkViewerAccess(req);
   const thisViewEvent: CreateEventRequest = {
     action: claims.viewLogAction,
@@ -78,7 +78,7 @@ export default async function(req) {
   const hydratedEvents = await addDisplayTitles({
     projectId: req.params.projectId,
     environmentId: claims.environmentId,
-    events: results.events!,
+    events: results.events || [],
     source: "viewer",
   });
 
@@ -100,11 +100,7 @@ export default async function(req) {
     });
     await nsq.produce("user_reporting_task", job);
   }
-  defaultEventCreater.saveRawEvent(
-    req.params.projectId,
-    claims.environmentId,
-    thisViewEvent,
-  );
+  defaultEventCreater.saveRawEvent(req.params.projectId, claims.environmentId, thisViewEvent);
 
   return {
     status: 200,

@@ -14,8 +14,7 @@ export interface Response<T> {
   filename?: string;
 }
 
-export interface RawResponse extends Response<string> {
-}
+export interface RawResponse extends Response<string> {}
 
 export const Responses = {
   created(entity: any): RawResponse {
@@ -31,41 +30,42 @@ export const Responses = {
  * for Pre/Post request logging and response generation.
  */
 
-export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter?: () => number | undefined) => (result: any) => {
+export const onSuccess =
+  (res: express.Response, reqId: string, statusCodeGetter?: () => number | undefined) => (result: any) => {
+    if (result) {
+      const statusToSend = result.status || (statusCodeGetter && statusCodeGetter()) || 200;
+      const body = result.body || JSON.stringify(result);
+      const contentType = result.contentType || "application/json";
 
-  if (result) {
-
-    const statusToSend = result.status || (statusCodeGetter && statusCodeGetter()) || 200;
-    const body = result.body || JSON.stringify(result);
-    const contentType = result.contentType || "application/json";
-
-    let bodyToLog = body;
-    if (!bodyToLog) {
-      bodyToLog = "";
-    } else if (bodyToLog.length > 512) {
-      bodyToLog = `${bodyToLog.substring(0, 512)} (... truncated, total ${bodyToLog.length} bytes)`;
+      let bodyToLog = body;
+      if (!bodyToLog) {
+        bodyToLog = "";
+      } else if (bodyToLog.length > 512) {
+        bodyToLog = `${bodyToLog.substring(0, 512)} (... truncated, total ${bodyToLog.length} bytes)`;
+      }
+      if (res.statusCode !== 200) {
+        logger.warn(
+          `[${reqId}] WARN response already has statusCode ${res.statusCode}, a response might have already been sent!`
+        );
+        logger.warn(util.inspect(res));
+      }
+      logger.info(`[${reqId}] => ${statusToSend} ${bodyToLog}`);
+      const respObj = res.status(statusToSend).type(contentType).set("X-Retraced-RequestId", reqId);
+      if (result.filename) {
+        respObj.attachment(result.filename);
+      }
+      if (result.headers) {
+        _.forOwn(result.headers, (value, key) => {
+          respObj.set(key || "", value);
+        });
+      }
+      respObj.send(body);
+    } else {
+      const statusToSend = (statusCodeGetter && statusCodeGetter()) || 200;
+      logger.info(`[${reqId}] => ${statusToSend}`);
+      res.status(statusToSend).set("X-Retraced-RequestId", reqId).json(result);
     }
-    if (res.statusCode !== 200) {
-      logger.warn(`[${reqId}] WARN response already has statusCode ${res.statusCode}, a response might have already been sent!`);
-      logger.warn(util.inspect(res));
-    }
-    logger.info(`[${reqId}] => ${statusToSend} ${bodyToLog}`);
-    const respObj = res.status(statusToSend).type(contentType).set("X-Retraced-RequestId", reqId);
-    if (result.filename) {
-      respObj.attachment(result.filename);
-    }
-    if (result.headers) {
-      _.forOwn(result.headers, (value, key) => {
-        respObj.set(key!, value);
-      });
-    }
-    respObj.send(body);
-  } else {
-    const statusToSend = (statusCodeGetter && statusCodeGetter()) || 200;
-    logger.info(`[${reqId}] => ${statusToSend}`);
-    res.status(statusToSend).set("X-Retraced-RequestId", reqId).json(result);
-  }
-};
+  };
 
 export const onError = (res: express.Response, reqId: string) => (err: any) => {
   if (err.status) {
@@ -92,7 +92,6 @@ function handleFrameworkError(err: any, reqId: string, res: express.Response) {
     invalid: err.invalid,
   };
   res.status(err.status).set("X-Retraced-RequestId", reqId).json(bodyToSend);
-
 }
 
 function handleUnexpectedError(err: any, reqId: string, res: express.Response) {
@@ -105,7 +104,8 @@ function handleUnexpectedError(err: any, reqId: string, res: express.Response) {
   };
   if (
     (err.message ? err.message : "").indexOf("Can't set headers after they are sent") !== -1 ||
-    (err.stack ? err.stack : "").indexOf("Can't set headers after they are sent") !== -1) {
+    (err.stack ? err.stack : "").indexOf("Can't set headers after they are sent") !== -1
+  ) {
     logger.error("Middleware error, current response object is", util.inspect(res));
   }
   logger.error(`[${reqId}] !! 500 ${err.stack || err.message || util.inspect(err)}`);
@@ -135,14 +135,11 @@ export const requestId = (req: express.Request, handlerName: string) => {
   return id;
 };
 
-export const wrapRoute = (route, handlerName) =>
-  (req: express.Request, res: express.Response) => {
-    const reqId = requestId(req, handlerName);
-    preRequest(req, reqId);
-    route.handler(req)
-      .then(onSuccess(res, reqId))
-      .catch(onError(res, reqId));
-  };
+export const wrapRoute = (route, handlerName) => (req: express.Request, res: express.Response) => {
+  const reqId = requestId(req, handlerName);
+  preRequest(req, reqId);
+  route.handler(req).then(onSuccess(res, reqId)).catch(onError(res, reqId));
+};
 
 export function register(route, handler, app) {
   // Register this route and callback with express.

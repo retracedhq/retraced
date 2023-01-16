@@ -38,13 +38,13 @@ export default async function renderSavedExport(opts) {
     let results: any;
 
     if (config.PG_SEARCH) {
-        const scope = {
-            projectId,
-            environmentId,
-            groupId,
-        };
-        const filterOpts = filterOptions(scope, queryDesc);
-        results = await filterEvents(filterOpts);
+      const scope = {
+        projectId,
+        environmentId,
+        groupId,
+      };
+      const filterOpts = filterOptions(scope, queryDesc);
+      results = await filterEvents(filterOpts);
     } else {
       const scope: Scope = {
         projectId,
@@ -108,13 +108,14 @@ export default async function renderSavedExport(opts) {
     const sanitized = sanitizefn(queryName).replace(/\s/g, "_");
     const filename = `${sanitized}.${format}`;
 
-    logger.info(`exported ${results.totalHits.value} events in ${(Date.now().valueOf() - startTime.valueOf()) / 1000} seconds`);
+    logger.info(
+      `exported ${results.totalHits.value} events in ${(Date.now().valueOf() - startTime.valueOf()) / 1000} seconds`
+    );
 
     return {
       filename,
       rendered,
     };
-
   } finally {
     pg.release();
   }
@@ -131,7 +132,7 @@ async function renderAsCSV(events) {
         row = stringifier.read();
       }
     });
-    stringifier.on("error", (err) => reject);
+    stringifier.on("error", () => reject);
     stringifier.on("finish", () => resolve(accum));
 
     for (const ev of events) {
@@ -139,11 +140,13 @@ async function renderAsCSV(events) {
       const flatActor = {};
       if (ev.actor) {
         for (const key of _.keys(ev.actor)) {
-          if (key === "retraced_object_type" ||
+          if (
+            key === "retraced_object_type" ||
             key === "foreign_id" ||
             key === "environment_id" ||
             key === "project_id" ||
-            key === "id") {
+            key === "id"
+          ) {
             continue;
           }
           flatActor[`actor_${key}`] = ev.actor[key];
@@ -152,11 +155,13 @@ async function renderAsCSV(events) {
       const flatObject = {};
       if (ev.object) {
         for (const key of _.keys(ev.object)) {
-          if (key === "retraced_object_type" ||
+          if (
+            key === "retraced_object_type" ||
             key === "foreign_id" ||
             key === "environment_id" ||
             key === "project_id" ||
-            key === "id") {
+            key === "id"
+          ) {
             continue;
           }
           flatObject[`object_${key}`] = ev.object[key];
@@ -177,34 +182,31 @@ async function renderAsCSV(events) {
 }
 
 function filterOptions(scope: Scope, qd: QueryDescriptor): FilterOptions {
-    const query: ParsedQuery = qd.searchQuery ? parseQuery(qd.searchQuery) : {};
+  const query: ParsedQuery = qd.searchQuery ? parseQuery(qd.searchQuery) : {};
 
-    const crud: string[] = [];
-    if (qd.showCreate) {
-        crud.push("c");
-    }
-    if (qd.showRead) {
-        crud.push("r");
-    }
-    if (qd.showUpdate) {
-        crud.push("u");
-    }
-    if (qd.showDelete) {
-        crud.push("d");
-    }
-    query.crud = crud;
+  const crud: string[] = [];
+  if (qd.showCreate) {
+    crud.push("c");
+  }
+  if (qd.showRead) {
+    crud.push("r");
+  }
+  if (qd.showUpdate) {
+    crud.push("u");
+  }
+  if (qd.showDelete) {
+    crud.push("d");
+  }
+  query.crud = crud;
 
-    if (qd.startTime || qd.endTime) {
-        query.received = [
-            qd.startTime || moment("2017-01-01").valueOf(),
-            qd.endTime || moment().add(1, "d").valueOf(),
-        ];
-    }
+  if (qd.startTime || qd.endTime) {
+    query.received = [qd.startTime || moment("2017-01-01").valueOf(), qd.endTime || moment().add(1, "d").valueOf()];
+  }
 
-    return {
-        query,
-        scope,
-        sort: "desc",
-        size: 1000000,
-    };
+  return {
+    query,
+    scope,
+    sort: "desc",
+    size: 1000000,
+  };
 }

@@ -13,12 +13,7 @@ module.exports = {
     project: "tsconfig.json",
     sourceType: "module",
   },
-  plugins: [
-    "eslint-plugin-import",
-    "eslint-plugin-jsdoc",
-    "eslint-plugin-prefer-arrow",
-    "@typescript-eslint",
-  ],
+  plugins: ["eslint-plugin-import", "eslint-plugin-jsdoc", "eslint-plugin-prefer-arrow", "@typescript-eslint"],
   root: true,
   rules: {
     "@typescript-eslint/adjacent-overload-signatures": "error",
@@ -38,8 +33,7 @@ module.exports = {
             message: "Avoid using the `Object` type. Did you mean `object`?",
           },
           Function: {
-            message:
-              "Avoid using the `Function` type. Prefer a specific function type, like `() => void`.",
+            message: "Avoid using the `Function` type. Prefer a specific function type, like `() => void`.",
           },
           Boolean: {
             message: "Avoid using the `Boolean` type. Did you mean `boolean`?",
@@ -56,6 +50,7 @@ module.exports = {
         },
       },
     ],
+    "prefer-spread": 1,
     "@typescript-eslint/consistent-type-assertions": "error",
     "@typescript-eslint/dot-notation": "off",
     "@typescript-eslint/explicit-function-return-type": "off",

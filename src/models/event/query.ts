@@ -1,7 +1,7 @@
 import _ from "lodash";
 import searchQueryParser from "search-query-parser";
 import moment from "moment";
-import { ApiResponse, Client, RequestParams } from "@elastic/elasticsearch";
+import { ApiResponse, RequestParams } from "@elastic/elasticsearch";
 
 import { Scope } from "../../security/scope";
 import { scope, getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
@@ -111,11 +111,11 @@ export async function doAllQuery(opts: Options): Promise<Result> {
   responseQueue.push(newResp);
   while (responseQueue.length) {
     const oneResp = responseQueue.shift(); // get a response from the queue
-    allHits = allHits.concat(oneResp!.body.hits.hits); // append hits to the list of all hits
+    allHits = allHits.concat(oneResp?.body?.hits?.hits); // append hits to the list of all hits
 
     const nextEvent = await es.scroll({
       // use the scroll API to get another response
-      scroll_id: oneResp!.body._scroll_id,
+      scroll_id: oneResp?.body?._scroll_id,
       scroll: "30s",
     });
 

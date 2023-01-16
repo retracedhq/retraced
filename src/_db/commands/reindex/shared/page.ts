@@ -105,7 +105,7 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
 
   logger.info(`indexing page with size ${result.length}`);
   totalIndexed += result.length;
-  await new Promise<void>((resolve, reject) => {
+  await new Promise<void>((resolve) => {
     es.bulk({ body }, (errr, resp) => {
       if (errr) {
         console.log(picocolors.red(errr.stack));

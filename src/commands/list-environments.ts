@@ -10,7 +10,7 @@ function list(): Promise<any> {
   return pgPool.query(`select * from environment`);
 }
 
-export const handler = async (argv) => {
+export const handler = async () => {
   try {
     const res = await list();
     console.log(`rows: ${util.inspect(res.rows)}`);

@@ -23,18 +23,6 @@ let es: Client;
  * with a status code in the 500 range.
  */
 
-// requestRetries specifies how many times the ES client library will retry.
-// It retries without backoff so set it to a low number. The only errors the ES
-// client library retries are errors emitted by Node's standard library http[s]
-// module.
-const requestRetries = intFromEnv("ELASTICSEARCH_REQUEST_RETRIES", 1);
-
-// requestTimeout specifies how long the ES client library will wait for a
-// request including retries. Set it high so actual long-running requests
-// are not interrupted. Most requests will hit requestRetries limit before
-// this timeout.
-const requestTimeout = intFromEnv("ELASTICSEARCH_REQUEST_TIMEOUT", 15000);
-
 // backoff is the initial backoff after the first failure by the ES client lib.
 // It's used by our wrapper, not passed to the ES client lib.
 const backoff = intFromEnv("ELASTICSEARCH_BACKOFF", 1000);
@@ -173,15 +161,9 @@ export interface AliasDesc {
   alias: string;
 }
 
-export type AliasRotator = (
-  toAdd: AliasDesc[],
-  toRemove: AliasDesc[]
-) => Promise<any>;
+export type AliasRotator = (toAdd: AliasDesc[], toRemove: AliasDesc[]) => Promise<any>;
 
-export async function putAliases(
-  toAdd: AliasDesc[],
-  toRemove: AliasDesc[]
-): Promise<any> {
+export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]): Promise<any> {
   const payload = {
     actions: [
       ...toAdd.map((v) => ({ add: { index: v.index, alias: v.alias } })),

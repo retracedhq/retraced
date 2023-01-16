@@ -18,7 +18,7 @@ export default function getPgPool(): pg.Pool {
       idleTimeoutMillis: Number(config.PUBLISHER_CREATE_EVENT_TIMEOUT) || 2000, // how long a client is allowed to remain idle before being closed
     });
 
-    pgPool.on("error", (err: Error) => {
+    pgPool.on("error", () => {
       logger.error("postgres client connection error");
       meter("PgPool.connection.error").mark();
     });
@@ -31,9 +31,7 @@ export interface Querier {
   query(query: string, args?: any[]): Promise<pg.QueryResult>;
 }
 
-const reportInterval = config.STATSD_INTERVAL_MILLIS
-  ? parseInt(config.STATSD_INTERVAL_MILLIS, 10)
-  : 30000;
+const reportInterval = config.STATSD_INTERVAL_MILLIS ? parseInt(config.STATSD_INTERVAL_MILLIS, 10) : 30000;
 
 function updatePoolGauges() {
   // pg 7.0 + uses pg-pool 2.0 +, which has pool.waitingCount, etc.

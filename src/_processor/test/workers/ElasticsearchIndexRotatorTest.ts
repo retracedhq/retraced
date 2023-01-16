@@ -30,7 +30,7 @@ class ElasticsearchIndexRotatorTest {
     };
 
     indices
-      .setup((x) => x.create(TypeMoq.It.is((a: any) => true)))
+      .setup((x) => x.create(TypeMoq.It.is(() => true)))
       .returns((args: any) => {
         expect(args).to.deep.equal(expectedIndex);
         return Promise.resolve(null);
@@ -39,9 +39,7 @@ class ElasticsearchIndexRotatorTest {
 
     pool
       .setup((x) => x.query("SELECT * FROM environment"))
-      .returns(
-        (x) => Promise.resolve({ rowCount: 1, rows: [{ id: environmentId, projectId }] }) as Promise<QueryResult>
-      )
+      .returns(() => Promise.resolve({ rowCount: 1, rows: [{ id: environmentId, projectId }] }) as Promise<QueryResult>)
       .verifiable(TypeMoq.Times.once());
 
     const rotator = new ElasticsearchIndexRotator(

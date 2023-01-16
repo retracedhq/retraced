@@ -10,7 +10,7 @@ function listProject(): Promise<any> {
   return pgPool.query(`select * from project`);
 }
 
-export const handler = async (argv) => {
+export const handler = async () => {
   try {
     const res = await listProject();
 
