@@ -23,7 +23,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: token=dev" -
   "action": "some.record.created",
   "teamId": "boxyhq",
   "group": {
-    "id": "boxyhq",
+    "id": "dev",
     "name": "BoxyHQ"
   },
   "crud": "c",
