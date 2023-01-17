@@ -126,6 +126,7 @@ jobs:
       - name: Move CycloneDx Report
         run: mv retraced_sbom.cyclonedx "./sbom.cyclonedx"
       - name: Scan docker image using TERN
+        #if: github.ref == 'refs/heads/release'
         uses: philips-labs/tern-action@v1.2.0
         id: scan
         with:
