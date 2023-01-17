@@ -65,7 +65,7 @@ jobs:
           context: ./
           file: ./deploy/Dockerfile-slim
           platforms: linux/amd64,linux/arm64
-          push: false
+          push: true
           tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.SHA7 }}
 
       - name: Image digest
@@ -121,11 +121,11 @@ jobs:
         with:
           name: retraced_sbom.cyclonedx
       - name: Remove older SBOMs
-        run: rm -rf ./service/sbom*.* || true
+        run: rm -rf ./sbom*.* || true
       - name: Move SPDX Report
-        run: mv retraced_sbom.spdx "./service/sbom.spdx"
+        run: mv retraced_sbom.spdx "./sbom.spdx"
       - name: Move CycloneDx Report
-        run: mv retraced_sbom.cyclonedx "./service/sbom.cyclonedx"
+        run: mv retraced_sbom.cyclonedx "./sbom.cyclonedx"
       - name: Scan docker image using TERN
         uses: philips-labs/tern-action@v1.2.0
         id: scan
