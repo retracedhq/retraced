@@ -4,11 +4,11 @@ import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 
 import moment from "moment";
-import elasticsearch from "elasticsearch";
 import monkit from "monkit";
 
 import { Clock } from "../../common";
 import { ElasticsearchSaver } from "../../workers/saveEventToElasticsearch";
+import { Client } from "@elastic/elasticsearch";
 
 const isAny = TypeMoq.It.isAny;
 
@@ -27,7 +27,7 @@ function expectUpdate(expectedValue) {
 @suite
 class ElasticsearchSaverTest {
   @test public async "ElasticSearchSaver#saveEventToElasticsearch()"() {
-    const es = TypeMoq.Mock.ofType(elasticsearch.Client);
+    const es = TypeMoq.Mock.ofType(Client);
     const registry = TypeMoq.Mock.ofType(monkit.Registry);
     const clock = TypeMoq.Mock.ofType<Clock>();
     const jobBody = JSON.stringify({
@@ -126,8 +126,8 @@ class ElasticsearchSaverTest {
     };
 
     es.setup((x) => x.index(isAny()))
-      .returns((opts) => {
-        expect(opts).to.deep.equal({
+      .returns((opts): any => {
+        expect(opts.body).to.deep.equal({
           index: "retraced.proj01.env01.current",
           type: "event",
           body: expectedIndexed,
@@ -142,24 +142,16 @@ class ElasticsearchSaverTest {
       .verifiable(TypeMoq.Times.once());
 
     registry
-      .setup((x) =>
-        x.histogram("workers.saveEventToElasticSearch.latencyCreated")
-      )
+      .setup((x) => x.histogram("workers.saveEventToElasticSearch.latencyCreated"))
       .returns(expectUpdate(400))
       .verifiable(TypeMoq.Times.once());
 
     registry
-      .setup((x) =>
-        x.histogram("workers.saveEventToElasticSearch.latencyReceived")
-      )
+      .setup((x) => x.histogram("workers.saveEventToElasticSearch.latencyReceived"))
       .returns(expectUpdate(300))
       .verifiable(TypeMoq.Times.once());
 
-    const saver = new ElasticsearchSaver(
-      es.object,
-      registry.object,
-      clock.object
-    );
+    const saver = new ElasticsearchSaver(es.object, registry.object, clock.object);
     await saver.saveEventToElasticsearch({ body: Buffer.from(jobBody) });
 
     es.verifyAll();

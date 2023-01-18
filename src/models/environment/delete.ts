@@ -1,16 +1,17 @@
 import getPgPool from "../../persistence/pg";
-import getElasticsearch from "../../persistence/elasticsearch";
+import { getESWithoutRetry } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
+import { Client } from "@elastic/elasticsearch";
 
 const pgPool = getPgPool();
-const es: any = getElasticsearch();
+const es: Client = getESWithoutRetry();
 
 interface Options {
   projectId: string;
   environmentId: string;
 }
 
-export default async function(opts: Options) {
+export default async function (opts: Options) {
   // We're doing a transaction here, so we want one consistent unique client
   // from the pool.
   const pg = await pgPool.connect();
@@ -85,14 +86,14 @@ export default async function(opts: Options) {
         const indexName = resp[0].index;
 
         // Delete all aliases attached to the soon-to-be-deleted index
-        es.raw.indices.deleteAlias({ index: indexName, name: "_all" }, (err2, resp2) => {
+        es.indices.deleteAlias({ index: indexName, name: "_all" }, (err2, resp2) => {
           if (err2) {
             reject(err2);
             return;
           }
 
           // Finally, delete the index itself
-          es.raw.indices.delete({ index: indexName }, (err3, resp3) => {
+          es.indices.delete({ index: indexName }, (err3, resp3) => {
             if (err3) {
               reject(err3);
               return;

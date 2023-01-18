@@ -4,7 +4,6 @@ import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 
 import moment from "moment";
-import elasticsearch from "elasticsearch";
 import pg from "pg";
 import { ElasticsearchIndexRotator } from "../../workers/ElasticsearchIndexRotator";
 import { QueryResult } from "pg";
@@ -16,13 +15,11 @@ class ElasticsearchIndexRotatorTest {
     const environmentId = "abcdef123456";
     const nextDay = moment.utc("2017-05-09");
 
-    const indices = TypeMoq.Mock.ofType(elasticsearch.Indices);
-    const cat = TypeMoq.Mock.ofType<elasticsearch.Cat>();
+    const indices = TypeMoq.Mock.ofType<any>();
+    const cat = TypeMoq.Mock.ofType<any>();
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const expectedAliases = {};
-    expectedAliases[
-      `retraced.${projectId}.${environmentId}.${nextDay.format("YYYYMMDD")}`
-    ] = {};
+    expectedAliases[`retraced.${projectId}.${environmentId}.${nextDay.format("YYYYMMDD")}`] = {};
     expectedAliases[`retraced.${projectId}.${environmentId}`] = {};
 
     const expectedIndex = {
@@ -43,11 +40,7 @@ class ElasticsearchIndexRotatorTest {
     pool
       .setup((x) => x.query("SELECT * FROM environment"))
       .returns(
-        (x) =>
-          Promise.resolve({
-            rowCount: 1,
-            rows: [{ id: environmentId, projectId }],
-          }) as Promise<QueryResult>
+        (x) => Promise.resolve({ rowCount: 1, rows: [{ id: environmentId, projectId }] }) as Promise<QueryResult>
       )
       .verifiable(TypeMoq.Times.once());
 

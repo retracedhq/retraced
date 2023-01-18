@@ -1,13 +1,15 @@
-import elasticsearch from "elasticsearch";
+// import elasticsearch from "elasticsearch";
 import _ from "lodash";
 import moment from "moment";
 import { Scope } from "../security/scope";
 import { Client } from "@elastic/elasticsearch";
+import axios from "axios";
 import { readFileSync } from "fs";
 import config from "../config";
+import https from "https";
 
-let es: elasticsearch.Client; // the legacy elasticsearch client library
-let newEs: Client; // the elasticsearch 7.6+ client library
+// let es: elasticsearch.Client; // the legacy elasticsearch client library
+let es: Client;
 
 /*
  * The Elasticsearch client library does not retry requests that failed due to
@@ -48,8 +50,8 @@ function intFromEnv(key, defaultN) {
   return _.isNaN(env) ? defaultN : env;
 }
 
-export function getNewElasticsearch(): Client {
-  if (!newEs) {
+function getElasticsearch(noRetry = false): Client {
+  if (!es) {
     const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
     if ((config.ELASTICSEARCH_NODES || "") !== "") {
       const sslSettings: any = {};
@@ -58,32 +60,16 @@ export function getNewElasticsearch(): Client {
         sslSettings.rejectUnauthorized = true;
       }
 
-      newEs = new Client({
+      es = new Client({
         nodes: hosts,
         ssl: sslSettings,
         maxRetries: 5,
       });
     }
   }
-  return newEs;
-}
 
-export default function getElasticsearch(): elasticsearch.Client {
-  if (!es) {
-    const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
-
-    const sslSettings: any = {};
-    if (config.ELASTICSEARCH_CAFILE) {
-      sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
-      sslSettings.rejectUnauthorized = true;
-    }
-
-    es = new elasticsearch.Client({
-      hosts,
-      requestTimeout,
-      maxRetries: requestRetries,
-      ssl: sslSettings,
-    });
+  if (noRetry) {
+    return es;
   }
 
   function withRetry(fn) {
@@ -109,13 +95,32 @@ export default function getElasticsearch(): elasticsearch.Client {
   }
 
   return Object.assign({}, es, {
-    raw: es,
+    count: es.count,
+    index: withRetry((params) => es.index(params)),
     search: withRetry((params) => es.search(params)),
     scroll: withRetry((params) => es.scroll(params)),
     indices: Object.assign({}, es.indices, {
       create: withRetry((params) => es.indices.create(params)),
     }),
   });
+}
+
+export type ClientWithRetry = {
+  count: any;
+  index: any;
+  search: any;
+  scroll: any;
+  indices: {
+    create: any;
+  };
+};
+
+export function getESWithRetry(): ClientWithRetry {
+  return getElasticsearch();
+}
+
+export function getESWithoutRetry(): Client {
+  return getElasticsearch(true);
 }
 
 // sleep for ms
@@ -162,4 +167,44 @@ export function scope(scopeInfo: Scope): [string, any[]] {
   }
 
   return [index, filters];
+}
+
+export interface AliasDesc {
+  index: string;
+  alias: string;
+}
+
+export type AliasRotator = (toAdd: AliasDesc[], toRemove: AliasDesc[]) => Promise<any>;
+
+export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]): Promise<any> {
+  const payload = {
+    actions: [
+      ...toAdd.map((v) => ({ add: { index: v.index, alias: v.alias } })),
+      ...toRemove.map((v) => ({ remove: { index: v.index, alias: v.alias } })),
+    ],
+  };
+
+  const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
+  if (hosts.length < 1 || !hosts[0]) {
+    throw new Error("Need at least one item in ELASTICSEARCH_NODES");
+  }
+  const uri = `${hosts[0]}/_aliases`;
+  const httpsAgentParams: https.AgentOptions = {
+    rejectUnauthorized: false,
+  };
+
+  if (config.ELASTICSEARCH_CAFILE) {
+    httpsAgentParams.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
+  }
+
+  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
+
+  const { data } = await axios.post<any>(uri, payload, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    httpsAgent: new https.Agent(httpsAgentParams),
+  });
+
+  return data;
 }
