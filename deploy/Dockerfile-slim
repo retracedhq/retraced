@@ -38,11 +38,8 @@ ADD . /src
 
 RUN make build
 
-# # #
-# Main build
-#
-# curl must be included for cron
-FROM $NODEJS_IMAGE
+
+FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE as curl-builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -53,6 +50,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
+
+# # #
+# Main build
+#
+# curl must be included for cron
+FROM curl-builder
 
 EXPOSE 3000
 
