@@ -152,8 +152,8 @@ jobs:
           mkdir oras_install
           tar -xvf "${ORAS_FILENAME}" -C oras_install
           ./oras_install/oras push ghcr.io/${{github.repository_owner}}/retraced/sbom:service-${{ steps.slug.outputs.SHA7 }} ./sbom.*
-          cd _docker
-          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/retraced/sbom:docker-${{ steps.slug.outputs.SHA7 }} ./sbom.*
+          cd _docker || true
+          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/retraced/sbom:docker-${{ steps.slug.outputs.SHA7 }} ./sbom.* || true
           cd ..
 
       - name: Sign the sbom images
