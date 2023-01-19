@@ -10,9 +10,9 @@ Client libraries are available for [Go](https://github.com/retracedhq/retraced-g
 
 ### Running with docker-compose
 
-Set `ADMIN_ROOT_TOKEN` environment variable either in `.env` file or in `docker-compose.yaml` file
-
 > `docker-compose up`
+
+**Note:** `ADMIN_ROOT_TOKEN` has been set to `dev` so you can test the setup locally. Please remember to change this (and other relevant sensitive env vars/secrets) in production.
 
 ### Run an example to see how Retraced works
 
