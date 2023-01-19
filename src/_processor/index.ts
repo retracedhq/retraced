@@ -50,11 +50,11 @@ if (config.PG_SEARCH) {
   logger.info("PG_SEARCH not set, using ElasticSearch");
 }
 let NO_WARP_PIPE = false;
-if (config.NO_WARP_PIPE) {
-  NO_WARP_PIPE = true;
-  logger.info("NO_WARP_PIPE set, disabling Warp Pipe jobs");
+if (config.REDIS_URI) {
+  logger.info("REDIS_URI set - Warp Pipe jobs enabled");
 } else {
-  logger.info("NO_WARP_PIPE not set - Warp Pipe jobs enabled");
+  NO_WARP_PIPE = true;
+  logger.info("REDIS_URI not set, disabling Warp Pipe jobs");
 }
 
 const leftPad = (s, n) => (n > s.length ? " ".repeat(n - s.length) + s : s);

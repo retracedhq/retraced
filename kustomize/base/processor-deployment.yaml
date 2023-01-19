@@ -74,8 +74,6 @@ spec:
           env:
             - name: TMPDIR
               value: /tmp
-            - name: NO_WARP_PIPE
-              value: "1"
             - name: BUGSNAG_TOKEN
               valueFrom:
                 secretKeyRef:
