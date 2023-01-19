@@ -77,6 +77,9 @@
     "typescript": "4.9.4"
   },
   "scripts": {
+    "swagger": "tsoa spec",
+    "routes": "tsoa routes",
+    "build": "npm run swagger && npm run routes && tsc && cp build/src/retracedctl.js build/src/retracedctl && chmod +x build/src/retracedctl",
     "lint": "tslint --project ./tsconfig.json",
     "test": "mocha --recursive -r ts-node/register src/test/**/*.ts",
     "integration:test": "mocha -r ts-node/register integration/test/**/*.ts",

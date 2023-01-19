@@ -1,16 +1,12 @@
 # # #
 # Cron build
 #
-ARG NODEJS_IMAGE=node:18.13.0
-ARG DEBIAN_IMAGE=debian:buster-slim
+ARG NODEJS_IMAGE=node:18.13.0-alpine3.17
+ARG DEBIAN_IMAGE=alpine:3.17
 FROM --platform=$BUILDPLATFORM $DEBIAN_IMAGE as cron
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  ca-certificates \
-  curl \
-  && apt-get clean \
-  && apt-get autoremove -y \
-  && rm -rf /var/lib/apt/lists/*
+RUN apk add --update --no-cache ca-certificates curl \
+  && rm -rf /tmp/* /var/cache/apk/*
 
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.1/supercronic-linux-amd64
 ENV SUPERCRONIC=supercronic-linux-amd64
@@ -27,30 +23,28 @@ COPY deploy/crontab /crontab
 #
 FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE as node
 
+#python
+RUN apk add --no-cache --virtual .gyp \
+  python3 \
+  make \
+  g++
+
 WORKDIR /src
 ADD package.json /src
 ADD package-lock.json /src
-ADD Makefile /src
 RUN npm install
 RUN npm run snyk-protect
 
 ADD . /src
 
-RUN make build
+RUN npm run build
 
-FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE as curl-builder
+FROM --platform=$BUILDPLATFORM node as curl-builder
 
 WORKDIR /app
 # curl must be included for cron
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  ca-certificates \
-  curl \
-  \
-  \
-  libp11-kit0 \
-  && apt-get clean \
-  && apt-get autoremove -y \
-  && rm -rf /var/lib/apt/lists/*
+RUN apk add --update --no-cache ca-certificates curl p11-kit \
+  && rm -rf /tmp/* /var/cache/apk/*
 
 ADD .env /app
 ADD package.json /app
@@ -62,7 +56,7 @@ RUN npm install --omit=dev
 # # #
 # Main build
 #
-FROM curl-builder
+FROM $NODEJS_IMAGE
 
 EXPOSE 3000
 
