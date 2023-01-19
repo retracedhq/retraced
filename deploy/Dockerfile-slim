@@ -68,10 +68,12 @@ EXPOSE 3000
 
 WORKDIR /app
 
+ADD .env /app
+ADD package.json /app
+
 COPY --from=node /src/migrations /app/build/migrations
 COPY --from=curl-builder /app/node_modules /app/node_modules
 COPY --from=node /src/build /app/build
-COPY --from=node /src/package.json /app/package.json
 COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercronic-linux-amd64
 COPY --from=cron /usr/local/bin/retraced-auditlog-cron /usr/local/bin/retraced-auditlog-cron
 COPY --from=cron /crontab /crontab
