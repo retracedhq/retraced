@@ -29,6 +29,20 @@ jobs:
       - run: make build
       - run: npm run cover
 
+      - name: Start containers
+        run: docker-compose up -d --build
+      - uses: nev7n/wait_for_response@v1
+        with:
+          url: "http://localhost:3000/healthz"
+          responseCode: 200
+          timeout: 2000
+          interval: 500
+      - name: e2e test
+        run: npm run e2e:test
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f down
+
   build:
     needs: ci
     runs-on: ubuntu-latest
