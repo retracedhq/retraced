@@ -49,12 +49,12 @@ if (config.PG_SEARCH) {
 } else {
   logger.info("PG_SEARCH not set, using ElasticSearch");
 }
-let NO_WARP_PIPE = false;
-if (config.NO_WARP_PIPE) {
-  NO_WARP_PIPE = true;
-  logger.info("NO_WARP_PIPE set, disabling Warp Pipe jobs");
+let WARP_PIPE = false;
+if (config.REDIS_URI) {
+  WARP_PIPE = true;
+  logger.info("REDIS_URI set - Warp Pipe jobs enabled");
 } else {
-  logger.info("NO_WARP_PIPE not set - Warp Pipe jobs enabled");
+  logger.info("REDIS_URI not set, disabling Warp Pipe jobs");
 }
 
 const leftPad = (s, n) => (n > s.length ? " ".repeat(n - s.length) + s : s);
@@ -135,7 +135,7 @@ const warpPipeConsumers: Consumer[] = [
 // no point setting the maxAttempts above 1 here.
 const nsqConsumers: Consumer[] = [
   ...(PG_SEARCH ? pgSearchConsumers : esConsumers),
-  ...(NO_WARP_PIPE ? [] : warpPipeConsumers),
+  ...(WARP_PIPE ? warpPipeConsumers : []),
   {
     topic: "raw_events",
     channel: "normalize",
