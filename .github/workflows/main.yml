@@ -29,20 +29,6 @@ jobs:
       - run: make build
       - run: npm run cover
 
-      - name: Start containers
-        run: docker-compose up -d --build
-      - uses: nev7n/wait_for_response@v1
-        with:
-          url: "http://localhost:3000/healthz"
-          responseCode: 200
-          timeout: 2000
-          interval: 500
-      - name: e2e test
-        run: npm run e2e:test
-      - name: Stop containers
-        if: always()
-        run: docker-compose down
-
   build:
     needs: ci
     runs-on: ubuntu-latest
@@ -81,9 +67,23 @@ jobs:
         with:
           context: ./
           file: ./deploy/Dockerfile-slim
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.SHA7 }}
+
+      - name: Start containers
+        run: docker-compose up -d --build
+      - uses: nev7n/wait_for_response@v1
+        with:
+          url: "http://localhost:3000/healthz"
+          responseCode: 200
+          timeout: 2000
+          interval: 500
+      - name: e2e test
+        run: npm run e2e:test
+      - name: Stop containers
+        if: always()
+        run: docker-compose down
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
