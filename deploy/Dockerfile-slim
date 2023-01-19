@@ -62,7 +62,7 @@ RUN npm install --omit=dev
 # # #
 # Main build
 #
-FROM curl-builder
+FROM $NODEJS_IMAGE
 
 EXPOSE 3000
 
