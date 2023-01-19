@@ -3,7 +3,7 @@
 #
 ARG NODEJS_IMAGE=node:18.13.0
 ARG DEBIAN_IMAGE=debian:buster-slim
-FROM --platform=$BUILDPLATFORM $DEBIAN_IMAGE as cron
+FROM --platform=${BUILDPLATFORM:-linux/amd64} $DEBIAN_IMAGE as cron
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -38,7 +38,7 @@ ADD . /src
 
 RUN make build
 
-FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE as curl-builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} $NODEJS_IMAGE as curl-builder
 
 WORKDIR /app
 # curl must be included for cron
