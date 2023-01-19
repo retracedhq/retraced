@@ -25,7 +25,7 @@ COPY deploy/crontab /crontab
 # # #
 # Node build
 #
-FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE as node
+FROM --platform=${BUILDPLATFORM-linux/amd64} $NODEJS_IMAGE as node
 
 WORKDIR /src
 ADD package.json /src

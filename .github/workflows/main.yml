@@ -41,7 +41,7 @@ jobs:
         run: npm run e2e:test
       - name: Stop containers
         if: always()
-        run: docker-compose -f down
+        run: docker-compose down
 
   build:
     needs: ci
