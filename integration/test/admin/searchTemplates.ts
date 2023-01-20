@@ -44,9 +44,7 @@ describe("Admin search templates", function () {
           beforeEach(function (done) {
             chai
               .request(Env.Endpoint)
-              .get(
-                `/admin/v1/project/${project.id}/templates?environment_id=${env.id}`
-              )
+              .get(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
               .set("Authorization", jwt)
               .end((err, res) => {
                 expect(err).to.be.null;
@@ -55,52 +53,46 @@ describe("Admin search templates", function () {
               });
           });
 
-          specify(
-            "The API should return an empty set of results with status 200",
-            function () {
-              expect(resp).to.have.property("status", 200);
+          specify("The API should return an empty set of results with status 200", function () {
+            expect(resp).to.have.property("status", 200);
 
-              expect(resp.body).to.deep.equal({
-                total_hits: 0,
-                templates: [],
-              });
-            }
-          );
+            expect(resp.body).to.deep.equal({
+              total_hits: 0,
+              templates: [],
+            });
+          });
 
-          specify(
-            "The search is audited under the headless project.",
-            async function () {
-              this.timeout(Env.EsIndexWaitMs * 2);
-              await sleep(Env.EsIndexWaitMs);
-              const query = {
-                crud: "r",
-                action: "template.search",
-              };
-              const mask = {
-                action: true,
-                crud: true,
-                actor: {
-                  id: true,
-                },
-                target: {
-                  id: true,
-                  name: true,
-                  fields: true,
-                },
-                group: {
-                  id: true,
-                },
-              };
-              const connection = await headless.query(query, mask, 1);
-              const audited = connection.currentResults[0];
-              const token = resp.body;
+          specify("The search is audited under the headless project.", async function () {
+            this.timeout(Env.EsIndexWaitMs * 2);
+            await sleep(Env.EsIndexWaitMs);
+            const query = {
+              crud: "r",
+              action: "template.search",
+            };
+            const mask = {
+              action: true,
+              crud: true,
+              actor: {
+                id: true,
+              },
+              target: {
+                id: true,
+                name: true,
+                fields: true,
+              },
+              group: {
+                id: true,
+              },
+            };
+            const connection = await headless.query(query, mask, 1);
+            const audited = connection.currentResults[0];
+            const token = resp.body;
 
-              expect(audited.action).to.equal("template.search");
-              expect(audited.crud).to.equal("r");
-              expect(audited.group!.id).to.equal(project.id);
-              expect(audited.actor!.id).to.equal(adminId);
-            }
-          );
+            expect(audited.action).to.equal("template.search");
+            expect(audited.crud).to.equal("r");
+            expect(audited.group!.id).to.equal(project.id);
+            expect(audited.actor!.id).to.equal(adminId);
+          });
         });
       });
 
@@ -109,9 +101,7 @@ describe("Admin search templates", function () {
           before(function (done) {
             chai
               .request(Env.Endpoint)
-              .post(
-                `/admin/v1/project/${project.id}/templates?environment_id=${env.id}`
-              )
+              .post(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
               .set("Authorization", jwt)
               .send({
                 name: i === 0 ? "Z" : "A",
@@ -125,72 +115,60 @@ describe("Admin search templates", function () {
           });
         }
 
-        context(
-          "When an admin searches for templates with length=1 offset=0",
-          function () {
-            let resp;
+        context("When an admin searches for templates with length=1 offset=0", function () {
+          let resp;
 
-            before(function (done) {
-              const qs = querystring.stringify({
-                environment_id: env.id,
-                offset: 0,
-                length: 1,
-              });
-              chai
-                .request(Env.Endpoint)
-                .get(`/admin/v1/project/${project.id}/templates?${qs}`)
-                .set("Authorization", jwt)
-                .end((err, res) => {
-                  expect(err).to.be.null;
-                  resp = res;
-                  done();
-                });
+          before(function (done) {
+            const qs = querystring.stringify({
+              environment_id: env.id,
+              offset: 0,
+              length: 1,
             });
-
-            specify(
-              "The first template in alphabetical order should be returned.",
-              function () {
-                expect(resp.status).to.equal(200);
-
-                expect(resp.body).to.have.property("total_hits", 1);
-                expect(resp.body.templates[0]).to.have.property("name", "A");
-              }
-            );
-          }
-        );
-
-        context(
-          "When an admin searches for templates with offset=1",
-          function () {
-            let resp;
-
-            before(function (done) {
-              const qs = querystring.stringify({
-                environment_id: env.id,
-                offset: 1,
+            chai
+              .request(Env.Endpoint)
+              .get(`/admin/v1/project/${project.id}/templates?${qs}`)
+              .set("Authorization", jwt)
+              .end((err, res) => {
+                expect(err).to.be.null;
+                resp = res;
+                done();
               });
-              chai
-                .request(Env.Endpoint)
-                .get(`/admin/v1/project/${project.id}/templates?${qs}`)
-                .set("Authorization", jwt)
-                .end((err, res) => {
-                  expect(err).to.be.null;
-                  resp = res;
-                  done();
-                });
+          });
+
+          specify("The first template in alphabetical order should be returned.", function () {
+            expect(resp.status).to.equal(200);
+
+            expect(resp.body).to.have.property("total_hits", 1);
+            expect(resp.body.templates[0]).to.have.property("name", "A");
+          });
+        });
+
+        context("When an admin searches for templates with offset=1", function () {
+          let resp;
+
+          before(function (done) {
+            const qs = querystring.stringify({
+              environment_id: env.id,
+              offset: 1,
             });
+            chai
+              .request(Env.Endpoint)
+              .get(`/admin/v1/project/${project.id}/templates?${qs}`)
+              .set("Authorization", jwt)
+              .end((err, res) => {
+                expect(err).to.be.null;
+                resp = res;
+                done();
+              });
+          });
 
-            specify(
-              "The first template in alphabetical order should be returned.",
-              function () {
-                expect(resp.status).to.equal(200);
+          specify("The first template in alphabetical order should be returned.", function () {
+            expect(resp.status).to.equal(200);
 
-                expect(resp.body).to.have.property("total_hits", 1);
-                expect(resp.body.templates[0]).to.have.property("name", "Z");
-              }
-            );
-          }
-        );
+            expect(resp.body).to.have.property("total_hits", 1);
+            expect(resp.body.templates[0]).to.have.property("name", "Z");
+          });
+        });
       });
     });
   });

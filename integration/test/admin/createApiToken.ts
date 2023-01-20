@@ -42,9 +42,7 @@ describe("Admin create API token", function () {
         before(function (done) {
           chai
             .request(Env.Endpoint)
-            .post(
-              `/admin/v1/project/${project.id}/token?environment_id=${env.id}`
-            )
+            .post(`/admin/v1/project/${project.id}/token?environment_id=${env.id}`)
             .set("Authorization", jwt)
             .send({
               name,
@@ -64,55 +62,49 @@ describe("Admin create API token", function () {
           expect(resp).to.have.property("status", 201);
           expect(token.token).to.be.ok;
           expect(token.created).to.be.ok;
-          expect(new Date(token.created)).to.be.within(
-            Date.now() - tenMinutes,
-            Date.now() + tenMinutes
-          );
+          expect(new Date(token.created)).to.be.within(Date.now() - tenMinutes, Date.now() + tenMinutes);
           expect(token.name).to.equal(name);
           expect(token.disabled).to.equal(false);
           expect(token.project_id).to.equal(project.id);
           expect(token.environment_id).to.equal(env.id);
         });
 
-        specify(
-          "The creation is audited under the headless project.",
-          async function () {
-            this.timeout(Env.EsIndexWaitMs * 2);
-            await sleep(Env.EsIndexWaitMs);
-            const query = {
-              crud: "c",
-              action: "api_token.create",
-            };
-            const mask = {
-              action: true,
-              crud: true,
-              actor: {
-                id: true,
-              },
-              target: {
-                id: true,
-                name: true,
-                fields: true,
-              },
-              group: {
-                id: true,
-              },
-            };
-            const connection = await headless.query(query, mask, 1);
-            const audited = connection.currentResults[0];
-            const token = resp.body;
+        specify("The creation is audited under the headless project.", async function () {
+          this.timeout(Env.EsIndexWaitMs * 2);
+          await sleep(Env.EsIndexWaitMs);
+          const query = {
+            crud: "c",
+            action: "api_token.create",
+          };
+          const mask = {
+            action: true,
+            crud: true,
+            actor: {
+              id: true,
+            },
+            target: {
+              id: true,
+              name: true,
+              fields: true,
+            },
+            group: {
+              id: true,
+            },
+          };
+          const connection = await headless.query(query, mask, 1);
+          const audited = connection.currentResults[0];
+          const token = resp.body;
 
-            expect(audited.action).to.equal("api_token.create");
-            expect(audited.crud).to.equal("c");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.be.ok;
-            expect(audited.target!.fields).to.deep.equal({
-              name,
-              disabled: "false",
-            });
-          }
-        );
+          expect(audited.action).to.equal("api_token.create");
+          expect(audited.crud).to.equal("c");
+          expect(audited.group!.id).to.equal(project.id);
+          expect(audited.actor!.id).to.equal(adminId);
+          expect(audited.target!.id).to.be.ok;
+          expect(audited.target!.fields).to.deep.equal({
+            name,
+            disabled: "false",
+          });
+        });
       });
     });
   });

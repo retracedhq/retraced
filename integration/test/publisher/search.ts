@@ -36,7 +36,7 @@ describe("Publisher Search", function () {
         },
         created: new Date(created + i),
         crud: "c",
-        sourceIp: `192.168.0.${i}`,
+        source_ip: `192.168.0.${i}`,
         actor: {
           id: uniqueActorId,
           name: "RetracedQA Employee",
@@ -55,7 +55,7 @@ describe("Publisher Search", function () {
           },
         },
         description: "Automated integration testing...",
-        isFailure: false,
+        is_failure: false,
         component: "chai",
         version: "v1",
         fields: {
@@ -122,34 +122,31 @@ describe("Publisher Search", function () {
             }
           );
 
-          context(
-            "When calling connection.nextPage() three times",
-            function () {
-              beforeEach(async function () {
-                this.timeout(Env.EsIndexWaitMs * 3);
-                await connection.nextPage();
-                await connection.nextPage();
-                await connection.nextPage();
-              });
+          context("When calling connection.nextPage() three times", function () {
+            beforeEach(async function () {
+              this.timeout(Env.EsIndexWaitMs * 3);
+              await connection.nextPage();
+              await connection.nextPage();
+              await connection.nextPage();
+            });
 
-              specify(
-                "Then the connection should contain the last result and metadata about the full results.",
-                function () {
-                  expect(connection.currentPageNumber).to.equal(4);
-                  expect(connection.totalCount).to.equal(10);
-                  expect(connection.hasNextPage()).to.equal(false);
-                  expect(connection.hasPreviousPage()).to.equal(true);
-                  expect(connection.totalPages()).to.equal(4);
-                  expect(connection.currentResults).to.deep.equal([
-                    {
-                      action: "integration.test.api",
-                      actor: { id: uniqueActorId },
-                    },
-                  ]);
-                }
-              );
-            }
-          );
+            specify(
+              "Then the connection should contain the last result and metadata about the full results.",
+              function () {
+                expect(connection.currentPageNumber).to.equal(4);
+                expect(connection.totalCount).to.equal(10);
+                expect(connection.hasNextPage()).to.equal(false);
+                expect(connection.hasPreviousPage()).to.equal(true);
+                expect(connection.totalPages()).to.equal(4);
+                expect(connection.currentResults).to.deep.equal([
+                  {
+                    action: "integration.test.api",
+                    actor: { id: uniqueActorId },
+                  },
+                ]);
+              }
+            );
+          });
         }
       );
     });

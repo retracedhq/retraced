@@ -60,41 +60,38 @@ describe("Admin create invite", function () {
           expect(resp.body).to.have.property("created");
         });
 
-        specify(
-          "The creation is audited under the headless project.",
-          async function () {
-            this.timeout(Env.EsIndexWaitMs * 2);
-            await sleep(Env.EsIndexWaitMs);
-            const query = {
-              crud: "c",
-              action: "invite.create",
-            };
-            const mask = {
-              action: true,
-              crud: true,
-              actor: {
-                id: true,
-              },
-              target: {
-                id: true,
-                name: true,
-              },
-              group: {
-                id: true,
-              },
-            };
-            const connection = await headless.query(query, mask, 1);
-            const audited = connection.currentResults[0];
-            const token = resp.body;
+        specify("The creation is audited under the headless project.", async function () {
+          this.timeout(Env.EsIndexWaitMs * 2);
+          await sleep(Env.EsIndexWaitMs);
+          const query = {
+            crud: "c",
+            action: "invite.create",
+          };
+          const mask = {
+            action: true,
+            crud: true,
+            actor: {
+              id: true,
+            },
+            target: {
+              id: true,
+              name: true,
+            },
+            group: {
+              id: true,
+            },
+          };
+          const connection = await headless.query(query, mask, 1);
+          const audited = connection.currentResults[0];
+          const token = resp.body;
 
-            expect(audited.action).to.equal("invite.create");
-            expect(audited.crud).to.equal("c");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.equal(resp.body.id);
-            expect(audited.target!.name).to.equal(email);
-          }
-        );
+          expect(audited.action).to.equal("invite.create");
+          expect(audited.crud).to.equal("c");
+          expect(audited.group!.id).to.equal(project.id);
+          expect(audited.actor!.id).to.equal(adminId);
+          expect(audited.target!.id).to.equal(resp.body.id);
+          expect(audited.target!.name).to.equal(email);
+        });
       });
     });
   });

@@ -114,14 +114,10 @@ class GraphQLCounts {
         }
       );
       console.log(res);
-      throw new Error(
-        "Expected 'Arguments 'before' and 'after' are exclusive' exception"
-      );
+      throw new Error("Expected 'Arguments 'before' and 'after' are exclusive' exception");
     } catch (ex) {
       expect(ex.status).to.equal(400);
-      expect(ex.err.message).to.equal(
-        "Arguments 'before' and 'after' are exclusive"
-      );
+      expect(ex.err.message).to.equal("Arguments 'before' and 'after' are exclusive");
     }
   }
   @test
@@ -146,14 +142,10 @@ class GraphQLCounts {
         }
       );
       console.log(res);
-      throw new Error(
-        "Expected 'Arguments 'first' and 'last' are exclusive' exception"
-      );
+      throw new Error("Expected 'Arguments 'first' and 'last' are exclusive' exception");
     } catch (ex) {
       expect(ex.status).to.equal(400);
-      expect(ex.err.message).to.equal(
-        "Arguments 'first' and 'last' are exclusive"
-      );
+      expect(ex.err.message).to.equal("Arguments 'first' and 'last' are exclusive");
     }
   }
   @test public async "GraphQL search#search() throws invalid cursor"() {
@@ -186,30 +178,29 @@ class GraphQLCounts {
 }
 async function setup(params?) {
   await cleanup();
-  await safeQuery("INSERT INTO project (id, name) VALUES ($1, $2)", [
+  await safeQuery("INSERT INTO project (id, name) VALUES ($1, $2)", ["test", "test"]);
+  await safeQuery("INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)", [
+    "test",
     "test",
     "test",
   ]);
-  await safeQuery(
-    "INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)",
-    ["test", "test", "test"]
-  );
-  await safeQuery("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", [
+  await safeQuery("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test", "test@test.com"]);
+  await safeQuery("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", [
     "test",
+    "test",
+    "dummytoken",
+  ]);
+  await safeQuery("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", [
+    "test",
+    "test",
+    "test",
+  ]);
+  await safeQuery("INSERT INTO invite (id, created, email, project_id) VALUES ($1, $2, $3, $4)", [
+    "test",
+    new Date(),
     "test@test.com",
+    "test",
   ]);
-  await safeQuery(
-    "INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)",
-    ["test", "test", "dummytoken"]
-  );
-  await safeQuery(
-    "INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)",
-    ["test", "test", "test"]
-  );
-  await safeQuery(
-    "INSERT INTO invite (id, created, email, project_id) VALUES ($1, $2, $3, $4)",
-    ["test", new Date(), "test@test.com", "test"]
-  );
   if (!params.skipSavedSearch) {
     await safeQuery(
       "INSERT INTO saved_search (id, name, project_id, environment_id, group_id, query_desc) VALUES ($1, $2, $3, $4, $5, $6)",
@@ -243,7 +234,6 @@ async function setup(params?) {
           id: "string",
           name: "group",
         },
-        displayTitle: "string",
         created: new Date(),
         actor: {
           id: "string",
@@ -304,10 +294,7 @@ async function cleanup() {
   await safeQuery(`DELETE FROM admin_token WHERE user_id=$1`, ["test"]);
   await safeQuery(`DELETE FROM environmentuser WHERE user_id=$1`, ["test"]);
   await safeQuery(`DELETE FROM environment WHERE name=$1`, ["test"]);
-  await safeQuery(`DELETE FROM project WHERE name=$1 OR name=$2`, [
-    "test",
-    "test1",
-  ]);
+  await safeQuery(`DELETE FROM project WHERE name=$1 OR name=$2`, ["test", "test1"]);
   await safeQuery(`DELETE FROM projectuser WHERE project_id=$1`, ["test"]);
   await safeQuery(`DELETE FROM token WHERE environment_id=$1`, ["test"]);
   await safeQuery(`DELETE FROM retraceduser WHERE email=$1`, ["test@test.com"]);

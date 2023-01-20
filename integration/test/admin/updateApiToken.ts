@@ -64,50 +64,45 @@ describe("Admin Update API tokens", function () {
             .get(`/admin/v1/project/${project.id}`)
             .set("Authorization", jwt)
             .end((err, res) => {
-              const updatedTkn = res.body.project.tokens.find(
-                (tkn) => tkn.token === token.token
-              );
+              const updatedTkn = res.body.project.tokens.find((tkn) => tkn.token === token.token);
               expect(updatedTkn.name).not.to.equal(token.name);
               expect(updatedTkn.name).to.equal(newName);
               done();
             });
         });
 
-        specify(
-          "The change has been audited under the headless project.",
-          async function () {
-            this.timeout(Env.EsIndexWaitMs * 2);
-            await sleep(Env.EsIndexWaitMs);
-            const query = {
-              crud: "u",
-              action: "api_token.update",
-            };
-            const mask = {
-              action: true,
-              crud: true,
-              actor: {
-                id: true,
-              },
-              target: {
-                id: true,
-              },
-              group: {
-                id: true,
-              },
-              fields: true,
-            };
-            const connection = await headless.query(query, mask, 1);
-            const audited = connection.currentResults[0];
+        specify("The change has been audited under the headless project.", async function () {
+          this.timeout(Env.EsIndexWaitMs * 2);
+          await sleep(Env.EsIndexWaitMs);
+          const query = {
+            crud: "u",
+            action: "api_token.update",
+          };
+          const mask = {
+            action: true,
+            crud: true,
+            actor: {
+              id: true,
+            },
+            target: {
+              id: true,
+            },
+            group: {
+              id: true,
+            },
+            fields: true,
+          };
+          const connection = await headless.query(query, mask, 1);
+          const audited = connection.currentResults[0];
 
-            expect(audited.action).to.equal("api_token.update");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.equal(token.token);
-            expect(audited.fields).to.deep.equal({
-              name: newName,
-            });
-          }
-        );
+          expect(audited.action).to.equal("api_token.update");
+          expect(audited.group!.id).to.equal(project.id);
+          expect(audited.actor!.id).to.equal(adminId);
+          expect(audited.target!.id).to.equal(token.token);
+          expect(audited.fields).to.deep.equal({
+            name: newName,
+          });
+        });
       });
 
       context("When a token is disabled", function () {
@@ -125,58 +120,50 @@ describe("Admin Update API tokens", function () {
             });
         });
 
-        specify(
-          "GET project will return the token's status as disabled.",
-          function (done) {
-            chai
-              .request(Env.Endpoint)
-              .get(`/admin/v1/project/${project.id}`)
-              .set("Authorization", jwt)
-              .end((err, res) => {
-                const updatedTkn = res.body.project.tokens.find(
-                  (tkn) => tkn.token === token.token
-                );
-                expect(updatedTkn.disabled).to.equal(true);
-                done();
-              });
-          }
-        );
-
-        specify(
-          "The change has been audited under the headless project.",
-          async function () {
-            this.timeout(Env.EsIndexWaitMs * 2);
-            await sleep(Env.EsIndexWaitMs);
-            const query = {
-              crud: "u",
-              action: "api_token.update",
-            };
-            const mask = {
-              action: true,
-              crud: true,
-              actor: {
-                id: true,
-              },
-              target: {
-                id: true,
-              },
-              group: {
-                id: true,
-              },
-              fields: true,
-            };
-            const connection = await headless.query(query, mask, 1);
-            const audited = connection.currentResults[0];
-
-            expect(audited.action).to.equal("api_token.update");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.equal(token.token);
-            expect(audited.fields).to.deep.equal({
-              disabled: "true",
+        specify("GET project will return the token's status as disabled.", function (done) {
+          chai
+            .request(Env.Endpoint)
+            .get(`/admin/v1/project/${project.id}`)
+            .set("Authorization", jwt)
+            .end((err, res) => {
+              const updatedTkn = res.body.project.tokens.find((tkn) => tkn.token === token.token);
+              expect(updatedTkn.disabled).to.equal(true);
+              done();
             });
-          }
-        );
+        });
+
+        specify("The change has been audited under the headless project.", async function () {
+          this.timeout(Env.EsIndexWaitMs * 2);
+          await sleep(Env.EsIndexWaitMs);
+          const query = {
+            crud: "u",
+            action: "api_token.update",
+          };
+          const mask = {
+            action: true,
+            crud: true,
+            actor: {
+              id: true,
+            },
+            target: {
+              id: true,
+            },
+            group: {
+              id: true,
+            },
+            fields: true,
+          };
+          const connection = await headless.query(query, mask, 1);
+          const audited = connection.currentResults[0];
+
+          expect(audited.action).to.equal("api_token.update");
+          expect(audited.group!.id).to.equal(project.id);
+          expect(audited.actor!.id).to.equal(adminId);
+          expect(audited.target!.id).to.equal(token.token);
+          expect(audited.fields).to.deep.equal({
+            disabled: "true",
+          });
+        });
       });
     });
   });

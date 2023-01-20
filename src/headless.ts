@@ -13,11 +13,7 @@ import createEnvironment from "./models/environment/create";
 import { logger } from "./logger";
 import config from "./config";
 
-const enabled = !!(
-  config.HEADLESS_API_KEY &&
-  config.HEADLESS_PROJECT_ID &&
-  config.HEADLESS_ENV_ID
-);
+const enabled = !!(config.HEADLESS_API_KEY && config.HEADLESS_PROJECT_ID && config.HEADLESS_ENV_ID);
 
 const retraced = new Client({
   apiKey: config.HEADLESS_API_KEY || "",
@@ -31,12 +27,7 @@ export async function reportEvents(events: Event[]) {
   }
 }
 
-export async function audit(
-  req: express.Request,
-  action: string,
-  crudOperation: crud,
-  record?: any
-) {
+export async function audit(req: express.Request, action: string, crudOperation: crud, record?: any) {
   if (!enabled) {
     return;
   }
@@ -78,21 +69,16 @@ async function fromRequest(req: express.Request) {
         id: userId,
       };
     } else {
-      event.isAnonymous = true;
+      event.is_anonymous = true;
     }
   } else {
-    event.isFailure = true;
+    event.is_failure = true;
   }
 
   return event;
 }
 
-function makeEvent(
-  action: string,
-  crudOperation: crud,
-  fromRequestInfo: any,
-  record?: any
-) {
+function makeEvent(action: string, crudOperation: crud, fromRequestInfo: any, record?: any) {
   const event: any = _.merge(
     {
       action,
@@ -129,9 +115,7 @@ export interface BootstrapOpts {
 
 // Checks that project exists with HEADLESS_PROJECT_ID and HEADLESS_API_KEY
 export async function ensureHeadlessProject() {
-  logger.info(
-    `Headless Retraced audit logging is ${enabled ? "enabled" : "disabled"}`
-  );
+  logger.info(`Headless Retraced audit logging is ${enabled ? "enabled" : "disabled"}`);
   if (!enabled) {
     return;
   }
@@ -168,9 +152,7 @@ export async function bootstrapProject(opts: BootstrapOpts) {
       projectId: project.id,
     });
   } else if (env.projectId !== project.id) {
-    throw new Error(
-      `env ${opts.envVarRef} does not belong to project ${opts.projectVarRef}`
-    );
+    throw new Error(`env ${opts.envVarRef} does not belong to project ${opts.projectVarRef}`);
   }
 
   // TODO: Take 2 args for token while bootstraping
@@ -190,8 +172,6 @@ export async function bootstrapProject(opts: BootstrapOpts) {
       opts.apiKey
     );
   } else if (token.projectId !== project.id) {
-    throw new Error(
-      `api key ${opts.keyVarRef} does not belong to project ${opts.projectVarRef}`
-    );
+    throw new Error(`api key ${opts.keyVarRef} does not belong to project ${opts.projectVarRef}`);
   }
 }

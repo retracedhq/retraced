@@ -35,15 +35,14 @@ export interface RetracedEvent {
   id?: string;
   action: string;
   group?: Group;
-  display_title?: string;
   created?: number;
   actor?: Actor;
   target?: Target;
   crud?: crud;
-  sourceIp?: string;
+  source_ip?: string;
   description?: string;
-  isAnonymous?: boolean;
-  isFailure?: boolean;
+  is_anonymous?: boolean;
+  is_failure?: boolean;
   fields?: EventFields;
   component?: string;
   version?: string;
@@ -51,10 +50,7 @@ export interface RetracedEvent {
 
 export default RetracedEvent;
 
-export function fromCreateEventInput(
-  eventInput: any,
-  newEventId: string
-): RetracedEvent {
+export function fromCreateEventInput(eventInput: any, newEventId: string): RetracedEvent {
   return {
     id: newEventId,
     action: eventInput["action"],
@@ -63,10 +59,10 @@ export function fromCreateEventInput(
     actor: eventInput["actor"],
     target: eventInput["target"],
     crud: eventInput["crud"],
-    sourceIp: eventInput["source_ip"],
+    source_ip: eventInput["source_ip"],
     description: eventInput["description"],
-    isAnonymous: eventInput["is_anonymous"],
-    isFailure: eventInput["is_failure"],
+    is_anonymous: eventInput["is_anonymous"],
+    is_failure: eventInput["is_failure"],
     fields: eventInput["fields"],
     component: eventInput["component"],
     version: eventInput["version"],
@@ -107,8 +103,7 @@ function toArray(x: string | string[]): string[] {
 
 export function parseQuery(query: string): ParsedQuery {
   const options = { keywords: structuredQueryKeywords };
-  const intermediate: string | searchQueryParser.SearchParserResult =
-    searchQueryParser.parse(query, options);
+  const intermediate: string | searchQueryParser.SearchParserResult = searchQueryParser.parse(query, options);
 
   if (_.isString(intermediate)) {
     return {
@@ -169,9 +164,7 @@ function scrubDatetimeRange(input: string | string[]): [number, number] {
     };
   }
 
-  const range = (input as [string, string]).map((datetime) =>
-    moment.utc(datetime)
-  );
+  const range = (input as [string, string]).map((datetime) => moment.utc(datetime));
   range.forEach((m) => {
     if (!m.isValid()) {
       throw {

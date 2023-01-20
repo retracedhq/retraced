@@ -4,7 +4,7 @@ import _ from "lodash";
 import Chance from "chance";
 import util from "util";
 import jwt from "jsonwebtoken";
-import Retraced from "@retracedhq/retraced";
+import * as Retraced from "@retracedhq/retraced";
 import ProgressBar from "progress";
 import http from "http";
 
@@ -60,8 +60,7 @@ exports.builder = {
     description: "Use specific group id for new events",
   },
   envId: {
-    description:
-      "Use specific api token associated with this env id for new events",
+    description: "Use specific api token associated with this env id for new events",
   },
 };
 
@@ -71,20 +70,13 @@ exports.handler = async (argv) => {
   };
   const jwtToken = jwt.sign(claims, adminHmacSecret);
 
-  const resp: any = await getProject(
-    argv.apiEndpoint,
-    jwtToken,
-    argv.projectId
-  );
+  const resp: any = await getProject(argv.apiEndpoint, jwtToken, argv.projectId);
   const project = resp.project;
 
   let apiToken = project.tokens[1];
 
   if (argv.envId) {
-    const maybe = _.find(
-      project.tokens,
-      (t: any) => t.environment_id === argv.envId
-    );
+    const maybe = _.find(project.tokens, (t: any) => t.environment_id === argv.envId);
     if (maybe) {
       apiToken = maybe;
     }
@@ -97,28 +89,18 @@ exports.handler = async (argv) => {
     console.log(util.inspect(groups, false, 100, true));
   }
 
-  await createEvents(
-    argv.apiEndpoint,
-    argv.projectId,
-    argv.eventcount,
-    apiToken,
-    argv.bulk,
-    argv.groupId
-  );
+  await createEvents(argv.apiEndpoint, argv.projectId, argv.eventcount, apiToken, argv.bulk, argv.groupId);
   console.log(picocolors.green("Done!"));
 };
 
 async function getProject(endpoint, jwtToken, projectId) {
-  const { data } = await axios.get<any>(
-    `${endpoint}/admin/v1/project/${projectId}`,
-    {
-      headers: {
-        "User-Agent": "Retraced-Dev/1.0.0",
-        Authorization: jwtToken,
-      },
-      httpAgent: new http.Agent({ keepAlive: true }),
-    }
-  );
+  const { data } = await axios.get<any>(`${endpoint}/admin/v1/project/${projectId}`, {
+    headers: {
+      "User-Agent": "Retraced-Dev/1.0.0",
+      Authorization: jwtToken,
+    },
+    httpAgent: new http.Agent({ keepAlive: true }),
+  });
 
   return data;
 }
@@ -141,9 +123,7 @@ function createEvents(endpoint, projectId, count, apiToken, bulk, groupId) {
     if (bulk) {
       Promise.all(
         _.map(_.chunk(events, 10), (someEvents) => {
-          return client
-            .reportEvents(someEvents)
-            .then(() => pbar.tick(someEvents.length));
+          return client.reportEvents(someEvents).then(() => pbar.tick(someEvents.length));
         })
       )
         .then(resolve)
@@ -184,8 +164,7 @@ function generateEvents(count, groupId) {
         name: chance.name(),
       };
     } else {
-      actor =
-        group.actors[chance.integer({ min: 0, max: group.actors.length - 1 })];
+      actor = group.actors[chance.integer({ min: 0, max: group.actors.length - 1 })];
     }
 
     let target: any;
@@ -204,7 +183,7 @@ function generateEvents(count, groupId) {
         name: group.name,
       },
       description: chance.paragraph({ sentences: 1 }),
-      sourceIp: chance.ip(),
+      source_ip: chance.ip(),
       actor,
       target,
       crud: crud[chance.integer({ min: 0, max: 3 })],
@@ -218,7 +197,7 @@ function generateEvents(count, groupId) {
       message.created = d; // to test conversion on server side
     }
     if (_.isEmpty(actor)) {
-      message.isAnonymous = true;
+      message.is_anonymous = true;
     }
 
     result.push(message);
