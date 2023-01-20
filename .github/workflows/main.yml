@@ -33,7 +33,7 @@ jobs:
       - id: version
         run: |
           npm install -g json
-          JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
+          JACKSON_VERSION=$(echo $(cat ./package.json) | json version)
 
           echo "NPM_VERSION=${JACKSON_VERSION}" >> $GITHUB_OUTPUT
 
