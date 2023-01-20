@@ -6,8 +6,8 @@ import { logger } from "../logger";
 /**
  * retraced exec processor /bin/bash
  *
- * make build
- * ./bin/processor email -p PROJECT -e ENVIRONMENT -r EMAIL_ADDRESS
+ * npm run build
+ * node ./build/_processor/runner.js email -p PROJECT -e ENVIRONMENT -r EMAIL_ADDRESS
  */
 export const name = "email";
 export const describe = "compute and send emails";
@@ -46,20 +46,14 @@ export const handler = (argv) => {
     projectName: argv.projectName,
     environmentId: argv.environmentId,
     environmentName: argv.environmentName,
-    date: moment
-      .utc()
-      .add(argv.utcOffset, "minutes")
-      .add(1, "day")
-      .format("YYYY-MM-DD"),
+    date: moment.utc().add(argv.utcOffset, "minutes").add(1, "day").format("YYYY-MM-DD"),
     offset: argv.utcOffset,
     recipients: [{ email: argv.recipient, id: "test id", token: "fake-token" }],
   });
   logger.info(
-    `scheduling analyze_day reporting job for environment ${
-      argv.environmentId
-    } at UTC offset ${argv.utcOffset} with recipients ${JSON.stringify([
-      argv.recipient,
-    ])}`
+    `scheduling analyze_day reporting job for environment ${argv.environmentId} at UTC offset ${
+      argv.utcOffset
+    } with recipients ${JSON.stringify([argv.recipient])}`
   );
   nsq.produce("environment_day", jobBody).catch((err) => logger.info(err));
   setTimeout(() => process.exit(0), 2000);
