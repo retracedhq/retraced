@@ -8,7 +8,6 @@ import { retracedUp } from "../pkg/retracedUp";
 import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
 
-// tslint:disable-next-line
 const chai = require("chai"),
   chaiHttp = require("chai-http");
 chai.use(chaiHttp);

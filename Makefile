@@ -15,7 +15,7 @@ deps:
 	npm install
 
 lint:
-	`npm bin`/tslint --project ./tsconfig.json
+	`npm bin`/eslint -c .eslintrc.js ./src
 
 
 swagger:

@@ -6,11 +6,7 @@ import moment from "moment";
 import pg from "pg";
 import { NSQClient } from "../../persistence/nsq";
 
-import {
-  EventCreater,
-  CreateEventRequest,
-  CreateEventResponse,
-} from "../../handlers/createEvent";
+import { EventCreater, CreateEventRequest, CreateEventResponse } from "../../handlers/createEvent";
 import Authenticator from "../../security/Authenticator";
 import { Connection } from "./Connection";
 
@@ -22,7 +18,7 @@ class EventCreaterTest {
     const conn = TypeMoq.Mock.ofType(pg.Client);
     const nsq = TypeMoq.Mock.ofType(NSQClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
-    const fakeHasher = (e) => "fake-hash";
+    const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
 
     const body: CreateEventRequest[] = [
@@ -64,19 +60,9 @@ class EventCreaterTest {
         })
       );
 
-    const creater = new EventCreater(
-      pool.object,
-      nsq.object,
-      fakeHasher,
-      fakeUUID,
-      authenticator.object,
-      2,
-      1000
-    );
+    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 2, 1000);
 
-    const expected = new Error(
-      "A maximum of 2 events may be created at once, received 3"
-    );
+    const expected = new Error("A maximum of 2 events may be created at once, received 3");
 
     try {
       await creater.createEventBulk("token=some-token", "a-project", body);
@@ -97,7 +83,7 @@ class EventCreaterTest {
     const conn = TypeMoq.Mock.ofType(pg.Client);
     const nsq = TypeMoq.Mock.ofType(NSQClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
-    const fakeHasher = (e) => "fake-hash";
+    const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
 
     const body: CreateEventRequest[] = [
@@ -139,23 +125,14 @@ class EventCreaterTest {
       .returns(() => Promise.resolve(conn.object) as Promise<any>)
       .verifiable(TypeMoq.Times.once());
 
-    const creater = new EventCreater(
-      pool.object,
-      nsq.object,
-      fakeHasher,
-      fakeUUID,
-      authenticator.object,
-      50,
-      1000
-    );
+    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
 
     try {
       await creater.createEventBulk("token=some-token", "a-project", body);
       throw new Error(`Expected error to be thrown`);
     } catch (err) {
       expect(err.status).to.equal(400);
-      expect(err.err.message).to.deep
-        .equal(`One or more invalid inputs, no events were logged:
+      expect(err.err.message).to.deep.equal(`One or more invalid inputs, no events were logged:
 - Invalid event input at index 0:
 -- Field 'actor.id' is required if 'actor' is present
 - Invalid event input at index 1:
@@ -166,8 +143,7 @@ class EventCreaterTest {
       expect(err.invalid).to.deep.equal([
         {
           index: 0,
-          message:
-            "Invalid event input at index 0:\n-- Field 'actor.id' is required if 'actor' is present",
+          message: "Invalid event input at index 0:\n-- Field 'actor.id' is required if 'actor' is present",
           violations: [
             {
               field: "actor.id",
@@ -188,14 +164,12 @@ class EventCreaterTest {
             },
             {
               field: "actor",
-              message:
-                "Event is not marked anonymous, and missing required field 'actor'",
+              message: "Event is not marked anonymous, and missing required field 'actor'",
               violation: "missing",
             },
             {
               field: "source_ip",
-              message:
-                "Unable to parse 'source_ip' field as valid IPV4 or IPV6 address: lol",
+              message: "Unable to parse 'source_ip' field as valid IPV4 or IPV6 address: lol",
               received: "lol",
               violation: "invalid",
             },
@@ -207,10 +181,7 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    nsq.verify(
-      (x) => x.produce("raw_events", TypeMoq.It.isAny()),
-      TypeMoq.Times.never()
-    );
+    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test public async "EventCreater#createEvent()"() {
@@ -218,7 +189,7 @@ class EventCreaterTest {
     const conn = TypeMoq.Mock.ofType(Connection);
     const nsq = TypeMoq.Mock.ofType(NSQClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
-    const fakeHasher = (e) => "fake-hash";
+    const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
 
     const body: CreateEventRequest = {
@@ -247,9 +218,7 @@ class EventCreaterTest {
 
     conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
     conn
-      .setup((x) =>
-        x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())
-      ) // Still need to validate args
+      .setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())) // Still need to validate args
       .verifiable(TypeMoq.Times.once());
     pool
       .setup((x) => x.connect())
@@ -258,25 +227,11 @@ class EventCreaterTest {
 
     // set up nsq
     const jobBody = JSON.stringify({ taskId: "kfbr392" });
-    nsq
-      .setup((x) => x.produce("raw_events", jobBody))
-      .returns((args) => Promise.resolve());
+    nsq.setup((x) => x.produce("raw_events", jobBody)).returns(() => Promise.resolve());
 
-    const creater = new EventCreater(
-      pool.object,
-      nsq.object,
-      fakeHasher,
-      fakeUUID,
-      authenticator.object,
-      50,
-      1000
-    );
+    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
 
-    const created: any = await creater.createEvent(
-      "token=some-token",
-      "a-project",
-      body
-    );
+    const created: any = await creater.createEvent("token=some-token", "a-project", body);
 
     expect(created.id).to.equal("kfbr392");
     expect(created.hash).to.equal("fake-hash");
@@ -287,7 +242,7 @@ class EventCreaterTest {
     const conn = TypeMoq.Mock.ofType(Connection);
     const nsq = TypeMoq.Mock.ofType(NSQClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
-    const fakeHasher = (e) => "fake-hash";
+    const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
 
     const body: CreateEventRequest = {
@@ -316,9 +271,7 @@ class EventCreaterTest {
 
     conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
     conn
-      .setup((x) =>
-        x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())
-      ) // Still need to validate args
+      .setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())) // Still need to validate args
       .verifiable(TypeMoq.Times.once());
     pool
       .setup((x) => x.connect())
@@ -327,25 +280,11 @@ class EventCreaterTest {
 
     // set up nsq
     const jobBody = JSON.stringify({ taskId: "kfbr392" });
-    nsq
-      .setup((x) => x.produce("raw_events", jobBody))
-      .returns((args) => Promise.resolve());
+    nsq.setup((x) => x.produce("raw_events", jobBody)).returns(() => Promise.resolve());
 
-    const creater = new EventCreater(
-      pool.object,
-      nsq.object,
-      fakeHasher,
-      fakeUUID,
-      authenticator.object,
-      50,
-      1000
-    );
+    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
 
-    const created: any = await creater.createEvent(
-      "token=some-token",
-      "a-project",
-      body
-    );
+    const created: any = await creater.createEvent("token=some-token", "a-project", body);
 
     expect(created.id).to.equal("kfbr392");
     expect(created.hash).to.equal("fake-hash");
@@ -356,7 +295,7 @@ class EventCreaterTest {
     const conn = TypeMoq.Mock.ofType(Connection);
     const nsq = TypeMoq.Mock.ofType(NSQClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
-    const fakeHasher = (e) => "fake-hash";
+    const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
 
     const body: CreateEventRequest[] = [
@@ -404,31 +343,17 @@ class EventCreaterTest {
       .verifiable(TypeMoq.Times.once());
 
     conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
-    conn
-      .setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()))
-      .verifiable(TypeMoq.Times.once());
+    conn.setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).verifiable(TypeMoq.Times.once());
 
     // set up nsq
     nsq
       .setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
-      .returns((args) => Promise.resolve())
+      .returns(() => Promise.resolve())
       .verifiable(TypeMoq.Times.exactly(3));
 
-    const creater = new EventCreater(
-      pool.object,
-      nsq.object,
-      fakeHasher,
-      fakeUUID,
-      authenticator.object,
-      50,
-      1000
-    );
+    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
 
-    const created: CreateEventResponse[] = await creater.createEventBulk(
-      "token=some-token",
-      "a-project",
-      body
-    );
+    const created: CreateEventResponse[] = await creater.createEventBulk("token=some-token", "a-project", body);
 
     expect(created.length).to.equal(3);
 
@@ -445,7 +370,7 @@ class EventCreaterTest {
     const conn = TypeMoq.Mock.ofType(Connection);
     const nsq = TypeMoq.Mock.ofType(NSQClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
-    const fakeHasher = (e) => "fake-hash";
+    const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
 
     const body: CreateEventRequest[] = [
@@ -479,25 +404,15 @@ class EventCreaterTest {
       .verifiable(TypeMoq.Times.once());
     // conn.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())).returns(() => Promise.resolve({ rowCount: 1 }));
     conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
-    conn
-      .setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()))
-      .throws(new Error("Postgres went away :("));
+    conn.setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).throws(new Error("Postgres went away :("));
 
     // set up nsq
     nsq
       .setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
-      .returns((args) => Promise.resolve())
+      .returns(() => Promise.resolve())
       .verifiable(TypeMoq.Times.exactly(1));
 
-    const creater = new EventCreater(
-      pool.object,
-      nsq.object,
-      fakeHasher,
-      fakeUUID,
-      authenticator.object,
-      50,
-      1000
-    );
+    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
 
     const expected = new Error("Postgres went away :(");
 
@@ -509,10 +424,7 @@ class EventCreaterTest {
     }
 
     // make sure we didn't send any nsq messages if the txn is ROLLBACK'd
-    nsq.verify(
-      (x) => x.produce("raw_events", TypeMoq.It.isAny()),
-      TypeMoq.Times.never()
-    );
+    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test public async "EventCreater.persistEvent()"() {
@@ -578,7 +490,7 @@ class EventCreaterTest {
       const creater = new EventCreater(
         TypeMoq.Mock.ofType(pg.Pool).object,
         TypeMoq.Mock.ofType(NSQClient).object,
-        (e) => "fake-hash",
+        () => "fake-hash",
         () => "fake-uuid",
         TypeMoq.Mock.ofType(Authenticator).object,
         50,
@@ -589,13 +501,7 @@ class EventCreaterTest {
         calls[i] = false;
         return {
           delayMS: p.delay,
-          persist: async (
-            pID: string,
-            eID: string,
-            id: string,
-            ts: number,
-            e: CreateEventRequest
-          ) => {
+          persist: async () => {
             calls[i] = true;
             await sleep(p.takes);
             if (p.fails) {
@@ -629,9 +535,7 @@ class EventCreaterTest {
       testElement.persisters.forEach((p, i) => {
         if (p.called !== calls[i]) {
           throw new Error(
-            `${testElement.description}: persister[${i}] ${
-              p.called ? "should" : "should not"
-            } have been called`
+            `${testElement.description}: persister[${i}] ${p.called ? "should" : "should not"} have been called`
           );
         }
       });

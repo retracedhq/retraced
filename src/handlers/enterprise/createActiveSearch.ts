@@ -5,7 +5,7 @@ import createActiveSearch from "../../models/active_search/create";
 import { Responses } from "../../router";
 
 export interface CreateActiveSearchRequest {
-  /** An id of an existing saved search to use */ // tslint:disable-next-line
+  /** An id of an existing saved search to use */ // eslint-disable-next-line
   saved_search_id: string;
 }
 

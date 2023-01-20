@@ -10,7 +10,7 @@ import common from "../../../common";
 import { logger } from "../../../../logger";
 import { Client } from "@elastic/elasticsearch";
 
-let totalIndexed: number = 0;
+let totalIndexed = 0;
 
 export const makePageIndexer = (writeIndex: string) => async (result: Event[]) => {
   logger.info(`processing page with count ${result.length}`);
@@ -105,7 +105,7 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
 
   logger.info(`indexing page with size ${result.length}`);
   totalIndexed += result.length;
-  await new Promise<void>((resolve, reject) => {
+  await new Promise<void>((resolve) => {
     es.bulk({ body }, (errr, resp) => {
       if (errr) {
         console.log(picocolors.red(errr.stack));

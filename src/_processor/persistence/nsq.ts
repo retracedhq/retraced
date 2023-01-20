@@ -26,12 +26,7 @@ interface ConsumerOptions {
 
 export interface NSQ {
   produce: (topic: string, body: string) => Promise<void>;
-  consume: (
-    topic: string,
-    channel: string,
-    handler: (Message) => void,
-    opts: ConsumerOptions
-  ) => void;
+  consume: (topic: string, channel: string, handler: (Message) => void, opts: ConsumerOptions) => void;
   deleteTopic: (topic: string) => Promise<void>;
 }
 
@@ -47,11 +42,7 @@ export class NSQClient {
   private readonly nsqdTCPAddresses: string[];
   private writer?: Promise<any>;
 
-  constructor(
-    private readonly host: string,
-    private readonly tcpPort: number,
-    private readonly httpPort: number
-  ) {
+  constructor(private readonly host: string, private readonly tcpPort: number, private readonly httpPort: number) {
     this.nsqdTCPAddresses = [`${host}:${tcpPort}`];
   }
 
@@ -65,15 +56,11 @@ export class NSQClient {
         resolve(w);
       });
       w.on("closed", () => {
-        logger.error(
-          `NSQ writer disconnected from ${this.host}:${this.tcpPort}`
-        );
+        logger.error(`NSQ writer disconnected from ${this.host}:${this.tcpPort}`);
         delete this.writer;
       });
       w.on("error", (err) => {
-        logger.error(
-          `NSQ writer ${this.host}:${this.tcpPort} : ${err.message}`
-        );
+        logger.error(`NSQ writer ${this.host}:${this.tcpPort} : ${err.message}`);
         reject(err); // no-op if already resolved
       });
     });
@@ -81,12 +68,7 @@ export class NSQClient {
     return this.writer;
   }
 
-  public consume(
-    topic: string,
-    channel: string,
-    handle: (msg: Message) => void,
-    opts: ConsumerOptions
-  ) {
+  public consume(topic: string, channel: string, handle: (msg: Message) => void, opts: ConsumerOptions) {
     // nsqjs passes to discard handler on attempt == maxAttempts, but expect
     // to wait until attempt > maxAttempts.
     const nsqConfig = {
@@ -101,20 +83,14 @@ export class NSQClient {
     reader.on("error", (err) => {
       logger.warn(`NSQ consumer ${topic}.${channel}: ${err.message}`);
     });
-    reader.on("discard", (msg) => {
-      logger.warn(
-        `NSQ discarding message on ${topic}.${channel} after ${opts.maxAttempts} attempts`
-      );
+    reader.on("discard", () => {
+      logger.warn(`NSQ discarding message on ${topic}.${channel} after ${opts.maxAttempts} attempts`);
     });
     reader.on("nsqd_connected", () => {
-      logger.info(
-        `NSQ consumer ${topic}:${channel} connected to ${this.host}:${this.tcpPort}`
-      );
+      logger.info(`NSQ consumer ${topic}:${channel} connected to ${this.host}:${this.tcpPort}`);
     });
     reader.on("nsqd_closed", () => {
-      logger.warn(
-        `NSQ consumer ${topic}:${channel} disconnected from ${this.host}:${this.tcpPort}`
-      );
+      logger.warn(`NSQ consumer ${topic}:${channel} disconnected from ${this.host}:${this.tcpPort}`);
       // The closed event is limited by the heartbeat of 30s, so no need for backoff
       this.consume(topic, channel, handle, opts);
     });
@@ -139,9 +115,7 @@ export class NSQClient {
   }
 
   public async deleteTopic(topic: string): Promise<void> {
-    await axios.post(
-      `http://${this.host}:${this.httpPort}/topic/delete?topic=${topic}`
-    );
+    await axios.post(`http://${this.host}:${this.httpPort}/topic/delete?topic=${topic}`);
   }
 }
 
@@ -154,12 +128,7 @@ export default {
     }
     return client.produce(topic, body) as Promise<void>;
   },
-  consume: (
-    topic: string,
-    channel: string,
-    handler: (Message) => void,
-    opts: ConsumerOptions
-  ) => {
+  consume: (topic: string, channel: string, handler: (Message) => void, opts: ConsumerOptions) => {
     if (!client) {
       client = NSQClient.fromEnv();
     }

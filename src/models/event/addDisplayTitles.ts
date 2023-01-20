@@ -32,7 +32,7 @@ export default async function addDisplayTitles(opts: Options): Promise<any[]> {
       // Use the default
       markdown = renderEvent({
         event,
-        template: getDefaultMarkdownForEvent(event, opts.source),
+        template: getDefaultMarkdownForEvent(event),
         source: "",
       });
     }
@@ -47,7 +47,7 @@ export default async function addDisplayTitles(opts: Options): Promise<any[]> {
   return updated;
 }
 
-function getDefaultMarkdownForEvent(event, source): string {
+function getDefaultMarkdownForEvent(event): string {
   let markdown = "";
   if (event.actor.name) {
     markdown = markdown + "**{{actor.name}}**";

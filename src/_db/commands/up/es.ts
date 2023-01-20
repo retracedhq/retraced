@@ -2,7 +2,7 @@ import picocolors from "picocolors";
 import walk from "walk";
 import path from "path";
 import util from "util";
-import bugsnag from "bugsnag";
+import Bugsnag from "@bugsnag/js";
 
 import { getESWithoutRetry } from "../../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
@@ -39,13 +39,13 @@ function getSchemaPath() {
   return path.join(__dirname, "../../../../migrations/es");
 }
 
-export const handler = (argv) => {
+export const handler = () => {
   const es: Client = getESWithoutRetry();
   const pgPool = getPgPool();
 
-  pgPool.connect((err, pg, done) => {
+  pgPool.connect((err, pg) => {
     if (err) {
-      bugsnag.notify(err);
+      Bugsnag.notify(err);
       console.log(picocolors.red("Couldn't connect to postgres"));
       console.log(picocolors.red(util.inspect(err)));
       process.exit(1);
@@ -93,7 +93,7 @@ export const handler = (argv) => {
                     break;
 
                   case "putTemplate": {
-                    es.indices.putTemplate(esQuery.params, (err2, resp) => {
+                    es.indices.putTemplate(esQuery.params, (err2) => {
                       if (err2) {
                         reject(err2);
                         return;
@@ -124,7 +124,7 @@ export const handler = (argv) => {
           next(); // done! next file pls
         })
         .catch((err2) => {
-          bugsnag.notify(err2);
+          Bugsnag.notify(err2);
           console.log(picocolors.red(err2.stack));
           process.exit(1);
         });
@@ -132,7 +132,7 @@ export const handler = (argv) => {
 
     walker.on("errors", (root, stat, next) => {
       stat.forEach((n) => {
-        bugsnag.notify(n.error);
+        Bugsnag.notify(n.error);
         console.error(`[ERROR] ${n.name}`);
         console.error(n.error.message || `${n.error.code}:${n.error.path}`);
       });

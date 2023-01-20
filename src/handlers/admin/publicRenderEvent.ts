@@ -1,7 +1,7 @@
 import renderEvent from "../../models/event/render";
 import eventRulesCheck from "../../models/event/rulesCheck";
 
-export default async function(req) {
+export default function (req) {
   const rule = req.body.rule;
   const template = req.body.template;
   const event = req.body.event;
@@ -26,7 +26,7 @@ export default async function(req) {
     template,
     source,
   };
-  const rendered = await renderEvent(renderOpts);
+  const rendered = renderEvent(renderOpts);
 
   return {
     status: 200,

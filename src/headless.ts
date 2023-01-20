@@ -27,7 +27,7 @@ const retraced = new Client({
 
 export async function reportEvents(events: Event[]) {
   if (enabled) {
-    retraced.reportEvents(events);
+    await retraced.reportEvents(events);
   }
 }
 

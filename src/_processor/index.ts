@@ -1,5 +1,5 @@
 import _ from "lodash";
-import bugsnag from "bugsnag";
+import Bugsnag from "@bugsnag/js";
 import * as monkit from "monkit";
 import config from "../config";
 import { errToLog, jobDesc, stopwatchClick } from "./common";
@@ -32,13 +32,12 @@ import getPgPool from "../persistence/pg";
 startHealthz();
 
 if (!config.BUGSNAG_TOKEN) {
-  logger.error(
-    "BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag"
-  );
+  logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
 } else {
-  bugsnag.register(config.BUGSNAG_TOKEN || "", {
-    releaseStage: config.STAGE,
-    notifyReleaseStages: ["production", "staging"],
+  Bugsnag.start({
+    apiKey: config.BUGSNAG_TOKEN || "",
+    releaseStage: config.STAGE || "",
+    enabledReleaseStages: ["production", "staging"],
   });
 }
 
@@ -239,18 +238,14 @@ if (!PG_SEARCH) {
 }
 
 for (const consumer of nsqConsumers) {
-  const { topic, channel, worker, maxAttempts, timeoutSeconds, maxInFlight } =
-    consumer;
+  const { topic, channel, worker, maxAttempts, timeoutSeconds, maxInFlight } = consumer;
 
   const receive = async (msg) => {
     const doAck = () => msg.finish();
     const requeue = () => msg.requeue(15000, true);
-    const attempt =
-      msg.attempt > 1 ? ` attempt ${msg.attempts} of ${maxAttempts}` : "";
+    const attempt = msg.attempt > 1 ? ` attempt ${msg.attempts} of ${maxAttempts}` : "";
 
-    logger.debug(
-      `-> ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${attempt}...`
-    );
+    logger.debug(`-> ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${attempt}...`);
     await monkit.instrument(
       `processor.${topic}__${channel}`,
       handle(topic, channel, worker, msg, doAck, requeue)
@@ -272,27 +267,19 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
     logger.debug(`✓  ${leftPad(topic, 20)} ${leftPad(channel, 25)}`);
     await doAck(job);
     if (elapsed >= slowElapsedThreshold) {
-      logger.warn(
-        `[${jobDesc(job)}] completed (slowly) in ${elapsed.toFixed(3)}ms`
-      );
+      logger.warn(`[${jobDesc(job)}] completed (slowly) in ${elapsed.toFixed(3)}ms`);
     }
     updateLastNSQ();
   } catch (err) {
     registry.meter("processor.waitForJobs.errors").mark();
-    bugsnag.notify(err);
+    Bugsnag.notify(err);
     const elapsed = stopwatchClick(startTime);
     let retry = false;
     if (_.has(err, "retry")) {
       retry = err.retry;
     }
-    logger.error(
-      `✘  ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${jobDesc(job)}`
-    );
-    logger.error(
-      `[${jobDesc(job)}] failed (took ${elapsed.toFixed(3)}ms): ${errToLog(
-        err
-      )}`
-    );
+    logger.error(`✘  ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${jobDesc(job)}`);
+    logger.error(`[${jobDesc(job)}] failed (took ${elapsed.toFixed(3)}ms): ${errToLog(err)}`);
     if (retry === true) {
       logger.info(`[${jobDesc(job)}] this job will be retried later`);
       requeue();

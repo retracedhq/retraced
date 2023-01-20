@@ -1,5 +1,3 @@
-import * as uuid from "uuid";
-
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -49,7 +47,6 @@ export default async function updateEitapiToken(opts) {
     updatedEitapiToken.view_log_action = result.rows.view_log_action;
 
     return updatedEitapiToken;
-
   } finally {
     pg.release();
   }

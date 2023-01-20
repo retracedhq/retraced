@@ -58,7 +58,7 @@ export default async function (opts: Options): Promise<Result> {
     };
     if (results.count > 0) {
       for (const hit of resp.body.hits.hits) {
-        results.events!.push(hit["_source"]);
+        results.events?.push(hit["_source"]);
       }
       results.scrollId = resp.body._scroll_id;
     }
@@ -211,7 +211,7 @@ export default async function (opts: Options): Promise<Result> {
     };
     if (results.count > 0) {
       for (const hit of resp.body.hits.hits) {
-        results.events!.push(hit["_source"]);
+        results.events?.push(hit["_source"]);
       }
     }
     if (resp.body._scroll_id) {
@@ -238,7 +238,7 @@ export default async function (opts: Options): Promise<Result> {
       };
       results.totalHits = results.count = initialResp.body.hits.total;
       for (const hit of initialResp.body.hits.hits) {
-        results.events!.push(hit["_source"]);
+        results.events?.push(hit["_source"]);
       }
       while (true) {
         const resp = await es.scroll({
@@ -252,7 +252,7 @@ export default async function (opts: Options): Promise<Result> {
           break;
         }
         for (const hit of resp.body.hits.hits) {
-          results.events!.push(hit["_source"]);
+          results.events?.push(hit["_source"]);
         }
         scrollParams.scroll_id = resp.body._scroll_id;
       }

@@ -41,7 +41,7 @@ async function parseClaims(authHeader: string) {
 
   if (tokenParts && tokenParts.length >= 3) {
     logger.debug("validating admin against token");
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     const [__, id, token, _, adminToken] = tokenParts;
     claims = await AdminTokenStore.default().verifyTokenOr401(id, token, adminToken);
   } else {

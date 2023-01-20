@@ -55,7 +55,7 @@ export const handler = async (argv) => {
     picocolors.yellow(
       `Reindexing time range: [${new Date(
         argv.startTime
-      ).toISOString()}, ${new Date(argv.endTime).toISOString()}`
+      ).toISOString()}, ${new Date(argv.endTime).toISOString()}]`
     )
   );
 

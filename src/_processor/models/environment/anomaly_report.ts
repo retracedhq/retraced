@@ -62,7 +62,6 @@ export default async function anomalyReport(opts: Options): Promise<Record[]> {
     opts.targetHour.clone().subtract(1, "week").format(),
   ]);
 
-  // @ts-ignore
   return result.rows.map((r) => {
     r.recipients = _.zipWith(
       r.recipient_emails,

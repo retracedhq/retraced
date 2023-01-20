@@ -1,5 +1,5 @@
 import getPgPool from "./persistence/pg";
-import bugsnag from "bugsnag";
+import Bugsnag from "@bugsnag/js";
 import config from "../config";
 
 const pgPool = getPgPool();
@@ -117,9 +117,10 @@ function setupBugsnag() {
   if (!config.BUGSNAG_TOKEN) {
     // console.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
   } else {
-    bugsnag.register(config.BUGSNAG_TOKEN || "", {
-      releaseStage: config.STAGE,
-      notifyReleaseStages: ["production", "staging"],
+    Bugsnag.start({
+      apiKey: config.BUGSNAG_TOKEN || "",
+      releaseStage: config.STAGE || "",
+      enabledReleaseStages: ["production", "staging"],
     });
   }
 }

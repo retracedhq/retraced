@@ -43,9 +43,9 @@ describe("models.environment.daily_report", () => {
         },
       ],
     };
-    /* tslint:disable */
+    /* eslint-disable */
     const [bob, ann, sam] = alpha.users;
-    /* tslint:enable */
+    /* eslint-enable */
     const beta = {
       id: uuid.v4(),
       name: "Beta",
@@ -65,9 +65,8 @@ describe("models.environment.daily_report", () => {
 
     fixProject(alpha);
     fixProject(beta);
-
-    const offset =
-      -moment.tz.zone("America/Los_Angeles")!.parse(Date.now()) / 60;
+    const tz = moment.tz.zone("America/Los_Angeles");
+    const offset = tz ? -tz.parse(Date.now()) / 60 : 0;
     describe(`Search for offset ${offset}`, () => {
       it(`
         Should return a record for Alpha.Prod with recipients Bob and Ann.
@@ -77,20 +76,16 @@ describe("models.environment.daily_report", () => {
         `, () => {
         return dailyReport({ offsetHour: offset }).then((records) => {
           const alphaProd = records.find(
-            ({ project_name, environment_name }) =>
-              project_name === "Alpha" && environment_name === "Prod"
+            ({ project_name, environment_name }) => project_name === "Alpha" && environment_name === "Prod"
           ) as Record;
           const alphaStage = records.find(
-            ({ project_name, environment_name }) =>
-              project_name === "Alpha" && environment_name === "Stage"
+            ({ project_name, environment_name }) => project_name === "Alpha" && environment_name === "Stage"
           ) as Record;
           const betaProd = records.find(
-            ({ project_name, environment_name }) =>
-              project_name === "Beta" && environment_name === "Prod"
+            ({ project_name, environment_name }) => project_name === "Beta" && environment_name === "Prod"
           ) as Record;
           const betaStage = records.find(
-            ({ project_name, environment_name }) =>
-              project_name === "Beta" && environment_name === "Stage"
+            ({ project_name, environment_name }) => project_name === "Beta" && environment_name === "Stage"
           ) as Record;
 
           expect(alphaProd).not.to.equal(undefined);
@@ -177,28 +172,22 @@ describe("models.environment.daily_report", () => {
       it("Should return records for all six environment/offsets", () => {
         return dailyReport({ offsetHour: 6 }).then((records) => {
           const prod6 = records.find(
-            ({ environment_name, utc_offset }) =>
-              environment_name === "Prod" && utc_offset === 360
+            ({ environment_name, utc_offset }) => environment_name === "Prod" && utc_offset === 360
           ) as Record;
           const stage6 = records.find(
-            ({ environment_name, utc_offset }) =>
-              environment_name === "Stage" && utc_offset === 360
+            ({ environment_name, utc_offset }) => environment_name === "Stage" && utc_offset === 360
           ) as Record;
           const prod530 = records.find(
-            ({ environment_name, utc_offset }) =>
-              environment_name === "Prod" && utc_offset === 330
+            ({ environment_name, utc_offset }) => environment_name === "Prod" && utc_offset === 330
           ) as Record;
           const stage530 = records.find(
-            ({ environment_name, utc_offset }) =>
-              environment_name === "Stage" && utc_offset === 330
+            ({ environment_name, utc_offset }) => environment_name === "Stage" && utc_offset === 330
           ) as Record;
           const prod545 = records.find(
-            ({ environment_name, utc_offset }) =>
-              environment_name === "Prod" && utc_offset === 345
+            ({ environment_name, utc_offset }) => environment_name === "Prod" && utc_offset === 345
           ) as Record;
           const stage545 = records.find(
-            ({ environment_name, utc_offset }) =>
-              environment_name === "Stage" && utc_offset === 345
+            ({ environment_name, utc_offset }) => environment_name === "Stage" && utc_offset === 345
           ) as Record;
 
           expect(prod6.recipients).to.deep.equal([

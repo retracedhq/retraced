@@ -3,8 +3,8 @@ import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 
-// tslint:disable-next-line
-const chai = require("chai"), chaiHttp = require("chai-http");
+const chai = require("chai"),
+  chaiHttp = require("chai-http");
 chai.use(chaiHttp);
 
 describe("Admin create admin token", function () {
@@ -30,7 +30,8 @@ describe("Admin create admin token", function () {
         let resp;
         beforeEach(async () => {
           resp = await new Promise<any>((resolve, reject) => {
-            chai.request(Env.Endpoint)
+            chai
+              .request(Env.Endpoint)
               .post(`/admin/v1/token`)
               .set("Authorization", jwt)
               .end((err, res) => {
@@ -51,34 +52,40 @@ describe("Admin create admin token", function () {
           expect(token).not.to.be.empty;
         });
 
-        context("When the token is used to make an Admin API call (e.g. create a template)", async function () {
-          let templateResponse;
-          const reqBody = {
-            name: "New Template",
-            rule: "always",
-            template: "{{}}",
-          };
+        context(
+          "When the token is used to make an Admin API call (e.g. create a template)",
+          async function () {
+            let templateResponse;
+            const reqBody = {
+              name: "New Template",
+              rule: "always",
+              template: "{{}}",
+            };
 
-          beforeEach(async () => {
-            templateResponse = await new Promise<any>((resolve, reject) => {
-              chai.request(Env.Endpoint)
-                .post(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
-                .set("Authorization", `id=${id} token=${token}`)
-                .send(reqBody)
-                .end((err, res) => {
-                  if (err) {
-                    reject(err);
-                    return;
-                  }
-                  resolve(res);
-                });
+            beforeEach(async () => {
+              templateResponse = await new Promise<any>((resolve, reject) => {
+                chai
+                  .request(Env.Endpoint)
+                  .post(
+                    `/admin/v1/project/${project.id}/templates?environment_id=${env.id}`
+                  )
+                  .set("Authorization", `id=${id} token=${token}`)
+                  .send(reqBody)
+                  .end((err, res) => {
+                    if (err) {
+                      reject(err);
+                      return;
+                    }
+                    resolve(res);
+                  });
+              });
             });
-          });
 
-          specify("Then the response should have a 2xx status", () => {
-            expect(templateResponse).to.have.property("status", 201);
-          });
-        });
+            specify("Then the response should have a 2xx status", () => {
+              expect(templateResponse).to.have.property("status", 201);
+            });
+          }
+        );
       });
     });
   });

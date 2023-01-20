@@ -2,7 +2,8 @@ import url from "url";
 import express from "express";
 import cors from "cors";
 import _ from "lodash";
-import bugsnag from "bugsnag";
+import Bugsnag from "@bugsnag/js";
+import BugsnagPluginExpress from "@bugsnag/plugin-express";
 import Sigsci from "sigsci-module-nodejs";
 import Prometheus from "prom-client";
 import swaggerUI from "swagger-ui-express";
@@ -27,9 +28,11 @@ import sslConf from "ssl-config";
 if (!config.BUGSNAG_TOKEN) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
 } else {
-  bugsnag.register(config.BUGSNAG_TOKEN || "", {
-    releaseStage: config.STAGE,
-    notifyReleaseStages: ["production", "staging"],
+  Bugsnag.start({
+    apiKey: config.BUGSNAG_TOKEN || "",
+    plugins: [BugsnagPluginExpress],
+    releaseStage: config.STAGE || "",
+    enabledReleaseStages: ["production", "staging"],
   });
 }
 
@@ -57,10 +60,16 @@ app.set("etag", false); // we're doing our own etag thing I guess
 // subnet will be used as req.ip.
 app.set("trust proxy", "uniquelocal");
 
-app.use(bugsnag.requestHandler);
+const bugSnagMiddleware = Bugsnag.getPlugin("express");
+
+if (bugSnagMiddleware) {
+  app.use(bugSnagMiddleware.requestHandler);
+}
 app.use(express.json({ limit: "10mb" }));
 app.use(cors());
-app.use(bugsnag.errorHandler);
+if (bugSnagMiddleware) {
+  app.use(bugSnagMiddleware.errorHandler);
+}
 
 buildRoutes();
 serve();
@@ -103,7 +112,7 @@ function buildRoutes() {
   }
   app.use(basePath, router);
 
-  app.use((req, res, next) => {
+  app.use((req, res) => {
     const errMsg = "Not Found";
     logger.error(`[${req.ip}] ${req.path} ${errMsg}`);
     res.status(404).send(errMsg);

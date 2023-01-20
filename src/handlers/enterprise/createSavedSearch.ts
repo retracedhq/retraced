@@ -1,9 +1,9 @@
 import moment from "moment";
 import express from "express";
 
-import {checkEitapiAccessUnwrapped} from "../../security/helpers";
-import createSavedSearch, {Options} from "../../models/saved_search/create";
-import {Responses} from "../../router";
+import { checkEitapiAccessUnwrapped } from "../../security/helpers";
+import createSavedSearch, { Options } from "../../models/saved_search/create";
+import { Responses } from "../../router";
 
 export interface CreateSavedSearchRequest {
   /** `name` of this saved search */
@@ -23,11 +23,14 @@ export interface SavedSearch {
 
 export default async function handler(req: express.Request) {
   return Responses.created(
-    createSavedSearchHandler(req.get("Authorization") || "", req.body),
+    await createSavedSearchHandler(req.get("Authorization") || "", req.body)
   );
 }
 
-export async function createSavedSearchHandler(auth: string, body: CreateSavedSearchRequest): Promise<SavedSearch> {
+export async function createSavedSearchHandler(
+  auth: string,
+  body: CreateSavedSearchRequest
+): Promise<SavedSearch> {
   const eitapiToken = await checkEitapiAccessUnwrapped(auth);
   if (!body.name) {
     throw {
