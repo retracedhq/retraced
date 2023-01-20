@@ -24,24 +24,33 @@ import { logger } from "../logger";
 import config from "../../config";
 
 export interface Email {
-    to: string | string[];
-    subject: string;
-    template: string;
-    context: any;
+  to: string | string[];
+  subject: string;
+  template: string;
+  context: any;
 }
 
 interface MandrillResult {
-    _id: string;
-    email: string;
-    status: "sent" | "queued" | "rejected" | "invalid";
-    reject_reason?: "hard-bounce" | "soft-bounce" | "spam" | "unsub" | "custom" | "invalid-sender" | "invalid" | "test-mode-limit" | "unsigned" | "rule";
+  _id: string;
+  email: string;
+  status: "sent" | "queued" | "rejected" | "invalid";
+  reject_reason?:
+    | "hard-bounce"
+    | "soft-bounce"
+    | "spam"
+    | "unsub"
+    | "custom"
+    | "invalid-sender"
+    | "invalid"
+    | "test-mode-limit"
+    | "unsigned"
+    | "rule";
 }
 
 // Returns the no-send-list.
 export type RecipientFilter = (recipients: string[]) => Promise<string[]>;
 
 export class Emailer {
-
   public static getDefault(): Emailer {
     if (!Emailer.instance) {
       let transport = Emailer.smtpFromEnv();
@@ -59,124 +68,129 @@ export class Emailer {
       Emailer.instance = new Emailer(
         transport,
         Emailer.defaultTemplates(),
-        config.EMAIL_FROM || "Retraced <contact@retraced.io>",
-        handleRejects,
+        config.EMAIL_FROM || "Retraced <retraced@boxyhq.com>",
+        handleRejects
       );
     }
 
     return Emailer.instance;
   }
 
-    public static defaultTemplates(): Map<string, (context: any) => string> {
-        const templates = new Map();
+  public static defaultTemplates(): Map<string, (context: any) => string> {
+    const templates = new Map();
 
-        templates.set("retraced/invite-to-team", inviteTmpl);
-        templates.set("retraced/report-day", reportTmpl);
-        templates.set("retraced/deletion-request", deletionRequestTmpl);
+    templates.set("retraced/invite-to-team", inviteTmpl);
+    templates.set("retraced/report-day", reportTmpl);
+    templates.set("retraced/deletion-request", deletionRequestTmpl);
 
-        return templates;
+    return templates;
+  }
+
+  public static smtpFromEnv(): nodemailer.Transporter | null {
+    if (!config.SMTP_CONNECTION_URL) {
+      return null;
     }
 
-    public static smtpFromEnv(): nodemailer.Transporter | null {
-        if (!config.SMTP_CONNECTION_URL) {
-            return null;
-        }
+    logger.info("Configured SMTP for sending emails");
 
-        logger.info("Configured SMTP for sending emails");
+    return nodemailer.createTransport(config.SMTP_CONNECTION_URL);
+  }
 
-        return nodemailer.createTransport(config.SMTP_CONNECTION_URL);
+  public static mandrillFromEnv(): nodemailer.Transporter | null {
+    if (!config.MANDRILL_KEY) {
+      return null;
     }
 
-    public static mandrillFromEnv(): nodemailer.Transporter | null {
-        if (!config.MANDRILL_KEY) {
-            return null;
-        }
+    logger.info("Configured Mandrill for sending emails");
 
-        logger.info("Configured Mandrill for sending emails");
+    return nodemailer.createTransport(
+      mandrillTransport({
+        auth: {
+          apiKey: config.MANDRILL_KEY,
+        },
+      })
+    );
+  }
 
-        return nodemailer.createTransport(mandrillTransport({
-            auth: {
-                apiKey: config.MANDRILL_KEY,
-            },
-        }));
-    }
+  public static mandrillRejectHandler(pgPool: pg.Pool, registry: Registry) {
+    return (results: MandrillResult[]) => {
+      // the list of email addresses that cannot ever receive or do not want more emails
+      const rejections = results
+        .filter((result: MandrillResult): boolean => {
+          if (result.status === "invalid") {
+            logger.error(`Mandrill send to ${result.email} invalid`);
+            return false;
+          }
 
-    public static mandrillRejectHandler(pgPool: pg.Pool, registry: Registry) {
-        return (results: MandrillResult[]) => {
-            // the list of email addresses that cannot ever receive or do not want more emails
-            const rejections = results.filter((result: MandrillResult): boolean => {
-                if (result.status === "invalid") {
-                    logger.error(`Mandrill send to ${result.email} invalid`);
-                    return false;
-                }
+          registry.meter(`Emailer.mandrillRejectHandler.${result.reject_reason}`).mark();
+          logger.warn(`Mandrill send to ${result.email} rejected: ${result.reject_reason}`);
 
-                registry.meter(`Emailer.mandrillRejectHandler.${result.reject_reason}`).mark();
-                logger.warn(`Mandrill send to ${result.email} rejected: ${result.reject_reason}`);
+          switch (result.reject_reason) {
+            case "hard-bounce":
+            case "spam":
+            case "unsub":
+              return true;
+            default:
+              return false;
+          }
+        })
+        .map(({ email }) => email);
 
-                switch (result.reject_reason) {
-                    case "hard-bounce":
-                    case "spam":
-                    case "unsub":
-                        return true;
-                    default:
-                        return false;
-                }
-            })
-                .map(({ email }) => email);
-
-            pgPool.query(`
+      pgPool
+        .query(
+          `
                 update retraceduser
                 set tx_emails_recipient = false
                 where email = any($1)`,
-                [rejections],
-            )
-                .catch((err) => {
-                    logger.error(`Failed to turn off tx email receiving for ${rejections}: ${err.message}`);
-                });
-        };
+          [rejections]
+        )
+        .catch((err) => {
+          logger.error(`Failed to turn off tx email receiving for ${rejections}: ${err.message}`);
+        });
+    };
+  }
+
+  private static instance: Emailer;
+
+  constructor(
+    private readonly transport: nodemailer.Transporter,
+    private readonly templates: Map<string, (context: any) => string>,
+    private readonly from: string,
+    private readonly onRejected?: (rejected: any[]) => void
+  ) {}
+
+  @instrumented
+  public async send(email: Email) {
+    const tmpl = this.templates.get(email.template);
+
+    if (!tmpl) {
+      throw new Error(`Emailer does not have template ${email.template}`);
     }
 
-    private static instance: Emailer;
+    const recipients = Array.isArray(email.to) ? email.to : [email.to];
 
-    constructor(
-        private readonly transport: nodemailer.Transporter,
-        private readonly templates: Map<string, (context: any) => string>,
-        private readonly from: string,
-        private readonly onRejected?: (rejected: any[]) => void,
-    ) { }
+    return new Promise((resolve, reject) => {
+      const rendered = {
+        from: this.from,
+        to: recipients.join(", "),
+        subject: email.subject,
+        html: tmpl(email.context),
+      };
 
-    @instrumented
-    public async send(email: Email) {
-        const tmpl = this.templates.get(email.template);
+      this.transport.sendMail(rendered, (err, info) => {
+        if (err) {
+          logger.error(`Failure sending "${email.template}" email to ${email.to}`);
+          reject(err);
+          return;
+        }
+        logger.info(`Delivered "${email.template}" email to ${email.to}`);
 
-        if (!tmpl) {
-            throw new Error(`Emailer does not have template ${email.template}`);
+        if (!_.isEmpty(info.rejected) && typeof this.onRejected === "function") {
+          this.onRejected(info.rejected);
         }
 
-        const recipients = Array.isArray(email.to) ? email.to : [email.to];
-
-        return new Promise((resolve, reject) => {
-            const rendered = {
-                from: this.from,
-                to: recipients.join(", "),
-                subject: email.subject,
-                html: tmpl(email.context),
-            };
-
-            this.transport.sendMail(rendered, (err, info) => {
-                if (err) {
-                    logger.error(`Failure sending "${email.template}" email to ${email.to}`);
-                    reject(err);
-                    return;
-                }
-                logger.info(`Delivered "${email.template}" email to ${email.to}`);
-
-                if (!_.isEmpty(info.rejected) && typeof this.onRejected === "function") {
-                    this.onRejected(info.rejected);
-                }
-
-                resolve(info);
-            });
-        });
-    }
+        resolve(info);
+      });
+    });
+  }
 }

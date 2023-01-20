@@ -333,7 +333,7 @@ a {
 				<div class="footer">
 					<table width="100%">
 						<tr>
-							<td class="aligncenter content-block">Visit <a href="http://www.retraced.io">retraced.io</a>.</td>
+							<td class="aligncenter content-block">Visit <a href="https://boxyhq.com/audit-logs">https://boxyhq.com/audit-logs</a>.</td>
 						</tr>
 					</table>
 				</div></div>

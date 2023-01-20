@@ -25,8 +25,7 @@ const specs: ApiSpec[] = [
     match: /^\/admin\/v1/,
     path: "/admin/v1",
     title: "Admin API",
-    description:
-      "APIs used by the [Retraced Admin Site](https://app.retraced.io)",
+    description: "APIs used by the [Retraced Admin Portal](https://boxyhq.com/docs/admin-portal/overview)",
   },
   {
     match: /^\/enterprise\/v1/,

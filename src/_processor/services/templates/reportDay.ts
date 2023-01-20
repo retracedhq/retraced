@@ -24,8 +24,8 @@ export default Handlebars.compile(`<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 
                             <tbody>
                               <tr>
                                 <td style="padding-bottom:40px !important;">
-                                  <a href="https://preview.retraced.io/" target="_blank">
-                                    <img alt="Retraced" src="https://preview.retraced.io/images/logo.png" style="width:140px !important;height:26px !important;display:block"/>
+                                  <a href="https://boxyhq.com/audit-logs" target="_blank">
+                                    <img alt="Retraced" src="https://boxyhq.com/img/products/audit-logs/logo.svg" style="width:40px !important;height:40px !important;display:block"/>
                                   </a>
                                 </td>
                               </tr>
@@ -363,7 +363,7 @@ export default Handlebars.compile(`<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 
                               <tr>
                                 <td style="text-align:left;">
                                   <p style="text-align:left;font-size:12px !important;font-weight:400 !important;line-height:12px !important;color:#9B9B9B;">Coded by
-                                    <img alt="Retraced" src="https://preview.retraced.io/images/logo.png" style="width:70px !important;height:13px !important;display:inline-block;margin-left:3px;vertical-align:top;"/>
+                                    <img alt="Retraced" src="https://boxyhq.com/img/products/audit-logs/logo.svg" style="width:13px !important;height:13px !important;display:inline-block;margin-left:3px;vertical-align:top;"/>
                                   </p>
                                 </td>
                                 <td style="text-align:right;">
