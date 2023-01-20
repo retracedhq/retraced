@@ -41,16 +41,6 @@ RUN make build
 FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE as curl-builder
 
 WORKDIR /app
-# curl must be included for cron
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  ca-certificates \
-  curl \
-  \
-  \
-  libp11-kit0 \
-  && apt-get clean \
-  && apt-get autoremove -y \
-  && rm -rf /var/lib/apt/lists/*
 
 ADD .env /app
 ADD package.json /app
@@ -67,6 +57,15 @@ FROM $NODEJS_IMAGE
 EXPOSE 3000
 
 WORKDIR /app
+
+# curl must be included for cron
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  ca-certificates \
+  curl \
+  libp11-kit0 \
+  && apt-get clean \
+  && apt-get autoremove -y \
+  && rm -rf /var/lib/apt/lists/*
 
 ADD .env /app
 ADD package.json /app
