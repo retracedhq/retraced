@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import bugsnag from "bugsnag";
+import Bugsnag from "@bugsnag/js";
 import express from "express";
 import util from "util";
 import * as uuid from "uuid";
@@ -76,7 +76,7 @@ export const onError = (res: express.Response, reqId: string) => (err: any) => {
 };
 
 function handleFrameworkError(err: any, reqId: string, res: express.Response) {
-  bugsnag.notify(err.err || err.message);
+  Bugsnag.notify(err.err || err.message);
   // Structured error, specific status code.
   const errMsg = err.err ? err.err.message : err.message || "An unexpected error occurred";
 
@@ -95,7 +95,7 @@ function handleFrameworkError(err: any, reqId: string, res: express.Response) {
 }
 
 function handleUnexpectedError(err: any, reqId: string, res: express.Response) {
-  bugsnag.notify(err);
+  Bugsnag.notify(err);
   // Generic error, default code (500).
   const bodyToSend = {
     status: 500,

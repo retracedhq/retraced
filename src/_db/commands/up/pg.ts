@@ -2,7 +2,7 @@ import picocolors from "picocolors";
 import path from "path";
 import _ from "lodash";
 import postgrator from "postgrator";
-import bugsnag from "bugsnag";
+import Bugsnag from "@bugsnag/js";
 import { setupBugsnag } from "../../common";
 
 setupBugsnag();
@@ -36,9 +36,7 @@ export const builder = {
 logger.info("registering handler");
 export const handler = (argv) => {
   try {
-    logger
-      .child({ up: "pg", schemaPath: argv.schemaPath })
-      .info("beginning handler");
+    logger.child({ up: "pg", schemaPath: argv.schemaPath }).info("beginning handler");
     const cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`;
     logger.info("initializing migrator");
     const migrator = new postgrator({
@@ -56,7 +54,7 @@ export const handler = (argv) => {
       process.exit(0);
     });
   } catch (err) {
-    bugsnag.notify(err);
+    Bugsnag.notify(err);
     console.log(err);
   }
 };
