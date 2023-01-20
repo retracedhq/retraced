@@ -1,4 +1,17 @@
-import { Get, Post, Delete, Route, Body, Query, Header, Path, SuccessResponse, Controller, Put, Request } from "tsoa";
+import {
+  Get,
+  Post,
+  Delete,
+  Route,
+  Body,
+  Query,
+  Header,
+  Path,
+  SuccessResponse,
+  Controller,
+  Put,
+  Request,
+} from "tsoa";
 import express from "express";
 import * as uuid from "uuid";
 
@@ -120,7 +133,7 @@ export class AdminAPI extends Controller {
   /**
    * Create a template. An overview of Template usage in Retraced can be found at
    *
-   * https://preview.retraced.io/documentation/advanced-retraced/display-templates/
+   * https://boxyhq.com/docs/retraced/advanced/display-templates
    *
    * @param auth          Base64 encoded JWT
    * @param projectId     The project id
@@ -157,7 +170,7 @@ export class AdminAPI extends Controller {
   /**
    * Search templates. An overview of Template usage in Retraced can be found at
    *
-   * https://preview.retraced.io/documentation/advanced-retraced/display-templates/
+   * https://boxyhq.com/docs/retraced/advanced/display-templates
    *
    * @param auth          Base64 encoded JWT
    * @param projectId     The project id
@@ -186,7 +199,7 @@ export class AdminAPI extends Controller {
   /**
    * Delete a template. An overview of Template usage in Retraced can be found at
    *
-   * https://preview.retraced.io/documentation/advanced-retraced/display-templates/
+   * https://boxyhq.com/docs/retraced/advanced/display-templates
    *
    *
    * @param auth          Base64 encoded JWT authentication

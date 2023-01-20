@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Request,
-  Example,
-  Header,
-  Post,
-  Route,
-  SuccessResponse,
-} from "tsoa";
+import { Body, Controller, Request, Example, Header, Post, Route, SuccessResponse } from "tsoa";
 import { Request as Req } from "express";
 
 import {
@@ -26,10 +17,7 @@ import { checkEitapiAccessUnwrapped } from "../security/helpers";
 import { graphql } from "graphql";
 import schema from "../handlers/graphql/schema";
 import { EnterpriseToken } from "../models/eitapi_token";
-import {
-  CreateEventRequest,
-  defaultEventCreater,
-} from "../handlers/createEvent";
+import { CreateEventRequest, defaultEventCreater } from "../handlers/createEvent";
 /*
 import enterpriseCreateSavedSearch from "../handlers/enterprise/createSavedSearch";
 import enterpriseDeleteActiveSearch from "../handlers/enterprise/deleteActiveSearch";
@@ -71,7 +59,7 @@ export class EnterpriseAPI extends Controller {
   /**
    * Query events with GraphQL
    *
-   * https://preview.retraced.io/documentation/apis/graphql/
+   * https://boxyhq.com/docs/retraced/apis/graphql
    *
    * @param auth            auth header of the form Token token= ...
    * @param projectId       the project id
@@ -116,11 +104,7 @@ export class EnterpriseAPI extends Controller {
       description: `Exported audit log events`,
       source_ip: req.ip,
     };
-    defaultEventCreater.saveRawEvent(
-      token.project_id,
-      token.environment_id,
-      thisViewEvent
-    );
+    defaultEventCreater.saveRawEvent(token.project_id, token.environment_id, thisViewEvent);
 
     this.setStatus(result.errors ? 400 : 200);
 
@@ -147,10 +131,7 @@ export class EnterpriseAPI extends Controller {
     @Header("Authorization") auth: string,
     @Body() request: CreateActiveSearchRequest
   ): Promise<ActiveSearchId> {
-    const result: ActiveSearchId = await enterpriseCreateActiveSearch(
-      auth,
-      request
-    );
+    const result: ActiveSearchId = await enterpriseCreateActiveSearch(auth, request);
 
     this.setStatus(201);
     return result;

@@ -56,7 +56,7 @@ export interface GraphQLResp {
 
 export interface GraphQLRequest {
   /**
-   * Graphql Search query string. See https://preview.retraced.io/documentation/apis/graphql/#search
+   * Graphql Search query string. See https://boxyhq.com/docs/retraced/apis/graphql#search
    * for an example query
    */
   query: string;

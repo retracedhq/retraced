@@ -48,7 +48,7 @@ export interface RequestActor {
   /** A human-readable name */
   name?: string;
   /** A url to view this actor in the vendor app.
-   * Can be referenced in Retraced [Display Templates](https://preview.retraced.io/documentation/advanced-retraced/display-templates/)
+   * Can be referenced in Retraced [Display Templates](https://boxyhq.com/docs/retraced/advanced/display-templates)
    * to create an interactive embedded viewer experience.
    */
   href?: string;
@@ -80,7 +80,7 @@ export interface CreateEventRequest {
   crud: string;
   group?: RequestGroup;
   /** A title to display for the event.
-   *  This field is deprecated in favor of [Display Templates](https://preview.retraced.io/documentation/advanced-retraced/display-templates/)
+   *  This field is deprecated in favor of [Display Templates](https://boxyhq.com/docs/retraced/advanced/display-templates)
    */
   displayTitle?: string;
   /** ISO8601 date string representing when this event occurent. `created` will be tracked in addtion to `received` */
@@ -111,7 +111,13 @@ export interface CreateEventResponse {
 
 export interface EventPersister {
   delayMS: number;
-  persist: (projId: string, envId: string, id: string, received: number, event: CreateEventRequest) => Promise<void>;
+  persist: (
+    projId: string,
+    envId: string,
+    id: string,
+    received: number,
+    event: CreateEventRequest
+  ) => Promise<void>;
 }
 
 export class EventCreater {
@@ -311,7 +317,14 @@ export class EventCreater {
     const insertStmt = EventCreater.insertIntoIngestTask;
 
     const newTaskId = this.idSource();
-    const insertVals = [newTaskId, JSON.stringify(eventInput), projectId, envId, newEventId, moment().valueOf()];
+    const insertVals = [
+      newTaskId,
+      JSON.stringify(eventInput),
+      projectId,
+      envId,
+      newEventId,
+      moment().valueOf(),
+    ];
 
     if (querier) {
       await querier.query(insertStmt, insertVals);
@@ -343,7 +356,13 @@ export class EventCreater {
     const conn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
     try {
       await instrument("EventCreater.insertOneIntoBacklog", async () => {
-        return await conn.query(insertStmt, [projectId, envId, newEventId, received, JSON.stringify(eventInput)]);
+        return await conn.query(insertStmt, [
+          projectId,
+          envId,
+          newEventId,
+          received,
+          JSON.stringify(eventInput),
+        ]);
       });
     } finally {
       conn.release();
@@ -397,7 +416,9 @@ export class EventCreater {
     if (events.length > this.maxEvents) {
       throw {
         status: 400,
-        err: new Error(`A maximum of ${this.maxEvents} events may be created at once, received ${events.length}`),
+        err: new Error(
+          `A maximum of ${this.maxEvents} events may be created at once, received ${events.length}`
+        ),
       };
     }
 
@@ -405,7 +426,9 @@ export class EventCreater {
       const violations = this.validateEventInput(eventInput);
       if (!_.isEmpty(violations)) {
         invalidEvents.push({
-          message: `Invalid event input at index ${index}:\n-- ${violations.map((i) => i.message).join("\n-- ")}`,
+          message: `Invalid event input at index ${index}:\n-- ${violations
+            .map((i) => i.message)
+            .join("\n-- ")}`,
           index,
           violations,
         });
@@ -508,7 +531,11 @@ export class EventCreater {
       });
     }
 
-    if (maybeEvent.source_ip && !IPV4_REGEX.test(maybeEvent.source_ip) && !IPV6_REGEX.test(maybeEvent.source_ip)) {
+    if (
+      maybeEvent.source_ip &&
+      !IPV4_REGEX.test(maybeEvent.source_ip) &&
+      !IPV6_REGEX.test(maybeEvent.source_ip)
+    ) {
       violations.push({
         message: `Unable to parse 'source_ip' field as valid IPV4 or IPV6 address: ${maybeEvent["source_ip"]}`,
         field: "source_ip",
