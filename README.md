@@ -10,7 +10,7 @@ Client libraries are available for [Go](https://github.com/retracedhq/retraced-g
 
 ### Running with docker-compose
 
-> `docker-compose up`
+> `docker-compose up -d` or `npm run dev`
 
 **Note:** `ADMIN_ROOT_TOKEN` has been set to `dev` so you can test the setup locally. Please remember to change this (and other relevant sensitive env vars/secrets) in production.
 
@@ -47,20 +47,20 @@ You can also use the [Admin Portal](http://localhost:5225) but will need to setu
 
 You could alternatively use Skaffold instead of docker-compose to run Retraced locally.
 
-> `make dev` or `skaffold dev --status-check=false --force=true`
+> `npm run dev:skaffold` or `skaffold dev --status-check=false --force=true`
 
 ## Swagger Documentation
 
 Swagger spec is generated from source using [TSOA](https://github.com/lukeautry/tsoa)
 
-By default, a swagger spec is built as part of `make build`, and is served by express at `/publisher/v1/swagger.json`.
+By default, a swagger spec is built as part of `npm run build`, and is served by express at `/publisher/v1/swagger.json`.
 
 #### Generating a spec
 
 To generate swagger.json from Typescript sources use
 
-```
-make swagger
+```sh
+npm run swagger
 ```
 
 The outputs will be written to build/swagger.json
