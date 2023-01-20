@@ -8,7 +8,7 @@ import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
 @suite
 class AdminUserBootstrapTest {
   @test
-  public async "AdminUserBootstrap#AdminUserBootstrap() gets initialized"() {
+  public "AdminUserBootstrap#AdminUserBootstrap() gets initialized"() {
     try {
       const adminUserBootstrap = new AdminUserBootstrap("test");
       return expect(adminUserBootstrap).to.not.be.null;
@@ -81,7 +81,7 @@ class AdminUserBootstrapTest {
     }
   }
 
-  @test public async "AdminUserBootstrap#handler()"() {
+  @test public "AdminUserBootstrap#handler()"() {
     try {
       const adminUserBootstrap = new AdminUserBootstrap("test");
       const handler = adminUserBootstrap.handler();

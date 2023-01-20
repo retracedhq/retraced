@@ -1,7 +1,5 @@
 import getPgPool from "../../persistence/pg";
 
-import listInvites from "../invite/list";
-
 const pgPool = getPgPool();
 
 // projectId

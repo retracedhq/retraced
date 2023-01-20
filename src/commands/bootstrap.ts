@@ -1,5 +1,5 @@
 import { bootstrapProject } from "../headless";
-import getPgPool from "../persistence/pg";
+// import getPgPool from "../persistence/pg";
 
 export const name = "bootstrap";
 export const describe =
@@ -33,25 +33,25 @@ const sleep = async (time) => {
   });
 };
 
-async function checkTableAvailability(tableName) {
-  const pool = getPgPool();
-  let count = 0;
-  let sql;
-  if (pool) {
-    do {
-      try {
-        sql = "SELECT * FROM " + tableName[count] + " LIMIT 1";
-        await pool.query(sql);
-        console.log(`Found table ${tableName[count]}`);
-        count++;
-      } catch (ex) {
-        console.log(`Table ${tableName[count]} not found`);
-      } finally {
-        await sleep(300);
-      }
-    } while (tableName.length > count);
-  }
-}
+// async function checkTableAvailability(tableName) {
+//   const pool = getPgPool();
+//   let count = 0;
+//   let sql;
+//   if (pool) {
+//     do {
+//       try {
+//         sql = "SELECT * FROM " + tableName[count] + " LIMIT 1";
+//         await pool.query(sql);
+//         console.log(`Found table ${tableName[count]}`);
+//         count++;
+//       } catch (ex) {
+//         console.log(`Table ${tableName[count]} not found`);
+//       } finally {
+//         await sleep(300);
+//       }
+//     } while (tableName.length > count);
+//   }
+// }
 
 export const handler = async (argv) => {
   const {

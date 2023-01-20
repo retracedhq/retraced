@@ -9,7 +9,6 @@ import { sleep } from "../pkg/util";
 
 const chance = new Chance();
 
-// tslint:disable-next-line
 const chai = require("chai"),
   chaiHttp = require("chai-http");
 chai.use(chaiHttp);

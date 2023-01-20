@@ -1,9 +1,8 @@
-/* tslint:disable */
+/* eslint:disable */
 import _ from "lodash";
 import leftPad from "left-pad";
 {{#if canImportByAlias}}
   import { ValidateParam } from 'tsoa';
-  import { Controller } from 'tsoa';
 {{else}}
   import { ValidateParam } from '../../../src/routeGeneration/templateHelpers';
   import { Controller } from '../../../src/interfaces/controller';

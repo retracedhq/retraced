@@ -1,12 +1,10 @@
 import * as querystring from "querystring";
 import { expect } from "chai";
-import * as Retraced from "@retracedhq/retraced";
 import "mocha";
 import "chai-http";
 import { retracedUp } from "../pkg/retracedUp";
 import * as Env from "../env";
 
-// tslint:disable-next-line
 const chai = require("chai"),
   chaiHttp = require("chai-http");
 chai.use(chaiHttp);

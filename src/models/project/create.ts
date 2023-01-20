@@ -37,7 +37,7 @@ export default function createProject(opts) {
         $1, to_timestamp($2), $3
       )`;
       const v = [project.id, project.created, project.name];
-      pg.query(q, v, (qerr, result) => {
+      pg.query(q, v, (qerr) => {
         done();
         if (qerr) {
           reject(qerr);
@@ -75,9 +75,7 @@ export default function createProject(opts) {
                 name: `Default ${environment.name} Token`,
                 disabled: false,
               };
-              createTokenPromises.push(
-                createApiToken(project.id, environment.id, newApiToken)
-              );
+              createTokenPromises.push(createApiToken(project.id, environment.id, newApiToken));
             });
             return Promise.all(createTokenPromises);
           })

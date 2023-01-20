@@ -26,15 +26,12 @@ class AuthenticatorTest {
 
     pool
       .setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
-      .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
+      .returns(() => Promise.resolve(tokenRows) as Promise<QueryResult>)
       .verifiable(TypeMoq.Times.once());
 
     const authenticator = new Authenticator(pool.object);
 
-    const token = await authenticator.getApiTokenOr401(
-      "token=some-token",
-      "a-project"
-    );
+    const token = await authenticator.getApiTokenOr401("token=some-token", "a-project");
 
     expect(token.projectId).to.equal("a-project");
     expect(token.environmentId).to.equal("an-environment");
@@ -46,7 +43,7 @@ class AuthenticatorTest {
     const tokenRows = { rowCount: 0, rows: [] as any[] };
     pool
       .setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
-      .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
+      .returns(() => Promise.resolve(tokenRows) as Promise<QueryResult>)
       .verifiable(TypeMoq.Times.once());
 
     const authenticator = new Authenticator(pool.object);
@@ -78,7 +75,7 @@ class AuthenticatorTest {
     };
     pool
       .setup((x) => x.query(getApiTokenQuery, tokenIdArgMatcher))
-      .returns((args) => Promise.resolve(tokenRows) as Promise<QueryResult>)
+      .returns(() => Promise.resolve(tokenRows) as Promise<QueryResult>)
       .verifiable(TypeMoq.Times.once());
 
     const authenticator = new Authenticator(pool.object);
@@ -86,10 +83,7 @@ class AuthenticatorTest {
     const expected = { status: 401, err: new Error("Unauthorized") };
 
     try {
-      await authenticator.getApiTokenOr401(
-        "token=bad-token",
-        "another-project"
-      );
+      await authenticator.getApiTokenOr401("token=bad-token", "another-project");
       throw new Error(`Expected error ${expected} to be thrown`);
     } catch (err) {
       expect(err.status).to.deep.equal(expected.status);

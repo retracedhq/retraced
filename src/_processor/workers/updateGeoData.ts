@@ -116,7 +116,7 @@ async function parseLocationData(csvReadStream) {
 
     blockReader
       .on("line", (line) => {
-        /* tslint:disable */
+        /* eslint-disable */
         const [
           geonameId,
           localeCode,
@@ -132,7 +132,7 @@ async function parseLocationData(csvReadStream) {
           metroCode,
           timeZone,
         ] = csv.parse(line)[0];
-        /* tslint:enable */
+        /* eslint-enable */
 
         if (first) {
           first = false;
@@ -171,7 +171,7 @@ async function translateIPBlockData(csvReadStream, locations, date) {
 
     blockReader
       .on("line", (line) => {
-        /* tslint:disable */
+        /* eslint-disable */
         const [
           network,
           geonameId,
@@ -184,7 +184,7 @@ async function translateIPBlockData(csvReadStream, locations, date) {
           longitude,
           accuracyRadius,
         ] = csv.parse(line)[0];
-        /* tslint:enable */
+        /* eslint-enable */
 
         if (first) {
           first = false;

@@ -103,7 +103,7 @@ function buildRoutes() {
   }
   app.use(basePath, router);
 
-  app.use((req, res, next) => {
+  app.use((req, res) => {
     const errMsg = "Not Found";
     logger.error(`[${req.ip}] ${req.path} ${errMsg}`);
     res.status(404).send(errMsg);

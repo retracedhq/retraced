@@ -19,7 +19,7 @@ query: {
 }
 */
 export default async function handler(req) {
-  const apiToken = await new Authenticator(getPgPool()).getApiTokenOr401(req.headers.authorization, req.params.projectId);
+  await new Authenticator(getPgPool()).getApiTokenOr401(req.headers.authorization, req.params.projectId);
   if (!req.query.environment_id) {
     throw { status: 400, err: new Error("Missing environment_id") };
   }
@@ -48,15 +48,15 @@ export default async function handler(req) {
   const hydratedEvents = await addDisplayTitles({
     projectId: req.params.projectId,
     environmentId: req.query.environment_id,
-    events: results.events!,
+    events: results.events || [],
     source: "admin",
   });
 
   return {
     status: 200,
-    body:   JSON.stringify({
+    body: JSON.stringify({
       total_hits: results.totalHits,
-      events:     hydratedEvents || [],
+      events: hydratedEvents || [],
     }),
   };
 }
