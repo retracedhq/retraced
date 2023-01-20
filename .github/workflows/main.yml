@@ -18,6 +18,8 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    outputs:
+      NPM_VERSION: ${{ steps.version.outputs.NPM_VERSION }}
     strategy:
       matrix:
         node-version: [18.x]
@@ -28,6 +30,12 @@ jobs:
       - run: npm run lint
       - run: make build
       - run: npm run cover
+      - id: version
+        run: |
+          npm install -g json
+          JACKSON_VERSION=$(echo $(cat ./package.json) | json version)
+
+          echo "NPM_VERSION=${JACKSON_VERSION}" >> $GITHUB_OUTPUT
 
   build:
     needs: ci
@@ -69,7 +77,7 @@ jobs:
           file: ./deploy/Dockerfile-slim
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.SHA7 }}
+          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
