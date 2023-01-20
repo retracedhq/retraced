@@ -42,9 +42,6 @@ RUN npm run build
 FROM --platform=$BUILDPLATFORM node as curl-builder
 
 WORKDIR /app
-# curl must be included for cron
-RUN apk add --update --no-cache ca-certificates curl p11-kit \
-  && rm -rf /tmp/* /var/cache/apk/*
 
 ADD .env /app
 ADD package.json /app
@@ -61,6 +58,10 @@ FROM $NODEJS_IMAGE
 EXPOSE 3000
 
 WORKDIR /app
+
+# curl must be included for cron
+RUN apk add --update --no-cache ca-certificates curl p11-kit \
+  && rm -rf /tmp/* /var/cache/apk/*
 
 ADD .env /app
 ADD package.json /app
