@@ -76,7 +76,7 @@
     "mocha": "10.2.0",
     "nyc": "15.1.0",
     "snyk": "1.1069.0",
-    "swagger-jsdoc": "6.2.7",
+    "swagger-jsdoc": "6.2.8",
     "ts-node": "10.9.1",
     "tslint": "6.1.3",
     "tv4": "1.3.0",
