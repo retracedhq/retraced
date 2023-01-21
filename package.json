@@ -77,7 +77,6 @@
     "mocha": "10.2.0",
     "nyc": "15.1.0",
     "rimraf": "4.1.1",
-    "snyk": "1.1069.0",
     "swagger-jsdoc": "6.2.8",
     "ts-node": "10.9.1",
     "tslint": "6.1.3",
@@ -96,7 +95,6 @@
     "e2e:test": "mocha --recursive -r ts-node/register src/e2e-tests/**/*.ts",
     "cover": "nyc mocha",
     "mintest": "mocha --recursive -r ts-node/register --reporter 'min' src/test/**/*.ts",
-    "snyk-protect": "snyk protect",
     "dev:api": "node --inspect=0.0.0.0 -r ts-node/register src/index.ts",
     "dev:processor": "PROCESSOR_DEV_PORT=3001 node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts",
     "dev:geo": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/workers/updateGeoData.ts",
@@ -104,7 +102,6 @@
     "dev:skaffold": "skaffold dev --status-check=false --force=true"
   },
   "author": "",
-  "snyk": true,
   "nyc": {
     "extension": [
       ".ts",
