@@ -36,9 +36,9 @@ export default function (event: Event): string {
   canonicalString += _.isEmpty(event.target) ? ":" : `${encodePassOne(event.target?.id)}:`;
   canonicalString += _.isEmpty(event.actor) ? ":" : `${encodePassOne(event.actor?.id)}:`;
   canonicalString += _.isEmpty(event.group) ? ":" : `${encodePassOne(event.group?.id)}:`;
-  canonicalString += _.isEmpty(event.sourceIp) ? ":" : `${encodePassOne(event.sourceIp || "")}:`;
-  canonicalString += event.isFailure ? "1:" : "0:";
-  canonicalString += event.isAnonymous ? "1:" : "0:";
+  canonicalString += _.isEmpty(event.source_ip) ? ":" : `${encodePassOne(event.source_ip || "")}:`;
+  canonicalString += event.is_failure ? "1:" : "0:";
+  canonicalString += event.is_anonymous ? "1:" : "0:";
 
   if (!event.fields) {
     canonicalString += ":";

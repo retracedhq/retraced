@@ -6,7 +6,7 @@
   "license": "Apache 2.0",
   "dependencies": {
     "@elastic/elasticsearch": "7.17.0",
-    "@retracedhq/retraced": "0.5.1",
+    "@retracedhq/retraced": "0.6.1",
     "analytics-node": "6.2.0",
     "axios": "1.2.2",
     "bcrypt": "5.0.1",

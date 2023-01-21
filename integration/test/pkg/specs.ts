@@ -1,123 +1,112 @@
 export const CreateEventSchema = {
-    $schema: "http://json-schema.org/draft-04/schema#",
-    definitions: {
+  $schema: "http://json-schema.org/draft-04/schema#",
+  definitions: {
+    id: {
+      type: "string",
+    },
+    name: {
+      type: "string",
+    },
+  },
+  properties: {
+    action: {
+      type: "string",
+    },
+    group: {
+      properties: {
         id: {
-            type: "string",
+          $ref: "#/definitions/id",
         },
         name: {
-            type: "string",
+          $ref: "#/definitions/name",
         },
+      },
+      required: ["id", "name"],
+      type: "object",
     },
-    properties: {
-        action: {
-            type: "string",
-        },
-        group: {
-            properties: {
-                id: {
-                    $ref: "#/definitions/id",
-                },
-                name: {
-                    $ref: "#/definitions/name",
-                },
-            },
-            required: [
-                "id",
-                "name",
-            ],
-            type: "object",
-        },
-        actor: {
-            properties: {
-                href: {
-                    type: "string",
-                },
-                id: {
-                    $ref: "#/definitions/id",
-                },
-                name: {
-                    $ref: "#/definitions/name",
-                },
-                fields: {
-                    type: "object",
-                },
-            },
-            required: [
-                "id",
-            ],
-            type: "object",
-        },
-        created: {
-            type: "object",
-        },
-        crud: {
-            type: "string",
-            enum: [
-                "c",
-                "r",
-                "u",
-                "d",
-            ],
-        },
-        description: {
-            type: "string",
-        },
-        sourceIp: {
-            type: "string",
-        },
-        target: {
-            properties: {
-                href: {
-                    type: "string",
-                },
-                id: {
-                    $ref: "#/definitions/id",
-                },
-                name: {
-                    $ref: "#/definitions/name",
-                },
-                type: {
-                    type: "string",
-                },
-                fields: {
-                    type: "object",
-                },
-            },
-            required: [
-                "id",
-            ],
-            type: "object",
-        },
-        isAnonymous: {
-            type: "boolean",
-        },
-        isFailure: {
-            type: "boolean",
-        },
-        component: {
+    actor: {
+      properties: {
+        href: {
           type: "string",
         },
-        version: {
+        id: {
+          $ref: "#/definitions/id",
+        },
+        name: {
+          $ref: "#/definitions/name",
+        },
+        fields: {
+          type: "object",
+        },
+      },
+      required: ["id"],
+      type: "object",
+    },
+    created: {
+      type: "object",
+    },
+    crud: {
+      type: "string",
+      enum: ["c", "r", "u", "d"],
+    },
+    description: {
+      type: "string",
+    },
+    source_ip: {
+      type: "string",
+    },
+    target: {
+      properties: {
+        href: {
+          type: "string",
+        },
+        id: {
+          $ref: "#/definitions/id",
+        },
+        name: {
+          $ref: "#/definitions/name",
+        },
+        type: {
           type: "string",
         },
         fields: {
-            type: "object",
+          type: "object",
         },
+      },
+      required: ["id"],
+      type: "object",
     },
-    required:["action", "crud"],
-    additionalProperties: false,
-    type: "object",
+    is_anonymous: {
+      type: "boolean",
+    },
+    is_failure: {
+      type: "boolean",
+    },
+    component: {
+      type: "string",
+    },
+    version: {
+      type: "string",
+    },
+    fields: {
+      type: "object",
+    },
+  },
+  required: ["action", "crud"],
+  additionalProperties: false,
+  type: "object",
 };
 
 export const search = (q: string) => {
-    return {
-        variables: {query: q, last:20, before:""},
-        query: GraphQLQuery.query,
-    };
+  return {
+    variables: { query: q, last: 20, before: "" },
+    query: GraphQLQuery.query,
+  };
 };
 
 export const GraphQLQuery = {
-    variables:{query:"",last:20,before:""},query:`
+  variables: { query: "", last: 20, before: "" },
+  query: `
     query Search($query: String!, $last: Int, $before: String) {
     search(query: $query, last: $last, before: $before) {
         totalCount

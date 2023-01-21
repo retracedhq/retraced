@@ -44,9 +44,7 @@ describe("Admin delete environment", function () {
         before(function (done) {
           chai
             .request(Env.Endpoint)
-            .post(
-              `/admin/v1/project/${project.id}/environment/${env.id}/deletion_request`
-            )
+            .post(`/admin/v1/project/${project.id}/environment/${env.id}/deletion_request`)
             .set("Authorization", jwt)
             .send({
               resourceKind: "environment",
@@ -62,9 +60,7 @@ describe("Admin delete environment", function () {
         before(function (done) {
           chai
             .request(Env.Endpoint)
-            .post(
-              `/admin/v1/project/${project.id}/templates?environment_id=${env.id}`
-            )
+            .post(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
             .set("Authorization", jwt)
             .send({
               name: "Delete Template Test",
@@ -80,61 +76,55 @@ describe("Admin delete environment", function () {
             });
         });
 
-        context(
-          "When the admin sends a request to delete the environment",
-          function () {
-            before(function (done) {
-              chai
-                .request(Env.Endpoint)
-                .delete(`/admin/v1/project/${project.id}/environment/${env.id}`)
-                .set("Authorization", jwt)
-                .end((err, res) => {
-                  expect(err).to.be.null;
-                  resp = res;
-                  done();
-                });
-            });
+        context("When the admin sends a request to delete the environment", function () {
+          before(function (done) {
+            chai
+              .request(Env.Endpoint)
+              .delete(`/admin/v1/project/${project.id}/environment/${env.id}`)
+              .set("Authorization", jwt)
+              .end((err, res) => {
+                expect(err).to.be.null;
+                resp = res;
+                done();
+              });
+          });
 
-            specify("The environment is deleted with status 204.", function () {
-              expect(resp.status).to.equal(204);
-              expect(resp.body).to.deep.equal({});
-            });
+          specify("The environment is deleted with status 204.", function () {
+            expect(resp.status).to.equal(204);
+            expect(resp.body).to.deep.equal({});
+          });
 
-            specify(
-              "The deletion is audited under the headless project.",
-              async function () {
-                this.timeout(Env.EsIndexWaitMs * 2);
-                await sleep(Env.EsIndexWaitMs);
-                const query = {
-                  crud: "d",
-                  action: "environment.delete",
-                };
-                const mask = {
-                  action: true,
-                  crud: true,
-                  actor: {
-                    id: true,
-                  },
-                  target: {
-                    id: true,
-                  },
-                  group: {
-                    id: true,
-                  },
-                };
-                const connection = await headless.query(query, mask, 1);
-                const audited = connection.currentResults[0];
-                const token = resp.body;
+          specify("The deletion is audited under the headless project.", async function () {
+            this.timeout(Env.EsIndexWaitMs * 2);
+            await sleep(Env.EsIndexWaitMs);
+            const query = {
+              crud: "d",
+              action: "environment.delete",
+            };
+            const mask = {
+              action: true,
+              crud: true,
+              actor: {
+                id: true,
+              },
+              target: {
+                id: true,
+              },
+              group: {
+                id: true,
+              },
+            };
+            const connection = await headless.query(query, mask, 1);
+            const audited = connection.currentResults[0];
+            const token = resp.body;
 
-                expect(audited.action).to.equal("environment.delete");
-                expect(audited.crud).to.equal("d");
-                expect(audited.group!.id).to.equal(project.id);
-                expect(audited.actor!.id).to.equal(adminId);
-                expect(audited.target!.id).to.equal(env.id);
-              }
-            );
-          }
-        );
+            expect(audited.action).to.equal("environment.delete");
+            expect(audited.crud).to.equal("d");
+            expect(audited.group!.id).to.equal(project.id);
+            expect(audited.actor!.id).to.equal(adminId);
+            expect(audited.target!.id).to.equal(env.id);
+          });
+        });
       }
     );
   });

@@ -42,7 +42,7 @@ describe("Enterprise Search Group Scoping", function () {
             },
             created: currentTime,
             crud: "c",
-            sourceIp: "192.168.0.1",
+            source_ip: "192.168.0.1",
             actor: {
               id: "qa@retraced.io",
               name: "RetracedQA Employee",
@@ -61,7 +61,7 @@ describe("Enterprise Search Group Scoping", function () {
               },
             },
             description: "Automated integration testing...",
-            isFailure: false,
+            is_failure: false,
             fields: {
               quality: "excellent",
             },
@@ -74,64 +74,52 @@ describe("Enterprise Search Group Scoping", function () {
           resultBody = await retraced.reportEvent(event);
         });
 
-        context(
-          "When a call is made to create an eitapi token for a Replicated group",
-          function () {
-            beforeEach((done) => {
-              if (otherToken) {
+        context("When a call is made to create an eitapi token for a Replicated group", function () {
+          beforeEach((done) => {
+            if (otherToken) {
+              done();
+              return;
+            }
+            chai
+              .request(Env.Endpoint)
+              .post(`/publisher/v1/project/${Env.ProjectID}/group/replqa1234/enterprisetoken`)
+              .set("Authorization", `token=${Env.ApiKey}`)
+              .send({ display_name: "QA" + randomNumber.toString() })
+              .end(function (err, res) {
+                responseBody = JSON.parse(res.text);
+                expect(err).to.be.null;
+                expect(res).to.have.property("status", 201);
+                expect(responseBody.token).to.exist;
+                otherToken = responseBody.token;
                 done();
-                return;
-              }
-              chai
-                .request(Env.Endpoint)
-                .post(
-                  `/publisher/v1/project/${Env.ProjectID}/group/replqa1234/enterprisetoken`
-                )
-                .set("Authorization", `token=${Env.ApiKey}`)
-                .send({ display_name: "QA" + randomNumber.toString() })
-                .end(function (err, res) {
-                  responseBody = JSON.parse(res.text);
-                  expect(err).to.be.null;
-                  expect(res).to.have.property("status", 201);
-                  expect(responseBody.token).to.exist;
-                  otherToken = responseBody.token;
-                  done();
-                });
-            });
+              });
+          });
 
-            context(
-              "And the eitapi token is used to call the Enterprise API GraphQL endpoint for event",
-              function () {
-                beforeEach(function (done) {
-                  this.timeout(Env.EsIndexWaitMs * 2);
-                  sleep(Env.EsIndexWaitMs).then(() => {
-                    chai
-                      .request(Env.Endpoint)
-                      .post("/enterprise/v1/graphql")
-                      .set("Authorization", `token=${otherToken}`)
-                      .send(
-                        search(
-                          "integration.test.api." + randomNumber.toString()
-                        )
-                      )
-                      .end(function (err, res) {
-                        responseBody = JSON.parse(res.text);
-                        expect(err).to.be.null;
-                        expect(res).to.have.property("status", 200);
-                        done();
-                      });
-                  });
+          context(
+            "And the eitapi token is used to call the Enterprise API GraphQL endpoint for event",
+            function () {
+              beforeEach(function (done) {
+                this.timeout(Env.EsIndexWaitMs * 2);
+                sleep(Env.EsIndexWaitMs).then(() => {
+                  chai
+                    .request(Env.Endpoint)
+                    .post("/enterprise/v1/graphql")
+                    .set("Authorization", `token=${otherToken}`)
+                    .send(search("integration.test.api." + randomNumber.toString()))
+                    .end(function (err, res) {
+                      responseBody = JSON.parse(res.text);
+                      expect(err).to.be.null;
+                      expect(res).to.have.property("status", 200);
+                      done();
+                    });
                 });
-                specify(
-                  "Then the response should not include the event from Retraced Group",
-                  function () {
-                    expect(responseBody.data.search.edges).to.be.empty;
-                  }
-                );
-              }
-            );
-          }
-        );
+              });
+              specify("Then the response should not include the event from Retraced Group", function () {
+                expect(responseBody.data.search.edges).to.be.empty;
+              });
+            }
+          );
+        });
       }
     );
   });

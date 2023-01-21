@@ -79,10 +79,6 @@ export interface CreateEventRequest {
   /** Denotes whether this is a "Create", "Read", "Update", or "Delete" event. */
   crud: string;
   group?: RequestGroup;
-  /** A title to display for the event.
-   *  This field is deprecated in favor of [Display Templates](https://boxyhq.com/docs/retraced/advanced/display-templates)
-   */
-  displayTitle?: string;
   /** ISO8601 date string representing when this event occurent. `created` will be tracked in addtion to `received` */
   created?: Date;
   actor?: RequestActor;
