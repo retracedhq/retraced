@@ -7,7 +7,6 @@ patchesStrategicMerge:
   - ./api-deployment.yaml
   - ./cron-deployment.yaml
   - ./dbutil-deployment.yaml
-  # - ./integrationtest.yaml
   - ./migratepg-job.yaml
   - ./migratees-job.yaml
   - ./processor-deployment.yaml
