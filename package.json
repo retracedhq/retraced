@@ -3,7 +3,7 @@
   "version": "1.5.1",
   "description": "A fully open source audit log service and embeddable UI easily deployed to your own Kubernetes cluster",
   "main": "./build/index.js",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "dependencies": {
     "@elastic/elasticsearch": "7.17.0",
     "@retracedhq/retraced": "0.6.1",
