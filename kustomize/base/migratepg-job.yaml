@@ -9,7 +9,7 @@ spec:
       restartPolicy: "OnFailure"
       containers:
         - name: db
-          image: retracedhq/retraced
+          image: retracedhq/retraced-local
           imagePullPolicy: IfNotPresent
           command:
             - node

@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
         - name: processor
-          image: retracedhq/retraced
+          image: retracedhq/retraced-local
           env:
             - name: PG_SEARCH
               value: ""

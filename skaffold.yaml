@@ -5,7 +5,7 @@ build:
     push: false
   platforms: ["linux/amd64", "linux/arm64"]
   artifacts:
-    - image: retracedhq/retraced
+    - image: retracedhq/retraced-local
       context: ./
       docker:
         dockerfile: ./deploy/Dockerfile-slim

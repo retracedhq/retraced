@@ -3,6 +3,7 @@ bases:
   - ../../base
 resources:
   - ./secrets.yaml
+  - ./admin-portal-secrets.yaml
 commonLabels:
   retraceddev: "1"
 

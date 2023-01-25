@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: cron
-          image: retracedhq/retraced
+          image: retracedhq/retraced-local

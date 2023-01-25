@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       tier: processor
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
@@ -35,7 +35,7 @@ spec:
           emptyDir: {}
       containers:
         - name: processor
-          image: retracedhq/retraced
+          image: retracedhq/retraced-local
           imagePullPolicy: IfNotPresent
           command:
             - node
