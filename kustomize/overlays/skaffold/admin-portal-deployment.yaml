@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
         - name: admin-portal
-          image: boxyhq/jackson:1.6.0
+          image: boxyhq/jackson:1.7.1
           ports:
             - containerPort: 5225
           env:

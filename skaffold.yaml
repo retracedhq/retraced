@@ -3,7 +3,7 @@ kind: Config
 build:
   local:
     push: false
-
+  platforms: ["linux/amd64", "linux/arm64"]
   artifacts:
     - image: retracedhq/retraced
       context: ./
