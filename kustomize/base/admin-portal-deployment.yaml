@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: boxyhq/jackson:1.6.0
+          image: boxyhq/jackson:1.7.1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5225
