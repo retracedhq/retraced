@@ -6,6 +6,10 @@ Retraced is the easiest way to integrate a compliant audit log into your applica
 It provides a searchable, exportable record of read/write events.
 Client libraries are available for [Go](https://github.com/retracedhq/retraced-go) and [Javascript](https://github.com/retracedhq/retraced-js).
 
+## Documentation
+
+Please head to [https://boxyhq.com/docs/retraced/overview](https://boxyhq.com/docs/retraced/overview) for detailed documentation on how to get started with Retraced.
+
 ## Usage
 
 ### Running with docker-compose
