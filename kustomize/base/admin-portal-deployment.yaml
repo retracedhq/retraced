@@ -15,7 +15,7 @@ spec:
         tier: admin-portal
     spec:
       containers:
-        - name: api
+        - name: admin-portal
           image: boxyhq/jackson:1.7.1
           imagePullPolicy: IfNotPresent
           ports:
@@ -24,7 +24,7 @@ spec:
               protocol: TCP
           envFrom:
             - secretRef:
-                name: auditlog
+                name: adminportal
           resources:
             requests:
               cpu: 100m

@@ -3,6 +3,7 @@ bases:
   - ../../base
 resources:
   - ./secrets.yaml
+  - ./admin-portal-secrets.yaml
 commonLabels:
   retraceddev: "1"
 
@@ -13,5 +14,3 @@ patchesStrategicMerge:
   - ./migratepg-job.yaml
   - ./migratees-job.yaml
   - ./processor-deployment.yaml
-  - ./admin-portal-deployment.yaml
-  - ./admin-portal-service.yaml
