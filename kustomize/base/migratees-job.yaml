@@ -9,7 +9,7 @@ spec:
       restartPolicy: "OnFailure"
       containers:
         - name: db
-          image: retracedhq/retraced
+          image: retracedhq/retraced-local
           command:
             - node
             - --inspect=0.0.0.0

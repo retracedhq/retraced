@@ -40,7 +40,7 @@ spec:
             periodSeconds: 30
             failureThreshold: 2
             successThreshold: 2
-          image: retracedhq/retraced
+          image: retracedhq/retraced-local
           imagePullPolicy: IfNotPresent
           command:
             - node

@@ -8,7 +8,7 @@ spec:
     spec:
       initContainers:
         - name: bootstrap
-          image: retracedhq/retraced
+          image: retracedhq/retraced-local
           command:
             - /bin/sh
           args:
