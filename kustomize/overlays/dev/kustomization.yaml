@@ -1,6 +1,6 @@
 ---
 bases:
-  - ../skaffold
+  - ../../base
   - ../dbs
 resources:
   - ./secrets.yaml

@@ -21,9 +21,9 @@ spec:
           image: retracedhq/retraced-local
           imagePullPolicy: IfNotPresent
           command:
-            - /bin/bash
+            - /bin/sh
             - -c
-            - /usr/local/bin/retraced-auditlog-cron /crontab | grep ERRO
+            - /usr/local/bin/retraced-auditlog-cron /crontab 2>&1 | grep ERRO
           env:
             - name: NSQD_HOST
               valueFrom:
