@@ -50,13 +50,19 @@ spec:
                 name: bootstrap
       containers:
         - name: api
+          startupProbe:
+            httpGet:
+              port: 3000
+              path: /healthz
+            periodSeconds: 10
+            failureThreshold: 5
+            successThreshold: 2
           readinessProbe:
             httpGet:
               port: 3000
               path: /healthz
-            initialDelaySeconds: 120
             periodSeconds: 30
-            failureThreshold: 2
+            failureThreshold: 5
             successThreshold: 2
           image: retracedhq/retraced-local
           imagePullPolicy: IfNotPresent
