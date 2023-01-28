@@ -99,7 +99,8 @@
     "dev:processor": "PROCESSOR_DEV_PORT=3001 node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts",
     "dev:geo": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/workers/updateGeoData.ts",
     "dev": "docker compose up -d",
-    "dev:skaffold": "skaffold dev --status-check=false --force=true"
+    "dev:skaffold": "skaffold dev --status-check=false --force=true",
+    "run:skaffold": "skaffold run --status-check=false --force=true"
   },
   "author": "",
   "nyc": {
