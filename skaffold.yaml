@@ -12,7 +12,7 @@ build:
 manifests:
   kustomize:
     paths:
-      - ./kustomize/overlays/skaffold
+      - ./kustomize/overlays/dev
 
 profiles:
   - name: demo
