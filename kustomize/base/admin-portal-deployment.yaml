@@ -24,7 +24,6 @@ spec:
               path: /api/health
             periodSeconds: 10
             failureThreshold: 5
-            successThreshold: 2
           readinessProbe:
             httpGet:
               port: 5225

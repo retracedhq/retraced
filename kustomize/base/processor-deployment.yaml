@@ -51,7 +51,6 @@ spec:
               path: /healthz
             periodSeconds: 10
             failureThreshold: 5
-            successThreshold: 2
           readinessProbe:
             httpGet:
               port: 3000
@@ -65,7 +64,6 @@ spec:
               path: /livez
             periodSeconds: 60
             failureThreshold: 5
-            successThreshold: 2
           resources:
             requests:
               cpu: 100m
