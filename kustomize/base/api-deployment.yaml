@@ -46,15 +46,8 @@ spec:
           envFrom:
             - secretRef:
                 name: auditlog
-          env:
-            - name: BOOTSTRAP_PROJECT_NAME
-              value: dev
-            - name: BOOTSTRAP_PROJECT_ID
-              value: dev
-            - name: BOOTSTRAP_ENVIRONMENT_ID
-              value: dev
-            - name: BOOTSTRAP_API_TOKEN
-              value: dev
+            - secretRef:
+                name: bootstrap
       containers:
         - name: api
           readinessProbe:
