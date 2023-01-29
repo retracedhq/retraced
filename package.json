@@ -100,7 +100,8 @@
     "dev:geo": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/workers/updateGeoData.ts",
     "dev": "docker compose up -d",
     "dev:skaffold": "skaffold dev --status-check=false --force=true",
-    "run:skaffold": "skaffold run --status-check=false --force=true"
+    "run:skaffold": "skaffold run --status-check=false --force=true",
+    "demo:skaffold": "skaffold run -f skaffold-demo.yaml --status-check=false --force=true"
   },
   "author": "",
   "nyc": {

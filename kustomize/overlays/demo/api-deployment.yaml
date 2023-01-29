@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retraced-api
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: bootstrap
+          image: retracedhq/retraced:1.5.1
+      containers:
+        - name: api
+          image: retracedhq/retraced:1.5.1
+          imagePullPolicy: IfNotPresent

@@ -13,11 +13,3 @@ manifests:
   kustomize:
     paths:
       - ./kustomize/overlays/dev
-
-profiles:
-  - name: demo
-    build: {}
-    manifests:
-      kustomize:
-        paths:
-          - ./kustomize/overlays/demo

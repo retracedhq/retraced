@@ -1,0 +1,11 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: retraced-migrate-es
+spec:
+  template:
+    spec:
+      containers:
+        - name: db
+          image: retracedhq/retraced:1.5.1
+          imagePullPolicy: IfNotPresent

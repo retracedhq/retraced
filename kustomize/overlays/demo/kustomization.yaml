@@ -1,7 +1,17 @@
 ---
 bases:
   - ../../base
+
 resources:
   - ./secrets.yaml
   - ./bootstrap-secrets.yaml
   - ./admin-portal-secrets.yaml
+
+patchesStrategicMerge:
+  - ./admin-portal-deployment.yaml
+  - ./api-deployment.yaml
+  - ./cron-deployment.yaml
+  - ./dbutil-deployment.yaml
+  - ./migratees-job.yaml
+  - ./migratepg-job.yaml
+  - ./processor-deployment.yaml

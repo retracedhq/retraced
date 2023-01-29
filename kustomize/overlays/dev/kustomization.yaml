@@ -2,9 +2,11 @@
 bases:
   - ../../base
   - ../dbs
+
 resources:
   - ./secrets.yaml
   - ./bootstrap-secrets.yaml
   - ./admin-portal-secrets.yaml
+
 commonLabels:
   retraceddev: "1"
