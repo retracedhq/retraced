@@ -30,15 +30,38 @@ spec:
                       values:
                         - api
                 topologyKey: "kubernetes.io/hostname"
+      initContainers:
+        - name: bootstrap
+          image: retracedhq/retraced-local
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - ./build/src/retracedctl
+              bootstrap
+              --projectName   "$BOOTSTRAP_PROJECT_NAME"
+              --projectId     "$BOOTSTRAP_PROJECT_ID"
+              --environmentId "$BOOTSTRAP_ENVIRONMENT_ID"
+              --apiKey        "$BOOTSTRAP_API_TOKEN"
+          envFrom:
+            - secretRef:
+                name: auditlog
+            - secretRef:
+                name: bootstrap
       containers:
         - name: api
+          startupProbe:
+            httpGet:
+              port: 3000
+              path: /healthz
+            periodSeconds: 10
+            failureThreshold: 5
           readinessProbe:
             httpGet:
               port: 3000
               path: /healthz
-            initialDelaySeconds: 120
             periodSeconds: 30
-            failureThreshold: 2
+            failureThreshold: 5
             successThreshold: 2
           image: retracedhq/retraced-local
           imagePullPolicy: IfNotPresent
@@ -59,8 +82,8 @@ spec:
                 secretKeyRef:
                   key: API_TOKEN
                   name: auditlog
-            - name: PG_SEARCH
-              value: ""
+            - name: EXPORT_PAGE_SIZE_INTERNAL
+              value: "2"
           resources:
             requests:
               cpu: 100m

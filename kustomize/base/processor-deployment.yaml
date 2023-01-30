@@ -45,20 +45,25 @@ spec:
             - containerPort: 3000
               name: http
               protocol: TCP
+          startupProbe:
+            httpGet:
+              port: 3000
+              path: /healthz
+            periodSeconds: 10
+            failureThreshold: 5
           readinessProbe:
             httpGet:
               port: 3000
               path: /healthz
-            initialDelaySeconds: 120
             periodSeconds: 30
-            failureThreshold: 2
+            failureThreshold: 5
             successThreshold: 2
           livenessProbe:
             httpGet:
               port: 3000
               path: /livez
-            initialDelaySeconds: 120
-            periodSeconds: 100
+            periodSeconds: 60
+            failureThreshold: 5
           resources:
             requests:
               cpu: 100m

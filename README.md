@@ -59,7 +59,7 @@ You can also use the [Admin Portal](http://localhost:5225) but will need to setu
 
 You could alternatively use Skaffold instead of docker-compose to run Retraced locally.
 
-> `npm run dev:skaffold` or `skaffold dev --status-check=false --force=true`
+> `npm run run:skaffold` or `skaffold run --status-check=false --force=true`
 
 ## Swagger Documentation
 

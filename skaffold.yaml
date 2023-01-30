@@ -9,8 +9,7 @@ build:
       context: ./
       docker:
         dockerfile: ./deploy/Dockerfile-slim
-
 manifests:
   kustomize:
     paths:
-      - ./kustomize/overlays/skaffold
+      - ./kustomize/overlays/dev

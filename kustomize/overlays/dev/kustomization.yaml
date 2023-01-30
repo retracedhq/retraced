@@ -1,18 +1,12 @@
 ---
 bases:
   - ../../base
+  - ../dbs
+
 resources:
   - ./secrets.yaml
+  - ./bootstrap-secrets.yaml
   - ./admin-portal-secrets.yaml
+
 commonLabels:
   retraceddev: "1"
-
-patchesStrategicMerge:
-  - ./api-deployment.yaml
-  - ./api-service.yaml
-  - ./cron-deployment.yaml
-  - ./migratepg-job.yaml
-  - ./migratees-job.yaml
-  - ./processor-deployment.yaml
-  - ./admin-portal-deployment.yaml
-  - ./admin-portal-service.yaml

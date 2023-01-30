@@ -7,11 +7,11 @@ metadata:
     app: auditlog
     tier: api
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
-  - name: http
-    port: 3000
-    targetPort: http
+    - name: http
+      port: 3000
+      targetPort: http
   selector:
     app: auditlog
     tier: api

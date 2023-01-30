@@ -7,10 +7,8 @@ spec:
     spec:
       initContainers:
         - name: bootstrap
-          image: retracedhq/retraced-local
+          image: retracedhq/retraced:1.5.1
       containers:
         - name: api
-          image: retracedhq/retraced-local
-          env:
-            - name: PG_SEARCH
-              value: ""
+          image: retracedhq/retraced:1.5.1
+          imagePullPolicy: IfNotPresent

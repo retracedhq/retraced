@@ -18,6 +18,19 @@ spec:
         - name: admin-portal
           image: boxyhq/jackson:1.7.1
           imagePullPolicy: IfNotPresent
+          startupProbe:
+            httpGet:
+              port: 5225
+              path: /api/health
+            periodSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              port: 5225
+              path: /api/health
+            periodSeconds: 30
+            failureThreshold: 5
+            successThreshold: 2
           ports:
             - containerPort: 5225
               name: http
