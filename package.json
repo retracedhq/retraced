@@ -101,7 +101,7 @@
     "dev": "docker compose up -d",
     "dev:skaffold": "skaffold dev --status-check=false --force=true",
     "run:skaffold": "skaffold run --status-check=false --force=true",
-    "demo:skaffold": "skaffold run -f skaffold-demo.yaml --status-check=false --force=true"
+    "demo:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo.yaml --status-check=false --force=true"
   },
   "author": "",
   "nyc": {
