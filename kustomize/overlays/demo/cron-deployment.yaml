@@ -7,5 +7,5 @@ spec:
     spec:
       containers:
         - name: cron
-          image: retracedhq/retraced:1.5.1
+          image: retracedhq/retraced:1.5.2
           imagePullPolicy: IfNotPresent
