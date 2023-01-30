@@ -38,7 +38,7 @@
     "postgrator": "3.0.0",
     "progress": "2.0.3",
     "prom-client": "14.1.0",
-    "redis": "4.5.1",
+    "redis": "4.6.4",
     "ruler": "1.0.0",
     "sanitize-filename": "1.6.3",
     "search-query-parser": "1.6.0",
