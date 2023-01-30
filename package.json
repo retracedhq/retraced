@@ -8,7 +8,7 @@
     "@elastic/elasticsearch": "7.13.0",
     "@retracedhq/retraced": "0.6.1",
     "analytics-node": "6.2.0",
-    "axios": "1.2.2",
+    "axios": "1.2.6",
     "bcrypt": "5.0.1",
     "@bugsnag/js": "7.18.0",
     "@bugsnag/plugin-express": "7.18.0",
