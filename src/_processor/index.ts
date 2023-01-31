@@ -31,6 +31,10 @@ import getPgPool from "../persistence/pg";
 
 startHealthz();
 
+if (config.MAXMIND_GEOLITE2_LICENSE_KEY) {
+  updateGeoData();
+}
+
 if (!config.BUGSNAG_TOKEN) {
   logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
 } else {
@@ -129,12 +133,24 @@ const warpPipeConsumers: Consumer[] = [
   },
 ];
 
+const geoDataConsumers: Consumer[] = [
+  {
+    topic: "first_wed_of_month",
+    channel: "update_geo_data",
+    worker: updateGeoData,
+    maxAttempts: 1,
+    timeoutSeconds: 900,
+    maxInFlight: 1,
+  },
+];
+
 //
 // If the worker does not throw any errors with the retry flag set, there is
 // no point setting the maxAttempts above 1 here.
 const nsqConsumers: Consumer[] = [
   ...(PG_SEARCH ? pgSearchConsumers : esConsumers),
   ...(WARP_PIPE ? warpPipeConsumers : []),
+  ...(config.MAXMIND_GEOLITE2_LICENSE_KEY ? geoDataConsumers : []),
   {
     topic: "raw_events",
     channel: "normalize",
@@ -181,14 +197,6 @@ const nsqConsumers: Consumer[] = [
     worker: pruneViewerDescriptors,
     maxAttempts: 1,
     timeoutSeconds: 60,
-    maxInFlight: 1,
-  },
-  {
-    topic: "first_wed_of_month",
-    channel: "update_geo_data",
-    worker: updateGeoData,
-    maxAttempts: 1,
-    timeoutSeconds: 900,
     maxInFlight: 1,
   },
   {
