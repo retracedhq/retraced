@@ -1,6 +1,7 @@
 ---
 bases:
   - ../../base
+  - ../../base/services
   - ../dbs
 
 resources:

@@ -1,6 +1,4 @@
 resources:
-  - ./admin-portal-service.yaml
-  - ./api-service.yaml
   - ./api-deployment.yaml
   - ./cron-deployment.yaml
   - ./dbutil-deployment.yaml

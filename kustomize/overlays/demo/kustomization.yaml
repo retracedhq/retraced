@@ -8,8 +8,6 @@ resources:
   - ./admin-portal-secrets.yaml
 
 patches:
-  - ./admin-portal-service.yaml
-  - ./api-service.yaml
   - ./admin-portal-deployment.yaml
   - ./api-deployment.yaml
   - ./cron-deployment.yaml

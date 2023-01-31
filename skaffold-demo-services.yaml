@@ -1,0 +1,7 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+build: {}
+manifests:
+  kustomize:
+    paths:
+      - ./kustomize/overlays/demo/services
