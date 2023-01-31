@@ -7,8 +7,8 @@ spec:
     spec:
       initContainers:
         - name: bootstrap
-          image: retracedhq/retraced:1.5.2
+          image: retracedhq/retraced:1.5.3
       containers:
         - name: api
-          image: retracedhq/retraced:1.5.2
+          image: retracedhq/retraced:1.5.3
           imagePullPolicy: IfNotPresent

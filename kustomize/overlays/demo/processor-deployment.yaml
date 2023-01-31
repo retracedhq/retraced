@@ -7,5 +7,5 @@ spec:
     spec:
       containers:
         - name: processor
-          image: retracedhq/retraced:1.5.2
+          image: retracedhq/retraced:1.5.3
           imagePullPolicy: IfNotPresent
