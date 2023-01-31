@@ -7,7 +7,9 @@ resources:
   - ./bootstrap-secrets.yaml
   - ./admin-portal-secrets.yaml
 
-patchesStrategicMerge:
+patches:
+  - ./admin-portal-service.yaml
+  - ./api-service.yaml
   - ./admin-portal-deployment.yaml
   - ./api-deployment.yaml
   - ./cron-deployment.yaml

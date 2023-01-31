@@ -8,5 +8,9 @@ resources:
   - ./bootstrap-secrets.yaml
   - ./admin-portal-secrets.yaml
 
+patches:
+  - ./admin-portal-service.yaml
+  - ./api-service.yaml
+
 commonLabels:
   retraceddev: "1"
