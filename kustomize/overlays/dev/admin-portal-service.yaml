@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: retraced-admin-portal
+  labels:
+    app: auditlog
+    tier: admin-portal
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 5225
+      targetPort: 5225
+  selector:
+    app: auditlog
+    tier: admin-portal

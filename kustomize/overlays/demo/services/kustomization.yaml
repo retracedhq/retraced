@@ -1,0 +1,7 @@
+---
+bases:
+  - ../../../base/services
+
+patches:
+  - ./admin-portal-service.yaml
+  - ./api-service.yaml
