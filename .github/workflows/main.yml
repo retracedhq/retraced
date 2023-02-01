@@ -123,24 +123,20 @@ jobs:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
       - name: Create SBOM Report [SPDX]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           format: spdx
           artifact-name: retraced_sbom.spdx
       - name: Publish report [SPDX]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
       - name: Create SBOM Report [CycloneDx]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           format: cyclonedx
           artifact-name: retraced_sbom.cyclonedx
       - name: Publish report [CycloneDx]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
