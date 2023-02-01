@@ -149,7 +149,7 @@ jobs:
         run: npm install -g @appthreat/cdxgen && cdxgen ${{ github.repository }}:latest -o ./_docker/sbom.xml -t docker
       - name: Move Report & cleanup
         run: |
-          mv docker_sbom.spdx "./docker_sbom.spdx" || true
+          mv docker_sbom.spdx "./_docker/sbom.spdx" || true
           rm results.sarif || true
           rm ./_docker/sbom.json || true
           mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
