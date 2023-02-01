@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       NPM_VERSION: ${{ steps.version.outputs.NPM_VERSION }}
+      PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
     strategy:
       matrix:
         node-version: [18.x]
@@ -33,9 +34,21 @@ jobs:
       - id: version
         run: |
           npm install -g json
-          JACKSON_VERSION=$(echo $(cat ./package.json) | json version)
+          RETRACED_VERSION=$(echo $(cat ./package.json) | json version)
 
-          echo "NPM_VERSION=${JACKSON_VERSION}" >> $GITHUB_OUTPUT
+          publishTag="latest"
+
+          if [[ "$GITHUB_REF" == *\/release ]]
+          then
+            echo "Release branch"
+          else
+            echo "Dev branch"
+            publishTag="beta"
+            RETRACED_VERSION="${RETRACED_VERSION}-beta.${GITHUB_RUN_NUMBER}"
+          fi
+
+          echo "NPM_VERSION=${RETRACED_VERSION}" >> $GITHUB_OUTPUT
+          echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
 
   build:
     needs: ci
@@ -53,10 +66,12 @@ jobs:
         run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
+        if: github.ref == 'refs/heads/release'
         id: buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
+        if: github.ref == 'refs/heads/release'
         uses: docker/setup-qemu-action@v2
 
       - name: Login to Docker Hub
@@ -75,9 +90,10 @@ jobs:
           file: ./deploy/Dockerfile-slim
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
+          tags: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
+        if: github.ref == 'refs/heads/release'
         run: echo ${{ steps.docker_build.outputs.digest }}
 
       - name: Login to GitHub Container Registry
@@ -86,12 +102,15 @@ jobs:
           echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{github.repository_owner}} --password-stdin
 
       - name: Install Cosign
+        if: github.ref == 'refs/heads/release'
         uses: sigstore/cosign-installer@main
 
       - name: Check install!
+        if: github.ref == 'refs/heads/release'
         run: cosign version
 
       - name: place the cosign private key in a file
+        if: github.ref == 'refs/heads/release'
         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
         shell: bash
         env:
@@ -122,37 +141,48 @@ jobs:
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: retraced_sbom.spdx
       - name: Download artifact for CycloneDx Report
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: retraced_sbom.cyclonedx
       - name: Remove older SBOMs
+        if: github.ref == 'refs/heads/release'
         run: rm -rf ./sbom*.* || true
       - name: Move SPDX Report
+        if: github.ref == 'refs/heads/release'
         run: mv retraced_sbom.spdx "./sbom.spdx"
       - name: Move CycloneDx Report
+        if: github.ref == 'refs/heads/release'
         run: mv retraced_sbom.cyclonedx "./sbom.cyclonedx"
-      # - name: Scan docker image using TERN
-      #   #if: github.ref == 'refs/heads/release'
-      #   uses: philips-labs/tern-action@v1.2.0
-      #   id: scan
-      #   with:
-      #     image: ${{ github.repository }}:latest
-      #     format: spdxtagvalue
-      #     output: docker_sbom.spdx
+
+      - name: Scan docker image using TERN
+        if: github.ref == 'refs/heads/release'
+        uses: philips-labs/tern-action@v1.2.0
+        id: scan
+        with:
+          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          format: spdxtagvalue
+          output: docker_sbom.spdx
       - name: Create/Clear folder
+        if: github.ref == 'refs/heads/release'
         run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
+
       - name: Docker CycloneDx report
-        run: npm install -g @appthreat/cdxgen && cdxgen ${{ github.repository }}:latest -o ./_docker/sbom.xml -t docker
-      - name: Move Report & cleanup
+        if: github.ref == 'refs/heads/release'
+        run: npm install -g @appthreat/cdxgen && cdxgen ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }} -o ./_docker/sbom.xml -t docker
+
+      - name: Move Report & cleanup (Docker)
+        if: github.ref == 'refs/heads/release'
         run: |
-          mv docker_sbom.spdx "./docker_sbom.spdx" || true
+          mv docker_sbom.spdx "./_docker/sbom.spdx" || true
           rm results.sarif || true
           rm ./_docker/sbom.json || true
-          mv ./_docker/sbom.xml ./docker_sbom.cyclonedx || true
+          mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
         if: github.ref == 'refs/heads/release'
         run: |
