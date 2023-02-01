@@ -158,6 +158,7 @@ jobs:
           format: spdxtagvalue
           output: docker_sbom.spdx
       - name: Create/Clear folder
+        if: github.ref == 'refs/heads/release'
         run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
 
       - name: Docker CycloneDx report
