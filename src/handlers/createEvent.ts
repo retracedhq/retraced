@@ -295,7 +295,7 @@ export class EventCreater {
     eventInput: CreateEventRequest,
     querier?: Querier
   ): Promise<void> {
-    await this.saveEvent(projectId, envId, this.idSource(), moment().valueOf(), eventInput, querier);
+    await this.saveEvent(projectId, envId, this.idSource(), eventInput, querier);
   }
 
   /**
@@ -306,7 +306,6 @@ export class EventCreater {
     projectId: string,
     envId: string,
     newEventId: string,
-    received: number,
     eventInput: CreateEventRequest,
     querier?: Querier
   ): Promise<void> {

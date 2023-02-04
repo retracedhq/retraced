@@ -93,6 +93,7 @@ export class EnterpriseAPI extends Controller {
 
     const thisViewEvent: CreateEventRequest = {
       action: token.view_log_action,
+      created: new Date(),
       crud: "r",
       actor: {
         id: `enterprise:${token.id.substring(0, 7)}`,
