@@ -42,6 +42,7 @@ import { AdminTokenStore } from "../models/admin_token/store";
 import { checkAdminAccessUnwrapped } from "../security/helpers";
 import { crud } from "../models/event";
 
+@Route("admin/v1")
 export class AdminAPI extends Controller {
   private readonly adminTokenStore: AdminTokenStore;
 
@@ -57,7 +58,7 @@ export class AdminAPI extends Controller {
    * @param projectId     The project id
    * @param body          The invite resource with the invitee's email
    */
-  @Route("admin/v1")
+
   @Post("project/{projectId}/invite")
   @SuccessResponse("201", "Created")
   public async createInvite(
@@ -89,7 +90,7 @@ export class AdminAPI extends Controller {
    * @param projectId     The project id
    * @param inviteId      The environment id
    */
-  @Route("admin/v1")
+
   @Delete(`project/{projectId}/invite/{inviteId}`)
   @SuccessResponse("204", "No Content")
   public async deleteInvite(
@@ -115,7 +116,7 @@ export class AdminAPI extends Controller {
    * @param auth          Base64 encoded JWT
    * @param projectId     The project id
    */
-  @Route("admin/v1")
+
   @Get(`project/{projectId}/invite`)
   @SuccessResponse("200", "OK")
   public async listInvites(
@@ -140,7 +141,7 @@ export class AdminAPI extends Controller {
    * @param environmentId The environment id
    * @param body          The template resource to create
    */
-  @Route("admin/v1")
+
   @Post("project/{projectId}/templates")
   @SuccessResponse("201", "Created")
   public async createTemplate(
@@ -178,7 +179,7 @@ export class AdminAPI extends Controller {
    * @param length        The maximum number of results to return
    * @param offset        How many results to skip
    */
-  @Route("admin/v1")
+
   @Get("project/{projectId}/templates")
   @SuccessResponse("200", "OK")
   public async searchTemplates(
@@ -207,7 +208,7 @@ export class AdminAPI extends Controller {
    * @param templateId    The id of the template to delete
    * @param environmentId The environment
    */
-  @Route("admin/v1")
+
   @Delete("project/{projectId}/templates/{templateId}")
   @SuccessResponse("204", "Deleted")
   public async deleteTemplate(
@@ -235,7 +236,7 @@ export class AdminAPI extends Controller {
    * @param projectId     The project id
    * @param name          The name of the new environment
    */
-  @Route("admin/v1")
+
   @Post("project/{projectId}/environment")
   @SuccessResponse("201", "Created")
   public async createEnvironmentRequest(
@@ -272,7 +273,7 @@ export class AdminAPI extends Controller {
    * @param projectId     The project id
    * @param environmentId The environment to be deleted
    */
-  @Route("admin/v1")
+
   @Delete("project/{projectId}/environment/{environmentId}")
   @SuccessResponse("204", "Deleted")
   public async deleteEnvironment(
@@ -303,7 +304,7 @@ export class AdminAPI extends Controller {
    * @param projectId     The project id
    * @param environmentId The environment
    */
-  @Route("admin/v1")
+
   @Post("project/{projectId}/environment/{environmentId}/deletion_request")
   @SuccessResponse("201", "Created")
   public async createDeletionRequest(
@@ -326,7 +327,7 @@ export class AdminAPI extends Controller {
    * @param environmentId     The environment
    * @param deletionRequestId The id of the deletion request to look up
    */
-  @Route("admin/v1")
+
   @Get("project/{projectId}/environment/{environmentId}/deletion_request/{deletionRequestId}")
   @SuccessResponse("200", "OK")
   public async getDeletionRequest(
@@ -349,7 +350,7 @@ export class AdminAPI extends Controller {
    * @param environmentId     The environment
    * @param code              The confirmation code
    */
-  @Route("admin/v1")
+
   @Post("project/{projectId}/environment/{environmentId}/deletion_confirmation/{code}")
   @SuccessResponse("200", "OK")
   public async approveDeletionConfirmation(
@@ -370,7 +371,7 @@ export class AdminAPI extends Controller {
    * @param projectId         The project id
    * @param environmentId     The environment id
    */
-  @Route("admin/v1")
+
   @Post("project/{projectId}/token")
   @SuccessResponse("201", "Created")
   public async createApiToken(
@@ -411,7 +412,7 @@ export class AdminAPI extends Controller {
    * @param projectId         The project id
    * @param apiToken          The token to update
    */
-  @Route("admin/v1")
+
   @Put("project/{projectId}/token/{apiToken}")
   @SuccessResponse("200", "OK")
   public async updateApiToken(
@@ -450,7 +451,7 @@ export class AdminAPI extends Controller {
    * @param projectId       The project id
    * @param tokenId         The token to delete
    */
-  @Route("admin/v1")
+
   @Delete("project/{projectId}/token/{tokenId}")
   @SuccessResponse("204", "Deleted")
   public async deleteApiToken(
@@ -478,7 +479,7 @@ export class AdminAPI extends Controller {
    * @param projectId     The project id
    * @param body          The invite resource with the invitee's email
    */
-  @Route("admin/v1")
+
   @Post("token")
   @SuccessResponse("201", "Created")
   public async createAdminToken(

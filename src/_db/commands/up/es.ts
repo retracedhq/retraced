@@ -7,7 +7,7 @@ import Bugsnag from "@bugsnag/js";
 import { getESWithoutRetry } from "../../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
 import { setupBugsnag } from "../../common";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 
 setupBugsnag();
 

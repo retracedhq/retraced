@@ -2,7 +2,7 @@ import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 
 import { parse, searchParams, Options } from "../../../models/event/query";
-import { RequestParams } from "@elastic/elasticsearch";
+import { RequestParams } from "@opensearch-project/opensearch";
 
 @suite
 class QueryEventsTest {

@@ -1,7 +1,7 @@
 import _ from "lodash";
 import searchQueryParser from "search-query-parser";
 import moment from "moment";
-import { ApiResponse, RequestParams } from "@elastic/elasticsearch";
+import { ApiResponse, RequestParams } from "@opensearch-project/opensearch";
 
 import { Scope } from "../../security/scope";
 import { scope, getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";

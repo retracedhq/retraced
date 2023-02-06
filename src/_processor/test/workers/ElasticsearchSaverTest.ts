@@ -8,7 +8,7 @@ import monkit from "monkit";
 
 import { Clock } from "../../common";
 import { ElasticsearchSaver } from "../../workers/saveEventToElasticsearch";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 
 const isAny = TypeMoq.It.isAny;
 

@@ -8,7 +8,7 @@ import { AliasDesc, AliasRotator, putAliases, getESWithoutRetry } from "../../pe
 import getPg from "../persistence/pg";
 import { logger } from "../logger";
 import config from "../../config";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 
 export type IndexNamer = (newDate: moment.Moment) => string;
 
@@ -38,7 +38,12 @@ export class ElasticsearchIndexRotator {
   public static default(): ElasticsearchIndexRotator {
     const es: Client = getESWithoutRetry();
     if (!ElasticsearchIndexRotator.instance) {
-      ElasticsearchIndexRotator.instance = new ElasticsearchIndexRotator(es.indices, es.cat, getPg(), putAliases);
+      ElasticsearchIndexRotator.instance = new ElasticsearchIndexRotator(
+        es.indices,
+        es.cat,
+        getPg(),
+        putAliases
+      );
     }
 
     return ElasticsearchIndexRotator.instance;
@@ -106,9 +111,15 @@ export class ElasticsearchIndexRotator {
 
     // This should never happen, every env should have at least an index with a search alias
     if (_.isEmpty(existingSearchAliases.body)) {
-      logger.info(env.environmentId, `CREATING No existing indices for search alias ${searchAlias}, creating one`);
+      logger.info(
+        env.environmentId,
+        `CREATING No existing indices for search alias ${searchAlias}, creating one`
+      );
       await this.appendNewIndex(moment(), env);
-      logger.info(env.environmentId, `CREATED No existing indices for search alias ${searchAlias}, created one`);
+      logger.info(
+        env.environmentId,
+        `CREATED No existing indices for search alias ${searchAlias}, created one`
+      );
       return 1;
     }
 
@@ -133,7 +144,9 @@ export class ElasticsearchIndexRotator {
     if (_.isEmpty(existingWriteAliases.body)) {
       logger.info(
         env.environmentId,
-        `CREATING alias ${writeAlias} for index ${existingSearchAliases.body.map((i) => `${i.alias} => ${i.index}`)[0]}`
+        `CREATING alias ${writeAlias} for index ${
+          existingSearchAliases.body.map((i) => `${i.alias} => ${i.index}`)[0]
+        }`
       );
       const aliasToAdd = {
         index: existingSearchAliases.body[0].index,
@@ -143,7 +156,9 @@ export class ElasticsearchIndexRotator {
       await this.aliasRotator([aliasToAdd], []);
       logger.info(
         env.environmentId,
-        `CREATED alias ${writeAlias} for index ${existingSearchAliases.body.map((i) => `${i.alias} => ${i.index}`)[0]}`
+        `CREATED alias ${writeAlias} for index ${
+          existingSearchAliases.body.map((i) => `${i.alias} => ${i.index}`)[0]
+        }`
       );
       return 1;
     }
@@ -161,7 +176,12 @@ export class ElasticsearchIndexRotator {
     const existingWriteAliases = await this.catApi.aliases(q);
 
     if (!_.isEmpty(existingWriteAliases.body)) {
-      logger.info(env.environmentId, "found existing index alias for ", writeAlias, existingWriteAliases.body);
+      logger.info(
+        env.environmentId,
+        "found existing index alias for ",
+        writeAlias,
+        existingWriteAliases.body
+      );
     }
 
     const aliases = {};
