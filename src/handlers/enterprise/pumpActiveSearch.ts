@@ -38,7 +38,9 @@ export default async function handler(req) {
 
   if (!savedSearch) {
     throw {
-      err: new Error(`Active search (id=${req.params.activeSearchId}) refers to a non-existent saved search (id=${activeSearch.saved_search_id})`),
+      err: new Error(
+        `Active search (id=${req.params.activeSearchId}) refers to a non-existent saved search (id=${activeSearch.saved_search_id})`
+      ),
       status: 500,
     };
   }
@@ -112,6 +114,7 @@ export default async function handler(req) {
   }
 
   const thisViewEvent: CreateEventRequest = {
+    created: new Date(),
     action: eitapiToken.view_log_action,
     crud: "r",
     actor: {
@@ -124,11 +127,7 @@ export default async function handler(req) {
     description: `${req.method} ${req.originalUrl}`,
     source_ip: req.ip,
   };
-  await defaultEventCreater.saveRawEvent(
-    eitapiToken.project_id,
-    eitapiToken.environment_id,
-    thisViewEvent,
-  );
+  await defaultEventCreater.saveRawEvent(eitapiToken.project_id, eitapiToken.environment_id, thisViewEvent);
 
   const response: any = {
     events: results.events,

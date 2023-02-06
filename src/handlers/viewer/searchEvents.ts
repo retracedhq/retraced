@@ -27,6 +27,7 @@ query: {
 export default async function (req) {
   const claims = await checkViewerAccess(req);
   const thisViewEvent: CreateEventRequest = {
+    created: new Date(),
     action: claims.viewLogAction,
     crud: "r",
     actor: {

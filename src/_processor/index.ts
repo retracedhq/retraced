@@ -45,12 +45,10 @@ if (!config.BUGSNAG_TOKEN) {
   });
 }
 
-let PG_SEARCH = false;
 if (config.PG_SEARCH) {
-  logger.info("PG_SEARCH  set, using Postgres search");
-  PG_SEARCH = true;
+  console.log("PG_SEARCH  set, using Postgres search");
 } else {
-  logger.info("PG_SEARCH not set, using ElasticSearch");
+  console.log("PG_SEARCH not set, using ElasticSearch");
 }
 let WARP_PIPE = false;
 if (config.REDIS_URI) {
@@ -148,7 +146,7 @@ const geoDataConsumers: Consumer[] = [
 // If the worker does not throw any errors with the retry flag set, there is
 // no point setting the maxAttempts above 1 here.
 const nsqConsumers: Consumer[] = [
-  ...(PG_SEARCH ? pgSearchConsumers : esConsumers),
+  ...(config.PG_SEARCH ? pgSearchConsumers : esConsumers),
   ...(WARP_PIPE ? warpPipeConsumers : []),
   ...(config.MAXMIND_GEOLITE2_LICENSE_KEY ? geoDataConsumers : []),
   {
@@ -241,7 +239,7 @@ const nsqConsumers: Consumer[] = [
   },
 ];
 
-if (!PG_SEARCH) {
+if (!config.PG_SEARCH) {
   elasticsearchAliasVerify();
 }
 

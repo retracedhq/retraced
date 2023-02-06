@@ -14,6 +14,7 @@ export default async function (req) {
   });
 
   const thisViewEvent: CreateEventRequest = {
+    created: new Date(),
     action: eitapiToken.view_log_action,
     crud: crud.r,
     actor: {
@@ -26,11 +27,7 @@ export default async function (req) {
     description: `${req.method} ${req.originalUrl}`,
     source_ip: req.ip,
   };
-  defaultEventCreater.saveRawEvent(
-    eitapiToken.project_id,
-    eitapiToken.environment_id,
-    thisViewEvent
-  );
+  defaultEventCreater.saveRawEvent(eitapiToken.project_id, eitapiToken.environment_id, thisViewEvent);
 
   return results;
 }
