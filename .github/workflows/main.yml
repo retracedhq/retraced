@@ -27,6 +27,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - run: node -v
+      - run: npm -v
       - run: npm install
       - run: npm run lint
       - run: npm run build
