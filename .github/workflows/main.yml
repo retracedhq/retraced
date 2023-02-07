@@ -23,10 +23,17 @@ jobs:
       PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [18]
 
     steps:
       - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          check-latest: true
+      - run: node -v
+      - run: npm -v
       - run: npm install
       - run: npm run lint
       - run: npm run build
@@ -55,11 +62,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [18]
 
     steps:
       - name: Check Out Repo
         uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          check-latest: true
 
       - name: Get short SHA
         id: slug
