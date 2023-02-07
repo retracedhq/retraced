@@ -23,7 +23,7 @@ jobs:
       PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [18]
 
     steps:
       - uses: actions/checkout@v3
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [18]
 
     steps:
       - name: Check Out Repo

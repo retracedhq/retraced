@@ -126,5 +126,8 @@
   },
   "bin": {
     "run": "index.js"
+  },
+  "engines": {
+    "node": ">=18.14.0"
   }
 }
