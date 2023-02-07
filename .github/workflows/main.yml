@@ -27,6 +27,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          node-version: ${{ matrix.node-version }}
       - run: node -v
       - run: npm -v
       - run: npm install
@@ -62,6 +64,8 @@ jobs:
     steps:
       - name: Check Out Repo
         uses: actions/checkout@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
       - name: Get short SHA
         id: slug
