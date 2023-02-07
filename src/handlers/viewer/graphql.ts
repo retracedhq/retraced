@@ -7,6 +7,7 @@ import handler from "../graphql/handler";
 export default async function (req) {
   const claims = await checkViewerAccess(req);
   const thisViewEvent: CreateEventRequest = {
+    created: new Date(),
     action: claims.viewLogAction,
     crud: "r",
     actor: {
@@ -35,11 +36,7 @@ export default async function (req) {
     targetId,
   });
 
-  await defaultEventCreater.saveRawEvent(
-    claims.projectId,
-    claims.environmentId,
-    thisViewEvent
-  );
+  await defaultEventCreater.saveRawEvent(claims.projectId, claims.environmentId, thisViewEvent);
 
   return results;
 }

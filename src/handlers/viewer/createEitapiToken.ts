@@ -2,7 +2,7 @@ import { checkViewerAccess } from "../../security/helpers";
 import createEitapiToken from "../../models/eitapi_token/create";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 
-export default async function(req) {
+export default async function (req) {
   const claims = await checkViewerAccess(req);
   const result = await createEitapiToken({
     displayName: req.body.displayName,
@@ -13,6 +13,7 @@ export default async function(req) {
   });
 
   const thisEvent: CreateEventRequest = {
+    created: new Date(),
     action: "eitapi_token.create",
     crud: "c",
     actor: {
@@ -24,11 +25,7 @@ export default async function(req) {
     description: `Created an Enterprise IT Integration API Token`,
     source_ip: claims.ip,
   };
-  await defaultEventCreater.saveRawEvent(
-    claims.projectId,
-    claims.environmentId,
-    thisEvent,
-  );
+  await defaultEventCreater.saveRawEvent(claims.projectId, claims.environmentId, thisEvent);
 
   return {
     status: 201,

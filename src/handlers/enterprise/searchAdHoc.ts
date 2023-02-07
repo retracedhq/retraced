@@ -29,6 +29,7 @@ export default async function handler(req) {
   const results = await searchEvents(opts);
 
   const thisViewEvent: CreateEventRequest = {
+    created: new Date(),
     action: eitapiToken.view_log_action,
     crud: "r",
     actor: {
@@ -41,11 +42,7 @@ export default async function handler(req) {
     description: `${req.method} ${req.originalUrl}`,
     source_ip: req.ip,
   };
-  defaultEventCreater.saveRawEvent(
-    eitapiToken.project_id,
-    eitapiToken.environment_id,
-    thisViewEvent,
-  );
+  defaultEventCreater.saveRawEvent(eitapiToken.project_id, eitapiToken.environment_id, thisViewEvent);
 
   const response: any = {
     status: 200,

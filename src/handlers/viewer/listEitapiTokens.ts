@@ -2,7 +2,7 @@ import { checkViewerAccess } from "../../security/helpers";
 import listEitapiTokens from "../../models/eitapi_token/list";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 
-export default async function(req) {
+export default async function (req) {
   const claims = await checkViewerAccess(req);
   const list = await listEitapiTokens({
     projectId: req.params.projectId,
@@ -11,6 +11,7 @@ export default async function(req) {
   });
 
   const thisEvent: CreateEventRequest = {
+    created: new Date(),
     action: "eitapi_tokens.list",
     crud: "r",
     actor: {
@@ -22,11 +23,7 @@ export default async function(req) {
     description: `Listed Enterprise IT Integration API Tokens`,
     source_ip: claims.ip,
   };
-  await defaultEventCreater.saveRawEvent(
-    claims.projectId,
-    claims.environmentId,
-    thisEvent,
-  );
+  await defaultEventCreater.saveRawEvent(claims.projectId, claims.environmentId, thisEvent);
 
   return {
     status: 200,
