@@ -31,6 +31,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: "npm"
           check-latest: true
       - run: node -v
       - run: npm -v
@@ -72,6 +73,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: "npm"
           check-latest: true
 
       - name: Get short SHA
