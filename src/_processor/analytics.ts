@@ -1,6 +1,6 @@
 import Mixpanel from "mixpanel";
 import { randomUUID } from "crypto";
-import { getAnalyticsId, createAnalyticsId, updateRunAt } from "../models/schemaversion";
+import { getAnalyticsId, createAnalyticsId, updateRunAt } from "../models/analytics";
 
 const idKey = "heartbeat";
 
