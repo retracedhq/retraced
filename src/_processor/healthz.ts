@@ -1,10 +1,13 @@
 import express from "express";
 import { logger } from "./logger";
+import { AnalyticsController } from "./analytics";
 
 const app = express();
 let lastNSQ: Date = new Date();
 
-export function startHealthz() {
+export async function startHealthz() {
+  await new AnalyticsController().init();
+
   // Needed for Kubernetes health checks
   app.get("/healthz", (req, res) => {
     res.status(200).send("");
@@ -15,13 +18,9 @@ export function startHealthz() {
     const currentTime: Date = new Date();
     // 1000 * 60 * 60 is one hour
     if (currentTime > new Date(lastNSQ.getTime() + 1000 * 60 * 60)) {
-      res
-        .status(500)
-        .send(`{"lastNSQ": ${lastNSQ.getTime()}, "status": "Unhealthy"}`);
+      res.status(500).send(`{"lastNSQ": ${lastNSQ.getTime()}, "status": "Unhealthy"}`);
     }
-    res
-      .status(200)
-      .send(`{"lastNSQ": ${lastNSQ.getTime()}}, "status": "Healthy"}`);
+    res.status(200).send(`{"lastNSQ": ${lastNSQ.getTime()}}, "status": "Healthy"}`);
   });
 
   const port = Number(process.env.PROCESSOR_DEV_PORT || 3000);
