@@ -19,7 +19,6 @@ export async function getAnalyticsId(): Promise<{ uuid: string; sent: string }> 
 
   const result = await pgPool.query(q);
   if (result.rowCount > 0) {
-    console.log(result.rows[0].run_at, typeof result.rows[0].run_at, result.rows[0]);
     if ((result.rows[0] as any).name !== "") {
       return { uuid: (result.rows[0] as any).uuid as string, sent: (result.rows[0] as any).sent as string };
     }

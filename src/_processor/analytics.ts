@@ -16,18 +16,14 @@ export class AnalyticsController {
   public async init(): Promise<void> {
     const { uuid, sent } = await getAnalyticsId();
     this.anonymousId = uuid;
-    console.log("this.anonymousId", this.anonymousId);
+
     if (!this.anonymousId || this.anonymousId === "") {
       this.anonymousId = randomUUID();
       await updateAnalyticsId(this.anonymousId);
-      console.log("saving this.anonymousId", this.anonymousId);
     }
 
-    console.log("sent:", sent);
     const msBetweenDates = Math.abs(new Date().getTime() - new Date(sent || 0).getTime());
     const hoursBetweenDates = msBetweenDates / (60 * 60 * 1000);
-
-    console.log("hoursBetweenDates", hoursBetweenDates);
 
     if (hoursBetweenDates >= 24) {
       await this.send();
@@ -53,9 +49,7 @@ export class AnalyticsController {
             return;
           }
 
-          console.log("writing date");
           updateRunAt(new Date().toISOString());
-          console.log("wrote date");
         }
       );
     } catch (err) {
