@@ -26,15 +26,15 @@ export class AnalyticsController {
     const hoursBetweenDates = msBetweenDates / (60 * 60 * 1000);
 
     if (hoursBetweenDates >= 24) {
-      await this.send();
+      this.send();
     }
 
-    setInterval(async () => {
-      await this.send();
+    setInterval(() => {
+      this.send();
     }, 60 * 60 * 24 * 1000);
   }
 
-  async send() {
+  send() {
     try {
       this.client.track(
         idKey,

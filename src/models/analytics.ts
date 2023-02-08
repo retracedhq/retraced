@@ -31,19 +31,15 @@ export async function getAnalyticsId(): Promise<{ uuid: string; sent: string }> 
 }
 
 export async function updateAnalyticsId(uuid: string): Promise<void> {
-  let q;
-  let v;
-  q = `update analytics set uuid = $1 where name = '${name}'`;
-  v = [uuid];
+  const q = `update analytics set uuid = $1 where name = '${name}'`;
+  const v = [uuid];
 
   await pgPool.query(q, v);
 }
 
 export async function updateRunAt(sent: string): Promise<void> {
-  let q;
-  let v;
-  q = `update  analytics set sent = $1::timestamp where name = '${name}'`;
-  v = [sent];
+  const q = `update  analytics set sent = $1::timestamp where name = '${name}'`;
+  const v = [sent];
 
   await pgPool.query(q, v);
 }
