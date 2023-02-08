@@ -35,7 +35,7 @@
     "pg-format": "1.0.4",
     "picocolors": "1.0.0",
     "pino": "8.8.0",
-    "postgrator": "3.0.0",
+    "postgrator": "5.0.1",
     "progress": "2.0.3",
     "prom-client": "14.1.1",
     "redis": "4.6.4",
