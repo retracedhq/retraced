@@ -4,6 +4,15 @@ const pgPool = getPgPool();
 
 const name = "heartbeat";
 
+async function createAnalyticsId(): Promise<void> {
+  const q = `insert into analytics (
+    name
+  ) values (
+    '${name}'
+  )`;
+  await pgPool.query(q);
+}
+
 export async function getAnalyticsId(): Promise<{ uuid: string; sent: string }> {
   const fields = `name, uuid, sent`;
   const q = `select ${fields} from analytics where name = '${name}'`;
@@ -13,15 +22,16 @@ export async function getAnalyticsId(): Promise<{ uuid: string; sent: string }> 
     console.log(result.rows[0].run_at, typeof result.rows[0].run_at, result.rows[0]);
     if ((result.rows[0] as any).name !== "") {
       return { uuid: (result.rows[0] as any).uuid as string, sent: (result.rows[0] as any).sent as string };
-    } else {
-      // create record
     }
+  } else {
+    // create record
+    await createAnalyticsId();
   }
 
   return { uuid: "", sent: "" };
 }
 
-export async function createAnalyticsId(uuid: string): Promise<void> {
+export async function updateAnalyticsId(uuid: string): Promise<void> {
   let q;
   let v;
   q = `update analytics set uuid = $1 where name = '${name}'`;

@@ -1,6 +1,6 @@
 import Mixpanel from "mixpanel";
 import { randomUUID } from "crypto";
-import { getAnalyticsId, createAnalyticsId, updateRunAt } from "../models/analytics";
+import { getAnalyticsId, updateAnalyticsId, updateRunAt } from "../models/analytics";
 
 const idKey = "heartbeat";
 
@@ -14,12 +14,12 @@ export class AnalyticsController {
   }
 
   public async init(): Promise<void> {
-    const { name, sent } = await getAnalyticsId();
-    this.anonymousId = name;
+    const { uuid, sent } = await getAnalyticsId();
+    this.anonymousId = uuid;
     console.log("this.anonymousId", this.anonymousId);
     if (!this.anonymousId || this.anonymousId === "") {
       this.anonymousId = randomUUID();
-      await createAnalyticsId(this.anonymousId);
+      await updateAnalyticsId(this.anonymousId);
       console.log("saving this.anonymousId", this.anonymousId);
     }
 
