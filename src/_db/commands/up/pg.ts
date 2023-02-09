@@ -1,7 +1,6 @@
 import picocolors from "picocolors";
 import path from "path";
 import _ from "lodash";
-import postgrator from "postgrator";
 import Bugsnag from "@bugsnag/js";
 import { setupBugsnag } from "../../common";
 import pg from "pg";
@@ -37,6 +36,7 @@ export const builder = {
 logger.info("registering handler");
 export const handler = async (argv) => {
   try {
+    const postgrator = (await import("postgrator")).default;
     logger.child({ up: "pg", schemaPath: argv.schemaPath }).info("beginning handler");
     const cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`;
     const client = new pg.Client(cs);

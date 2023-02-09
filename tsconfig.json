@@ -1,30 +1,30 @@
 {
-    "compilerOptions": {
-        "target": "es2017",
-        "module": "commonjs",
-        "noImplicitAny": false,
-        "noEmitOnError": true,
-        "sourceMap": true,
-        "preserveConstEnums": true,
-        "experimentalDecorators": true,
-        "strictNullChecks": true,
-        "skipLibCheck": true,
-        "allowJs": true,
-        "outDir": "build",
-        "lib": [
-            "es2015"
-        ],
-        "pretty": true,
-        "noUnusedLocals": false,
-        "noUnusedParameters": false,
-        "resolveJsonModule": true,
-        "esModuleInterop": true,
-    },
-    "include": [
-        "src/**/*.js",
-        "src/**/*.ts"
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "Node16",
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "sourceMap": true,
+    "preserveConstEnums": true,
+    "experimentalDecorators": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "outDir": "build",
+    "lib": [
+      "es2015"
     ],
-    "exclude": [
-        "node_modules"
-    ]
+    "pretty": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+  },
+  "include": [
+    "src/**/*.js",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
