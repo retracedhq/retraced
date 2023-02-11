@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 

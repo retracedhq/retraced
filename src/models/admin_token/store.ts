@@ -1,6 +1,6 @@
 import _ from "lodash";
 import pg from "pg";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { instrument, instrumented } from "../../metrics";
 import { AdminToken } from "./types";
 import getPgPool from "../../persistence/pg";
@@ -20,19 +20,14 @@ export class AdminTokenStore {
 
   private static instance: AdminTokenStore;
 
-  constructor(
-    private readonly idSource: () => string,
-    private readonly pool: pg.Pool
-  ) {}
+  constructor(private readonly idSource: () => string, private readonly pool: pg.Pool) {}
 
   @instrumented
   public async createAdminToken(userId: string): Promise<AdminToken> {
     const id = this.idSource();
     const token = this.idSource();
 
-    const tokenBcrypt = await instrument("adminToken.bcrypt", () =>
-      bcrypt.hash(token, 12)
-    );
+    const tokenBcrypt = await instrument("adminToken.bcrypt", () => bcrypt.hash(token, 12));
     const created = new Date();
 
     const q = `
