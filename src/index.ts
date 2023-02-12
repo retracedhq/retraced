@@ -2,9 +2,8 @@ import url from "url";
 import express from "express";
 import cors from "cors";
 import _ from "lodash";
-import Bugsnag from "@bugsnag/js";
-import BugsnagPluginExpress from "@bugsnag/plugin-express";
 import Sigsci from "sigsci-module-nodejs";
+import Bugsnag from "@bugsnag/js";
 import Prometheus from "prom-client";
 import swaggerUI from "swagger-ui-express";
 import config from "./config";
@@ -24,17 +23,7 @@ import { logger } from "./logger";
 import fs from "fs";
 import https from "https";
 import sslConf from "ssl-config";
-
-if (!config.BUGSNAG_TOKEN) {
-  logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
-} else {
-  Bugsnag.start({
-    apiKey: config.BUGSNAG_TOKEN || "",
-    plugins: [BugsnagPluginExpress],
-    releaseStage: config.STAGE || "",
-    enabledReleaseStages: ["production", "staging"],
-  });
-}
+import { startErrorNotifier } from "./error-notifier";
 
 const app = express();
 const router = express.Router();
@@ -60,14 +49,16 @@ app.set("etag", false); // we're doing our own etag thing I guess
 // subnet will be used as req.ip.
 app.set("trust proxy", "uniquelocal");
 
+const notifierEnabled = startErrorNotifier(true);
+
 const bugSnagMiddleware = Bugsnag.getPlugin("express");
 
-if (bugSnagMiddleware) {
+if (notifierEnabled && bugSnagMiddleware) {
   app.use(bugSnagMiddleware.requestHandler);
 }
 app.use(express.json({ limit: "10mb" }));
 app.use(cors());
-if (bugSnagMiddleware) {
+if (notifierEnabled && bugSnagMiddleware) {
   app.use(bugSnagMiddleware.errorHandler);
 }
 

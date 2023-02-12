@@ -2,12 +2,11 @@ import picocolors from "picocolors";
 import path from "path";
 import _ from "lodash";
 import postgrator from "postgrator";
-import Bugsnag from "@bugsnag/js";
-import { setupBugsnag } from "../../common";
-
-setupBugsnag();
 
 import { logger } from "../../../logger";
+import { notifyError, startErrorNotifier } from "../../../error-notifier";
+
+startErrorNotifier();
 
 export const command = "pg";
 export const describe = "migrate postgres database to the current schema";
@@ -54,7 +53,7 @@ export const handler = (argv) => {
       process.exit(0);
     });
   } catch (err) {
-    Bugsnag.notify(err);
+    notifyError(err);
     console.log(err);
   }
 };

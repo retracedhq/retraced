@@ -1,5 +1,4 @@
 import getPgPool from "./persistence/pg";
-import Bugsnag from "@bugsnag/js";
 import config from "../config";
 
 const pgPool = getPgPool();
@@ -113,17 +112,4 @@ const common = {
   },
 };
 
-function setupBugsnag() {
-  if (!config.BUGSNAG_TOKEN) {
-    // console.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
-  } else {
-    Bugsnag.start({
-      apiKey: config.BUGSNAG_TOKEN || "",
-      releaseStage: config.STAGE || "",
-      enabledReleaseStages: ["production", "staging"],
-    });
-  }
-}
-
 export default common;
-export { setupBugsnag };

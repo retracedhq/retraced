@@ -1,5 +1,4 @@
 import _ from "lodash";
-import Bugsnag from "@bugsnag/js";
 import * as monkit from "monkit";
 import config from "../config";
 import { errToLog, jobDesc, stopwatchClick } from "./common";
@@ -28,6 +27,7 @@ import * as metrics from "./metrics";
 import { logger } from "./logger";
 import { startHealthz, updateLastNSQ } from "./healthz";
 import getPgPool from "../persistence/pg";
+import { notifyError, startErrorNotifier } from "../error-notifier";
 
 startHealthz();
 
@@ -35,15 +35,7 @@ if (config.MAXMIND_GEOLITE2_LICENSE_KEY) {
   updateGeoData();
 }
 
-if (!config.BUGSNAG_TOKEN) {
-  logger.error("BUGSNAG_TOKEN not set, error reports will not be sent to bugsnag");
-} else {
-  Bugsnag.start({
-    apiKey: config.BUGSNAG_TOKEN || "",
-    releaseStage: config.STAGE || "",
-    enabledReleaseStages: ["production", "staging"],
-  });
-}
+startErrorNotifier();
 
 if (config.PG_SEARCH) {
   console.log("PG_SEARCH  set, using Postgres search");
@@ -278,7 +270,7 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
     updateLastNSQ();
   } catch (err) {
     registry.meter("processor.waitForJobs.errors").mark();
-    Bugsnag.notify(err);
+    notifyError(err);
     const elapsed = stopwatchClick(startTime);
     let retry = false;
     if (_.has(err, "retry")) {
