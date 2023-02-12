@@ -2,14 +2,13 @@ import picocolors from "picocolors";
 import walk from "walk";
 import path from "path";
 import util from "util";
-import Bugsnag from "@bugsnag/js";
 
 import { getESWithoutRetry } from "../../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
-import { setupBugsnag } from "../../common";
 import { Client } from "@elastic/elasticsearch";
+import { notifyError, startErrorNotifier } from "../../../error-notifier";
 
-setupBugsnag();
+startErrorNotifier();
 
 export const command = "es";
 export const describe = "migrate the elasticsearch database to the current schema";
@@ -45,7 +44,7 @@ export const handler = () => {
 
   pgPool.connect((err, pg) => {
     if (err) {
-      Bugsnag.notify(err);
+      notifyError(err);
       console.log(picocolors.red("Couldn't connect to postgres"));
       console.log(picocolors.red(util.inspect(err)));
       process.exit(1);
@@ -124,7 +123,7 @@ export const handler = () => {
           next(); // done! next file pls
         })
         .catch((err2) => {
-          Bugsnag.notify(err2);
+          notifyError(err2);
           console.log(picocolors.red(err2.stack));
           process.exit(1);
         });
@@ -132,7 +131,7 @@ export const handler = () => {
 
     walker.on("errors", (root, stat, next) => {
       stat.forEach((n) => {
-        Bugsnag.notify(n.error);
+        notifyError(n.error);
         console.error(`[ERROR] ${n.name}`);
         console.error(n.error.message || `${n.error.code}:${n.error.path}`);
       });
