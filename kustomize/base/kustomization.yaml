@@ -10,9 +10,3 @@ resources:
   - ./admin-portal-deployment.yaml
 
 namespace: default
-
-images:
-  - name: boxyhq/jackson
-    newTag: 1.7.4
-  - name: retracedhq/retraced
-    newTag: 1.5.3
