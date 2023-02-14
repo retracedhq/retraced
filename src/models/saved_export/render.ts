@@ -10,8 +10,9 @@ import { parseQuery, ParsedQuery } from "../event";
 import QueryDescriptor from "../query_desc/def";
 import { logger } from "../../logger";
 import config from "../../config";
+import { stringify } from "csv-stringify";
 
-let stringify;
+// let stringify;
 const pgPool = getPgPool();
 
 const pageSize = config.EXPORT_PAGE_SIZE_INTERNAL ? parseInt(config.EXPORT_PAGE_SIZE_INTERNAL, 10) : 10000;
@@ -126,9 +127,6 @@ export default async function renderSavedExport(opts) {
 }
 
 async function renderAsCSV(events) {
-  if (!stringify) {
-    stringify = (await import("csv-stringify")).stringify;
-  }
   const processing = new Promise((resolve, reject) => {
     let accum = "";
     const stringifier = stringify({ header: true });
