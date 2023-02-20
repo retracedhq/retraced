@@ -29,7 +29,9 @@ export default async function renderSavedExport(opts) {
     const v = [savedExportId, environmentId, projectId];
     const result = await pg.query(q, v);
     if (!result.rows.length) {
-      throw new Error(`No such saved export: id=${savedExportId}, envid=${environmentId}, projid=${projectId}`);
+      throw new Error(
+        `No such saved export: id=${savedExportId}, envid=${environmentId}, projid=${projectId}`
+      );
     }
 
     const queryDesc: QueryDescriptor = JSON.parse(result.rows[0].body);
@@ -109,7 +111,9 @@ export default async function renderSavedExport(opts) {
     const filename = `${sanitized}.${format}`;
 
     logger.info(
-      `exported ${results.totalHits.value} events in ${(Date.now().valueOf() - startTime.valueOf()) / 1000} seconds`
+      `exported ${results.totalHits.value} events in ${
+        (Date.now().valueOf() - startTime.valueOf()) / 1000
+      } seconds`
     );
 
     return {
@@ -200,7 +204,10 @@ function filterOptions(scope: Scope, qd: QueryDescriptor): FilterOptions {
   query.crud = crud;
 
   if (qd.startTime || qd.endTime) {
-    query.received = [qd.startTime || moment("2017-01-01").valueOf(), qd.endTime || moment().add(1, "d").valueOf()];
+    query.received = [
+      qd.startTime || moment("2017-01-01").valueOf(),
+      qd.endTime || moment().add(1, "d").valueOf(),
+    ];
   }
 
   return {

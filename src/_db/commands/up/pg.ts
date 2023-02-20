@@ -1,13 +1,12 @@
 import picocolors from "picocolors";
 import path from "path";
 import _ from "lodash";
-import postgrator from "postgrator";
-import Bugsnag from "@bugsnag/js";
-import { setupBugsnag } from "../../common";
-
-setupBugsnag();
+import pg from "pg";
 
 import { logger } from "../../../logger";
+import { notifyError, startErrorNotifier } from "../../../error-notifier";
+
+startErrorNotifier();
 
 export const command = "pg";
 export const describe = "migrate postgres database to the current schema";
@@ -29,21 +28,25 @@ export const builder = {
     demand: true,
   },
   schemaPath: {
-    default: path.join(__dirname, "../../../../migrations/pg"),
+    default: path.join(__dirname, "../../../../migrations/pg/*"),
   },
 };
 
 logger.info("registering handler");
-export const handler = (argv) => {
+export const handler = async (argv) => {
   try {
+    const postgrator = (await import("postgrator")).default;
     logger.child({ up: "pg", schemaPath: argv.schemaPath }).info("beginning handler");
     const cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`;
+    const client = new pg.Client(cs);
+    // Establish a database connection
+    await client.connect();
     logger.info("initializing migrator");
     const migrator = new postgrator({
-      migrationDirectory: argv.schemaPath,
+      migrationPattern: argv.schemaPath,
       driver: "pg",
-      connectionString: cs,
-      requestTimeout: 1000 * 10,
+      execQuery: (query) => client.query(query),
+      database: argv.postgresDatabase,
     });
 
     logger.info("executing migration");
@@ -54,7 +57,8 @@ export const handler = (argv) => {
       process.exit(0);
     });
   } catch (err) {
-    Bugsnag.notify(err);
+    notifyError(err);
     console.log(err);
+    process.exit(1);
   }
 };
