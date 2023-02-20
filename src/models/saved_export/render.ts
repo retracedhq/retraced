@@ -1,4 +1,5 @@
 import moment from "moment";
+import { stringify } from "csv-stringify";
 import _ from "lodash";
 import sanitizefn from "sanitize-filename";
 
@@ -10,9 +11,7 @@ import { parseQuery, ParsedQuery } from "../event";
 import QueryDescriptor from "../query_desc/def";
 import { logger } from "../../logger";
 import config from "../../config";
-import { stringify } from "csv-stringify";
 
-// let stringify;
 const pgPool = getPgPool();
 
 const pageSize = config.EXPORT_PAGE_SIZE_INTERNAL ? parseInt(config.EXPORT_PAGE_SIZE_INTERNAL, 10) : 10000;
