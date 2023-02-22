@@ -45,7 +45,7 @@
     "sigsci-module-nodejs": "2.1.3",
     "ssl-config": "1.0.0",
     "swagger-ui-express": "4.6.0",
-    "tsoa": "5.0.0",
+    "tsoa": "5.1.1",
     "unzipper": "0.10.11",
     "uuid": "9.0.0",
     "walk": "2.3.15",
