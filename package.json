@@ -49,7 +49,7 @@
     "unzipper": "0.10.11",
     "uuid": "9.0.0",
     "walk": "2.3.15",
-    "yargs": "17.6.2"
+    "yargs": "17.7.0"
   },
   "devDependencies": {
     "@testdeck/mocha": "0.3.3",
