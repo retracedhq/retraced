@@ -63,7 +63,7 @@
     "@types/pg-types": "2.2.0",
     "@types/statsd-client": "0.4.3",
     "@types/swagger-jsdoc": "6.0.1",
-    "@types/uuid": "9.0.0",
+    "@types/uuid": "9.0.1",
     "@types/yargs": "17.0.22",
     "@typescript-eslint/eslint-plugin": "5.52.0",
     "@typescript-eslint/parser": "5.54.0",
