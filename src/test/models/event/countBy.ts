@@ -3,7 +3,7 @@ import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 
 import { countBy } from "../../../models/event/countBy";
-import { Client, ApiResponse } from "@elastic/elasticsearch";
+import { Client, ApiResponse } from "@opensearch-project/opensearch";
 
 @suite
 class EventsCountByTest {

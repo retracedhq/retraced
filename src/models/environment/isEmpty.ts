@@ -1,4 +1,4 @@
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import { getESWithoutRetry } from "../../persistence/elasticsearch";
 
 const es: Client = getESWithoutRetry();

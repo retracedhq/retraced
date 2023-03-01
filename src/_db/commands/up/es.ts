@@ -5,7 +5,7 @@ import util from "util";
 
 import { getESWithoutRetry } from "../../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import { notifyError, startErrorNotifier } from "../../../error-notifier";
 
 startErrorNotifier();

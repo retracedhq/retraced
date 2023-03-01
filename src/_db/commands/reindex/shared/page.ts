@@ -8,7 +8,7 @@ import { getESWithoutRetry } from "../../../../persistence/elasticsearch";
 import { Event } from "../../../persistence/EventSource";
 import common from "../../../common";
 import { logger } from "../../../../logger";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 
 let totalIndexed = 0;
 

@@ -7,7 +7,7 @@ import PostgresEventSource from "../../persistence/PostgresEventSource";
 import getPgPool from "../../persistence/pg";
 import { logger } from "../../../logger";
 import { makePageIndexer } from "./shared/page";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 
 export const command = "postgres";
 export const desc = "reindex all events from postgres into elasticsearch";
@@ -58,7 +58,9 @@ export const handler = async (argv) => {
   if (argv.startDate && argv.endDate) {
     console.log(
       picocolors.yellow(
-        `Reindexing time range: [${new Date(argv.startDate).toISOString()}, ${new Date(argv.endDate).toISOString()}`
+        `Reindexing time range: [${new Date(argv.startDate).toISOString()}, ${new Date(
+          argv.endDate
+        ).toISOString()}`
       )
     );
     pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received", [
