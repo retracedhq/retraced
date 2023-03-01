@@ -2,10 +2,10 @@ import picocolors from "picocolors";
 import walk from "walk";
 import path from "path";
 import util from "util";
-import { Client } from "@opensearch-project/opensearch";
 
 import { getESWithoutRetry } from "../../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
+import { Client } from "@opensearch-project/opensearch";
 import { notifyError, startErrorNotifier } from "../../../error-notifier";
 
 startErrorNotifier();
