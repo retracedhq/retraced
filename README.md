@@ -88,3 +88,13 @@ Please try to create bug reports that are:
 - _Unique._ Do not duplicate existing opened issues.
 - _Scoped to a Single Bug._ One bug per report.
 
+## Support
+
+Reach out to the maintainers at one of the following places:
+
+- [GitHub Issues](https://github.com/retracedhq/retraced/issues) (Bug reports, Contributions)
+
+## Community
+
+- [Discord](https://discord.gg/uyb7pYt4Pa) (For live discussion with the Community and BoxyHQ team)
+- [Twitter](https://twitter.com/BoxyHQ) (Get the news fast)
