@@ -34,7 +34,7 @@
     "pg-cursor": "2.8.0",
     "pg-format": "1.0.4",
     "picocolors": "1.0.0",
-    "pino": "8.10.0",
+    "pino": "8.11.0",
     "postgrator": "7.1.1",
     "progress": "2.0.3",
     "prom-client": "14.1.1",
