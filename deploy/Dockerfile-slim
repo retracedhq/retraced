@@ -78,6 +78,7 @@ RUN ln -s /src/processor /src/replicated-auditlog-processor
 RUN ln -s /src/bin/retracedctl /src/replicated-auditlog-retracedctl
 RUN ln -s /src/retraceddb /src/replicated-auditlog-migrations
 
+VOLUME /src/auth0
 WORKDIR /src
 
 RUN chmod a+rwx /src # auth0 writes to pwd

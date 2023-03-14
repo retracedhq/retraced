@@ -8,3 +8,5 @@ RUN apk add --update --no-cache \
     apk-tools \
     openssl \
     libgcrypt
+
+VOLUME /var/run/postgresql

@@ -14,6 +14,7 @@ EXPOSE 4150 4151 4160 4161 4170 4171
 
 VOLUME /data
 VOLUME /etc/ssl/certs
+VOLUME /home
 
 COPY --from=0 /usr/local/bin/ /usr/local/bin/
 
