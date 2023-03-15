@@ -231,7 +231,7 @@ jobs:
           tar -xvf "${ORAS_FILENAME}" -C oras_install
           ./oras_install/oras push ghcr.io/${{github.repository_owner}}/retraced/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
           cd _docker || true
-          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/retraced/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.* || true
+          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/retraced/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
           cd ..
 
       - name: Sign the sbom images
