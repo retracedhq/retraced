@@ -116,7 +116,7 @@ jobs:
       - name: Login to GitHub Container Registry
         if: github.ref == 'refs/heads/release'
         run: |
-          echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{github.repository_owner}} --password-stdin
+          echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
       - name: Install Cosign
         if: github.ref == 'refs/heads/release'
@@ -228,15 +228,15 @@ jobs:
           curl -LO "https://github.com/oras-project/oras/releases/download/${ORAS_VERSION}/${ORAS_FILENAME}"
           mkdir oras_install
           tar -xvf "${ORAS_FILENAME}" -C oras_install
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/retraced/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
+          ./oras_install/oras push ghcr.io/${{ secrets.DOCKER_HUB_USERNAME }}/retraced/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
           cd _docker || true
-          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/retraced/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.* || true
+          ../oras_install/oras push ghcr.io/${{ secrets.DOCKER_HUB_USERNAME }}/retraced/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.* || true
           cd ..
 
       - name: Sign the sbom images
         if: github.ref == 'refs/heads/release'
         run: |
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/retraced/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/retraced/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} || true
+          cosign sign --key /tmp/cosign.key ghcr.io/${{ secrets.DOCKER_HUB_USERNAME }}/retraced/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} || true
+          cosign sign --key /tmp/cosign.key ghcr.io/${{ secrets.DOCKER_HUB_USERNAME }}/retraced/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} || true
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
