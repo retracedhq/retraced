@@ -135,7 +135,7 @@ jobs:
 
       - name: Sign the image
         if: github.ref == 'refs/heads/release'
-        run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.SHA7 }} || true
+        run: cosign sign --key /tmp/cosign.key ${{ secrets.DOCKER_HUB_USERNAME }}/retraced:${{ steps.slug.outputs.SHA7 }} || true
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
@@ -181,7 +181,7 @@ jobs:
         if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          image: ${{ secrets.DOCKER_HUB_USERNAME }}/retraced:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: spdx
           artifact-name: docker_sbom.spdx
       - name: Publish report [Docker][SPDX]
@@ -193,7 +193,7 @@ jobs:
         if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          image: ${{ secrets.DOCKER_HUB_USERNAME }}/retraced:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: cyclonedx
           artifact-name: docker_sbom.cyclonedx
       - name: Publish report [Docker][CycloneDx]
