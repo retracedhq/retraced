@@ -72,3 +72,4 @@ which will build `build/swagger.adoc`, convert to `build/swagger.html`, and open
 docker build --pull -t registry.replicated.com/library/retraced:${SEMVER} -f deploy/Dockerfile-slim .
 docker push registry.replicated.com/library/retraced:${SEMVER}
 ```
+
