@@ -7,6 +7,8 @@ RUN apk add --update --no-cache \
     \
     apk-tools \
     openssl \
-    libgcrypt
+    libgcrypt \
+    krb5-libs \
+    libcom_err
 
 VOLUME /var/run/postgresql
