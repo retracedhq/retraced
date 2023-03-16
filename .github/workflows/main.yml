@@ -230,13 +230,13 @@ jobs:
           tar -xvf "${ORAS_FILENAME}" -C oras_install
           ./oras_install/oras push ghcr.io/${{github.repository_owner}}/retraced/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
           cd _docker || true
-          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/retraced/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.* || true
+          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/retraced/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
           cd ..
 
       - name: Sign the sbom images
         if: github.ref == 'refs/heads/release'
         run: |
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/retraced/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/retraced/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} || true
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/retraced/sbom:service-${{ needs.ci.outputs.NPM_VERSION }}
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/retraced/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
