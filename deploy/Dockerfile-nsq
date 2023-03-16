@@ -14,7 +14,7 @@ EXPOSE 4150 4151 4160 4161 4170 4171
 
 VOLUME /data
 VOLUME /etc/ssl/certs
-VOLUME /home
+VOLUME /tmp
 
 COPY --from=0 /usr/local/bin/ /usr/local/bin/
 
@@ -22,4 +22,4 @@ RUN ln -s /usr/local/bin/*nsq* / \
     && ln -s /usr/local/bin/*nsq* /bin/
 
 RUN chmod a+rwx /tmp /home /run /var
-WORKDIR /home
+WORKDIR /tmp
