@@ -6,7 +6,6 @@ module.exports = () => {
       name: "retraced_main",
       body: {
         template: "retraced*",
-        version: 2,
         settings: {
           analysis: {
             filter: {
