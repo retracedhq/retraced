@@ -6,6 +6,7 @@ module.exports = () => {
       name: "retraced_main",
       body: {
         template: "retraced*",
+        version: 2,
         settings: {
           analysis: {
             filter: {
@@ -20,6 +21,16 @@ module.exports = () => {
                 type: "custom",
                 tokenizer: "standard",
                 filter: ["lowercase", "autocomplete_filter"],
+              },
+              comma_analyzer: {
+                type: "custom",
+                tokenizer: "comma_tokenizer",
+              },
+            },
+            tokenizer: {
+              comma_tokenizer: {
+                type: "pattern",
+                pattern: ",",
               },
             },
           },
@@ -90,7 +101,24 @@ module.exports = () => {
             country: {
               type: "text",
             },
+            external_id: {
+              type: "keyword",
+            },
+            indexes: {
+              type: "object",
+            },
           },
+          dynamic_templates: [
+            {
+              indexes: {
+                path_match: "indexes.*",
+                mapping: {
+                  type: "text",
+                  analyzer: "comma_analyzer",
+                },
+              },
+            },
+          ],
         },
       },
     },

@@ -95,6 +95,7 @@
     "dev:api": "node --inspect=0.0.0.0 -r ts-node/register src/index.ts",
     "dev:processor": "PROCESSOR_DEV_PORT=3001 node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts",
     "dev:geo": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/workers/updateGeoData.ts",
+    "dev:elastic-migration": "node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts es",
     "dev": "docker compose up -d",
     "dev:skaffold": "skaffold dev -f skaffold-dev.yaml --status-check=false --force=true",
     "run:skaffold": "skaffold run -f skaffold-dev.yaml --status-check=false --force=true",

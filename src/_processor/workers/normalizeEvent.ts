@@ -21,10 +21,7 @@ export default async function normalizeEvent(job) {
     const fields = `id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres,
       saved_to_elasticsearch, project_id, environment_id, new_event_id,
       extract(epoch from received) * 1000 as received`;
-    const pgResp = await pg.query(
-      `select ${fields} from ingest_task where id = $1`,
-      [taskId]
-    );
+    const pgResp = await pg.query(`select ${fields} from ingest_task where id = $1`, [taskId]);
     if (!pgResp.rows.length) {
       throw new Error(`Couldn't find ingestion task with id '${taskId}'`);
     }
@@ -35,9 +32,7 @@ export default async function normalizeEvent(job) {
 
     // id is mandatory!
     if (_.isEmpty(newEventId) || _.isNil(newEventId)) {
-      throw new Error(
-        "No canonical event id was given to the event normalization function"
-      );
+      throw new Error("No canonical event id was given to the event normalization function");
     }
 
     let processingNewEvent = true;
@@ -151,15 +146,7 @@ export default async function normalizeEvent(job) {
   }
 }
 
-function processEvent(
-  origEvent,
-  received,
-  group,
-  actor,
-  target,
-  locInfo,
-  newEventId: string
-) {
+function processEvent(origEvent, received, group, actor, target, locInfo, newEventId: string) {
   const result: any = _.pick(origEvent, [
     "created",
     "description",
@@ -232,6 +219,14 @@ function processEvent(
     if (locInfo.timeZone) {
       result.time_zone = locInfo.timeZone;
     }
+  }
+
+  if (origEvent.external_id) {
+    result.external_id = origEvent.external_id;
+  }
+
+  if (!_.isEmpty(origEvent.indexes)) {
+    result.indexes = origEvent.indexes;
   }
 
   return result;
