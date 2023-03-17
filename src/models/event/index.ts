@@ -46,6 +46,8 @@ export interface RetracedEvent {
   fields?: EventFields;
   component?: string;
   version?: string;
+  external_id?: string;
+  indexes?: EventFields;
 }
 
 export default RetracedEvent;

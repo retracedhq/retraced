@@ -52,6 +52,21 @@ export default function (event: Event): string {
     }
   }
 
+  if (event.external_id) {
+    canonicalString += `:${encodePassOne(event.external_id)}`;
+  }
+
+  if (event.indexes) {
+    canonicalString += ":";
+    const sortedKeys = _.keys(event.indexes).sort();
+    for (const key of sortedKeys) {
+      const value = event.indexes[key];
+      const encodedKey = encodePassTwo(encodePassOne(key));
+      const encodedValue = encodePassTwo(encodePassOne(value));
+      canonicalString += `${encodedKey}=${encodedValue};`;
+    }
+  }
+
   const hasher = crypto.createHash("sha256");
   hasher.update(canonicalString);
   const hashResult = hasher.digest("hex");
