@@ -1,6 +1,6 @@
 import * as querystring from "querystring";
 import { expect } from "chai";
-import * as Retraced from "@retracedhq/retraced";
+import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
@@ -14,7 +14,7 @@ describe("Admin search templates", function () {
   if (!Env.AdminRootToken) {
     return;
   }
-  const headless = new Retraced.Client({
+  const headless = new Client({
     apiKey: Env.HeadlessApiKey,
     projectId: Env.HeadlessProjectID,
     endpoint: Env.Endpoint,

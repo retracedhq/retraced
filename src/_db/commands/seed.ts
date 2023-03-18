@@ -4,7 +4,7 @@ import _ from "lodash";
 import Chance from "chance";
 import util from "util";
 import jwt from "jsonwebtoken";
-import * as Retraced from "@retracedhq/retraced";
+import { Event, Client, CRUD } from "@retracedhq/retraced";
 import ProgressBar from "progress";
 import http from "http";
 
@@ -106,7 +106,7 @@ async function getProject(endpoint, jwtToken, projectId) {
 }
 
 function createEvents(endpoint, projectId, count, apiToken, bulk, groupId) {
-  const client = new Retraced.Client({
+  const client = new Client({
     endpoint,
     apiKey: apiToken.token,
     projectId,
@@ -176,7 +176,7 @@ function generateEvents(count, groupId) {
       target.href = `https://doot.doot.com/targets/${target.id}`;
     }
 
-    const message: Retraced.Event = {
+    const message: Event = {
       action: actions[chance.integer({ min: 0, max: actions.length - 1 })],
       group: {
         id: group.id,
@@ -186,7 +186,7 @@ function generateEvents(count, groupId) {
       source_ip: chance.ip(),
       actor,
       target,
-      crud: crud[chance.integer({ min: 0, max: 3 })] as any,
+      crud: crud[chance.integer({ min: 0, max: 3 })] as CRUD,
     };
 
     if (i % 2 === 0) {

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import * as Retraced from "@retracedhq/retraced";
+import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
 import "chai-http";
@@ -26,7 +26,7 @@ describe("Create Events", function () {
 
     context("And a call is made into the Retraced API with a standard audit event", () => {
       beforeEach(async function () {
-        const retraced = new Retraced.Client({
+        const retraced = new Client({
           apiKey: Env.ApiKey,
           projectId: Env.ProjectID,
           endpoint: Env.Endpoint,
@@ -39,7 +39,7 @@ describe("Create Events", function () {
             name: "RetracedQA",
           },
           created: currentTime,
-          crud: "c",
+          crud: "c" as CRUD,
           source_ip: "192.168.0.1",
           actor: {
             id: "qa@retraced.io",
@@ -151,7 +151,7 @@ describe("Create Events", function () {
       "And a call is made into the Retraced API with a standard audit event that has the minimum amount of information",
       function () {
         beforeEach(async function () {
-          const retraced = new Retraced.Client({
+          const retraced = new Client({
             apiKey: Env.ApiKey,
             projectId: Env.ProjectID,
             endpoint: Env.Endpoint,
@@ -159,7 +159,7 @@ describe("Create Events", function () {
 
           const event = {
             action: "integrationminimum" + randomNumber.toString(),
-            crud: "c",
+            crud: "c" as CRUD,
             is_anonymous: true,
           };
           const valid = tv4.validate(event, CreateEventSchema);
@@ -216,7 +216,7 @@ describe("Create Events", function () {
     context("When a call is made into the Retraced API with the incorrect API key", function () {
       let httpResponse;
       beforeEach(async function () {
-        const retraced = new Retraced.Client({
+        const retraced = new Client({
           apiKey: Math.random().toString(36).substr(2, 186),
           projectId: Env.ProjectID,
           endpoint: Env.Endpoint,
@@ -224,7 +224,7 @@ describe("Create Events", function () {
 
         const event = {
           action: "integrationminimum" + randomNumber.toString(),
-          crud: "c",
+          crud: "c" as CRUD,
           is_anonymous: true,
         };
         const valid = tv4.validate(event, CreateEventSchema);
@@ -256,7 +256,7 @@ describe("Create Events", function () {
       let resultBody, httpResponse;
 
       beforeEach(async function () {
-        const retraced = new Retraced.Client({
+        const retraced = new Client({
           apiKey: Env.ApiKey,
           projectId: Env.ProjectID,
           endpoint: Env.Endpoint,
@@ -265,7 +265,7 @@ describe("Create Events", function () {
         const event = {
           source_ip: "localhost",
           action: "integrationinvalid" + randomNumber.toString(),
-          crud: "c",
+          crud: "c" as CRUD,
           is_anonymous: true,
         };
 

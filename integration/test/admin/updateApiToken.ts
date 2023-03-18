@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import "chai-http";
-import * as Retraced from "@retracedhq/retraced";
+import { Client } from "@retracedhq/retraced";
 import * as Env from "../env";
 import Chance from "chance";
 import { retracedUp } from "../pkg/retracedUp";
@@ -17,7 +17,7 @@ describe("Admin Update API tokens", function () {
   if (!Env.AdminRootToken) {
     return;
   }
-  const headless = new Retraced.Client({
+  const headless = new Client({
     apiKey: Env.HeadlessApiKey,
     projectId: Env.HeadlessProjectID,
     endpoint: Env.Endpoint,
