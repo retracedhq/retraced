@@ -186,7 +186,7 @@ function generateEvents(count, groupId) {
       source_ip: chance.ip(),
       actor,
       target,
-      crud: crud[chance.integer({ min: 0, max: 3 })],
+      crud: crud[chance.integer({ min: 0, max: 3 })] as any,
     };
 
     if (i % 2 === 0) {
