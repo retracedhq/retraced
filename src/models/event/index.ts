@@ -1,53 +1,15 @@
 import searchQueryParser from "search-query-parser";
 import moment from "moment";
 import _ from "lodash";
+import { EventInternal } from "@retracedhq/retraced";
 
-export interface Group {
-  id: string;
-  name?: string;
-}
+export { EventFields } from "@retracedhq/retraced";
 
-export interface Actor {
-  id: string;
-  name?: string;
-  href?: string;
-}
-
-export interface Target {
-  id: string;
-  name: string;
-  href?: string;
-  type?: string;
-}
-
-export interface EventFields {
-  [key: string]: string;
-}
-
-export enum crud {
-  "c" = "c",
-  "r" = "r",
-  "u" = "u",
-  "d" = "d",
-}
-
-export interface RetracedEvent {
+export interface RetracedEvent extends EventInternal {
   id?: string;
-  action: string;
-  group?: Group;
   created?: number;
-  actor?: Actor;
-  target?: Target;
-  crud?: crud;
-  source_ip?: string;
-  description?: string;
-  is_anonymous?: boolean;
-  is_failure?: boolean;
-  fields?: EventFields;
   component?: string;
   version?: string;
-  external_id?: string;
-  indexes?: EventFields;
 }
 
 export default RetracedEvent;

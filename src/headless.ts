@@ -1,5 +1,5 @@
 import express from "express";
-import { crud, EventFields } from "./models/event";
+import { EventFields } from "./models/event";
 import { adminIdentity } from "./security/helpers";
 import _ from "lodash";
 import { Client, Event } from "@retracedhq/retraced";
@@ -27,7 +27,12 @@ export async function reportEvents(events: Event[]) {
   }
 }
 
-export async function audit(req: express.Request, action: string, crudOperation: crud, record?: any) {
+export async function audit(
+  req: express.Request,
+  action: string,
+  crudOperation: "c" | "r" | "u" | "d",
+  record?: any
+) {
   if (!enabled) {
     return;
   }
@@ -78,7 +83,7 @@ async function fromRequest(req: express.Request) {
   return event;
 }
 
-function makeEvent(action: string, crudOperation: crud, fromRequestInfo: any, record?: any) {
+function makeEvent(action: string, crudOperation: "c" | "r" | "u" | "d", fromRequestInfo: any, record?: any) {
   const event: any = _.merge(
     {
       action,

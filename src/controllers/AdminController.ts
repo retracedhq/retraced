@@ -40,7 +40,6 @@ import { audit } from "../headless";
 import { AdminToken } from "../models/admin_token/types";
 import { AdminTokenStore } from "../models/admin_token/store";
 import { checkAdminAccessUnwrapped } from "../security/helpers";
-import { crud } from "../models/event";
 
 @Route("admin/v1")
 export class AdminAPI extends Controller {
@@ -68,7 +67,7 @@ export class AdminAPI extends Controller {
   ): Promise<InviteResponse> {
     const id = uuid.v4().replace(/-/g, "");
 
-    await audit(req, "invite.create", crud.c, {
+    await audit(req, "invite.create", "c", {
       target: {
         id,
         name: body.email,
@@ -97,7 +96,7 @@ export class AdminAPI extends Controller {
     @Path("inviteId") inviteId: string,
     @Request() req: express.Request
   ): Promise<void> {
-    await audit(req, "invite.delete", crud.d, {
+    await audit(req, "invite.delete", "d", {
       target: {
         id: inviteId,
       },
@@ -123,7 +122,7 @@ export class AdminAPI extends Controller {
   ): Promise<InviteResponse[]> {
     const invites = await listInvites(auth, projectId);
 
-    audit(req, "invite.list", crud.r);
+    audit(req, "invite.list", "r");
 
     return invites.map(responseFromInvite);
   }
@@ -150,7 +149,7 @@ export class AdminAPI extends Controller {
     // Generate ID here to audit before creating
     const id = uuid.v4().replace(/-/g, "");
 
-    await audit(req, "template.create", crud.c, {
+    await audit(req, "template.create", "c", {
       target: {
         id,
         fields: body,
@@ -187,7 +186,7 @@ export class AdminAPI extends Controller {
   ): Promise<TemplateSearchResults> {
     const results = await searchTemplates(auth, projectId, environmentId, length || 100, offset || 0);
 
-    await audit(req, "template.search", crud.r);
+    await audit(req, "template.search", "r");
 
     return results;
   }
@@ -212,7 +211,7 @@ export class AdminAPI extends Controller {
     @Query("environment_id") environmentId: string,
     @Request() req: express.Request
   ): Promise<void> {
-    await audit(req, "template.delete", crud.d, {
+    await audit(req, "template.delete", "d", {
       target: {
         id: templateId,
       },
@@ -240,7 +239,7 @@ export class AdminAPI extends Controller {
   ): Promise<EnvironmentResponse> {
     const id = uuid.v4().replace(/-/g, "");
 
-    await audit(req, "environment.create", crud.c, {
+    await audit(req, "environment.create", "c", {
       target: {
         id,
         name: body.name,
@@ -276,7 +275,7 @@ export class AdminAPI extends Controller {
   ): Promise<void> {
     // Pass in audit function to run after all validations, just before deleting
     const preDeleteHook = async () => {
-      await audit(req, "environment.delete", crud.d, {
+      await audit(req, "environment.delete", "d", {
         target: {
           id: environmentId,
         },
@@ -371,7 +370,7 @@ export class AdminAPI extends Controller {
   ): Promise<ApiTokenResponse> {
     // generate here so audit event can complete first
     const tokenId = uuid.v4().replace(/-/g, "");
-    await audit(req, "api_token.create", crud.c, {
+    await audit(req, "api_token.create", "c", {
       target: {
         id: tokenId,
         fields: body,
@@ -409,7 +408,7 @@ export class AdminAPI extends Controller {
     @Body() requestBody: Partial<ApiTokenValues>,
     @Request() req: express.Request
   ): Promise<ApiTokenResponse> {
-    await audit(req, "api_token.update", crud.u, {
+    await audit(req, "api_token.update", "u", {
       target: {
         id: apiToken,
       },
@@ -446,7 +445,7 @@ export class AdminAPI extends Controller {
     @Path("tokenId") tokenId: string,
     @Request() req: express.Request
   ): Promise<void> {
-    await audit(req, "api_token.delete", crud.d, {
+    await audit(req, "api_token.delete", "d", {
       target: {
         id: tokenId,
       },
@@ -471,7 +470,7 @@ export class AdminAPI extends Controller {
     @Header("Authorization") auth: string,
     @Request() req: express.Request
   ): Promise<AdminToken> {
-    await audit(req, "admin_token.create", crud.c);
+    await audit(req, "admin_token.create", "c");
     const { userId } = await checkAdminAccessUnwrapped(auth);
     return await this.adminTokenStore.createAdminToken(userId);
   }
