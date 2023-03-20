@@ -108,8 +108,7 @@ export default async function search(q: any, args: Args, context: Scope) {
     edges,
     pageInfo: {
       hasNextPage: opts.sort === "asc" && totalCount > results.events.length,
-      hasPreviousPage:
-        opts.sort === "desc" && totalCount > results.events.length,
+      hasPreviousPage: opts.sort === "desc" && totalCount > results.events.length,
     },
   };
 }
