@@ -52,6 +52,9 @@ module.exports = () => {
                 },
               },
             },
+            crud: {
+              type: "keyword",
+            },
             actor: {
               properties: {
                 id: {
@@ -75,8 +78,27 @@ module.exports = () => {
                 },
               },
             },
+            source_ip: {
+              type: "ip",
+            },
             description: {
               type: "text",
+            },
+            is_failure: {
+              type: "boolean",
+            },
+            is_anonymous: {
+              type: "boolean",
+            },
+            fields: {
+              type: "object",
+            },
+            external_id: {
+              type: "keyword",
+            },
+            metadata: {
+              type: "object",
+              enabled: false,
             },
             created: {
               type: "date",
@@ -90,25 +112,12 @@ module.exports = () => {
               type: "date",
               format: "epoch_millis",
             },
-            source_ip: {
-              type: "ip",
-            },
             raw: {
               type: "text",
               index: false,
             },
             country: {
               type: "text",
-            },
-            fields: {
-              type: "object",
-            },
-            external_id: {
-              type: "keyword",
-            },
-            metadata: {
-              type: "object",
-              enabled: false,
             },
           },
           dynamic_templates: [
