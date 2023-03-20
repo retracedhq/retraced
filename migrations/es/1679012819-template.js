@@ -100,17 +100,21 @@ module.exports = () => {
             country: {
               type: "text",
             },
+            fields: {
+              type: "object",
+            },
             external_id: {
               type: "keyword",
             },
-            indexes: {
+            metadata: {
               type: "object",
+              enabled: false,
             },
           },
           dynamic_templates: [
             {
-              indexes: {
-                path_match: "indexes.*",
+              fields: {
+                path_match: "fields.*",
                 mapping: {
                   type: "text",
                   analyzer: "comma_analyzer",

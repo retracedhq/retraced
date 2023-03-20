@@ -30,6 +30,8 @@ export function fromCreateEventInput(eventInput: any, newEventId: string): Retra
     fields: eventInput["fields"],
     component: eventInput["component"],
     version: eventInput["version"],
+    external_id: eventInput["external_id"],
+    metadata: eventInput["metadata"],
   };
 }
 

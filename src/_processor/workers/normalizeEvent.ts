@@ -225,8 +225,8 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
     result.external_id = origEvent.external_id;
   }
 
-  if (!_.isEmpty(origEvent.indexes)) {
-    result.indexes = origEvent.indexes;
+  if (!_.isEmpty(origEvent.metadata)) {
+    result.metadata = origEvent.metadata;
   }
 
   return result;
