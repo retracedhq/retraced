@@ -101,6 +101,7 @@ export class ElasticsearchSaver {
   }
 
   private async sendToWebhook(event: any): Promise<void> {
+    delete event.raw;
     await axios.post(
       event.fields.webhookUrl || "http://localhost:63970",
       {
