@@ -119,6 +119,12 @@ module.exports = () => {
             country: {
               type: "text",
             },
+            loc_subdiv1: {
+              type: "text",
+            },
+            loc_subdiv2: {
+              type: "text",
+            },
           },
           dynamic_templates: [
             {
