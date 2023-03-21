@@ -27,10 +27,10 @@ export function responseFromInvite(invite: Invite): InviteResponse {
 }
 
 export function parseInvite(invite: any): Invite {
-    return {
-      id: invite.id,
-      project_id: invite.project_id,
-      email: invite.email,
-      created: invite.created.format(),
-    };
-  }
+  return {
+    id: invite.id,
+    project_id: invite.project_id,
+    email: invite.email,
+    created: moment.unix(invite.created as any),
+  };
+}
