@@ -112,7 +112,7 @@ jobs:
           file: ./deploy/Dockerfile-slim
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/retraced${{ needs.ci.outputs.IMAGE_SUFFIX }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ secrets.DOCKER_HUB_USERNAME }}/retraced:${{ steps.slug.outputs.SHA7 }},${{ secrets.DOCKER_HUB_USERNAME }}/retraced:${{ needs.ci.outputs.NPM_VERSION }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/retraced${{ needs.ci.outputs.IMAGE_SUFFIX }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ secrets.DOCKER_HUB_USERNAME }}/retraced${{ needs.ci.outputs.IMAGE_SUFFIX }}:${{ steps.slug.outputs.SHA7 }},${{ secrets.DOCKER_HUB_USERNAME }}/retraced${{ needs.ci.outputs.IMAGE_SUFFIX }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
         #if: github.ref == 'refs/heads/release'
