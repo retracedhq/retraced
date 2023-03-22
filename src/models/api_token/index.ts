@@ -35,7 +35,7 @@ export function responseFromApiToken(t: ApiToken): ApiTokenResponse {
 export function apiTokenFromRow(row: any): ApiToken {
   return {
     token: row.token,
-    created: moment(row.created),
+    created: moment(+row.created),
     // ah javascript, how do i love thee...
     disabled: row.disabled !== undefined && row.disabled !== null && row.disabled,
     name: row.name,
