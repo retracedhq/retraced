@@ -62,37 +62,39 @@ describe("Admin search templates", function () {
             });
           });
 
-          specify("The search is audited under the headless project.", async function () {
-            this.timeout(Env.EsIndexWaitMs * 2);
-            await sleep(Env.EsIndexWaitMs);
-            const query = {
-              crud: "r",
-              action: "template.search",
-            };
-            const mask = {
-              action: true,
-              crud: true,
-              actor: {
-                id: true,
-              },
-              target: {
-                id: true,
-                name: true,
-                fields: true,
-              },
-              group: {
-                id: true,
-              },
-            };
-            const connection = await headless.query(query, mask, 1);
-            const audited = connection.currentResults[0];
-            const token = resp.body;
+          if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
+            specify("The search is audited under the headless project.", async function () {
+              this.timeout(Env.EsIndexWaitMs * 2);
+              await sleep(Env.EsIndexWaitMs);
+              const query = {
+                crud: "r",
+                action: "template.search",
+              };
+              const mask = {
+                action: true,
+                crud: true,
+                actor: {
+                  id: true,
+                },
+                target: {
+                  id: true,
+                  name: true,
+                  fields: true,
+                },
+                group: {
+                  id: true,
+                },
+              };
+              const connection = await headless.query(query, mask, 1);
+              const audited = connection.currentResults[0];
+              const token = resp.body;
 
-            expect(audited.action).to.equal("template.search");
-            expect(audited.crud).to.equal("r");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-          });
+              expect(audited.action).to.equal("template.search");
+              expect(audited.crud).to.equal("r");
+              expect(audited.group!.id).to.equal(project.id);
+              expect(audited.actor!.id).to.equal(adminId);
+            });
+          }
         });
       });
 

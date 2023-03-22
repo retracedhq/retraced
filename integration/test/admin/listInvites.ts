@@ -78,32 +78,34 @@ describe("Admin list invites", function () {
           expect(resp.body[1]).to.have.property("email", emails[1]);
         });
 
-        specify("The read is audited under the headless project.", async function () {
-          this.timeout(Env.EsIndexWaitMs * 2);
-          await sleep(Env.EsIndexWaitMs);
-          const query = {
-            crud: "r",
-            action: "invite.list",
-          };
-          const mask = {
-            action: true,
-            crud: true,
-            actor: {
-              id: true,
-            },
-            group: {
-              id: true,
-            },
-          };
-          const connection = await headless.query(query, mask, 1);
-          const audited = connection.currentResults[0];
-          const token = resp.body;
+        if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
+          specify("The read is audited under the headless project.", async function () {
+            this.timeout(Env.EsIndexWaitMs * 2);
+            await sleep(Env.EsIndexWaitMs);
+            const query = {
+              crud: "r",
+              action: "invite.list",
+            };
+            const mask = {
+              action: true,
+              crud: true,
+              actor: {
+                id: true,
+              },
+              group: {
+                id: true,
+              },
+            };
+            const connection = await headless.query(query, mask, 1);
+            const audited = connection.currentResults[0];
+            const token = resp.body;
 
-          expect(audited.action).to.equal("invite.list");
-          expect(audited.crud).to.equal("r");
-          expect(audited.group!.id).to.equal(project.id);
-          expect(audited.actor!.id).to.equal(adminId);
-        });
+            expect(audited.action).to.equal("invite.list");
+            expect(audited.crud).to.equal("r");
+            expect(audited.group!.id).to.equal(project.id);
+            expect(audited.actor!.id).to.equal(adminId);
+          });
+        }
       });
     });
   });
