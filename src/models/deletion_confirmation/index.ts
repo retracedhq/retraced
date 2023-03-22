@@ -28,7 +28,7 @@ export function deletionConfirmationFromRow(row: any): DeletionConfirmation {
     id: row.id,
     deletionRequestId: row.deletion_request_id,
     retracedUserId: row.retraceduser_id,
-    received: row.received ? moment(row.received) : undefined,
+    received: row.received ? moment(+row.received) : undefined,
     visibleCode: row.visible_code,
   };
 }

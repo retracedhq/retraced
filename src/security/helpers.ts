@@ -37,13 +37,21 @@ export function apiTokenFromAuthHeader(authHeader?: string): string {
 
 async function parseClaims(authHeader: string) {
   let claims;
-  const tokenParts = authHeader.match(/id=(.+) token=(.+) (admin_token=(.+))?/);
+  const tokenParts = authHeader.split(" ");
 
-  if (tokenParts && tokenParts.length >= 3) {
+  if (tokenParts && tokenParts.length >= 2) {
     logger.debug("validating admin against token");
-    // eslint-disable-next-line
-    const [__, id, token, _, adminToken] = tokenParts;
-    claims = await AdminTokenStore.default().verifyTokenOr401(id, token, adminToken);
+    const tokens = {};
+    tokens[tokenParts[0].split("=")[0]] = tokenParts[0].split("=")[1];
+    tokens[tokenParts[1].split("=")[0]] = tokenParts[1].split("=")[1];
+    if (tokenParts[2]) {
+      tokens[tokenParts[2].split("=")[0]] = tokenParts[2].split("=")[1];
+    }
+    claims = await AdminTokenStore.default().verifyTokenOr401(
+      tokens["id"],
+      tokens["token"],
+      tokens["admin_token"]
+    );
   } else {
     logger.debug("validating jwt voucher");
     claims = await validateAdminVoucher(authHeader);
@@ -70,7 +78,6 @@ export async function checkAdminAccessUnwrapped(
   projectId?: string,
   environmentId?: string
 ): Promise<AdminClaims> {
-  logger.debug("checking admin access");
   if (_.isEmpty(authHeader)) {
     throw { status: 401, err: new Error("Missing Authorization header") };
   }
@@ -90,7 +97,6 @@ export async function checkAdminAccessUnwrapped(
   if (environmentId) {
     await checkEnvAccess(environmentId, claims);
   }
-
   return claims;
 }
 

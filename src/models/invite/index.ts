@@ -31,6 +31,6 @@ export function parseInvite(invite: any): Invite {
     id: invite.id,
     project_id: invite.project_id,
     email: invite.email,
-    created: moment.unix(invite.created as any),
+    created: moment(+invite.created),
   };
 }
