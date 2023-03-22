@@ -41,7 +41,6 @@ async function parseClaims(authHeader: string) {
 
   if (tokenParts && tokenParts.length >= 2) {
     logger.debug("validating admin against token");
-    // eslint-disable-next-line
     const tokens = {};
     tokens[tokenParts[0].split("=")[0]] = tokenParts[0].split("=")[1];
     tokens[tokenParts[1].split("=")[0]] = tokenParts[1].split("=")[1];

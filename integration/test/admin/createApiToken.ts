@@ -95,9 +95,7 @@ describe("Admin create API token", function () {
                 id: true,
               },
             };
-            console.log("I am here");
             const connection = await headless.query(query, mask, 1);
-            console.log("I am here1");
             const audited = connection.currentResults[0];
             const token = resp.body;
 
