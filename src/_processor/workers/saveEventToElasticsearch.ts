@@ -102,25 +102,28 @@ export class ElasticsearchSaver {
 
   private async sendToWebhook(event: any): Promise<void> {
     delete event.raw;
-    await axios.post(
-      event.fields.webhookUrl || "http://localhost:63970",
-      {
-        ddsource: "local-dev-machine",
-        ddtags: "Audit-Logs, Retraced, BoxyHQ",
-        hostname: "127.0.0.1",
-        service: "Retraced-audit-logs",
-        message: JSON.stringify(event),
-      },
-      {
-        headers: {
-          "Ce-Id": v4(),
-          "Ce-Specversion": "1.0",
-          "Ce-Type": "io.triggermesh.datadog.log.send",
-          "Ce-Source": "ocimetrics/adapter",
-          "Content-Type": "application/json",
+    axios
+      .post(
+        event?.fields?.webhookUrl || "http://localhost:63970",
+        {
+          ddsource: "local-dev-machine",
+          ddtags: "Audit-Logs, Retraced, BoxyHQ",
+          hostname: "127.0.0.1",
+          service: "Retraced-audit-logs",
+          message: JSON.stringify(event),
         },
-      }
-    );
+        {
+          headers: {
+            "Ce-Id": v4(),
+            "Ce-Specversion": "1.0",
+            "Ce-Type": "io.triggermesh.datadog.log.send",
+            "Ce-Source": "ocimetrics/adapter",
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .catch(console.log)
+      .then(console.log);
   }
 }
 
