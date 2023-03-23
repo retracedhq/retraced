@@ -25,7 +25,6 @@ jobs:
       NPM_VERSION: ${{ steps.version.outputs.NPM_VERSION }}
       PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
       IMAGE_SUFFIX: ${{ steps.version.outputs.IMAGE_SUFFIX }}
-      IMAGE_PATH: ${{ steps.version.outputs.IMAGE_PATH }}
     strategy:
       matrix:
         node-version: [18]
@@ -51,7 +50,6 @@ jobs:
 
           publishTag="latest"
           imageSuffix=""
-          imagePath="${{ secrets.DOCKER_HUB_USERNAME }}/retraced"
 
           if [[ "$GITHUB_REF" == *\/release ]]
           then
@@ -60,7 +58,6 @@ jobs:
             echo "Dev branch"
             publishTag="beta"
             imageSuffix="-beta"
-            imagePath="${{ secrets.DOCKER_HUB_USERNAME }}/retraced-beta"
             RETRACED_VERSION="${RETRACED_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
           echo "${imagePath}"
@@ -68,7 +65,6 @@ jobs:
           echo "NPM_VERSION=${RETRACED_VERSION}" >> $GITHUB_OUTPUT
           echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
           echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
-          echo "IMAGE_PATH=${imagePath}" >> $GITHUB_OUTPUT
 
   build:
     needs: ci
@@ -92,7 +88,19 @@ jobs:
 
       - name: Get short SHA
         id: slug
-        run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
+        run: |
+          echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
+          imagePath="${{ secrets.DOCKER_HUB_USERNAME }}/retraced"
+
+          if [[ "$GITHUB_REF" == *\/release ]]
+          then
+            echo "${imagePath}"
+          else
+            imagePath="${{ secrets.DOCKER_HUB_USERNAME }}/retraced-beta"
+          fi
+          echo "${imagePath}"
+
+          echo "IMAGE_PATH=${imagePath}" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         #if: github.ref == 'refs/heads/release'
@@ -119,7 +127,7 @@ jobs:
           file: ./deploy/Dockerfile-slim
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
+          tags: ${{ steps.slug.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ steps.slug.outputs.IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ steps.slug.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
         #if: github.ref == 'refs/heads/release'
