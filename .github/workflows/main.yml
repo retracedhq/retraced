@@ -77,7 +77,7 @@ jobs:
       - name: Check Out Repo
         uses: actions/checkout@v3
 
-      - run: echo ${{ needs.ci.outputs.IMAGE_PATH }}
+      - run: echo ${{ steps.slug.outputs.IMAGE_PATH }}
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -155,7 +155,7 @@ jobs:
 
       - name: Sign the image
         #if: github.ref == 'refs/heads/release'
-        run: cosign sign --key /tmp/cosign.key -y ${{ needs.ci.outputs.IMAGE_PATH }}@${{ steps.docker_build.outputs.digest }}
+        run: cosign sign --key /tmp/cosign.key -y ${{ steps.slug.outputs.IMAGE_PATH }}@${{ steps.docker_build.outputs.digest }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
@@ -201,7 +201,7 @@ jobs:
         #if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          image: ${{ steps.slug.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: spdx
           artifact-name: docker_sbom.spdx
       - name: Publish report [Docker][SPDX]
@@ -213,7 +213,7 @@ jobs:
         #if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          image: ${{ steps.slug.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: cyclonedx
           artifact-name: docker_sbom.cyclonedx
       - name: Publish report [Docker][CycloneDx]
