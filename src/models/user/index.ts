@@ -22,9 +22,9 @@ export interface RetracedUserResponse {
 export function retracedUserFromRow(row: any): RetracedUser {
   return {
     id: row.id,
-    created: moment(row.created),
+    created: moment(+row.created),
     email: row.email,
-    lastLogin: row.last_login ? moment(row.last_login) : undefined,
+    lastLogin: row.last_login ? moment(+row.last_login) : undefined,
     externalAuthId: row.external_auth_id,
     timezone: row.timezone,
     txEmailsRecipient: row.tx_emails_recipient,
