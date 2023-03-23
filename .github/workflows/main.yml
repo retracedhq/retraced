@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - release
+      - fix/gh-actions
     tags:
       - "beta-v*"
   pull_request:
