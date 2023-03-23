@@ -63,6 +63,7 @@ jobs:
             imagePath="${{ secrets.DOCKER_HUB_USERNAME }}/retraced-beta"
             RETRACED_VERSION="${RETRACED_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
+          echo "${imagePath}"
 
           echo "NPM_VERSION=${RETRACED_VERSION}" >> $GITHUB_OUTPUT
           echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
