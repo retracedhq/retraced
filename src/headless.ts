@@ -141,6 +141,7 @@ export async function bootstrapProject(opts: BootstrapOpts) {
     project = await createProject({
       id: opts.projectId,
       name: opts.projectName,
+      env: opts.environmentId ? [] : undefined,
     });
   }
 

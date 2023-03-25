@@ -143,7 +143,8 @@ services:
     networks:
       - retraced
     depends_on:
-      - postgres-migration
+      elastic-migration:
+        condition: service_completed_successfully
     command: ./build/src/retracedctl bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev
 
   postgres-migration:
