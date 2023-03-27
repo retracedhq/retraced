@@ -1,7 +1,7 @@
 import getPgPool from "../../persistence/pg";
 import { getESWithoutRetry } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 
 const pgPool = getPgPool();
 const es: Client = getESWithoutRetry();
@@ -75,15 +75,15 @@ export default async function (opts: Options) {
           return;
         }
 
-        if (!Array.isArray(resp) || resp.length === 0) {
+        if (!Array.isArray(resp.body) || resp.body.length === 0) {
           reject(new Error(`No ES alias found with name '${aliasName}'`));
           return;
-        } else if (resp.length > 1) {
+        } else if (resp.body.length > 1) {
           reject(new Error(`System is in disarray: more than one ES alias found with name '${aliasName}'`));
           return;
         }
 
-        const indexName = resp[0].index;
+        const indexName = resp.body[0].index;
 
         // Delete all aliases attached to the soon-to-be-deleted index
         es.indices.deleteAlias({ index: indexName, name: "_all" }, (err2) => {

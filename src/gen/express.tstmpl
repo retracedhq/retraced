@@ -47,7 +47,7 @@ export function RegisterRoutes(app: any) {
     {{#each controllers}}
     {{#each actions}}
         console.log(`TSOA ${'{{method}}'.padStart(6, ' ')} {{../../basePath}}{{../path}}{{path}}`);
-        app.{{method}}('{{../../basePath}}{{../path}}{{path}}', 
+        app.{{method}}('{{../../basePath}}{{../path}}{{path}}',
             {{#if security}} 
             authenticateMiddleware('{{security.name}}'
                 {{#if security.scopes.length}} 

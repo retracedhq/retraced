@@ -1,7 +1,7 @@
 import _ from "lodash";
 import moment from "moment";
 import { Scope } from "../security/scope";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import axios from "axios";
 import { readFileSync } from "fs";
 import config from "../config";

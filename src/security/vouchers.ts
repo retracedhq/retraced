@@ -18,9 +18,7 @@ export function createViewerDescriptorVoucher(desc: ViewerDescriptor): string {
   return jwt.sign(desc, config.HMAC_SECRET_VIEWER);
 }
 
-export async function validateAdminVoucher(
-  voucher: string
-): Promise<AdminClaims> {
+export async function validateAdminVoucher(voucher: string): Promise<AdminClaims> {
   return new Promise<AdminClaims>((resolve, reject) => {
     jwt.verify(voucher, config.HMAC_SECRET_ADMIN, (err, claims) => {
       if (err) {
@@ -32,9 +30,7 @@ export async function validateAdminVoucher(
   });
 }
 
-export async function validateViewerDescriptorVoucher(
-  voucher: string
-): Promise<ViewerDescriptor> {
+export async function validateViewerDescriptorVoucher(voucher: string): Promise<ViewerDescriptor> {
   return new Promise<ViewerDescriptor>((resolve, reject) => {
     jwt.verify(voucher, config.HMAC_SECRET_VIEWER, (err, claims) => {
       if (err) {

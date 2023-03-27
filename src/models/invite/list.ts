@@ -20,10 +20,9 @@ export default async function listInvites(opts: Options): Promise<Invite[]> {
       id: row.id,
       email: row.email,
       project_id: row.project_id,
-      created: moment(row.created),
+      created: moment(+row.created),
     }));
   }
 
   return [];
-
 }

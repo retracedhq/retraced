@@ -76,3 +76,25 @@ npm run swagger
 ```
 
 The outputs will be written to build/swagger.json
+
+## Contributing
+
+Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody else and are appreciated.
+
+Please try to create bug reports that are:
+
+- _Reproducible._ Include steps to reproduce the problem.
+- _Specific._ Include as much detail as possible: which version, what environment, etc.
+- _Unique._ Do not duplicate existing opened issues.
+- _Scoped to a Single Bug._ One bug per report.
+
+## Support
+
+Reach out to the maintainers at one of the following places:
+
+- [GitHub Issues](https://github.com/retracedhq/retraced/issues) (Bug reports, Contributions)
+
+## Community
+
+- [Discord](https://discord.gg/uyb7pYt4Pa) (For live discussion with the Community and BoxyHQ team)
+- [Twitter](https://twitter.com/BoxyHQ) (Get the news fast)
