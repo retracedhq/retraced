@@ -50,8 +50,7 @@ export class NSQClient {
   // we maybe want to use something like hystrixjs,
   // but it seems a little heavy for what we need at this point.
   private checkCircuitBreaker() {
-    const shouldCheck =
-      this.circuitBreakerThreshold >= 0 && this.circuitBreakerThreshold <= 1;
+    const shouldCheck = this.circuitBreakerThreshold >= 0 && this.circuitBreakerThreshold <= 1;
 
     if (!shouldCheck) {
       return;
@@ -92,9 +91,7 @@ export class NSQClient {
       let connected = false;
 
       w.connect();
-      logger.info(
-        `NSQ writer attempting to connect to nsqd at ${this.host}:${this.port}`
-      );
+      logger.info(`NSQ writer attempting to connect to nsqd at ${this.host}:${this.port}`);
 
       w.on("ready", () => {
         connected = true;
