@@ -57,7 +57,7 @@
     "@types/express": "4.17.17",
     "@types/lodash": "4.14.191",
     "@types/mocha": "10.0.1",
-    "@types/node": "18.14.0",
+    "@types/node": "18.15.10",
     "@types/pg": "8.6.6",
     "@types/statsd-client": "0.4.3",
     "@types/swagger-jsdoc": "6.0.1",
