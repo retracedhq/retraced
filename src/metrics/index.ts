@@ -12,6 +12,8 @@ import {
   SysdigNameRewriter,
   timer as monkitTimer,
 } from "monkit";
+// Require the otel instrumentation on startup
+import "./opentelemetry/instrumentation";
 import { logger } from "../logger";
 
 export function startStatsdReporter(
