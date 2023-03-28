@@ -44,11 +44,7 @@ export default class PostgresEventSource implements EventSource {
         const events = rows
           .filter((r) => {
             if (!r.normalized_event) {
-              console.log(
-                picocolors.yellow(
-                  `WARN Skipping task ${r.id}, it is missing 'normalized_event'`
-                )
-              );
+              console.log(picocolors.yellow(`WARN Skipping task ${r.id}, it is missing 'normalized_event'`));
               return false;
             }
             return true;
@@ -64,18 +60,13 @@ export default class PostgresEventSource implements EventSource {
 
   private getQuery(): Cursor {
     if (this.startDate && this.endDate) {
-      return new Cursor(
-        "SELECT * FROM ingest_task WHERE $1::tsrange @> received",
-        [`[${this.startDate}, ${this.endDate})`]
-      );
+      return new Cursor("SELECT * FROM ingest_task WHERE $1::tsrange @> received", [
+        `[${this.startDate}, ${this.endDate})`,
+      ]);
     } else if (this.startDate && !this.endDate) {
-      return new Cursor("SELECT * FROM ingest_task WHERE received >= $1 ", [
-        this.startDate,
-      ]);
+      return new Cursor("SELECT * FROM ingest_task WHERE received >= $1 ", [this.startDate]);
     } else if (!this.startDate && this.endDate) {
-      return new Cursor("SELECT * FROM ingest_task WHERE received < $1 ", [
-        this.endDate,
-      ]);
+      return new Cursor("SELECT * FROM ingest_task WHERE received < $1 ", [this.endDate]);
     } else {
       return new Cursor("SELECT * FROM ingest_task ");
     }
@@ -102,6 +93,9 @@ export default class PostgresEventSource implements EventSource {
       actor,
       group,
       target,
+      fields,
+      external_id,
+      metadata,
     } = event;
 
     const ret: Event = {
@@ -119,6 +113,9 @@ export default class PostgresEventSource implements EventSource {
       created: new Date(created),
       received: new Date(received),
       canonical_time: new Date(canonical_time),
+      fields,
+      external_id,
+      metadata,
     };
 
     if (group) {

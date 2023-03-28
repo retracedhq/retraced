@@ -169,6 +169,17 @@ export function getFilters(query: ParsedQuery, scope: Scope): Filter[] {
     });
   }
 
+  if (query.external_id) {
+    const some = _.map(query.external_id, (id) => {
+      return {
+        where: `(doc -> 'external_id') @> ${nextParam()}`,
+        values: [quote(id)],
+      };
+    });
+
+    filters.push(orJoin(some));
+  }
+
   // TODO
   if (query.location) {
     // structured search for "location" not implemented - add to free text

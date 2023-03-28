@@ -15,7 +15,7 @@ chai.use(chaiHttp);
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
 const currentTime = new Date();
-currentTime.setMilliseconds(0); // api only returns seconds preceision
+currentTime.setMilliseconds(0); // api only returns seconds precision
 
 describe("Viewer API", function () {
   describe("Given the Retraced API is up and running", function () {
@@ -23,7 +23,6 @@ describe("Viewer API", function () {
     const targetID = "rtrcdapi";
     const actorID = "qa@retraced.io";
 
-    let resultBody;
     beforeEach(retracedUp(Env));
 
     context("And a call is made into the Retraced API with a standard audit event", function () {
@@ -71,7 +70,7 @@ describe("Viewer API", function () {
           console.log(tv4.error);
         }
         expect(valid).to.be.true;
-        resultBody = await retraced.reportEvent(event);
+        await retraced.reportEvent(event);
       });
 
       context("And a call is made to create a viewer description scoped to a target", function () {

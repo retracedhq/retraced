@@ -18,7 +18,7 @@ const FIRST_EVENT = randomNumber.toString();
 const SECOND_EVENT = (randomNumber + 1).toString();
 const GROUP_ID = (randomNumber + 2).toString();
 const currentTime = new Date();
-currentTime.setMilliseconds(0); // api only returns seconds preceision
+currentTime.setMilliseconds(0); // api only returns seconds precision
 
 describe("Group Name Resolution", function () {
   describe("Given the Retraced API is up and running", function () {

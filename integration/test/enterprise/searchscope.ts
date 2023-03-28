@@ -14,7 +14,7 @@ chai.use(chaiHttp);
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
 const currentTime = new Date();
-currentTime.setMilliseconds(0); // api only returns seconds preceision
+currentTime.setMilliseconds(0); // api only returns seconds precision
 
 describe("Enterprise Search Group Scoping", function () {
   describe("Given the Retraced API is up and running", function () {

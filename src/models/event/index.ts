@@ -49,6 +49,7 @@ export interface ParsedQuery {
   actor_name?: string[];
   description?: string[];
   location?: string[];
+  external_id?: string[];
   text?: string;
 }
 
@@ -61,6 +62,7 @@ const structuredQueryKeywords = [
   "actor.name",
   "description",
   "location",
+  "external_id",
 ];
 
 function toArray(x: string | string[]): string[] {
@@ -110,6 +112,9 @@ export function parseQuery(query: string): ParsedQuery {
   }
   if (intermediate["actor.name"]) {
     parsed.actor_name = toArray(intermediate["actor.name"]);
+  }
+  if (intermediate["external_id"]) {
+    parsed.external_id = toArray(intermediate["external_id"]);
   }
 
   if (intermediate.created) {
