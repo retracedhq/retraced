@@ -3,12 +3,14 @@ import moment from "moment";
 import * as uuid from "uuid";
 import pg from "pg";
 import { histogram, instrumented, meter } from "monkit";
-
+import otel from "@opentelemetry/api";
 import { AliasDesc, AliasRotator, putAliases, getESWithoutRetry } from "../../persistence/elasticsearch";
 import getPg from "../persistence/pg";
 import { logger } from "../logger";
 import config from "../../config";
 import { Client } from "@opensearch-project/opensearch";
+
+const otelMeter = otel.metrics.getMeter("retraced-meter");
 
 export type IndexNamer = (newDate: moment.Moment) => string;
 
@@ -131,6 +133,10 @@ export class ElasticsearchIndexRotator {
     // If more than one, remove all but one
     if (!_.isEmpty(existingWriteAliases.body) && existingWriteAliases.body.length > 1) {
       logger.info(`WARN found ${existingWriteAliases.body.length} write aliases`);
+      const _otelHistogram = otelMeter.createHistogram(
+        "ElasticsearchIndexRotator.createWriteIndexIfNecessary.multipleWriteAliases"
+      );
+      _otelHistogram.record(existingWriteAliases.body.length);
       histogram(`ElasticsearchIndexRotator.createWriteIndexIfNecessary.multipleWriteAliases`).update(
         existingWriteAliases.body.length
       );

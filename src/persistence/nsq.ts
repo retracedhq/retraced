@@ -1,7 +1,10 @@
 import nsq from "nsqjs";
 import { histogram, instrumented, meter, timer } from "../metrics";
+import otel from "@opentelemetry/api";
 import { logger } from "../logger";
 import config from "../config";
+
+const otelMeter = otel.metrics.getMeter("retraced-meter");
 
 export class NSQClient {
   public static fromEnv() {
@@ -57,6 +60,8 @@ export class NSQClient {
     }
 
     const errorPct = this.computeErrorPercentage();
+    const _otelHistogram = otelMeter.createHistogram("NSQClient.produce.errorPct");
+    _otelHistogram.record(errorPct);
     histogram("NSQClient.produce.errorPct").update(errorPct);
 
     if (errorPct > this.circuitBreakerThreshold) {
