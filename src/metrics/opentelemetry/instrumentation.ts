@@ -3,7 +3,6 @@ import { MeterProvider, PeriodicExportingMetricReader } from "@opentelemetry/sdk
 import { Resource } from "@opentelemetry/resources";
 import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
-import config from "../../config";
 
 const resource = Resource.default().merge(
   new Resource({
@@ -12,19 +11,12 @@ const resource = Resource.default().merge(
   })
 );
 
-const collectorOptions = {
-  url: config.LIGHTSTEP_URL, // url is optional and can be omitted - default is http://localhost:4318/v1/metrics
-  headers: {
-    "Lightstep-Access-Token": config.LIGHTSTEP_TOKEN,
-  }, // an optional object containing custom headers to be sent with each request
-  concurrencyLimit: 1, // an optional limit on pending requests
-};
-const metricExporter = new OTLPMetricExporter(collectorOptions);
+const metricExporter = new OTLPMetricExporter();
 
 const metricReader = new PeriodicExportingMetricReader({
   exporter: metricExporter,
 
-  exportIntervalMillis: Number(config.LIGHTSTEP_INTERVAL_MILLIS) || 30000,
+  exportIntervalMillis: 30000,
 });
 
 const myServiceMeterProvider = new MeterProvider({
