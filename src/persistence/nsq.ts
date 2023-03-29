@@ -87,6 +87,7 @@ export class NSQClient {
       this.writer.then((w) => w.close());
       delete this.writer;
     }
+    otelMeter.createCounter("NSQClient.forceReconnect.destroy").add(1);
     meter("NSQClient.forceReconnect.destroy").mark();
   }
 
