@@ -1,5 +1,6 @@
 import _ from "lodash";
 import * as monkit from "monkit";
+import otel from "@opentelemetry/api";
 import config from "../config";
 import { errToLog, jobDesc, stopwatchClick } from "./common";
 import nsq from "./persistence/nsq";
@@ -28,6 +29,8 @@ import { logger } from "./logger";
 import { startHealthz, updateLastNSQ } from "./healthz";
 import getPgPool from "../persistence/pg";
 import { notifyError, startErrorNotifier } from "../error-notifier";
+
+const otelMeter = otel.metrics.getMeter("retraced-meter");
 
 startHealthz();
 
@@ -269,6 +272,7 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
     }
     updateLastNSQ();
   } catch (err) {
+    otelMeter.createCounter("processor.waitForJobs.errors").add(1);
     registry.meter("processor.waitForJobs.errors").mark();
     notifyError(err);
     const elapsed = stopwatchClick(startTime);

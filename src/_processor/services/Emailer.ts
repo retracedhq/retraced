@@ -15,13 +15,15 @@ import mandrillTransport from "nodemailer-mandrill-transport";
 import _ from "lodash";
 import pg from "pg";
 import { getRegistry, instrumented, Registry } from "monkit";
-
+import otel from "@opentelemetry/api";
 import inviteTmpl from "./templates/inviteToTeam";
 import reportTmpl from "./templates/reportDay";
 import deletionRequestTmpl from "./templates/deletionRequest";
 import getPgPool from "../persistence/pg";
 import { logger } from "../logger";
 import config from "../../config";
+
+const otelMeter = otel.metrics.getMeter("retraced-meter");
 
 export interface Email {
   to: string | string[];
@@ -121,7 +123,7 @@ export class Emailer {
             logger.error(`Mandrill send to ${result.email} invalid`);
             return false;
           }
-
+          otelMeter.createCounter(`Emailer.mandrillRejectHandler.${result.reject_reason}`).add(1);
           registry.meter(`Emailer.mandrillRejectHandler.${result.reject_reason}`).mark();
           logger.warn(`Mandrill send to ${result.email} rejected: ${result.reject_reason}`);
 

@@ -68,6 +68,7 @@ export default class NormalizeRepairer {
     ]);
     if (!resp.rows.length) {
       logger.debug(`No jobs older than ${this.minAgeMs}ms missing 'normalized_event'`);
+      otelMeter.createCounter("NormalizeRepairer.repairOldEvents.allClear").add(1);
       this.metricRegistry.meter("NormalizeRepairer.repairOldEvents.allClear").mark();
       return;
     }
@@ -78,10 +79,7 @@ export default class NormalizeRepairer {
     );
     logger.warn(`Oldest event is ${oldestEvent.id} which was received ${oldestEvent.age_ms}ms ago`);
     // metrics
-    const _otelGuage = otelMeter.createObservableGauge("NormalizeRepairer.repairOldEvents.hits");
-    _otelGuage.addCallback((result) => {
-      result.observe(resp.rows.length);
-    });
+    otelMeter.createCounter("NormalizeRepairer.repairOldEvents.hits").add(resp.rows.length);
     this.metricRegistry?.meter("NormalizeRepairer.repairOldEvents.hits").mark(resp.rows.length);
     const _otelHistogram = otelMeter.createHistogram("NormalizeRepairer.repairOldEvents.oldest");
     _otelHistogram.record(oldestEvent.age_ms);

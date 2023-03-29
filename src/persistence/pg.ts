@@ -1,9 +1,12 @@
 import pg from "pg";
 import { gauge, meter } from "../metrics";
+import otel from "@opentelemetry/api";
 import { logger } from "../logger";
 import config from "../config";
 
 let pgPool: pg.Pool;
+
+const otelMeter = otel.metrics.getMeter("retraced-meter");
 
 export default function getPgPool(): pg.Pool {
   if (!pgPool) {
@@ -20,6 +23,7 @@ export default function getPgPool(): pg.Pool {
 
     pgPool.on("error", () => {
       logger.error("postgres client connection error");
+      otelMeter.createCounter("PgPool.connection.error").add(1);
       meter("PgPool.connection.error").mark();
     });
   }

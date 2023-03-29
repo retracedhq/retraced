@@ -85,6 +85,7 @@ export class ElasticsearchIndexRotator {
     const environments = await this.getEnvironments();
     const count = await Promise.all(environments.map((e) => this.verifyIndexAliases(e))).then(_.sum);
     logger.info(`Completed Elasticsearch Index Alias review with ${count} repairs performed.`);
+    otelMeter.createCounter(`ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair`).add(count);
     meter(`ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair`).mark(count);
   }
 
