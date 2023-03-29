@@ -81,14 +81,12 @@ export default class NormalizeRepairer {
     // metrics
     otelMeter.createCounter("NormalizeRepairer.repairOldEvents.hits").add(resp.rows.length);
     this.metricRegistry?.meter("NormalizeRepairer.repairOldEvents.hits").mark(resp.rows.length);
-    const _otelHistogram = otelMeter.createHistogram("NormalizeRepairer.repairOldEvents.oldest");
-    _otelHistogram.record(oldestEvent.age_ms);
+    otelMeter.createHistogram("NormalizeRepairer.repairOldEvents.oldest").record(oldestEvent.age_ms);
     this.metricRegistry?.histogram("NormalizeRepairer.repairOldEvents.oldest").update(oldestEvent.age_ms);
 
     return Promise.all(
       resp.rows.map((row) => {
-        const __otelHistogram = otelMeter.createHistogram("NormalizeRepairer.repairOldEvents.age");
-        __otelHistogram.record(row.age_ms);
+        otelMeter.createHistogram("NormalizeRepairer.repairOldEvents.age").record(row.age_ms);
         this.metricRegistry?.histogram("NormalizeRepairer.repairOldEvents.age").update(row.age_ms);
         return this.nsq.produce("raw_events", JSON.stringify({ taskId: row.id }));
       })

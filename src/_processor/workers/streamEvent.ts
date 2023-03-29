@@ -43,12 +43,10 @@ export default async function (job) {
   const now = moment.utc().valueOf();
 
   if (normalizedEvent.created) {
-    const __otelHistogram = otelMeter.createHistogram("workers.streamEvent.latencyCreated");
-    __otelHistogram.record(now - normalizedEvent.created);
+    otelMeter.createHistogram("workers.streamEvent.latencyCreated").record(now - normalizedEvent.created);
 
     monkit.histogram("workers.streamEvent.latencyCreated").update(now - normalizedEvent.created);
   }
-  const _otelHistogram = otelMeter.createHistogram("workers.streamEvent.latencyReceived");
-  _otelHistogram.record(now - normalizedEvent.received);
+  otelMeter.createHistogram("workers.streamEvent.latencyReceived").record(now - normalizedEvent.received);
   monkit.histogram("workers.streamEvent.latencyReceived").update(now - normalizedEvent.received);
 }

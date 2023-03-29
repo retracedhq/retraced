@@ -60,8 +60,7 @@ export class NSQClient {
     }
 
     const errorPct = this.computeErrorPercentage();
-    const _otelHistogram = otelMeter.createHistogram("NSQClient.produce.errorPct");
-    _otelHistogram.record(errorPct);
+    otelMeter.createHistogram("NSQClient.produce.errorPct").record(errorPct);
     histogram("NSQClient.produce.errorPct").update(errorPct);
 
     if (errorPct > this.circuitBreakerThreshold) {
