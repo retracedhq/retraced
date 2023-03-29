@@ -41,10 +41,21 @@ function updatePoolGauges() {
   // pg 7.0 + uses pg-pool 2.0 +, which has pool.waitingCount, etc.
   // but @types for 7.0 aren't out as of 7/27/2017
   const pool: any = getPgPool();
-
+  otelMeter
+    .createObservableGauge("PgPool.clients.waiting.count")
+    .addCallback((result) => result.observe(pool.waitingCount));
   gauge("PgPool.clients.waiting.count").set(pool.waitingCount);
+  otelMeter
+    .createObservableGauge("PgPool.clients.total.count")
+    .addCallback((result) => result.observe(pool.totalCount));
   gauge("PgPool.clients.total.count").set(pool.totalCount);
+  otelMeter
+    .createObservableGauge("PgPool.clients.idle.count")
+    .addCallback((result) => result.observe(pool.idleCount));
   gauge("PgPool.clients.idle.count").set(pool.idleCount);
+  otelMeter
+    .createObservableGauge("PgPool.clients.active.count")
+    .addCallback((result) => result.observe(pool.totalCount - pool.idleCount));
   gauge("PgPool.clients.active.count").set(pool.totalCount - pool.idleCount);
 }
 
