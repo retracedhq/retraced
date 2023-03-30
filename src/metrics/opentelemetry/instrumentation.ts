@@ -30,8 +30,10 @@ const meterProvider = new MeterProvider({
 
 meterProvider.addMetricReader(metricReader);
 
-// Set this MeterProvider to be global to the app being instrumented.
-otel.metrics.setGlobalMeterProvider(meterProvider);
+if (process.env.NODE_ENV !== "test") {
+  // Set this MeterProvider to be global to the app being instrumented.
+  otel.metrics.setGlobalMeterProvider(meterProvider);
+}
 
 let counters;
 let gauges;
