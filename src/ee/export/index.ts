@@ -2,7 +2,7 @@ import axios from "axios";
 import config from "../../config";
 import { logger } from "../../logger";
 
-export default async function sendToWebhook(event: any): Promise<void> {
+export default function sendToWebhook(event: any): void {
   if (config.EXPORT_VECTOR_WEBHOOK_URL) {
     delete event.raw;
     axios
