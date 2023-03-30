@@ -17,7 +17,7 @@ source = """
 # Set the values of the output object
 .ddsource = "${EXPORT_DDSOURCE}"
 .ddtags = "${EXPORT_DDTAGS}"
-.hostname = "${EXPORT_HOSTNAME}"
+.hostname = "${EXPORT_DDHOSTNAME}"
 .service = "${EXPORT_SERVICE}"
 """
 
