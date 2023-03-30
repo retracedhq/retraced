@@ -41,6 +41,10 @@ const initOtelInstruments = () => {
   const otelMeter = otel.metrics.getMeter("retraced-meter");
 
   counters = {
+    "EventCreater.handled.events": otelMeter.createCounter("EventCreater.handled.events"),
+    "ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair": otelMeter.createCounter(
+      "ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair"
+    ),
     "processor.waitForJobs.errors": otelMeter.createCounter("processor.waitForJobs.errors"),
     "Emailer.mandrillRejectHandler": otelMeter.createCounter("Emailer.mandrillRejectHandler"),
     "NSQClient.forceReconnect.destroy": otelMeter.createCounter("NSQClient.forceReconnect.destroy"),
