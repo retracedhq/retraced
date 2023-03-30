@@ -28,7 +28,7 @@ import { logger } from "./logger";
 import { startHealthz, updateLastNSQ } from "./healthz";
 import getPgPool from "../persistence/pg";
 import { notifyError, startErrorNotifier } from "../error-notifier";
-import { incrementOtelCounter } from "../metrics/opentelemetry/instrumentation";
+import { incrementOtelCounter, initOtelInstruments } from "../metrics/opentelemetry/instrumentation";
 
 startHealthz();
 
@@ -55,6 +55,7 @@ const leftPad = (s, n) => (n > s.length ? " ".repeat(n - s.length) + s : s);
 const registry = monkit.getRegistry();
 
 metrics.bootstrapFromEnv();
+initOtelInstruments();
 
 const slowElapsedThreshold = 250.0; // ms
 
