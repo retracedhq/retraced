@@ -3,20 +3,20 @@ import config from "../../config";
 import { logger } from "../../logger";
 
 export default function sendToWebhook(event: any): void {
-  if (config.EXPORT_VECTOR_WEBHOOK_URL) {
+  if (config.EXPORT_WEBHOOK_URL) {
     delete event.raw;
     axios
       .post(
-        config.EXPORT_VECTOR_WEBHOOK_URL,
+        config.EXPORT_WEBHOOK_URL,
         {
           message: JSON.stringify(event),
         },
         {
           auth:
-            config.EXPORT_VECTOR_WEBHOOK_USERNAME && config.EXPORT_VECTOR_WEBHOOK_PASSWORD
+            config.EXPORT_WEBHOOK_USERNAME && config.EXPORT_WEBHOOK_PASSWORD
               ? {
-                  username: config.EXPORT_VECTOR_WEBHOOK_USERNAME,
-                  password: config.EXPORT_VECTOR_WEBHOOK_PASSWORD,
+                  username: config.EXPORT_WEBHOOK_USERNAME,
+                  password: config.EXPORT_WEBHOOK_PASSWORD,
                 }
               : undefined,
         }
