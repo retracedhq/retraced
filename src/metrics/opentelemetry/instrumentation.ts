@@ -40,8 +40,6 @@ let histograms;
 const initOtelInstruments = () => {
   const otelMeter = otel.metrics.getMeter("retraced-meter");
 
-  console.log(`initOtelInstruments invoked`);
-
   counters = {
     "processor.waitForJobs.errors": otelMeter.createCounter("processor.waitForJobs.errors"),
     "Emailer.mandrillRejectHandler": otelMeter.createCounter("Emailer.mandrillRejectHandler"),
