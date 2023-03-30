@@ -1,4 +1,4 @@
-data_dir = "${EXPORT_VECTOR_DATA_DIR}"
+data_dir = "${EXPORT_DATA_DIR}"
 
 # The data source that Vector will collect logs from
 [sources.webhook]
@@ -6,8 +6,8 @@ type = "http_server" # The protocol to use
 address = "0.0.0.0:9000" # The address to bind to
 healthcheck = true # Enable built-in health checks
 body_size_limit = "1mb" # Maximum size of request body
-auth.password = "${EXPORT_VECTOR_WEBHOOK_PASSWORD}"
-auth.username = "${EXPORT_VECTOR_WEBHOOK_USERNAME}"
+auth.password = "${EXPORT_WEBHOOK_PASSWORD}"
+auth.username = "${EXPORT_WEBHOOK_USERNAME}"
 
 # The transformation(s) to apply to each event
 [transforms.add_datadog_info]
@@ -15,20 +15,20 @@ type = "remap"
 inputs = [ "webhook" ]
 source = """
 # Set the values of the output object
-.ddsource = "${EXPORT_VECTOR_DDSOURCE}"
-.ddtags = "${EXPORT_VECTOR_DDTAGS}"
-.hostname = "${EXPORT_VECTOR_HOSTNAME}"
-.service = "${EXPORT_VECTOR_SERVICE}"
+.ddsource = "${EXPORT_DDSOURCE}"
+.ddtags = "${EXPORT_DDTAGS}"
+.hostname = "${EXPORT_HOSTNAME}"
+.service = "${EXPORT_SERVICE}"
 """
 
 # The destination(s) to send the events to
 [sinks.datadog_sink]
 type = "datadog_logs"
 inputs = [ "add_datadog_info" ]
-default_api_key = "${EXPORT_VECTOR_DATADOG_API_KEY}"
+default_api_key = "${EXPORT_DATADOG_API_KEY}"
 compression = "gzip"
-region = "${EXPORT_VECTOR_DATADOG_REGION}"
-site = "${EXPORT_VECTOR_DATADOG_SITE}"
+region = "${EXPORT_DATADOG_REGION}"
+site = "${EXPORT_DATADOG_SITE}"
 acknowledgements.enabled = true
 healthcheck.enabled = true
 request.concurrency = 10
