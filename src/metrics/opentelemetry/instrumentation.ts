@@ -30,16 +30,17 @@ const meterProvider = new MeterProvider({
 
 meterProvider.addMetricReader(metricReader);
 
-if (process.env.NODE_ENV !== "test") {
-  // Set this MeterProvider to be global to the app being instrumented.
-  otel.metrics.setGlobalMeterProvider(meterProvider);
-}
+// Set this MeterProvider to be global to the app being instrumented.
+otel.metrics.setGlobalMeterProvider(meterProvider);
 
 let counters;
 let gauges;
 let histograms;
 
 const initOtelInstruments = () => {
+  if (process.env.NODE_ENV === "test") {
+    return;
+  }
   const otelMeter = otel.metrics.getMeter("retraced-meter");
 
   counters = {
@@ -91,6 +92,9 @@ const initOtelInstruments = () => {
 };
 
 const incrementOtelCounter = (name: string, inc = 1, metricAttributes?: Attributes) => {
+  if (process.env.NODE_ENV === "test") {
+    return;
+  }
   const counter: Counter = counters[name];
   if (counter) {
     counter.add(inc, metricAttributes);
@@ -98,6 +102,9 @@ const incrementOtelCounter = (name: string, inc = 1, metricAttributes?: Attribut
 };
 
 const recordOtelHistogram = (name: string, val: number, metricAttributes?: Attributes) => {
+  if (process.env.NODE_ENV === "test") {
+    return;
+  }
   const histogram: Histogram = histograms[name];
   if (histogram) {
     histogram.record(val, metricAttributes);
@@ -105,6 +112,9 @@ const recordOtelHistogram = (name: string, val: number, metricAttributes?: Attri
 };
 
 const observeOtelGauge = (name: string, val: number, metricAttributes?: Attributes) => {
+  if (process.env.NODE_ENV === "test") {
+    return;
+  }
   const gauge: ObservableGauge = gauges[name];
   if (gauge) {
     gauge.addCallback((result) => {
