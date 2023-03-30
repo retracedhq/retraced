@@ -210,9 +210,8 @@ services:
       - EXPORT_DATADOG_API_KEY=${EXPORT_DATADOG_API_KEY}
       - EXPORT_DATADOG_REGION=${EXPORT_DATADOG_REGION}
       - EXPORT_DATADOG_SITE=${EXPORT_DATADOG_SITE}
-      - EXPORT_DATA_DIR=${EXPORT_DATA_DIR}
     volumes:
       - ./vector.toml:/etc/vector/vector.toml
-      - ${EXPORT_DATA_DIR_HOST}:${EXPORT_DATA_DIR}
+      - ./vector/data:/var/lib/vector/
     networks:
       - retraced

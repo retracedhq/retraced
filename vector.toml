@@ -1,4 +1,4 @@
-data_dir = "${EXPORT_DATA_DIR}"
+data_dir = "/var/lib/vector/"
 
 # The data source that Vector will collect logs from
 [sources.webhook]
