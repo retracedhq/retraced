@@ -3,6 +3,7 @@ import { MeterProvider, PeriodicExportingMetricReader } from "@opentelemetry/sdk
 import { Resource } from "@opentelemetry/resources";
 import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
+import config from "../../config";
 
 const resource = Resource.default().merge(
   new Resource({
@@ -15,15 +16,14 @@ const metricExporter = new OTLPMetricExporter();
 
 const metricReader = new PeriodicExportingMetricReader({
   exporter: metricExporter,
-
-  exportIntervalMillis: 30000,
+  exportIntervalMillis: Number(config.OTLP_INTERVAL_MILLIS) || 30000,
 });
 
-const myServiceMeterProvider = new MeterProvider({
+const meterProvider = new MeterProvider({
   resource,
 });
 
-myServiceMeterProvider.addMetricReader(metricReader);
+meterProvider.addMetricReader(metricReader);
 
 // Set this MeterProvider to be global to the app being instrumented.
-otel.metrics.setGlobalMeterProvider(myServiceMeterProvider);
+otel.metrics.setGlobalMeterProvider(meterProvider);
