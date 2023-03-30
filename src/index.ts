@@ -24,6 +24,7 @@ import fs from "fs";
 import https from "https";
 import sslConf from "ssl-config";
 import { startErrorNotifier } from "./error-notifier";
+import { initOtelInstruments } from "./metrics/opentelemetry/instrumentation";
 
 const app = express();
 const router = express.Router();
@@ -65,6 +66,7 @@ if (notifierEnabled && bugSnagMiddleware) {
 buildRoutes();
 serve();
 metrics.bootstrapFromEnv();
+initOtelInstruments();
 
 function buildRoutes() {
   registerHealthchecks();

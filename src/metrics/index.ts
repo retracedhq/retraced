@@ -13,11 +13,9 @@ import {
   timer as monkitTimer,
 } from "monkit";
 // Require the otel instrumentation on startup
-import "./opentelemetry/instrumentation";
-import otel from "@opentelemetry/api";
 
-const otelMeter = otel.metrics.getMeter("retraced-meter");
 import { logger } from "../logger";
+import { incrementOtelCounter, recordOtelHistogram } from "./opentelemetry/instrumentation";
 
 export function startStatsdReporter(
   statsdHost: string,
@@ -230,22 +228,20 @@ export function gauge(name: string, help?: string, labels?: string[]) {
  * Run the given function, recording throughput, latency and errors
  */
 export async function instrument(name: string, delegate: () => any) {
-  const _otelHistogram = otelMeter.createHistogram(`${name}.timer`);
   const t = timer(`${name}.timer`);
-  const _otelCounter = otelMeter.createCounter(`${name}.errors`);
   const errors = meter(`${name}.errors`);
   const start = process.hrtime();
 
   try {
     return await delegate();
   } catch (err) {
-    _otelCounter.add(1);
+    incrementOtelCounter("method.errors", 1, { "class.method": name });
     errors.mark();
     throw err;
   } finally {
     const elapsed = process.hrtime(start);
     const elapsedNanos = elapsed[0] * 1000000000 + elapsed[1];
-    _otelHistogram.record(elapsedNanos);
+    recordOtelHistogram("method.executionTime", elapsedNanos, { "class.method": name });
     t.update(elapsedNanos);
   }
 }

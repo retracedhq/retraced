@@ -1,12 +1,10 @@
 import pg from "pg";
 import * as monkit from "monkit";
-import otel from "@opentelemetry/api";
 import getPgPool from "../persistence/pg";
 import nsq, { NSQ, NSQClient } from "../persistence/nsq";
 import { logger } from "../logger";
 import config from "../../config";
-
-const otelMeter = otel.metrics.getMeter("retraced-meter");
+import { incrementOtelCounter, recordOtelHistogram } from "../../metrics/opentelemetry/instrumentation";
 
 /**
  * This worker runs at a scheduled interval.
@@ -68,7 +66,7 @@ export default class NormalizeRepairer {
     ]);
     if (!resp.rows.length) {
       logger.debug(`No jobs older than ${this.minAgeMs}ms missing 'normalized_event'`);
-      otelMeter.createCounter("NormalizeRepairer.repairOldEvents.allClear").add(1);
+      incrementOtelCounter("NormalizeRepairer.repairOldEvents.allClear");
       this.metricRegistry.meter("NormalizeRepairer.repairOldEvents.allClear").mark();
       return;
     }
@@ -79,14 +77,14 @@ export default class NormalizeRepairer {
     );
     logger.warn(`Oldest event is ${oldestEvent.id} which was received ${oldestEvent.age_ms}ms ago`);
     // metrics
-    otelMeter.createCounter("NormalizeRepairer.repairOldEvents.hits").add(resp.rows.length);
+    incrementOtelCounter("NormalizeRepairer.repairOldEvents.hits", resp.rows.length);
     this.metricRegistry?.meter("NormalizeRepairer.repairOldEvents.hits").mark(resp.rows.length);
-    otelMeter.createHistogram("NormalizeRepairer.repairOldEvents.oldest").record(oldestEvent.age_ms);
+    recordOtelHistogram("NormalizeRepairer.repairOldEvents.oldest", oldestEvent.age_ms);
     this.metricRegistry?.histogram("NormalizeRepairer.repairOldEvents.oldest").update(oldestEvent.age_ms);
 
     return Promise.all(
       resp.rows.map((row) => {
-        otelMeter.createHistogram("NormalizeRepairer.repairOldEvents.age").record(row.age_ms);
+        recordOtelHistogram("NormalizeRepairer.repairOldEvents.age", row.age_ms);
         this.metricRegistry?.histogram("NormalizeRepairer.repairOldEvents.age").update(row.age_ms);
         return this.nsq.produce("raw_events", JSON.stringify({ taskId: row.id }));
       })

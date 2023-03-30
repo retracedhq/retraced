@@ -1,11 +1,9 @@
 import _ from "lodash";
 import moment from "moment";
 import { Registry, getRegistry, instrumented } from "monkit";
-import otel from "@opentelemetry/api";
 import { Clock } from "../common";
 import { ClientWithRetry, getESWithRetry } from "../../persistence/elasticsearch";
-
-const otelMeter = otel.metrics.getMeter("retraced-meter");
+import { recordOtelHistogram } from "../../metrics/opentelemetry/instrumentation";
 
 export class ElasticsearchSaver {
   public static getDefault(): ElasticsearchSaver {
@@ -81,10 +79,10 @@ export class ElasticsearchSaver {
   private trackTimeUntilSearchable(created: number | undefined, received: number) {
     const now = this.clock().valueOf();
     if (created) {
-      otelMeter.createHistogram("workers.saveEventToElasticSearch.latencyCreated").record(now - created);
+      recordOtelHistogram("workers.saveEventToElasticSearch.latencyCreated", now - created);
       this.registry.histogram("workers.saveEventToElasticSearch.latencyCreated").update(now - created);
     }
-    otelMeter.createHistogram("workers.saveEventToElasticSearch.latencyReceived").record(now - received);
+    recordOtelHistogram("workers.saveEventToElasticSearch.latencyReceived", now - received);
     this.registry.histogram("workers.saveEventToElasticSearch.latencyReceived").update(now - received);
   }
 

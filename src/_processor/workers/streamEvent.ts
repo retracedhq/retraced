@@ -1,13 +1,11 @@
 import moment from "moment";
 import monkit from "monkit";
-import otel from "@opentelemetry/api";
 import _ from "lodash";
 
 import nsq from "../persistence/nsq";
 import getRedis from "../persistence/redis";
 import config from "../../config";
-
-const otelMeter = otel.metrics.getMeter("retraced-meter");
+import { recordOtelHistogram } from "../../metrics/opentelemetry/instrumentation";
 
 export default async function (job) {
   const redis = getRedis(config.WARP_PIPE_REDIS_DB);
@@ -43,10 +41,10 @@ export default async function (job) {
   const now = moment.utc().valueOf();
 
   if (normalizedEvent.created) {
-    otelMeter.createHistogram("workers.streamEvent.latencyCreated").record(now - normalizedEvent.created);
-
+    recordOtelHistogram("workers.streamEvent.latencyCreated", now - normalizedEvent.created);
     monkit.histogram("workers.streamEvent.latencyCreated").update(now - normalizedEvent.created);
   }
-  otelMeter.createHistogram("workers.streamEvent.latencyReceived").record(now - normalizedEvent.received);
+
+  recordOtelHistogram("workers.streamEvent.latencyReceived", now - normalizedEvent.received);
   monkit.histogram("workers.streamEvent.latencyReceived").update(now - normalizedEvent.received);
 }

@@ -3,14 +3,12 @@ import moment from "moment";
 import * as uuid from "uuid";
 import pg from "pg";
 import { histogram, instrumented, meter } from "monkit";
-import otel from "@opentelemetry/api";
 import { AliasDesc, AliasRotator, putAliases, getESWithoutRetry } from "../../persistence/elasticsearch";
 import getPg from "../persistence/pg";
 import { logger } from "../logger";
 import config from "../../config";
 import { Client } from "@opensearch-project/opensearch";
-
-const otelMeter = otel.metrics.getMeter("retraced-meter");
+import { incrementOtelCounter, recordOtelHistogram } from "../../metrics/opentelemetry/instrumentation";
 
 export type IndexNamer = (newDate: moment.Moment) => string;
 
@@ -85,7 +83,7 @@ export class ElasticsearchIndexRotator {
     const environments = await this.getEnvironments();
     const count = await Promise.all(environments.map((e) => this.verifyIndexAliases(e))).then(_.sum);
     logger.info(`Completed Elasticsearch Index Alias review with ${count} repairs performed.`);
-    otelMeter.createCounter(`ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair`).add(count);
+    incrementOtelCounter("ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair", count);
     meter(`ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair`).mark(count);
   }
 
@@ -134,9 +132,10 @@ export class ElasticsearchIndexRotator {
     // If more than one, remove all but one
     if (!_.isEmpty(existingWriteAliases.body) && existingWriteAliases.body.length > 1) {
       logger.info(`WARN found ${existingWriteAliases.body.length} write aliases`);
-      otelMeter
-        .createHistogram("ElasticsearchIndexRotator.createWriteIndexIfNecessary.multipleWriteAliases")
-        .record(existingWriteAliases.body.length);
+      recordOtelHistogram(
+        "ElasticsearchIndexRotator.createWriteIndexIfNecessary.multipleWriteAliases",
+        existingWriteAliases.body.length
+      );
       histogram(`ElasticsearchIndexRotator.createWriteIndexIfNecessary.multipleWriteAliases`).update(
         existingWriteAliases.body.length
       );

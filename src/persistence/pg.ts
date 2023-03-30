@@ -1,12 +1,10 @@
 import pg from "pg";
 import { gauge, meter } from "../metrics";
-import otel from "@opentelemetry/api";
 import { logger } from "../logger";
 import config from "../config";
+import { incrementOtelCounter, observeOtelGauge } from "../metrics/opentelemetry/instrumentation";
 
 let pgPool: pg.Pool;
-
-const otelMeter = otel.metrics.getMeter("retraced-meter");
 
 export default function getPgPool(): pg.Pool {
   if (!pgPool) {
@@ -23,7 +21,7 @@ export default function getPgPool(): pg.Pool {
 
     pgPool.on("error", () => {
       logger.error("postgres client connection error");
-      otelMeter.createCounter("PgPool.connection.error").add(1);
+      incrementOtelCounter("PgPool.connection.error");
       meter("PgPool.connection.error").mark();
     });
   }
@@ -41,21 +39,13 @@ function updatePoolGauges() {
   // pg 7.0 + uses pg-pool 2.0 +, which has pool.waitingCount, etc.
   // but @types for 7.0 aren't out as of 7/27/2017
   const pool: any = getPgPool();
-  otelMeter
-    .createObservableGauge("PgPool.clients.waiting.count")
-    .addCallback((result) => result.observe(pool.waitingCount));
+  observeOtelGauge("PgPool.clients.waiting.count", pool.waitingCount);
   gauge("PgPool.clients.waiting.count").set(pool.waitingCount);
-  otelMeter
-    .createObservableGauge("PgPool.clients.total.count")
-    .addCallback((result) => result.observe(pool.totalCount));
+  observeOtelGauge("PgPool.clients.total.count", pool.totalCount);
   gauge("PgPool.clients.total.count").set(pool.totalCount);
-  otelMeter
-    .createObservableGauge("PgPool.clients.idle.count")
-    .addCallback((result) => result.observe(pool.idleCount));
+  observeOtelGauge("PgPool.clients.idle.count", pool.idleCount);
   gauge("PgPool.clients.idle.count").set(pool.idleCount);
-  otelMeter
-    .createObservableGauge("PgPool.clients.active.count")
-    .addCallback((result) => result.observe(pool.totalCount - pool.idleCount));
+  observeOtelGauge("PgPool.clients.active.count", pool.totalCount - pool.idleCount);
   gauge("PgPool.clients.active.count").set(pool.totalCount - pool.idleCount);
 }
 

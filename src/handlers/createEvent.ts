@@ -5,7 +5,6 @@ import pgFormat from "pg-format";
 import util from "util";
 import * as monkit from "monkit";
 import { instrument, instrumented } from "../metrics";
-import otel from "@opentelemetry/api";
 import createCanonicalHash from "../models/event/canonicalize";
 import Event, { EventFields } from "../models/event/";
 import { fromCreateEventInput } from "../models/event";
@@ -15,6 +14,7 @@ import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
 import config from "../config";
+import { incrementOtelCounter } from "../metrics/opentelemetry/instrumentation";
 
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 const IPV6_REGEX =
@@ -32,8 +32,6 @@ const requiredSubfields = [
   // target, if present, must include target.id
   ["target", "target.id"],
 ];
-
-const otelMeter = otel.metrics.getMeter("retraced-meter");
 
 /** A group is a single organization that is an end customer of a vendor app */
 export interface RequestGroup {
@@ -180,7 +178,7 @@ export class EventCreater {
       // Coerce the input event into a proper Event object.
       // Then, generate an authoritative hash from its contents.
       const hash = this.hasher(fromCreateEventInput(event, id));
-      otelMeter.createCounter("EventCreater.handled.events").add(1);
+      incrementOtelCounter("EventCreater.handled.events");
       this.registry.meter("EventCreater.handled.events").mark();
 
       return { id, hash };
@@ -281,7 +279,7 @@ export class EventCreater {
     events.forEach(this.nsqPublish.bind(this));
     events.forEach((e) => {
       this.nsqPublish(e);
-      otelMeter.createCounter("EventCreater.handled.events").add(1);
+      incrementOtelCounter("EventCreater.handled.events");
       this.registry.meter("EventCreater.handled.events").mark();
     });
 
