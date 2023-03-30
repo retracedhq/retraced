@@ -197,3 +197,20 @@ services:
     depends_on:
       - "retraced-api"
     restart: "always"
+
+  vector:
+    image: timberio/vector:0.X-alpine
+    environment:
+      - EXPORT_VECTOR_WEBHOOK_USERNAME=${EXPORT_VECTOR_WEBHOOK_USERNAME}
+      - EXPORT_VECTOR_WEBHOOK_PASSWORD=${EXPORT_VECTOR_WEBHOOK_PASSWORD}
+      - EXPORT_VECTOR_DDSOURCE=${EXPORT_VECTOR_DDSOURCE}
+      - EXPORT_VECTOR_DDTAGS=${EXPORT_VECTOR_DDTAGS}
+      - EXPORT_VECTOR_HOSTNAME=${EXPORT_VECTOR_HOSTNAME}
+      - EXPORT_VECTOR_SERVICE=${EXPORT_VECTOR_SERVICE}
+      - EXPORT_VECTOR_DATADOG_API_KEY=${EXPORT_VECTOR_DATADOG_API_KEY}
+      - EXPORT_VECTOR_DATADOG_REGION=${EXPORT_VECTOR_DATADOG_REGION}
+      - EXPORT_VECTOR_DATADOG_SITE=${EXPORT_VECTOR_DATADOG_SITE}
+    volumes:
+      - ./vector.toml:/etc/vector/vector.toml
+    networks:
+      - retraced

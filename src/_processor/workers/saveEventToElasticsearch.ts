@@ -4,8 +4,7 @@ import { Registry, getRegistry, instrumented } from "monkit";
 
 import { Clock } from "../common";
 import { ClientWithRetry, getESWithRetry } from "../../persistence/elasticsearch";
-import axios from "axios";
-import { v4 } from "uuid";
+import sendToWebhook from "../../ee/export/index";
 
 export class ElasticsearchSaver {
   public static getDefault(): ElasticsearchSaver {
@@ -32,7 +31,7 @@ export class ElasticsearchSaver {
     const alias = `retraced.${jobObj.projectId}.${jobObj.environmentId}.current`;
     try {
       await this.esIndex(event, alias);
-      this.sendToWebhook(event);
+      sendToWebhook(event);
     } catch (e) {
       e.retry = true;
       throw e;
@@ -98,32 +97,6 @@ export class ElasticsearchSaver {
     errString = _.trimEnd(errString, "; ");
 
     return errString;
-  }
-
-  private async sendToWebhook(event: any): Promise<void> {
-    delete event.raw;
-    axios
-      .post(
-        event?.fields?.webhookUrl || "http://localhost:63970",
-        {
-          ddsource: "local-dev-machine",
-          ddtags: "Audit-Logs, Retraced, BoxyHQ",
-          hostname: "127.0.0.1",
-          service: "Retraced-audit-logs",
-          message: JSON.stringify(event),
-        },
-        {
-          headers: {
-            "Ce-Id": v4(),
-            "Ce-Specversion": "1.0",
-            "Ce-Type": "io.triggermesh.datadog.log.send",
-            "Ce-Source": "ocimetrics/adapter",
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .catch(console.log)
-      .then(console.log);
   }
 }
 
