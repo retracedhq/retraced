@@ -107,3 +107,4 @@ test-results.xml
 .env.test.local
 .env.production.local
 vector/*
+minio/*
