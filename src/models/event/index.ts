@@ -63,6 +63,7 @@ const structuredQueryKeywords = [
   "description",
   "location",
   "external_id",
+  "fields.*",
 ];
 
 function toArray(x: string | string[]): string[] {

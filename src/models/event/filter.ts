@@ -189,11 +189,12 @@ export function getFilters(query: ParsedQuery, scope: Scope): Filter[] {
   }
 
   if (query.text) {
+    const text = query.text.split(":")[1] || query.text;
     filters.push({
       // this only searches values in "fields", not keys
       where: `to_tsvector('english', doc) @@ plainto_tsquery('english', ${nextParam()})`,
       // all terms must appear in the document
-      values: [query.text],
+      values: [text],
     });
   }
 
