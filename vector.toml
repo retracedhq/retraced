@@ -37,3 +37,14 @@ request.rate_limit_num = 10
 buffer.type = "disk"
 # 1GB
 buffer.max_size = 1073741952
+
+[sinks.s3_sink]
+type = "aws_s3"
+inputs = ["webhook"]
+bucket = "test"
+region = "us-east-1"
+endpoint = "http://minio:9000"
+encoding.codec = "json"
+acknowledgements.enabled = true
+auth.access_key_id="GB7IVdZwvHYOLkhr"
+auth.secret_access_key="aDmgK7w9hm3HPgXY9EcV4kNDUrO3Hsyv"

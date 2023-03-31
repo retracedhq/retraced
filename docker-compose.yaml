@@ -215,3 +215,12 @@ services:
       - ./vector/data:/var/lib/vector/
     networks:
       - retraced
+
+  minio:
+    image: quay.io/minio/minio:latest
+    ports:
+      - "9002:9000"
+      - "9001:9001"
+    networks:
+      - retraced
+    command: server /data --console-address ":9001"
