@@ -91,21 +91,21 @@ const initOtelInstruments = () => {
 };
 
 const incrementOtelCounter = (name: string, inc = 1, metricAttributes?: Attributes) => {
-  const counter: Counter = counters[name];
+  const counter: Counter = counters?.[name];
   if (counter) {
     counter.add(inc, metricAttributes);
   }
 };
 
 const recordOtelHistogram = (name: string, val: number, metricAttributes?: Attributes) => {
-  const histogram: Histogram = histograms[name];
+  const histogram: Histogram = histograms?.[name];
   if (histogram) {
     histogram.record(val, metricAttributes);
   }
 };
 
 const observeOtelGauge = (name: string, val: number, metricAttributes?: Attributes) => {
-  const gauge: ObservableGauge = gauges[name];
+  const gauge: ObservableGauge = gauges?.[name];
   if (gauge) {
     gauge.addCallback((result) => {
       result.observe(val, metricAttributes);
