@@ -180,7 +180,6 @@ export function getFilters(query: ParsedQuery, scope: Scope): Filter[] {
     filters.push(orJoin(some));
   }
 
-  // TODO
   if (query.location) {
     // structured search for "location" not implemented - add to free text
     const loc = query.location.join(" ");

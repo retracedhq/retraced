@@ -96,7 +96,7 @@ class QueryEventsTest {
     });
   }
 
-  @test public 'parse(description:"debit credt")'() {
+  @test public 'parse(description:"debit credit")'() {
     expect(parse(`description:"debit credit"`)).to.deep.equal({
       bool: {
         filter: [{ match: { description: "debit credit" } }],
