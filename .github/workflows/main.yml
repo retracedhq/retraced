@@ -96,9 +96,9 @@ jobs:
       - name: Run docker-compose up
         #if: github.ref == 'refs/heads/release'
         run: |
-          docker-compose docker-compose.yml up -d
+          docker-compose up -d
           sleep 30
-          docker-compose docker-compose.yml ps
+          docker-compose ps
 
       # Run e3e tests
       - name: Run e2e tests
