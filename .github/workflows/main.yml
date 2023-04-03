@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - release
+      - e2e-test
     tags:
       - "beta-v*"
   pull_request:
