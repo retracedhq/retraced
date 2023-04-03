@@ -67,7 +67,7 @@
     "@typescript-eslint/parser": "5.54.0",
     "chai": "4.3.7",
     "chai-http": "4.3.0",
-    "eslint": "8.36.0",
+    "eslint": "8.37.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-jsdoc": "40.1.1",
