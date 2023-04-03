@@ -65,8 +65,48 @@ jobs:
           echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
           echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
 
-  build:
+  test:
     needs: ci
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+      - name: Check Out Repo
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          check-latest: true
+
+      - run: npm install
+
+      # Build the docker image
+      - name: Set up Docker Buildx
+        #if: github.ref == 'refs/heads/release'
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Run the docker-compose up
+      - name: Run docker-compose up
+        #if: github.ref == 'refs/heads/release'
+        run: |
+          docker-compose docker-compose.yml up -d
+          sleep 30
+          docker-compose docker-compose.yml ps
+
+      # Run e3e tests
+      - name: Run e2e tests
+        #if: github.ref == 'refs/heads/release'
+        run: |
+          npm run test:e2e
+
+  build:
+    needs: test
     runs-on: ubuntu-latest
     strategy:
       matrix:
