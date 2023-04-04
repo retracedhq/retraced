@@ -3,12 +3,12 @@ import moment from "moment";
 import * as uuid from "uuid";
 import pg from "pg";
 import { histogram, instrumented, meter } from "monkit";
+import { Client } from "@opensearch-project/opensearch";
 
 import { AliasDesc, AliasRotator, putAliases, getESWithoutRetry } from "../../persistence/elasticsearch";
 import getPg from "../persistence/pg";
 import { logger } from "../logger";
 import config from "../../config";
-import { Client } from "@opensearch-project/opensearch";
 
 export type IndexNamer = (newDate: moment.Moment) => string;
 
@@ -216,7 +216,7 @@ export class ElasticsearchIndexRotator {
 }
 
 export const rotator = config.PG_SEARCH ? null : ElasticsearchIndexRotator.default();
-export const worker = () =>
+export const worker = async () =>
   rotator
     ? rotator.worker(moment.utc().add(1, "days"))
     : () => {
