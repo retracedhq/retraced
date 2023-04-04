@@ -100,7 +100,7 @@ jobs:
         env:
           CUSTOM_VARIABLE: "test"
 
-      # Run e3e tests
+      # Run e2e tests
       - name: Run e2e tests
         #if: github.ref == 'refs/heads/release'
         run: |
