@@ -33,21 +33,13 @@ export default class NormalizeRepairer {
     `;
 
   private readonly minAgeMs: number;
-  // private readonly nsq: NSQ;
   private readonly pgPool: pg.Pool;
   private metricRegistry: monkit.Registry;
   private readonly maxEvents: number;
 
-  constructor(
-    minAgeMs?: number,
-    // nsqClient?: NSQClient,
-    pgPool?: pg.Pool,
-    registry?: monkit.Registry,
-    maxEvents?: number
-  ) {
+  constructor(minAgeMs?: number, pgPool?: pg.Pool, registry?: monkit.Registry, maxEvents?: number) {
     this.minAgeMs =
       minAgeMs || Number(config.PROCESSOR_NORMALIZE_REPAIRER_MIN_AGE_MS) || TWO_MINUTES_IN_MILLIS;
-    // this.nsq = nsqClient || nsq;
     this.pgPool = pgPool || getPgPool();
 
     this.maxEvents = maxEvents || Number(config.PROCESSOR_NORMALIZE_REPAIRER_MAX_EVENTS) || 10000;

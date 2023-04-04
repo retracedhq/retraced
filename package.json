@@ -34,7 +34,6 @@
     "monkit": "0.4.0",
     "nodemailer": "6.9.1",
     "nodemailer-mandrill-transport": "1.2.0",
-    "nsqjs": "0.13.0",
     "pg": "8.9.0",
     "pg-cursor": "2.8.0",
     "pg-format": "1.0.4",

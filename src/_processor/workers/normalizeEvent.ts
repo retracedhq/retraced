@@ -114,7 +114,6 @@ export default async function normalizeEvent(taskId: string) {
     let locInfo;
     if (origEvent.source_ip) {
       locInfo = await getLocationByIP(origEvent.source_ip);
-      console.log({ locInfo });
     }
 
     // TODO(zhaytee): Add typing
@@ -157,7 +156,9 @@ function processEvent(
   target: Target,
   locInfo: LocationInfo,
   newEventId: string
-) {
+): NormalizedEvent {
+  console.log("Processing event", newEventId);
+
   const result = _.pick(origEvent, [
     "created",
     "description",
@@ -220,23 +221,29 @@ function processEvent(
     if (locInfo.lat) {
       result["lat"] = locInfo.lat;
     }
+
     if (locInfo.lon) {
       result["lon"] = locInfo.lon;
     }
+
     if (locInfo.country) {
       result["country"] = locInfo.country;
     }
+
     if (locInfo.subdiv1) {
       result["loc_subdiv1"] = locInfo.subdiv1;
     }
+
     if (locInfo.subdiv2) {
       result["loc_subdiv2"] = locInfo.subdiv2;
     }
+
     if (locInfo.timeZone) {
       result["time_zone"] = locInfo.timeZone;
     }
   }
 
+  // @ts-ignore
   return result;
 }
 
@@ -256,7 +263,7 @@ export interface IngestTask {
 export interface Job {
   projectId: string;
   environmentId: string;
-  event: Partial<Event>;
+  event: NormalizedEvent;
 }
 
 interface LocationInfo {
@@ -320,15 +327,15 @@ interface Event {
   fields: string[];
 }
 
-// interface NormalizedEvent extends Event {
-//   id: string;
-//   received: number;
-//   raw: string;
-//   canonical_time: number;
-//   lat: number;
-//   lon: number;
-//   country: string;
-//   loc_subdiv1: string;
-//   loc_subdiv2: string;
-//   time_zone: string;
-// }
+interface NormalizedEvent extends Event {
+  id: string;
+  received: number;
+  raw: string;
+  lat: number;
+  lon: number;
+  country: string;
+  loc_subdiv1: string;
+  loc_subdiv2: string;
+  time_zone: string;
+  canonical_time: number;
+}
