@@ -10,7 +10,7 @@ const { ingestFromQueue, normalizeEvent } = proxyActivities<typeof activities>({
   },
 });
 
-export async function ingestFromQueueWorkflow(job: Job): Promise<void> {
+export async function ingestFromQueueWorkflow(job: Job) {
   const taskId = await ingestFromQueue(job);
 
   if (!taskId) {

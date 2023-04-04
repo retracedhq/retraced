@@ -9,6 +9,6 @@ const { pruneViewerDescriptors } = proxyActivities<typeof activities>({
   },
 });
 
-export async function pruneViewerDescriptorsWorkflow(): Promise<void> {
+export async function pruneViewerDescriptorsWorkflow() {
   await pruneViewerDescriptors();
 }

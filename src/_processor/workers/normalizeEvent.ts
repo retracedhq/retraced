@@ -117,7 +117,7 @@ export default async function normalizeEvent(taskId: string) {
     }
 
     // TODO(zhaytee): Add typing
-    const normalizedEvent: any = processEvent(
+    const normalizedEvent = processEvent(
       origEvent,
       parseInt(task.received, 10),
       Object.assign({}, group),
@@ -134,7 +134,7 @@ export default async function normalizeEvent(taskId: string) {
 
     // We only do these things if this is a fresh run.
     if (processingNewEvent) {
-      const message = {
+      const message: Job = {
         projectId: task.project_id,
         environmentId: task.environment_id,
         event: normalizedEvent,
@@ -223,4 +223,10 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
   }
 
   return result;
+}
+
+export interface Job {
+  projectId: string;
+  environmentId: string;
+  event: any;
 }

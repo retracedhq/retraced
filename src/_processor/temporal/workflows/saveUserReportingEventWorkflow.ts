@@ -7,6 +7,6 @@ const { saveUserReportingEvent } = proxyActivities<typeof activities>({
   startToCloseTimeout: "1 minute",
 });
 
-export async function saveUserReportingEventWorkflow(job: Job): Promise<void> {
+export async function saveUserReportingEventWorkflow(job: Job) {
   await saveUserReportingEvent(job);
 }

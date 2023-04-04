@@ -1,10 +1,12 @@
 import _ from "lodash";
+
 import { logger } from "../../logger";
 import getPgPool from "../../persistence/pg";
+import type { Job } from "./normalizeEvent";
 
 const pgPool = getPgPool();
 
-export default async function indexEvent(job: any): Promise<void> {
+export default async function indexEvent(job: Job) {
   const event = cleanEvent(job.event);
   event.received = parseInt(event.received, 10);
 
@@ -15,7 +17,7 @@ export default async function indexEvent(job: any): Promise<void> {
   logger.info("Indexed event", result);
 }
 
-function cleanEvent(event: any): any {
+function cleanEvent(event: any) {
   if (event.group) {
     event.group = _.pick(event.group, ["id", "name"]);
   }

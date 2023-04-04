@@ -7,7 +7,7 @@ const { normalizeEvent, saveActiveActor, saveActiveGroup, indexEvent, saveEventT
     startToCloseTimeout: "1 minute",
   });
 
-export async function normalizeEventWorkflow(taskId: string): Promise<void> {
+export async function normalizeEventWorkflow(taskId: string) {
   const normalizedEvent = await normalizeEvent(taskId);
 
   if (!normalizedEvent) {

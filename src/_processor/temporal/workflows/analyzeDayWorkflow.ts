@@ -7,6 +7,6 @@ const { analyzeDay } = proxyActivities<typeof activities>({
   startToCloseTimeout: "1 minute",
 });
 
-export async function analyzeDayWorkflow(job: Opts): Promise<void> {
+export async function analyzeDayWorkflow(job: Opts) {
   await analyzeDay(job);
 }

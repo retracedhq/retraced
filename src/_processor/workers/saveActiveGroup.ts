@@ -1,8 +1,9 @@
 import getPgPool from "../../persistence/pg";
+import type { Job } from "./normalizeEvent";
 
 const pgPool = getPgPool();
 
-export default async function saveActiveGroup(job: any) {
+export default async function saveActiveGroup(job: Job) {
   const groupId = job.event.group && job.event.group.id;
 
   if (!groupId) {

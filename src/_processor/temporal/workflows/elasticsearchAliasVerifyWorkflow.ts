@@ -6,6 +6,6 @@ const { elasticsearchAliasVerify } = proxyActivities<typeof activities>({
   startToCloseTimeout: "1 minute",
 });
 
-export async function elasticsearchAliasVerifyWorkflow(): Promise<void> {
+export async function elasticsearchAliasVerifyWorkflow() {
   await elasticsearchAliasVerify();
 }

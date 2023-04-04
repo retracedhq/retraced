@@ -4,6 +4,7 @@ import { Registry, getRegistry, instrumented } from "monkit";
 
 import { Clock } from "../common";
 import { ClientWithRetry, getESWithRetry } from "../../persistence/elasticsearch";
+import type { Job } from "./normalizeEvent";
 
 export class ElasticsearchSaver {
   public static getDefault(): ElasticsearchSaver {
@@ -21,7 +22,7 @@ export class ElasticsearchSaver {
     private readonly clock: Clock
   ) {}
 
-  public async saveEventToElasticsearch(job: any): Promise<void> {
+  public async saveEventToElasticsearch(job: Job) {
     const event = job.event;
 
     this.cleanEvent(event);
@@ -37,7 +38,7 @@ export class ElasticsearchSaver {
     this.trackTimeUntilSearchable(event.created, event.received);
   }
 
-  private cleanEvent(event: any): any {
+  private cleanEvent(event: any) {
     if (event.group) {
       event.group = _.pick(event.group, ["id", "name"]);
     }
@@ -97,6 +98,6 @@ export class ElasticsearchSaver {
   }
 }
 
-export default async function saveEventToElasticsearch(job: any): Promise<void> {
+export default async function saveEventToElasticsearch(job: Job): Promise<void> {
   return ElasticsearchSaver.getDefault().saveEventToElasticsearch(job);
 }

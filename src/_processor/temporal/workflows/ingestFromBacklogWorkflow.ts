@@ -10,7 +10,7 @@ const { ingestFromBacklog } = proxyActivities<typeof activities>({
   },
 });
 
-export async function ingestFromBacklogWorkflow(): Promise<void> {
+export async function ingestFromBacklogWorkflow() {
   const tasks = await ingestFromBacklog();
 
   if (!tasks) {

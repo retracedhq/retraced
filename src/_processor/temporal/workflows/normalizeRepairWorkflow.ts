@@ -7,7 +7,7 @@ const { normalizeRepair } = proxyActivities<typeof activities>({
   startToCloseTimeout: "1 minute",
 });
 
-export async function normalizeRepairWorkflow(): Promise<void> {
+export async function normalizeRepairWorkflow() {
   const taskIds: string[] = await normalizeRepair();
 
   if (!taskIds) {

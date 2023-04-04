@@ -6,6 +6,6 @@ const { updateGeoData } = proxyActivities<typeof activities>({
   startToCloseTimeout: "1 minute",
 });
 
-export async function updateGeoDataWorkflow(): Promise<void> {
+export async function updateGeoDataWorkflow() {
   await updateGeoData();
 }

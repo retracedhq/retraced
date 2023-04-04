@@ -1,8 +1,9 @@
 import getPgPool from "../../persistence/pg";
+import type { Job } from "./normalizeEvent";
 
 const pgPool = getPgPool();
 
-export default async function saveActiveActor(job: any) {
+export default async function saveActiveActor(job: Job) {
   const actorId = job.event.actor && job.event.actor.id;
 
   if (!actorId) {
