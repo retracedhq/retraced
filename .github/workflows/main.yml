@@ -48,7 +48,7 @@ jobs:
       - name: Run docker-compose up
         id: docker_compose
         #if: github.ref == 'refs/heads/release'
-      - uses: isbang/compose-action@v1.4.1
+        uses: isbang/compose-action@v1.4.1
         with:
           compose-file: "./docker-compose.yaml"
         env:
