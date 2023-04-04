@@ -1,4 +1,5 @@
 import * as uuid from "uuid";
+
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -43,12 +44,6 @@ export default async function ingestFromQueue(job: any) {
   }
 
   return taskId;
-
-  // const jobTask = JSON.stringify({
-  //   taskId,
-  // });
-
-  //await nsq.produce("raw_events", jobTask);
 }
 
 export interface Task {

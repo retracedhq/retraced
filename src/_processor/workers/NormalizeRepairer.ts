@@ -2,7 +2,6 @@ import pg from "pg";
 import * as monkit from "monkit";
 
 import getPgPool from "../../persistence/pg";
-// import nsq, { NSQ, NSQClient } from "../persistence/nsq";
 import { logger } from "../../logger";
 import config from "../../config";
 
@@ -87,11 +86,6 @@ export default class NormalizeRepairer {
     return resp.rows.map((row) => {
       return row.id;
     });
-
-    //   Promise.all(resp.rows.map((row) => {
-    //     this.metricRegistry?.histogram("NormalizeRepairer.repairOldEvents.age").update(row.age_ms);
-    //     return this.nsq.produce("raw_events", JSON.stringify({ taskId: row.id }));
-    // }));
   }
 }
 

@@ -189,14 +189,14 @@ const nsqConsumers: Consumer[] = [
   //   timeoutSeconds: 60,
   //   maxInFlight: 1,
   // },
-  {
-    topic: "environment_day",
-    channel: "analyze_day",
-    worker: analyzeDay,
-    maxAttempts: 1,
-    timeoutSeconds: 10,
-    maxInFlight: 5,
-  },
+  // {
+  //   topic: "environment_day",
+  //   channel: "analyze_day",
+  //   worker: analyzeDay,
+  //   maxAttempts: 1,
+  //   timeoutSeconds: 10,
+  //   maxInFlight: 5,
+  // },
   {
     topic: "user_reporting_task",
     channel: "save_user_reporting_event",

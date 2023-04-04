@@ -33,14 +33,6 @@ export default async function ingestFromBacklog() {
     const taskIds: string[] = result.rows.map((row) => row.id);
 
     return taskIds;
-
-    // for (const row of result.rows) {
-    //   const job = JSON.stringify({
-    //     taskId: row.id,
-    //   });
-
-    //  await nsq.produce("raw_events", job);
-    // }
   } catch (ex) {
     logger.error("Error ingesting from backlog:", ex);
   }

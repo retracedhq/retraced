@@ -1,5 +1,6 @@
 import _ from "lodash";
 import moment from "moment";
+
 import upsertActor from "../models/actor/upsert";
 import upsertGroup from "../models/group/upsert";
 import upsertAction from "../models/action/upsert";
@@ -140,8 +141,6 @@ export default async function normalizeEvent(taskId: string) {
       };
 
       return message;
-
-      // await nsq.produce("normalized_events", JSON.stringify(message));
     }
   } finally {
     pg.release();
