@@ -197,14 +197,14 @@ const nsqConsumers: Consumer[] = [
   //   timeoutSeconds: 10,
   //   maxInFlight: 5,
   // },
-  {
-    topic: "user_reporting_task",
-    channel: "save_user_reporting_event",
-    worker: saveUserReportingEvent,
-    maxAttempts: 1,
-    timeoutSeconds: 10,
-    maxInFlight: 5,
-  },
+  // {
+  //   topic: "user_reporting_task",
+  //   channel: "save_user_reporting_event",
+  //   worker: saveUserReportingEvent,
+  //   maxAttempts: 1,
+  //   timeoutSeconds: 10,
+  //   maxInFlight: 5,
+  // },
   // {
   //   topic: "every_second",
   //   channel: "clear_ingest_backlog",

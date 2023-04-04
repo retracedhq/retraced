@@ -5,9 +5,18 @@ import moment from "moment";
 
 import { checkViewerAccess } from "../../security/helpers";
 import searchEvents, { Options } from "../../models/event/search";
-import nsq from "../../persistence/nsq";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
+import { temporalClient } from "../../_processor/persistence/temporal";
+import { saveUserReportingEventWorkflow } from "../../_processor/temporal/workflows";
+
+export interface Job {
+  taskId: string;
+  projectId: string;
+  environmentId: string;
+  event: string;
+  timestamp: number;
+}
 
 /*
 What we're expecting from clients:
@@ -91,16 +100,23 @@ export default async function (req) {
     update: true,
     delete: true,
   };
+
   if (!_.isEqual(defaultQuery, reqOpts)) {
-    const job = JSON.stringify({
+    const job = {
       taskId: uuid.v4().replace(/-/g, ""),
       projectId: req.params.projectId,
       environmentId: claims.environmentId,
       event: "viewer_search",
       timestamp: moment().valueOf(),
+    };
+
+    await temporalClient.start(saveUserReportingEventWorkflow, {
+      workflowId: `${job.taskId}`,
+      taskQueue: "events",
+      args: [job],
     });
-    await nsq.produce("user_reporting_task", job);
   }
+
   defaultEventCreater.saveRawEvent(req.params.projectId, claims.environmentId, thisViewEvent);
 
   return {

@@ -8,3 +8,4 @@ export { default as saveEventToElasticsearch } from "../workers/saveEventToElast
 export { worker as normalizeRepair } from "./NormalizeRepairer";
 export { default as pruneViewerDescriptors } from "./pruneViewerDescriptors";
 export { default as analyzeDay } from "../workers/analyzeDay";
+export { default as saveUserReportingEvent } from "../workers/saveUserReportingEvent";
