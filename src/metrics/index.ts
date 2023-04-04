@@ -17,13 +17,12 @@ import {
 import { logger } from "../logger";
 import { incrementOtelCounter, recordOtelHistogram } from "./opentelemetry/instrumentation";
 
-import { metrics } from "@opentelemetry/api";
+import { DiagConsoleLogger, DiagLogLevel, diag, metrics } from "@opentelemetry/api";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
 import { OTLPMetricExporter as OTLPMetricExporterGRPC } from "@opentelemetry/exporter-metrics-otlp-grpc";
 import { MeterProvider, PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { Resource } from "@opentelemetry/resources";
 import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
-import { DiagConsoleLogger, DiagLogLevel, diag } from "@opentelemetry/api";
 
 import packageInfo from "../../package.json";
 
