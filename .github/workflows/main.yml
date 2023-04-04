@@ -60,10 +60,7 @@ jobs:
       # Run e2e tests
       - name: Run e2e tests
         #if: github.ref == 'refs/heads/release'
-        run: |
-          npm install
-          npm run build
-          npm run e2e:test
+        run: npm run e2e:test
 
       - id: version
         run: |
