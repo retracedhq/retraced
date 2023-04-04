@@ -3,7 +3,7 @@
 #
 ARG NODEJS_IMAGE=node:18.15.0-alpine3.17
 ARG ALPINE_IMAGE=alpine:3.17
-FROM --platform=$BUILDPLATFORM $ALPINE_IMAGE as cron
+FROM --platform=${BUILDPLATFORM:-linux/amd64} $ALPINE_IMAGE as cron
 
 RUN apk add --update --no-cache ca-certificates curl \
   && rm -rf /tmp/* /var/cache/apk/*
