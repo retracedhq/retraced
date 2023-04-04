@@ -59,6 +59,7 @@ jobs:
           npm run build
           npm run cover
           npm run e2e:test
+          npm run integration:test
 
       - id: version
         run: |
