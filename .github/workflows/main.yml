@@ -40,13 +40,14 @@ jobs:
       - run: node -v
       - run: npm -v
 
-      - name: Set up Docker Buildx
-        #if: github.ref == 'refs/heads/release'
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
+      # - name: Set up Docker Buildx
+      #   if: github.ref == 'refs/heads/release'
+      #   id: buildx
+      #   uses: docker/setup-buildx-action@v2
       # Run the docker-compose up
-      - uses: actions/checkout@v3
+      - name: Run docker-compose up
+        id: docker_compose
+        #if: github.ref == 'refs/heads/release'
       - uses: isbang/compose-action@v1.4.1
         with:
           compose-file: "./docker-compose.yaml"
@@ -54,8 +55,8 @@ jobs:
           CUSTOM_VARIABLE: "test"
 
       # Run e2e tests
-      - name: Run e2e tests
-        #if: github.ref == 'refs/heads/release'
+      - name: Run tests
+        if: github.ref == 'refs/heads/release'
         run: |
           npm install
           npm run lint
