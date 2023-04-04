@@ -96,7 +96,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: isbang/compose-action@v1.4.1
         with:
-          compose-file: "./docker/docker-compose.yml"
+          compose-file: "./docker-compose.yml"
         env:
           CUSTOM_VARIABLE: "test"
 
@@ -104,7 +104,7 @@ jobs:
       - name: Run e2e tests
         #if: github.ref == 'refs/heads/release'
         run: |
-          npm run test:e2e
+          npm run e2e:test
 
   build:
     needs: test
