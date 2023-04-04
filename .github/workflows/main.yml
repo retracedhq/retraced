@@ -84,8 +84,6 @@ jobs:
           cache: "npm"
           check-latest: true
 
-      - run: npm install
-
       # Build the docker image
       - name: Set up Docker Buildx
         #if: github.ref == 'refs/heads/release'
@@ -104,6 +102,7 @@ jobs:
       - name: Run e2e tests
         #if: github.ref == 'refs/heads/release'
         run: |
+          npm install
           npm run e2e:test
 
   build:
