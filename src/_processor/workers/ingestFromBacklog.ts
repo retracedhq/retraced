@@ -28,11 +28,9 @@ export default async function ingestFromBacklog() {
         ON CONFLICT DO NOTHING
         RETURNING id`;
 
-    const result = await pgPool.query(q, []);
+    const result = await pgPool.query<{ id: string }>(q, []);
 
-    const taskIds: string[] = result.rows.map((row) => row.id);
-
-    return taskIds;
+    return result.rows;
   } catch (ex) {
     logger.error("Error ingesting from backlog:", ex);
   }

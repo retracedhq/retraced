@@ -11,22 +11,23 @@ const schedules: ScheduleOptions[] = [
   {
     action: {
       type: "startWorkflow",
-      taskQueue: "raw_events",
+      taskQueue: "events",
       workflowType: ingestFromBacklogWorkflow,
     },
     scheduleId: "workflow-ingest-from-backlog",
     policies: {
       catchupWindow: "1 day",
-      overlap: ScheduleOverlapPolicy.ALLOW_ALL,
+      overlap: ScheduleOverlapPolicy.SKIP,
     },
     spec: {
       intervals: [{ every: "1s" }],
     },
   },
+
   {
     action: {
       type: "startWorkflow",
-      taskQueue: "normalize_repair",
+      taskQueue: "events",
       workflowType: normalizeRepairWorkflow,
     },
     scheduleId: "workflow-normalize-repair",
@@ -41,7 +42,7 @@ const schedules: ScheduleOptions[] = [
   {
     action: {
       type: "startWorkflow",
-      taskQueue: "prune_viewer_descriptors",
+      taskQueue: "events",
       workflowType: pruneViewerDescriptorsWorkflow,
     },
     scheduleId: "workflow-prune-viewer-descriptors",

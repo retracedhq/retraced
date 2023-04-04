@@ -1,12 +1,13 @@
 import * as uuid from "uuid";
 
+import type { CreateEventRequest } from "../../handlers/createEvent";
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
-export default async function ingestFromQueue(job: any) {
-  const task: Task = JSON.parse(job);
+export default async function ingestFromQueue(task: Job) {
   const taskId = uuid.v4().replace(/-/g, "");
+
   const q = `
         INSERT INTO ingest_task (
             id,
@@ -46,10 +47,10 @@ export default async function ingestFromQueue(job: any) {
   return taskId;
 }
 
-export interface Task {
-  new_event_id: string;
+export interface Job {
   project_id: string;
   environment_id: string;
+  new_event_id: string;
+  original_event: CreateEventRequest;
   received: number;
-  original_event: string;
 }

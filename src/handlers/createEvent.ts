@@ -102,6 +102,7 @@ export interface CreateEventRequest {
 }
 
 export type CreateEventBulkResponse = CreateEventResponse[];
+
 export interface CreateEventResponse {
   id: string;
   hash: string;
@@ -375,30 +376,29 @@ export class EventCreater {
     received: number,
     eventInput: CreateEventRequest
   ): Promise<void> {
-    const job = JSON.stringify({
+    const job = {
       project_id: projectId,
       environment_id: envId,
       new_event_id: newEventId,
       original_event: eventInput,
       received,
-    });
+    };
 
-    await temporalClient.start(ingestFromQueueWorkflow, {
-      workflowId: `${projectId}-${envId}-${newEventId}`,
-      taskQueue: "unsaved_events",
-      args: [job],
-    });
+    try {
+      await temporalClient.start(ingestFromQueueWorkflow, {
+        workflowId: newEventId,
+        taskQueue: "events",
+        args: [job],
+      });
 
-    // return this.nsq
-    //   .produce("unsaved_events", job)
-    //   .then(() => {
-    //     logger.info(`sent new event ${newEventId} to unsaved_events`);
-    //   })
-    //   .catch((err) => {
-    //     logger.error(`failed to send ${newEventId} to raw_events`);
+      logger.info(`started workflow ingestFromQueueWorkflow for ${newEventId}`);
+    } catch (err) {
+      logger.error(
+        `failed to start workflow ingestFromQueueWorkflow for ${newEventId}: ${util.inspect(err)}`
+      );
 
-    //     throw err;
-    //   });
+      throw err;
+    }
   }
 
   private async nsqPublish({ taskId }) {

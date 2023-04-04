@@ -1,12 +1,16 @@
 import { proxyActivities } from "@temporalio/workflow";
 
 import type * as activities from "../../workers";
+import type { Job } from "../../workers/ingestFromQueue";
 
 const { ingestFromQueue, normalizeEvent } = proxyActivities<typeof activities>({
-  startToCloseTimeout: "1 minute",
+  startToCloseTimeout: "10 seconds",
+  retry: {
+    maximumAttempts: 20,
+  },
 });
 
-export async function ingestFromQueueWorkflow(job: string): Promise<void> {
+export async function ingestFromQueueWorkflow(job: Job): Promise<void> {
   const taskId = await ingestFromQueue(job);
 
   if (!taskId) {
