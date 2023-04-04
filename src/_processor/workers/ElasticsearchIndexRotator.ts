@@ -222,7 +222,7 @@ export const worker = async () =>
     : () => {
         /* nope */
       };
-export const repair = () =>
+export const repair = async () =>
   rotator
     ? rotator.repairAliases()
     : () => {

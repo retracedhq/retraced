@@ -9,7 +9,5 @@ export { worker as normalizeRepair } from "./NormalizeRepairer";
 export { default as pruneViewerDescriptors } from "./pruneViewerDescriptors";
 export { default as analyzeDay } from "./analyzeDay";
 export { default as saveUserReportingEvent } from "./saveUserReportingEvent";
-export {
-  repair as elasticsearchAliasVerify,
-  worker as elasticsearchIndexRotator,
-} from "./ElasticsearchIndexRotator";
+export { repair as elasticsearchAliasVerify } from "./ElasticsearchIndexRotator";
+export { default as updateGeoData } from "./updateGeoData";

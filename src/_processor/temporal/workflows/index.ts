@@ -4,4 +4,5 @@ export { normalizeEventWorkflow } from "./normalizeEventWorkflow";
 export { normalizeRepairWorkflow } from "./normalizeRepairWorkflow";
 export { pruneViewerDescriptorsWorkflow } from "./pruneViewerDescriptorsWorkflow";
 export { analyzeDayWorkflow } from "./analyzeDayWorkflow";
-export { saveUserReportingEventWorkflow } from "./saveUserReportingEventWorkflow";
+export { elasticsearchAliasVerifyWorkflow } from "./elasticsearchAliasVerifyWorkflow";
+export { updateGeoDataWorkflow } from "./updateGeoDataWorkflow";

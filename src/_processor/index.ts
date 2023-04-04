@@ -31,6 +31,7 @@ import { notifyError, startErrorNotifier } from "../error-notifier";
 
 startHealthz();
 
+// QUESTION: Why is this here?
 if (config.MAXMIND_GEOLITE2_LICENSE_KEY) {
   updateGeoData();
 }
@@ -83,14 +84,14 @@ const esConsumers: Consumer[] = [
     timeoutSeconds: 300,
     maxInFlight: 1,
   },
-  {
-    topic: "every_minute",
-    channel: "repair_elasticsearch_index_aliases",
-    worker: elasticsearchAliasVerify,
-    maxAttempts: 1,
-    timeoutSeconds: 300,
-    maxInFlight: 1,
-  },
+  // {
+  //   topic: "every_minute",
+  //   channel: "repair_elasticsearch_index_aliases",
+  //   worker: elasticsearchAliasVerify,
+  //   maxAttempts: 1,
+  //   timeoutSeconds: 300,
+  //   maxInFlight: 1,
+  // },
 ];
 
 const pgSearchConsumers: Consumer[] = [
@@ -124,14 +125,14 @@ const warpPipeConsumers: Consumer[] = [
 ];
 
 const geoDataConsumers: Consumer[] = [
-  {
-    topic: "first_wed_of_month",
-    channel: "update_geo_data",
-    worker: updateGeoData,
-    maxAttempts: 1,
-    timeoutSeconds: 900,
-    maxInFlight: 1,
-  },
+  // {
+  //   topic: "first_wed_of_month",
+  //   channel: "update_geo_data",
+  //   worker: updateGeoData,
+  //   maxAttempts: 1,
+  //   timeoutSeconds: 900,
+  //   maxInFlight: 1,
+  // },
 ];
 
 //
@@ -168,7 +169,7 @@ const nsqConsumers: Consumer[] = [
   {
     topic: "fifty_three_past_hour",
     channel: "schedule_daily_reports_due",
-    worker: scheduleDailyReportsDue, // Not used anymore?
+    worker: scheduleDailyReportsDue,
     maxAttempts: 1,
     timeoutSeconds: 60,
     maxInFlight: 1,
