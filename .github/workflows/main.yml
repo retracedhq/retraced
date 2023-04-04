@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - release
-      - e2e-test
     tags:
       - "beta-v*"
   pull_request:
@@ -43,7 +42,7 @@ jobs:
       # Run the docker-compose up
       - name: Run docker-compose up
         id: docker_compose
-        #if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: isbang/compose-action@v1.4.1
         with:
           compose-file: "./docker-compose.yaml"
@@ -52,7 +51,7 @@ jobs:
 
       # Run e2e tests
       - name: Run tests
-        #if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: |
           npm install
           npm run lint
