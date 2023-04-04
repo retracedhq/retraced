@@ -1,6 +1,6 @@
 import { proxyActivities } from "@temporalio/workflow";
 
-import type * as activities from "../activities";
+import type * as activities from "../../workers";
 
 const { normalizeEvent, saveActiveActor, saveActiveGroup, indexEvent, saveEventToElasticsearch } =
   proxyActivities<typeof activities>({

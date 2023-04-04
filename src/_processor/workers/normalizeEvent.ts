@@ -4,27 +4,23 @@ import upsertActor from "../models/actor/upsert";
 import upsertGroup from "../models/group/upsert";
 import upsertAction from "../models/action/upsert";
 import upsertTarget from "../models/target/upsert";
-import getPgPool from "../persistence/pg";
+import getPgPool from "../../persistence/pg";
 import getLocationByIP from "../persistence/geoip";
-import nsq from "../persistence/nsq";
-import { logger } from "../logger";
+import { logger } from "../../logger";
 import { mapValues } from "../../common/mapper";
 
 const pgPool = getPgPool();
 
-export default async function normalizeEvent(job) {
-  const jobObj = JSON.parse(job.body);
-  const taskId = jobObj.taskId;
-
+export default async function normalizeEvent(taskId: string) {
   const pg = await pgPool.connect();
+
   try {
     const fields = `id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres,
       saved_to_elasticsearch, project_id, environment_id, new_event_id,
       extract(epoch from received) * 1000 as received`;
-    const pgResp = await pg.query(
-      `select ${fields} from ingest_task where id = $1`,
-      [taskId]
-    );
+
+    const pgResp = await pg.query(`select ${fields} from ingest_task where id = $1`, [taskId]);
+
     if (!pgResp.rows.length) {
       throw new Error(`Couldn't find ingestion task with id '${taskId}'`);
     }
@@ -35,9 +31,7 @@ export default async function normalizeEvent(job) {
 
     // id is mandatory!
     if (_.isEmpty(newEventId) || _.isNil(newEventId)) {
-      throw new Error(
-        "No canonical event id was given to the event normalization function"
-      );
+      throw new Error("No canonical event id was given to the event normalization function");
     }
 
     let processingNewEvent = true;
@@ -144,22 +138,17 @@ export default async function normalizeEvent(job) {
         environmentId: task.environment_id,
         event: normalizedEvent,
       };
-      await nsq.produce("normalized_events", JSON.stringify(message));
+
+      return message;
+
+      // await nsq.produce("normalized_events", JSON.stringify(message));
     }
   } finally {
     pg.release();
   }
 }
 
-function processEvent(
-  origEvent,
-  received,
-  group,
-  actor,
-  target,
-  locInfo,
-  newEventId: string
-) {
+function processEvent(origEvent, received, group, actor, target, locInfo, newEventId: string) {
   const result: any = _.pick(origEvent, [
     "created",
     "description",

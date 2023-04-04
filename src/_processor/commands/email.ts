@@ -2,7 +2,7 @@ import moment from "moment";
 
 import { logger } from "../logger";
 import { temporalClient } from "../persistence/temporal";
-import { analyzeDayWorkflow } from "../workflows";
+import { analyzeDayWorkflow } from "../temporal/workflows";
 
 /**
  * retraced exec processor /bin/bash

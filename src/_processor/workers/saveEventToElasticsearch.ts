@@ -21,13 +21,12 @@ export class ElasticsearchSaver {
     private readonly clock: Clock
   ) {}
 
-  public async saveEventToElasticsearch(job): Promise<void> {
-    const jobObj = JSON.parse(job.body);
-    const event = jobObj.event;
+  public async saveEventToElasticsearch(job: any): Promise<void> {
+    const event = job.event;
 
     this.cleanEvent(event);
 
-    const alias = `retraced.${jobObj.projectId}.${jobObj.environmentId}.current`;
+    const alias = `retraced.${job.projectId}.${job.environmentId}.current`;
     try {
       await this.esIndex(event, alias);
     } catch (e) {
@@ -98,6 +97,6 @@ export class ElasticsearchSaver {
   }
 }
 
-export default async function saveEventToElasticsearch(job): Promise<void> {
+export default async function saveEventToElasticsearch(job: any): Promise<void> {
   return ElasticsearchSaver.getDefault().saveEventToElasticsearch(job);
 }

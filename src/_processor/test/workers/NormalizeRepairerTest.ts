@@ -35,20 +35,12 @@ class NormalizeRepairerTest {
       })
       .verifiable(TypeMoq.Times.once());
 
-    const repairer = new NormalizeRepairer(
-      minAgeMs,
-      nsq.object,
-      pool.object,
-      registry,
-      maxEvents
-    );
+    const repairer = new NormalizeRepairer(minAgeMs, pool.object, registry, maxEvents);
 
     await repairer.repairOldEvents();
 
     nsq.verify((x) => x.produce(isAny(), isAny()), TypeMoq.Times.never());
-    expect(
-      registry.meter("NormalizeRepairer.repairOldEvents.allClear").count
-    ).to.equal(1);
+    expect(registry.meter("NormalizeRepairer.repairOldEvents.allClear").count).to.equal(1);
   }
 
   @test public async "NormalizeRepairer#repairOldEvents()"() {
@@ -77,35 +69,17 @@ class NormalizeRepairerTest {
       })
       .verifiable(TypeMoq.Times.once());
 
-    const repairer = new NormalizeRepairer(
-      minAgeMs,
-      nsq.object,
-      pool.object,
-      registry,
-      maxEvents
-    );
+    const repairer = new NormalizeRepairer(minAgeMs, pool.object, registry, maxEvents);
 
     await repairer.repairOldEvents();
 
-    nsq.verify(
-      (x) => x.produce("raw_events", JSON.stringify({ taskId: rows[0].id })),
-      TypeMoq.Times.once()
-    );
+    nsq.verify((x) => x.produce("raw_events", JSON.stringify({ taskId: rows[0].id })), TypeMoq.Times.once());
 
-    nsq.verify(
-      (x) => x.produce("raw_events", JSON.stringify({ taskId: rows[1].id })),
-      TypeMoq.Times.once()
-    );
+    nsq.verify((x) => x.produce("raw_events", JSON.stringify({ taskId: rows[1].id })), TypeMoq.Times.once());
 
-    expect(
-      registry.histogram("NormalizeRepairer.repairOldEvents.age").max
-    ).to.equal(20050);
-    expect(
-      registry.histogram("NormalizeRepairer.repairOldEvents.age").min
-    ).to.equal(15000);
-    expect(
-      registry.histogram("NormalizeRepairer.repairOldEvents.age").count
-    ).to.equal(2);
+    expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").max).to.equal(20050);
+    expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").min).to.equal(15000);
+    expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").count).to.equal(2);
   }
 }
 

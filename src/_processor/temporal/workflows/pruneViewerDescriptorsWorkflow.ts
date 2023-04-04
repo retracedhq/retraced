@@ -1,6 +1,6 @@
 import { proxyActivities } from "@temporalio/workflow";
 
-import type * as activities from "../activities";
+import type * as activities from "../../workers";
 
 const { pruneViewerDescriptors } = proxyActivities<typeof activities>({
   startToCloseTimeout: "60 seconds",

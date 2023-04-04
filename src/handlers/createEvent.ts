@@ -15,7 +15,7 @@ import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
 import config from "../config";
-import { ingestFromQueueWorkflow } from "../_processor/workflows";
+import { ingestFromQueueWorkflow } from "../_processor/temporal/workflows";
 import { temporalClient } from "../_processor/persistence/temporal";
 
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;

@@ -1,10 +1,9 @@
-import getPgPool from "../persistence/pg";
+import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
-export default async function saveActiveActor(job) {
-  const jobObj = JSON.parse(job.body);
-  const actorId = jobObj.event.actor && jobObj.event.actor.id;
+export default async function saveActiveActor(job: any) {
+  const actorId = job.event.actor && job.event.actor.id;
 
   if (!actorId) {
     return;
@@ -15,12 +14,9 @@ export default async function saveActiveActor(job) {
   ) values (
     to_timestamp($1::double precision / 1000), $2, $3, $4
   )`;
-  const v = [
-    jobObj.event.canonical_time,
-    jobObj.projectId,
-    jobObj.environmentId,
-    actorId,
-  ];
+
+  const v = [job.event.canonical_time, job.projectId, job.environmentId, actorId];
+
   try {
     await pgPool.query(q, v);
   } catch (e) {

@@ -8,7 +8,7 @@ import saveEventToElasticsearch from "./workers/saveEventToElasticsearch";
 import saveUserReportingEvent from "./workers/saveUserReportingEvent";
 import saveActiveActor from "./workers/saveActiveActor";
 import saveActiveGroup from "./workers/saveActiveGroup";
-import analyzeDay from "./activities/analyzeDay";
+import analyzeDay from "./workers/analyzeDay";
 import scheduleDailyReportsDue from "./workers/scheduleDailyReportsDue";
 import streamEvent from "./workers/streamEvent";
 import prunePipeSessions from "./workers/prunePipeSessions";

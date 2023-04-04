@@ -1,6 +1,6 @@
 import { proxyActivities, executeChild } from "@temporalio/workflow";
 
-import type * as activities from "../activities";
+import type * as activities from "../../workers";
 import { normalizeEventWorkflow } from "./normalizeEventWorkflow";
 
 const { normalizeRepair } = proxyActivities<typeof activities>({

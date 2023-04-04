@@ -1,21 +1,10 @@
-import { Worker } from "@temporalio/worker";
-import type { WorkerOptions } from "@temporalio/worker";
-
-import * as activities from "../activities";
-
-const workers: WorkerOptions[] = [
-  {
-    workflowsPath: require.resolve("../workflows"),
-    activities,
-    taskQueue: "events",
-  },
-];
-
-async function run() {
-  await Promise.all(workers.map((worker) => Worker.create(worker).then((w) => w.run())));
-}
-
-run().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+export { default as ingestFromQueue } from "./ingestFromQueue";
+export { default as normalizeEvent } from "./normalizeEvent";
+export { default as ingestFromBacklog } from "./ingestFromBacklog";
+export { default as saveActiveActor } from "./saveActiveActor";
+export { default as saveActiveGroup } from "./saveActiveGroup";
+export { default as indexEvent } from "../workers/indexEvent";
+export { default as saveEventToElasticsearch } from "../workers/saveEventToElasticsearch";
+export { worker as normalizeRepair } from "./NormalizeRepairer";
+export { default as pruneViewerDescriptors } from "./pruneViewerDescriptors";
+export { default as analyzeDay } from "../workers/analyzeDay";
