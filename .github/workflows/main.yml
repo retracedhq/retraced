@@ -43,6 +43,28 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm run cover
+
+      - name: Set up Docker Buildx
+        #if: github.ref == 'refs/heads/release'
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Run the docker-compose up
+      - uses: actions/checkout@v3
+      - uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: "./docker-compose.yaml"
+        env:
+          CUSTOM_VARIABLE: "test"
+
+      # Run e2e tests
+      - name: Run e2e tests
+        #if: github.ref == 'refs/heads/release'
+        run: |
+          npm install
+          npm run build
+          npm run e2e:test
+
       - id: version
         run: |
           npm install -g json
@@ -66,48 +88,8 @@ jobs:
           echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
           echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
 
-  test:
-    needs: ci
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18]
-
-    steps:
-      - name: Check Out Repo
-        uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          check-latest: true
-
-      # Build the docker image
-      - name: Set up Docker Buildx
-        #if: github.ref == 'refs/heads/release'
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      # Run the docker-compose up
-      - uses: actions/checkout@v3
-      - uses: isbang/compose-action@v1.4.1
-        with:
-          compose-file: "./docker-compose.yaml"
-        env:
-          CUSTOM_VARIABLE: "test"
-
-      # Run e2e tests
-      - name: Run e2e tests
-        #if: github.ref == 'refs/heads/release'
-        run: |
-          npm install
-          npm run build
-          npm run e2e:test
-
   build:
-    needs: test
+    needs: ci
     runs-on: ubuntu-latest
     strategy:
       matrix:
