@@ -111,8 +111,8 @@
     "demo:delete:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold delete -f skaffold-demo.yaml",
     "demo-services:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo-services.yaml --status-check=false --force=true",
     "demo-services:delete:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold delete -f skaffold-demo-services.yaml",
-    "start:worker": "nodemon ./src/_processor/temporal/workers/index.ts",
-    "schedule.start": "ts-node ./src/_processor/temporal/schedule/start.ts"
+    "temporal:worker:start": "nodemon ./src/_processor/temporal/workers/index.ts",
+    "temporal:schedule:start": "ts-node ./src/_processor/temporal/schedule/start.ts"
   },
   "author": "",
   "nyc": {
