@@ -15,6 +15,8 @@ import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
 import config from "../config";
+import { ingestFromQueueWorkflow } from "../_processor/workflows";
+import { temporalClient } from "../_processor/persistence/temporal";
 
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 const IPV6_REGEX =
@@ -381,16 +383,22 @@ export class EventCreater {
       received,
     });
 
-    return this.nsq
-      .produce("unsaved_events", job)
-      .then(() => {
-        logger.info(`sent new event ${newEventId} to unsaved_events`);
-      })
-      .catch((err) => {
-        logger.error(`failed to send ${newEventId} to raw_events`);
+    await temporalClient.start(ingestFromQueueWorkflow, {
+      workflowId: `${projectId}-${envId}-${newEventId}`,
+      taskQueue: "unsaved_events",
+      args: [job],
+    });
 
-        throw err;
-      });
+    // return this.nsq
+    //   .produce("unsaved_events", job)
+    //   .then(() => {
+    //     logger.info(`sent new event ${newEventId} to unsaved_events`);
+    //   })
+    //   .catch((err) => {
+    //     logger.error(`failed to send ${newEventId} to raw_events`);
+
+    //     throw err;
+    //   });
   }
 
   private async nsqPublish({ taskId }) {

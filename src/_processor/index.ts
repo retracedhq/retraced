@@ -8,7 +8,7 @@ import saveEventToElasticsearch from "./workers/saveEventToElasticsearch";
 import saveUserReportingEvent from "./workers/saveUserReportingEvent";
 import saveActiveActor from "./workers/saveActiveActor";
 import saveActiveGroup from "./workers/saveActiveGroup";
-import analyzeDay from "./workers/analyzeDay";
+import analyzeDay from "./activities/analyzeDay";
 import scheduleDailyReportsDue from "./workers/scheduleDailyReportsDue";
 import streamEvent from "./workers/streamEvent";
 import prunePipeSessions from "./workers/prunePipeSessions";
@@ -67,14 +67,14 @@ interface Consumer {
 }
 
 const esConsumers: Consumer[] = [
-  {
-    topic: "normalized_events",
-    channel: "save_to_elasticsearch",
-    worker: saveEventToElasticsearch,
-    maxAttempts: 3,
-    timeoutSeconds: 30,
-    maxInFlight: 5,
-  },
+  // {
+  //   topic: "normalized_events",
+  //   channel: "save_to_elasticsearch",
+  //   worker: saveEventToElasticsearch,
+  //   maxAttempts: 3,
+  //   timeoutSeconds: 30,
+  //   maxInFlight: 5,
+  // },
   {
     topic: "eleven_minutes_to_midnight",
     channel: "rotate_elasticsearch_indices",
@@ -94,14 +94,14 @@ const esConsumers: Consumer[] = [
 ];
 
 const pgSearchConsumers: Consumer[] = [
-  {
-    topic: "normalized_events",
-    channel: "index_events",
-    worker: indexEvent,
-    maxAttempts: 3,
-    timeoutSeconds: 20,
-    maxInFlight: 10,
-  },
+  // {
+  //   topic: "normalized_events",
+  //   channel: "index_events",
+  //   worker: indexEvent,
+  //   maxAttempts: 3,
+  //   timeoutSeconds: 20,
+  //   maxInFlight: 10,
+  // },
 ];
 
 const warpPipeConsumers: Consumer[] = [
@@ -141,54 +141,54 @@ const nsqConsumers: Consumer[] = [
   ...(config.PG_SEARCH ? pgSearchConsumers : esConsumers),
   ...(WARP_PIPE ? warpPipeConsumers : []),
   ...(config.MAXMIND_GEOLITE2_LICENSE_KEY ? geoDataConsumers : []),
-  {
-    topic: "raw_events",
-    channel: "normalize",
-    worker: normalizeEvent,
-    maxAttempts: 1,
-    timeoutSeconds: 30,
-    maxInFlight: 5,
-  },
-  {
-    topic: "normalized_events",
-    channel: "save_active_actor",
-    worker: saveActiveActor,
-    maxAttempts: 3,
-    timeoutSeconds: 10,
-    maxInFlight: 5,
-  },
-  {
-    topic: "normalized_events",
-    channel: "save_active_group",
-    worker: saveActiveGroup,
-    maxAttempts: 3,
-    timeoutSeconds: 10,
-    maxInFlight: 5,
-  },
+  // {
+  //   topic: "raw_events",
+  //   channel: "normalize",
+  //   worker: normalizeEvent,
+  //   maxAttempts: 1,
+  //   timeoutSeconds: 30,
+  //   maxInFlight: 5,
+  // },
+  // {
+  //   topic: "normalized_events",
+  //   channel: "save_active_actor",
+  //   worker: saveActiveActor,
+  //   maxAttempts: 3,
+  //   timeoutSeconds: 10,
+  //   maxInFlight: 5,
+  // },
+  // {
+  //   topic: "normalized_events",
+  //   channel: "save_active_group",
+  //   worker: saveActiveGroup,
+  //   maxAttempts: 3,
+  //   timeoutSeconds: 10,
+  //   maxInFlight: 5,
+  // },
   {
     topic: "fifty_three_past_hour",
     channel: "schedule_daily_reports_due",
-    worker: scheduleDailyReportsDue,
+    worker: scheduleDailyReportsDue, // Not used anymore?
     maxAttempts: 1,
     timeoutSeconds: 60,
     maxInFlight: 1,
   },
-  {
-    topic: "every_ten_minutes",
-    channel: "normalize_repair",
-    worker: normalizeRepair,
-    maxAttempts: 1,
-    timeoutSeconds: 60,
-    maxInFlight: 1,
-  },
-  {
-    topic: "every_ten_minutes",
-    channel: "prune_viewer_descriptors",
-    worker: pruneViewerDescriptors,
-    maxAttempts: 1,
-    timeoutSeconds: 60,
-    maxInFlight: 1,
-  },
+  // {
+  //   topic: "every_ten_minutes",
+  //   channel: "normalize_repair",
+  //   worker: normalizeRepair,
+  //   maxAttempts: 1,
+  //   timeoutSeconds: 60,
+  //   maxInFlight: 1,
+  // },
+  // {
+  //   topic: "every_ten_minutes",
+  //   channel: "prune_viewer_descriptors",
+  //   worker: pruneViewerDescriptors,
+  //   maxAttempts: 1,
+  //   timeoutSeconds: 60,
+  //   maxInFlight: 1,
+  // },
   {
     topic: "environment_day",
     channel: "analyze_day",
@@ -205,22 +205,22 @@ const nsqConsumers: Consumer[] = [
     timeoutSeconds: 10,
     maxInFlight: 5,
   },
-  {
-    topic: "every_second",
-    channel: "clear_ingest_backlog",
-    worker: ingestFromBacklog,
-    maxAttempts: 1,
-    timeoutSeconds: 10,
-    maxInFlight: 1,
-  },
-  {
-    topic: "unsaved_events",
-    channel: "clear_ingest_queue",
-    worker: ingestFromQueue,
-    maxAttempts: 20,
-    timeoutSeconds: 10,
-    maxInFlight: 10,
-  },
+  // {
+  //   topic: "every_second",
+  //   channel: "clear_ingest_backlog",
+  //   worker: ingestFromBacklog,
+  //   maxAttempts: 1,
+  //   timeoutSeconds: 10,
+  //   maxInFlight: 1,
+  // },
+  // {
+  //   topic: "unsaved_events",
+  //   channel: "clear_ingest_queue",
+  //   worker: ingestFromQueue,
+  //   maxAttempts: 20,
+  //   timeoutSeconds: 10,
+  //   maxInFlight: 10,
+  // },
   {
     topic: "emails",
     channel: "send",
