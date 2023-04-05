@@ -3,7 +3,7 @@
 #
 ARG NODEJS_IMAGE=node:18.15.0-alpine3.17
 ARG ALPINE_IMAGE=alpine:3.17
-FROM --platform=$BUILDPLATFORM $ALPINE_IMAGE as cron
+FROM --platform=${BUILDPLATFORM:-linux/amd64} $ALPINE_IMAGE as cron
 
 RUN apk add --update --no-cache ca-certificates curl \
   && rm -rf /tmp/* /var/cache/apk/*
@@ -21,7 +21,7 @@ COPY deploy/crontab /crontab
 # # #
 # Node build
 #
-FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE as node
+FROM --platform=${BUILDPLATFORM:-linux/amd64} $NODEJS_IMAGE as node
 
 #python
 RUN apk add --no-cache --virtual .gyp \
@@ -38,7 +38,7 @@ ADD . /src
 
 RUN npm run build
 
-FROM --platform=$BUILDPLATFORM node as curl-builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} node as curl-builder
 
 WORKDIR /app
 
