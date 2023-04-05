@@ -1,0 +1,13 @@
+{
+  "all": false,
+  "include": ["src/**/*"],
+  "exclude": [
+    "**/*.tstmpl",
+    "**/test/*",
+    "**/e2e-tests/*",
+    "**/coverage/*",
+    "**/node_modules/*",
+    "**/integration/test/*",
+    "**/migration/*"
+  ]
+}
