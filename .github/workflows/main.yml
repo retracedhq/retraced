@@ -42,19 +42,18 @@ jobs:
       # Run the docker-compose up
       - name: Run docker-compose up
         id: docker_compose
-        if: github.ref == 'refs/heads/release'
         uses: isbang/compose-action@v1.4.1
         with:
           compose-file: "./docker-compose.yaml"
 
       # Run e2e tests
       - name: Run tests
-        if: github.ref == 'refs/heads/release'
         run: |
           npm install
           npm run lint
           npm run build
           npm run cover
+          npm run e2e:test
           npm run integration:test
 
       - id: version
