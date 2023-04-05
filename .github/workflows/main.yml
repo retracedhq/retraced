@@ -52,9 +52,7 @@ jobs:
           npm install
           npm run lint
           npm run build
-          npm run cover
-          npm run e2e:test
-          npm run integration:test
+          npm run cover:all
 
       - id: version
         run: |

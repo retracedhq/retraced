@@ -91,6 +91,7 @@
     "integration:test": "mocha --recursive -r ts-node/register integration/test/**/*.ts",
     "e2e:test": "mocha --recursive -r ts-node/register src/e2e-tests/**/*.ts",
     "cover": "nyc mocha",
+    "cover:all": "nyc mocha --recursive -r ts-node/register src/e2e-tests/**/*.ts integration/test/**/*.ts src/test/**/*.ts",
     "mintest": "mocha --recursive -r ts-node/register --reporter 'min' src/test/**/*.ts",
     "dev:api": "node --inspect=0.0.0.0 -r ts-node/register src/index.ts",
     "dev:processor": "PROCESSOR_DEV_PORT=3001 node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts",
