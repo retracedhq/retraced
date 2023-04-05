@@ -1,7 +1,6 @@
 import { Emailer } from "../services/Emailer";
+import type { Email } from "../services/Emailer";
 
-export default async function sendEmail(job: any) {
-  const email = JSON.parse(job.body);
-
+export default async function sendEmail(email: Email) {
   await Emailer.getDefault().send(email);
 }
