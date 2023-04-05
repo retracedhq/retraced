@@ -52,6 +52,7 @@ export interface RequestActor {
    * to create an interactive embedded viewer experience.
    */
   href?: string;
+  fields?: EventFields;
 }
 
 /** A target is the object upon which the action is performed */
@@ -67,6 +68,7 @@ export interface RequestTarget {
   href?: string;
   /** Identifies the type */
   type?: string;
+  fields?: EventFields;
 }
 
 export interface CreateEventBulkRequest {
@@ -97,6 +99,10 @@ export interface CreateEventRequest {
   component?: string;
   /** An identifier for the version of the vendor app that sent the event, usually a git SHA */
   version?: string;
+  /** An identifier for the environment in which the event was sent */
+  external_id?: string;
+  /** An optional set of additional metadata  about the data */
+  metadata?: EventFields;
 }
 
 export type CreateEventBulkResponse = CreateEventResponse[];

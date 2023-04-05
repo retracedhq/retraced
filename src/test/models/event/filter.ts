@@ -99,8 +99,7 @@ const tests = [
     scope: minScope,
     filters: [
       {
-        where:
-          "(doc -> 'received')::text::bigint >= $1 AND (doc -> 'received')::text::bigint < $2",
+        where: "(doc -> 'received')::text::bigint >= $1 AND (doc -> 'received')::text::bigint < $2",
         values: [1496275200000, 1498867200000],
       },
       { where: "project_id = $3", values: ["proj1"] },
@@ -115,8 +114,7 @@ const tests = [
     scope: minScope,
     filters: [
       {
-        where:
-          "(doc -> 'created')::text::bigint >= $1 AND (doc -> 'created')::text::bigint < $2",
+        where: "(doc -> 'created')::text::bigint >= $1 AND (doc -> 'created')::text::bigint < $2",
         values: [1496275200000, 1498867200000],
       },
       { where: "project_id = $3", values: ["proj1"] },
@@ -176,8 +174,7 @@ const tests = [
     scope: minScope,
     filters: [
       {
-        where:
-          "to_tsvector('english', (doc -> 'description')) @@ plainto_tsquery('english', $1)",
+        where: "to_tsvector('english', (doc -> 'description')) @@ plainto_tsquery('english', $1)",
         values: ["download secret"],
       },
       { where: "project_id = $2", values: ["proj1"] },

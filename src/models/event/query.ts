@@ -32,18 +32,6 @@ export interface Result {
   events: any[];
 }
 
-export interface ParsedQuery {
-  action: string | string[];
-  crud: string | string[];
-  received: string | string[];
-  created: string | string[];
-  "actor.id": string | string[];
-  "actor.name": string | string[];
-  description: string | string[];
-  location: string | string[];
-  text?: string | string[];
-}
-
 export default async function query(opts: Options): Promise<Result> {
   const result = await doQuery(opts);
 
@@ -159,7 +147,17 @@ function scrubDatetimeRange(input: string | string[]): [number, number] {
 // exported for testing
 export function parse(searchQuery: string): any {
   const options = {
-    keywords: ["action", "crud", "received", "created", "actor.id", "actor.name", "description", "location"],
+    keywords: [
+      "action",
+      "crud",
+      "received",
+      "created",
+      "actor.id",
+      "actor.name",
+      "description",
+      "location",
+      "external_id",
+    ],
   };
   let keywords = searchQueryParser.parse(searchQuery, options);
   const q: any = {
@@ -250,6 +248,12 @@ export function parse(searchQuery: string): any {
           query: keywords.location,
           fields: ["country", "loc_subdiv1", "loc_subdiv2"],
         },
+      });
+    }
+
+    if (keywords.external_id) {
+      q.bool.filter.push({
+        match: { external_id: { query: keywords.external_id, operator: "and" } },
       });
     }
 
