@@ -67,6 +67,9 @@ describe("Viewer API", function () {
             field1: field1,
           },
           external_id: externalID,
+          metadata: {
+            metadata1: "metadata1",
+          },
         };
         const valid = tv4.validate(event, CreateEventSchema);
         if (!valid) {
@@ -246,6 +249,14 @@ describe("Viewer API", function () {
                     "data.search.edges[0].node.external_id",
                     externalID
                   );
+                  expect(responseBody).to.have.nested.property(
+                    "data.search.edges[0].node.metadata[0].key",
+                    "metadata1"
+                  );
+                  expect(responseBody).to.have.nested.property(
+                    "data.search.edges[0].node.metadata[0].value",
+                    "metadata1"
+                  );
                 }
               );
             }
@@ -328,6 +339,14 @@ describe("Viewer API", function () {
                   expect(responseBody).to.have.nested.property(
                     "data.search.edges[0].node.external_id",
                     externalID
+                  );
+                  expect(responseBody).to.have.nested.property(
+                    "data.search.edges[0].node.metadata[0].key",
+                    "metadata1"
+                  );
+                  expect(responseBody).to.have.nested.property(
+                    "data.search.edges[0].node.metadata[0].value",
+                    "metadata1"
                   );
                 }
               );
