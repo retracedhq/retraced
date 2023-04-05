@@ -222,14 +222,14 @@ const nsqConsumers: Consumer[] = [
   //   timeoutSeconds: 10,
   //   maxInFlight: 10,
   // },
-  {
-    topic: "emails",
-    channel: "send",
-    worker: sendEmail,
-    maxAttempts: 10,
-    timeoutSeconds: 60,
-    maxInFlight: 10,
-  },
+  // {
+  //   topic: "emails",
+  //   channel: "send",
+  //   worker: sendEmail,
+  //   maxAttempts: 10,
+  //   timeoutSeconds: 60,
+  //   maxInFlight: 10,
+  // },
 ];
 
 if (!config.PG_SEARCH) {

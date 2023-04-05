@@ -3,6 +3,7 @@ import moment from "moment";
 import { logger } from "../logger";
 import { temporalClient } from "../persistence/temporal";
 import { analyzeDayWorkflow } from "../temporal/workflows";
+import { createWorkflowId } from "../temporal/helper";
 
 /**
  * retraced exec processor /bin/bash
@@ -42,7 +43,7 @@ export const builder = {
 };
 
 export const handler = async (argv) => {
-  const jobBody = {
+  const job = {
     projectId: argv.projectId,
     projectName: argv.projectName,
     environmentId: argv.environmentId,
@@ -59,9 +60,9 @@ export const handler = async (argv) => {
   );
 
   await temporalClient.start(analyzeDayWorkflow, {
-    workflowId: `${argv.projectId}-${argv.environmentId}-${jobBody.date.toString()}`,
+    workflowId: createWorkflowId(argv.projectId, argv.environmentId),
     taskQueue: "events",
-    args: [jobBody],
+    args: [job],
   });
 
   setTimeout(() => process.exit(0), 2000);

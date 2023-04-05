@@ -9,6 +9,7 @@ import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 import { temporalClient } from "../../_processor/persistence/temporal";
 import { saveUserReportingEventWorkflow } from "../../_processor/temporal/workflows";
+import { createWorkflowId } from "../../_processor/temporal/helper";
 
 export interface Job {
   taskId: string;
@@ -111,7 +112,7 @@ export default async function (req) {
     };
 
     await temporalClient.start(saveUserReportingEventWorkflow, {
-      workflowId: `${job.taskId}`,
+      workflowId: createWorkflowId(job.projectId, job.environmentId),
       taskQueue: "events",
       args: [job],
     });

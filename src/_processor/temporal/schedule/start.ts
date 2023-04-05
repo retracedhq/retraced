@@ -33,12 +33,13 @@ const schedules: ScheduleOptions[] = [
     scheduleId: "workflow-normalize-repair",
     policies: {
       catchupWindow: "1 day",
-      overlap: ScheduleOverlapPolicy.ALLOW_ALL,
+      overlap: ScheduleOverlapPolicy.SKIP,
     },
     spec: {
       intervals: [{ every: "10m" }],
     },
   },
+
   {
     action: {
       type: "startWorkflow",
@@ -48,7 +49,7 @@ const schedules: ScheduleOptions[] = [
     scheduleId: "workflow-prune-viewer-descriptors",
     policies: {
       catchupWindow: "1 day",
-      overlap: ScheduleOverlapPolicy.ALLOW_ALL,
+      overlap: ScheduleOverlapPolicy.SKIP,
     },
     spec: {
       intervals: [{ every: "10m" }],

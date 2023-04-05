@@ -4,7 +4,10 @@ import type * as activities from "../../workers";
 import { normalizeEventWorkflow } from "./normalizeEventWorkflow";
 
 const { normalizeRepair } = proxyActivities<typeof activities>({
-  startToCloseTimeout: "1 minute",
+  startToCloseTimeout: "60 seconds",
+  retry: {
+    maximumAttempts: 1,
+  },
 });
 
 export async function normalizeRepairWorkflow() {

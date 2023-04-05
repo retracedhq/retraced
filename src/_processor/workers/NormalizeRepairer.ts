@@ -50,7 +50,7 @@ export default class NormalizeRepairer {
     this.metricRegistry.histogram("NormalizeRepairer.repairOldEvents.age");
   }
 
-  public async repairOldEvents() {
+  public async repairOldEvents(): Promise<string[] | undefined> {
     const resp = await this.pgPool.query(NormalizeRepairer.selectFromIngestTask, [
       this.minAgeMs,
       this.maxEvents,

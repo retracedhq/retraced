@@ -17,6 +17,7 @@ import { logger } from "../logger";
 import config from "../config";
 import { ingestFromQueueWorkflow } from "../_processor/temporal/workflows";
 import { temporalClient } from "../_processor/persistence/temporal";
+import { createWorkflowId } from "../_processor/temporal/helper";
 
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 const IPV6_REGEX =
@@ -386,7 +387,7 @@ export class EventCreater {
 
     try {
       await temporalClient.start(ingestFromQueueWorkflow, {
-        workflowId: newEventId,
+        workflowId: createWorkflowId(projectId, envId),
         taskQueue: "events",
         args: [job],
       });

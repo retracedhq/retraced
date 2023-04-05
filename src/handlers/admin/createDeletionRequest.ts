@@ -15,6 +15,7 @@ import util from "util";
 import config from "../../config";
 import { temporalClient } from "../../_processor/persistence/temporal";
 import { sendEmailWorkflow } from "../../_processor/temporal/workflows/sendEmailWorkflow";
+import { createWorkflowId } from "../../_processor/temporal/helper";
 
 const pgPool = getPgPool();
 
@@ -141,7 +142,7 @@ export default async function handle(
       };
 
       await temporalClient.start(sendEmailWorkflow, {
-        workflowId: newDeletionRequest.id,
+        workflowId: createWorkflowId(projectId, environmentId),
         taskQueue: "events",
         args: [task],
       });
