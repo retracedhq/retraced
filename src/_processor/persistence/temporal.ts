@@ -1,3 +1,3 @@
 import { WorkflowClient } from "@temporalio/client";
 
-export const temporalClient = new WorkflowClient();
+export const workflowClient = new WorkflowClient();

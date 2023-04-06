@@ -4,19 +4,19 @@ import pg from "pg";
 import pgFormat from "pg-format";
 import util from "util";
 import * as monkit from "monkit";
-import { instrument, instrumented } from "../metrics";
+import { WorkflowClient } from "@temporalio/client";
 
+import { instrument, instrumented } from "../metrics";
 import createCanonicalHash from "../models/event/canonicalize";
 import Event, { EventFields } from "../models/event/";
 import { fromCreateEventInput } from "../models/event";
 import uniqueId from "../models/uniqueId";
-import { NSQClient } from "../persistence/nsq";
 import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
 import config from "../config";
-import { ingestFromQueueWorkflow } from "../_processor/temporal/workflows";
-import { temporalClient } from "../_processor/persistence/temporal";
+import { ingestFromQueueWorkflow, normalizeEventWorkflow } from "../_processor/temporal/workflows";
+import { workflowClient } from "../_processor/persistence/temporal";
 import { createWorkflowId } from "../_processor/temporal/helper";
 
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
@@ -146,7 +146,7 @@ export class EventCreater {
 
   constructor(
     private readonly pgPool: pg.Pool,
-    private readonly nsq: NSQClient,
+    private readonly workflowClient: WorkflowClient,
     private readonly hasher: (event: Event) => string,
     private readonly idSource: () => string,
     private readonly authenticator: Authenticator,
@@ -276,7 +276,7 @@ export class EventCreater {
       events.map(({ values }) => values)
     );
 
-    const pgConn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
+    const pgConn = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
 
     try {
       await instrument("EventCreater.insertMany", async () => {
@@ -286,9 +286,9 @@ export class EventCreater {
       pgConn.release();
     }
 
-    events.forEach(this.nsqPublish.bind(this));
+    // events.forEach(this.startWorkflow.bind(this));
     events.forEach((e) => {
-      this.nsqPublish(e);
+      this.startWorkflow(e);
       this.registry.meter("EventCreater.handled.events").mark();
     });
 
@@ -309,7 +309,7 @@ export class EventCreater {
   }
 
   /**
-   * Save an event to postgres ingest_task and publish to NSQ for processing
+   * Save an event to postgres ingest_task and start the workflow to process it.
    */
   @instrumented
   public async saveEvent(
@@ -334,7 +334,7 @@ export class EventCreater {
     if (querier) {
       await querier.query(insertStmt, insertVals);
     } else {
-      const conn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
+      const conn = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
 
       try {
         await instrument("EventCreater.insertOne", async () => {
@@ -345,7 +345,7 @@ export class EventCreater {
       }
     }
 
-    this.nsqPublish({ taskId: newTaskId });
+    this.startWorkflow({ taskId: newTaskId });
   }
 
   // Add a record to Postgres to be later moved to ingest_task.
@@ -392,7 +392,7 @@ export class EventCreater {
     };
 
     try {
-      await temporalClient.start(ingestFromQueueWorkflow, {
+      await this.workflowClient.start(ingestFromQueueWorkflow, {
         workflowId: createWorkflowId(projectId, envId),
         taskQueue: "events",
         args: [job],
@@ -406,18 +406,6 @@ export class EventCreater {
 
       throw err;
     }
-  }
-
-  private async nsqPublish({ taskId }) {
-    const job = JSON.stringify({ taskId });
-    return this.nsq
-      .produce("raw_events", job)
-      .then(() => {
-        logger.info(`sent task ${job} to raw_events`);
-      })
-      .catch((err) => {
-        logger.error(`failed to send task ${job} to raw_events: ${util.inspect(err)}`);
-      });
   }
 
   private validateEventInputs(events: CreateEventRequest[]): void {
@@ -556,6 +544,21 @@ export class EventCreater {
 
     return violations;
   }
+
+  private async startWorkflow({ taskId }: { taskId: string }) {
+    try {
+      await this.workflowClient.start(normalizeEventWorkflow, {
+        workflowId: taskId,
+        taskQueue: "events",
+        args: [taskId],
+      });
+
+      logger.info(`started workflow normalizeEventWorkflow for ${taskId}`);
+    } catch (err) {
+      logger.error(`failed to start workflow normalizeEventWorkflow for ${taskId}: ${util.inspect(err)}`);
+      throw err;
+    }
+  }
 }
 
 interface Violation {
@@ -567,7 +570,7 @@ interface Violation {
 
 export const defaultEventCreater = new EventCreater(
   getPgPool(),
-  NSQClient.fromEnv(),
+  workflowClient,
   createCanonicalHash,
   uniqueId,
   Authenticator.default(),
