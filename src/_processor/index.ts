@@ -2,7 +2,7 @@ import _ from "lodash";
 import * as monkit from "monkit";
 import config from "../config";
 import { errToLog, jobDesc, stopwatchClick } from "./common";
-import nsq from "./persistence/nsq";
+// import nsq from "./persistence/nsq";
 import normalizeEvent from "./workers/normalizeEvent";
 import saveEventToElasticsearch from "./workers/saveEventToElasticsearch";
 import saveUserReportingEvent from "./workers/saveUserReportingEvent";
@@ -251,11 +251,11 @@ for (const consumer of nsqConsumers) {
     );
   };
 
-  nsq.consume(topic, channel, receive, {
-    maxAttempts,
-    maxInFlight,
-    messageTimeoutMS: timeoutSeconds * 1000,
-  });
+  // nsq.consume(topic, channel, receive, {
+  //   maxAttempts,
+  //   maxInFlight,
+  //   messageTimeoutMS: timeoutSeconds * 1000,
+  // });
 }
 
 const handle = (topic, channel, worker, job, doAck, requeue) => async () => {

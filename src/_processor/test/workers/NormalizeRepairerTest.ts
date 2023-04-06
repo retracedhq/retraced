@@ -1,14 +1,11 @@
 import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
-
 import * as TypeMoq from "typemoq";
-
 import pg from "pg";
 import monkit from "monkit";
-
-import { NSQClient } from "../../persistence/nsq";
-import NormalizeRepairer from "../../workers/NormalizeRepairer";
 import { QueryResult } from "pg";
+
+import NormalizeRepairer from "../../workers/NormalizeRepairer";
 
 const isAny = TypeMoq.It.isAny;
 
@@ -16,7 +13,7 @@ const isAny = TypeMoq.It.isAny;
 class NormalizeRepairerTest {
   @test public async "NormalizeRepairer#repairOldEvents() with no events"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    // const nsq = TypeMoq.Mock.ofType(NSQClient);
     const registry = new monkit.Registry();
     const minAgeMs = 10000;
     const maxEvents = 20000;
@@ -39,13 +36,13 @@ class NormalizeRepairerTest {
 
     await repairer.repairOldEvents();
 
-    nsq.verify((x) => x.produce(isAny(), isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce(isAny(), isAny()), TypeMoq.Times.never());
     expect(registry.meter("NormalizeRepairer.repairOldEvents.allClear").count).to.equal(1);
   }
 
   @test public async "NormalizeRepairer#repairOldEvents()"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    // const nsq = TypeMoq.Mock.ofType(NSQClient);
     const registry = new monkit.Registry();
     const minAgeMs = 10000;
     const maxEvents = 20000;
@@ -73,9 +70,9 @@ class NormalizeRepairerTest {
 
     await repairer.repairOldEvents();
 
-    nsq.verify((x) => x.produce("raw_events", JSON.stringify({ taskId: rows[0].id })), TypeMoq.Times.once());
+    // nsq.verify((x) => x.produce("raw_events", JSON.stringify({ taskId: rows[0].id })), TypeMoq.Times.once());
 
-    nsq.verify((x) => x.produce("raw_events", JSON.stringify({ taskId: rows[1].id })), TypeMoq.Times.once());
+    // nsq.verify((x) => x.produce("raw_events", JSON.stringify({ taskId: rows[1].id })), TypeMoq.Times.once());
 
     expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").max).to.equal(20050);
     expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").min).to.equal(15000);

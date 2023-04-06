@@ -30,7 +30,7 @@ class ElasticsearchSaverTest {
     const es = TypeMoq.Mock.ofType(Client);
     const registry = TypeMoq.Mock.ofType(monkit.Registry);
     const clock = TypeMoq.Mock.ofType<Clock>();
-    const jobBody = JSON.stringify({
+    const jobBody = {
       environmentId: "env01",
       projectId: "proj01",
       event: {
@@ -87,7 +87,7 @@ class ElasticsearchSaverTest {
           },
         },
       },
-    });
+    };
 
     const expectedIndexed = {
       action: "license.update",
@@ -152,7 +152,7 @@ class ElasticsearchSaverTest {
       .verifiable(TypeMoq.Times.once());
 
     const saver = new ElasticsearchSaver(es.object, registry.object, clock.object);
-    await saver.saveEventToElasticsearch({ body: Buffer.from(jobBody) });
+    await saver.saveEventToElasticsearch(jobBody as any);
 
     es.verifyAll();
     clock.verifyAll();
