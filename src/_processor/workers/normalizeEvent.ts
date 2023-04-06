@@ -156,7 +156,7 @@ function processEvent(
   target: Target,
   locInfo: LocationInfo,
   newEventId: string
-): NormalizedEvent {
+) {
   const result = _.pick(origEvent, [
     "created",
     "description",
@@ -189,7 +189,6 @@ function processEvent(
   if (result.created) {
     result["canonical_time"] = result.created;
   } else {
-    // @ts-ignore
     result["canonical_time"] = result.received;
   }
 
@@ -201,18 +200,16 @@ function processEvent(
   if (group) {
     group.id = group.group_id;
     _.unset(group, "group_id");
-    // @ts-ignore
-    result["group"] = mapValues(group);
+
+    result["group"] = mapValues(group) as Group;
   }
 
   if (actor) {
-    // @ts-ignore
-    result["actor"] = mapValues(actor);
+    result["actor"] = mapValues(actor) as Actor;
   }
 
   if (target) {
-    // @ts-ignore
-    result["target"] = mapValues(target);
+    result["target"] = mapValues(target) as Target;
   }
 
   if (locInfo) {
@@ -249,8 +246,7 @@ function processEvent(
     result.metadata = origEvent.metadata;
   }
 
-  // @ts-ignore
-  return result;
+  return result as NormalizedEvent;
 }
 
 export interface IngestTask {
@@ -324,15 +320,16 @@ interface Target {
 interface Event {
   action: string;
   teamId: string;
-  group: Group;
   crud: string;
   created: number;
   source_ip: string;
-  actor: Actor;
-  target: Target;
   fields: string[];
   metadata: string;
   external_id: string;
+  received: number;
+  actor: Actor;
+  target: Target;
+  group: Group;
 }
 
 interface NormalizedEvent extends Event {
