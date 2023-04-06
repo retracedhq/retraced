@@ -1,14 +1,12 @@
 import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
-
 import * as TypeMoq from "typemoq";
-
 import moment from "moment";
 import monkit from "monkit";
+import { Client } from "@opensearch-project/opensearch";
 
 import { Clock } from "../../common";
 import { ElasticsearchSaver } from "../../workers/saveEventToElasticsearch";
-import { Client } from "@opensearch-project/opensearch";
 
 const isAny = TypeMoq.It.isAny;
 
