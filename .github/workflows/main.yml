@@ -39,7 +39,7 @@ jobs:
       - run: node -v
       - run: npm -v
 
-      - name: Build
+      - name: Install Dependencies & check lint
         run: |
           npm install
           npm run lint
@@ -85,14 +85,12 @@ jobs:
       - run: node -v
       - run: npm -v
 
-      # Run the docker-compose up
       - name: Run docker-compose up
         id: docker_compose
         uses: isbang/compose-action@v1.4.1
         with:
           compose-file: "./docker-compose.yaml"
 
-      # Run e2e tests
       - name: Run tests
         run: |
           npm install
@@ -117,7 +115,6 @@ jobs:
       - run: node -v
       - run: npm -v
 
-      # Run the docker-compose up
       - name: Run docker-compose up
         id: docker_compose
         uses: isbang/compose-action@v1.4.1
@@ -126,7 +123,6 @@ jobs:
         env:
           PG_SEARCH: "true"
 
-      # Run e2e tests
       - name: Run tests
         run: |
           npm install
