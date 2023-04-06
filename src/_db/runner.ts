@@ -2,4 +2,4 @@
 
 import yargs from "yargs";
 
-yargs.commandDir("../../build/_db/commands").env().help().argv;
+const res = yargs.commandDir("../../build/_db/commands").env().help().argv;

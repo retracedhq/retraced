@@ -16,7 +16,7 @@ export default async function () {
     if (lastSeen.isBefore(moment().subtract("1", "hour"))) {
       // Ephemeral topics are deleted when the last client disconnects, but
       // created again on the next write to the topic.
-      //await nsq.deleteTopic(eitapi + "#ephemeral");
+      // await nsq.deleteTopic(eitapi + "#ephemeral");
 
       // Delete the redis structures
       const idsKey = `session.ids:${session["project.id"]}:${session["environment.id"]}:${session["group.id"]}`;

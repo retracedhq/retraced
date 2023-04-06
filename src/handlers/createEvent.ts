@@ -4,7 +4,7 @@ import pg from "pg";
 import pgFormat from "pg-format";
 import util from "util";
 import * as monkit from "monkit";
-import type { WorkflowClient } from "@temporalio/client";
+import { WorkflowClient } from "@temporalio/client";
 
 import { instrument, instrumented } from "../metrics";
 import createCanonicalHash from "../models/event/canonicalize";
@@ -16,7 +16,7 @@ import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
 import config from "../config";
 import { ingestFromQueueWorkflow, normalizeEventWorkflow } from "../_processor/temporal/workflows";
-import { workflowClient } from "../_processor/persistence/temporal";
+// import { workflowClient  } from "../_processor/persistence/temporal";
 import { createWorkflowId } from "../_processor/temporal/helper";
 
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
@@ -570,7 +570,7 @@ interface Violation {
 
 export const defaultEventCreater = new EventCreater(
   getPgPool(),
-  workflowClient,
+  new WorkflowClient(),
   createCanonicalHash,
   uniqueId,
   Authenticator.default(),
