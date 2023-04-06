@@ -21,6 +21,7 @@ export async function normalizeRepairWorkflow() {
     taskIds.map((taskId) =>
       executeChild(normalizeEventWorkflow, {
         args: [taskId],
+        workflowId: taskId,
       })
     )
   );
