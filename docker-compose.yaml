@@ -114,6 +114,7 @@ services:
       - "9200:9200"
     networks:
       - retraced
+    restart: "always"
 
   # opensearch:
   #   image: opensearchproject/opensearch:1.3.2
@@ -143,7 +144,8 @@ services:
     networks:
       - retraced
     depends_on:
-      - postgres-migration
+      elastic-migration:
+        condition: service_completed_successfully
     command: ./build/src/retracedctl bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev
 
   postgres-migration:
@@ -175,7 +177,7 @@ services:
     restart: "on-failure"
 
   admin-portal:
-    image: boxyhq/jackson:1.7.1
+    image: boxyhq/jackson:1.9.0
     ports:
       - "5225:5225"
     networks:

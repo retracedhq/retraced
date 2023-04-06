@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import * as Retraced from "@retracedhq/retraced";
+import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
@@ -13,7 +13,7 @@ describe("Admin delete template", function () {
   if (!Env.AdminRootToken) {
     return;
   }
-  const headless = new Retraced.Client({
+  const headless = new Client({
     apiKey: Env.HeadlessApiKey,
     projectId: Env.HeadlessProjectID,
     endpoint: Env.Endpoint,
@@ -77,36 +77,38 @@ describe("Admin delete template", function () {
           expect(resp.body).to.deep.equal({});
         });
 
-        specify("The deletion is audited under the headless project.", async function () {
-          this.timeout(Env.EsIndexWaitMs * 2);
-          await sleep(Env.EsIndexWaitMs);
-          const query = {
-            crud: "d",
-            action: "template.delete",
-          };
-          const mask = {
-            action: true,
-            crud: true,
-            actor: {
-              id: true,
-            },
-            target: {
-              id: true,
-            },
-            group: {
-              id: true,
-            },
-          };
-          const connection = await headless.query(query, mask, 1);
-          const audited = connection.currentResults[0];
-          const token = resp.body;
+        if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
+          specify("The deletion is audited under the headless project.", async function () {
+            this.timeout(Env.EsIndexWaitMs * 2);
+            await sleep(Env.EsIndexWaitMs);
+            const query = {
+              crud: "d",
+              action: "template.delete",
+            };
+            const mask = {
+              action: true,
+              crud: true,
+              actor: {
+                id: true,
+              },
+              target: {
+                id: true,
+              },
+              group: {
+                id: true,
+              },
+            };
+            const connection = await headless.query(query, mask, 1);
+            const audited = connection.currentResults[0];
+            const token = resp.body;
 
-          expect(audited.action).to.equal("template.delete");
-          expect(audited.crud).to.equal("d");
-          expect(audited.group!.id).to.equal(project.id);
-          expect(audited.actor!.id).to.equal(adminId);
-          expect(audited.target!.id).to.equal(templateID);
-        });
+            expect(audited.action).to.equal("template.delete");
+            expect(audited.crud).to.equal("d");
+            expect(audited.group!.id).to.equal(project.id);
+            expect(audited.actor!.id).to.equal(adminId);
+            expect(audited.target!.id).to.equal(templateID);
+          });
+        }
       });
     });
   });

@@ -56,9 +56,7 @@ export default async function filter(opts: Options): Promise<Result> {
         SELECT doc
         FROM indexed_events
         WHERE ${wheres.join(" AND ")}
-        ORDER BY (doc-> 'canonical_time')::text::bigint ${_.toUpper(
-          opts.sort
-        )}, id ${_.toUpper(opts.sort)}
+        ORDER BY (doc-> 'canonical_time')::text::bigint ${_.toUpper(opts.sort)}, id ${_.toUpper(opts.sort)}
         LIMIT ${size}`;
 
   const results = await pgPool.query(q, vals);
@@ -73,7 +71,7 @@ export default async function filter(opts: Options): Promise<Result> {
 
   return {
     events,
-    totalHits,
+    totalHits: { value: totalHits },
   };
 }
 
@@ -171,7 +169,17 @@ export function getFilters(query: ParsedQuery, scope: Scope): Filter[] {
     });
   }
 
-  // TODO
+  if (query.external_id) {
+    const some = _.map(query.external_id, (id) => {
+      return {
+        where: `(doc -> 'external_id') @> ${nextParam()}`,
+        values: [quote(id)],
+      };
+    });
+
+    filters.push(orJoin(some));
+  }
+
   if (query.location) {
     // structured search for "location" not implemented - add to free text
     const loc = query.location.join(" ");
@@ -180,11 +188,12 @@ export function getFilters(query: ParsedQuery, scope: Scope): Filter[] {
   }
 
   if (query.text) {
+    const text = query.text.split(":")[1] || query.text;
     filters.push({
       // this only searches values in "fields", not keys
       where: `to_tsvector('english', doc) @@ plainto_tsquery('english', ${nextParam()})`,
       // all terms must appear in the document
-      values: [query.text],
+      values: [text],
     });
   }
 

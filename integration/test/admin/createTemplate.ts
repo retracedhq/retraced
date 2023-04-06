@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import * as Retraced from "@retracedhq/retraced";
+import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
@@ -13,12 +13,11 @@ describe("Admin create template", function () {
   if (!Env.AdminRootToken) {
     return;
   }
-  const headless = new Retraced.Client({
+  const headless = new Client({
     apiKey: Env.HeadlessApiKey,
     projectId: Env.HeadlessProjectID,
     endpoint: Env.Endpoint,
   });
-  const name = "New Token Name";
   let project;
   let env;
   let jwt;
@@ -70,42 +69,44 @@ describe("Admin create template", function () {
           expect(template).to.have.property("template", reqBody.template);
           expect(template).to.have.property("project_id", project.id);
           expect(template).to.have.property("environment_id", env.id);
-          expect(new Date(template.created)).to.be.within(now - tenMinutes, now + tenMinutes);
+          expect(new Date(template.created).getTime()).to.be.within(now - tenMinutes, now + tenMinutes);
         });
 
-        specify("The creation is audited under the headless project.", async function () {
-          this.timeout(Env.EsIndexWaitMs * 2);
-          await sleep(Env.EsIndexWaitMs);
-          const query = {
-            crud: "c",
-            action: "template.create",
-          };
-          const mask = {
-            action: true,
-            crud: true,
-            actor: {
-              id: true,
-            },
-            target: {
-              id: true,
-              name: true,
-              fields: true,
-            },
-            group: {
-              id: true,
-            },
-          };
-          const connection = await headless.query(query, mask, 1);
-          const audited = connection.currentResults[0];
-          const token = resp.body;
+        if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
+          specify("The creation is audited under the headless project.", async function () {
+            this.timeout(Env.EsIndexWaitMs * 2);
+            await sleep(Env.EsIndexWaitMs);
+            const query = {
+              crud: "c",
+              action: "template.create",
+            };
+            const mask = {
+              action: true,
+              crud: true,
+              actor: {
+                id: true,
+              },
+              target: {
+                id: true,
+                name: true,
+                fields: true,
+              },
+              group: {
+                id: true,
+              },
+            };
+            const connection = await headless.query(query, mask, 1);
+            const audited = connection.currentResults[0];
+            const token = resp.body;
 
-          expect(audited.action).to.equal("template.create");
-          expect(audited.crud).to.equal("c");
-          expect(audited.group!.id).to.equal(project.id);
-          expect(audited.actor!.id).to.equal(adminId);
-          expect(audited.target!.id).to.be.ok;
-          expect(audited.target!.fields).to.deep.equal(reqBody);
-        });
+            expect(audited.action).to.equal("template.create");
+            expect(audited.crud).to.equal("c");
+            expect(audited.group!.id).to.equal(project.id);
+            expect(audited.actor!.id).to.equal(adminId);
+            expect(audited.target!.id).to.be.ok;
+            expect(audited.target!.fields).to.deep.equal(reqBody);
+          });
+        }
       });
     });
   });

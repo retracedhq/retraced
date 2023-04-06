@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import * as Retraced from "@retracedhq/retraced";
+import { EventsConnection, Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
 import "chai-http";
@@ -17,7 +17,7 @@ const randomNumber = Math.floor(Math.random() * 99999) + 1;
 
 describe("Publisher Search", function () {
   describe("Given the Retraced API is up and running", function () {
-    const retraced = new Retraced.Client({
+    const retraced = new Client({
       apiKey: Env.ApiKey,
       projectId: Env.ProjectID,
       endpoint: Env.Endpoint,
@@ -35,7 +35,7 @@ describe("Publisher Search", function () {
           name: "RetracedQA",
         },
         created: new Date(created + i),
-        crud: "c",
+        crud: "c" as CRUD,
         source_ip: `192.168.0.${i}`,
         actor: {
           id: uniqueActorId,
@@ -79,7 +79,7 @@ describe("Publisher Search", function () {
       context(
         `When searching the publisher GraphQL endpoint for actor_id:${uniqueActorId} with pageSize 3 and fields "action" and "actor.id"`,
         function () {
-          let connection: Retraced.EventsConnection;
+          let connection: EventsConnection;
 
           beforeEach(async function () {
             this.timeout(Env.EsIndexWaitMs * 3);

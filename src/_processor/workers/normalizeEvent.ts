@@ -157,8 +157,6 @@ function processEvent(
   locInfo: LocationInfo,
   newEventId: string
 ): NormalizedEvent {
-  console.log("Processing event", newEventId);
-
   const result = _.pick(origEvent, [
     "created",
     "description",
@@ -241,6 +239,14 @@ function processEvent(
     if (locInfo.timeZone) {
       result["time_zone"] = locInfo.timeZone;
     }
+  }
+
+  if (origEvent.external_id) {
+    result.external_id = origEvent.external_id;
+  }
+
+  if (!_.isEmpty(origEvent.metadata)) {
+    result.metadata = origEvent.metadata;
   }
 
   // @ts-ignore

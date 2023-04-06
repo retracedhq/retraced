@@ -73,6 +73,14 @@ export default async function search(q: any, args: Args, context: Scope) {
     if (event.group && event.group.id && !event.group.name) {
       event.group = groupsByIdWithoutName[event.group.id];
     }
+
+    if (event.metadata) {
+      event.metadata = _.map(event.metadata, (value, key) => ({
+        key,
+        value,
+      }));
+    }
+
     if (event.fields) {
       event.fields = _.map(event.fields, (value, key) => ({
         key,
@@ -108,8 +116,7 @@ export default async function search(q: any, args: Args, context: Scope) {
     edges,
     pageInfo: {
       hasNextPage: opts.sort === "asc" && totalCount > results.events.length,
-      hasPreviousPage:
-        opts.sort === "desc" && totalCount > results.events.length,
+      hasPreviousPage: opts.sort === "desc" && totalCount > results.events.length,
     },
   };
 }

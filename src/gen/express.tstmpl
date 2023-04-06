@@ -1,10 +1,10 @@
 /* eslint:disable */
 import _ from "lodash";
 {{#if canImportByAlias}}
-  import { ValidateParam } from 'tsoa';
+import { ValidateParam } from 'tsoa';
 {{else}}
-  import { ValidateParam } from '../../../src/routeGeneration/templateHelpers';
-  import { Controller } from '../../../src/interfaces/controller';
+import { ValidateParam } from '../../../src/routeGeneration/templateHelpers';
+import { Controller } from '../../../src/interfaces/controller';
 {{/if}}
 {{#if iocModule}}
 import { iocContainer } from '{{iocModule}}';
@@ -47,7 +47,7 @@ export function RegisterRoutes(app: any) {
     {{#each controllers}}
     {{#each actions}}
         console.log(`TSOA ${'{{method}}'.padStart(6, ' ')} {{../../basePath}}{{../path}}{{path}}`);
-        app.{{method}}('{{../../basePath}}{{../path}}{{path}}', 
+        app.{{method}}('{{../../basePath}}{{../path}}{{path}}',
             {{#if security}} 
             authenticateMiddleware('{{security.name}}'
                 {{#if security.scopes.length}} 

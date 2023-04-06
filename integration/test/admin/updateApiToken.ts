@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import "chai-http";
-import * as Retraced from "@retracedhq/retraced";
+import { Client } from "@retracedhq/retraced";
 import * as Env from "../env";
 import Chance from "chance";
 import { retracedUp } from "../pkg/retracedUp";
@@ -17,7 +17,7 @@ describe("Admin Update API tokens", function () {
   if (!Env.AdminRootToken) {
     return;
   }
-  const headless = new Retraced.Client({
+  const headless = new Client({
     apiKey: Env.HeadlessApiKey,
     projectId: Env.HeadlessProjectID,
     endpoint: Env.Endpoint,
@@ -71,38 +71,40 @@ describe("Admin Update API tokens", function () {
             });
         });
 
-        specify("The change has been audited under the headless project.", async function () {
-          this.timeout(Env.EsIndexWaitMs * 2);
-          await sleep(Env.EsIndexWaitMs);
-          const query = {
-            crud: "u",
-            action: "api_token.update",
-          };
-          const mask = {
-            action: true,
-            crud: true,
-            actor: {
-              id: true,
-            },
-            target: {
-              id: true,
-            },
-            group: {
-              id: true,
-            },
-            fields: true,
-          };
-          const connection = await headless.query(query, mask, 1);
-          const audited = connection.currentResults[0];
+        if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
+          specify("The change has been audited under the headless project.", async function () {
+            this.timeout(Env.EsIndexWaitMs * 2);
+            await sleep(Env.EsIndexWaitMs);
+            const query = {
+              crud: "u",
+              action: "api_token.update",
+            };
+            const mask = {
+              action: true,
+              crud: true,
+              actor: {
+                id: true,
+              },
+              target: {
+                id: true,
+              },
+              group: {
+                id: true,
+              },
+              fields: true,
+            };
+            const connection = await headless.query(query, mask, 1);
+            const audited = connection.currentResults[0];
 
-          expect(audited.action).to.equal("api_token.update");
-          expect(audited.group!.id).to.equal(project.id);
-          expect(audited.actor!.id).to.equal(adminId);
-          expect(audited.target!.id).to.equal(token.token);
-          expect(audited.fields).to.deep.equal({
-            name: newName,
+            expect(audited.action).to.equal("api_token.update");
+            expect(audited.group!.id).to.equal(project.id);
+            expect(audited.actor!.id).to.equal(adminId);
+            expect(audited.target!.id).to.equal(token.token);
+            expect(audited.fields).to.deep.equal({
+              name: newName,
+            });
           });
-        });
+        }
       });
 
       context("When a token is disabled", function () {
@@ -132,38 +134,40 @@ describe("Admin Update API tokens", function () {
             });
         });
 
-        specify("The change has been audited under the headless project.", async function () {
-          this.timeout(Env.EsIndexWaitMs * 2);
-          await sleep(Env.EsIndexWaitMs);
-          const query = {
-            crud: "u",
-            action: "api_token.update",
-          };
-          const mask = {
-            action: true,
-            crud: true,
-            actor: {
-              id: true,
-            },
-            target: {
-              id: true,
-            },
-            group: {
-              id: true,
-            },
-            fields: true,
-          };
-          const connection = await headless.query(query, mask, 1);
-          const audited = connection.currentResults[0];
+        if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
+          specify("The change has been audited under the headless project.", async function () {
+            this.timeout(Env.EsIndexWaitMs * 2);
+            await sleep(Env.EsIndexWaitMs);
+            const query = {
+              crud: "u",
+              action: "api_token.update",
+            };
+            const mask = {
+              action: true,
+              crud: true,
+              actor: {
+                id: true,
+              },
+              target: {
+                id: true,
+              },
+              group: {
+                id: true,
+              },
+              fields: true,
+            };
+            const connection = await headless.query(query, mask, 1);
+            const audited = connection.currentResults[0];
 
-          expect(audited.action).to.equal("api_token.update");
-          expect(audited.group!.id).to.equal(project.id);
-          expect(audited.actor!.id).to.equal(adminId);
-          expect(audited.target!.id).to.equal(token.token);
-          expect(audited.fields).to.deep.equal({
-            disabled: "true",
+            expect(audited.action).to.equal("api_token.update");
+            expect(audited.group!.id).to.equal(project.id);
+            expect(audited.actor!.id).to.equal(adminId);
+            expect(audited.target!.id).to.equal(token.token);
+            expect(audited.fields).to.deep.equal({
+              disabled: "true",
+            });
           });
-        });
+        }
       });
     });
   });

@@ -56,6 +56,9 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
       "loc_subdiv2",
       "raw",
       "canonical_time",
+      "fields",
+      "external_id",
+      "metadata",
     ]);
 
     indexableEvent = mapValues(indexableEvent);
@@ -76,7 +79,6 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
 
   // Bulk index
   pbar.terminate();
-  console.log();
   if (_.isEmpty(toBeIndexed)) {
     console.log(picocolors.yellow("No valid rows to index!"));
     return;

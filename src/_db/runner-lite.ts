@@ -20,12 +20,6 @@ const res = yargs
   .command(upEs.command, upEs.describe, upEs.builder, upEs.handler)
   .command(geoIP.command, geoIP.describe, geoIP.builder, geoIP.handler)
   .command("reindex", reindex.desc, reindex.builder, reindex.handler)
-  .command(
-    "reindex-range",
-    reindexRange.desc,
-    reindexRange.builder,
-    reindexRange.handler
-  )
+  .command("reindex-range", reindexRange.desc, reindexRange.builder, reindexRange.handler)
   .env()
   .help().argv;
-console.log(res);

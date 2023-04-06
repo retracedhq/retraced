@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import * as Retraced from "@retracedhq/retraced";
+import { Client, CRUD } from "@retracedhq/retraced";
 import "mocha";
 import "chai-http";
 import { search } from "../pkg/specs";
@@ -33,7 +33,7 @@ describe("Bulk Create Events", function () {
       "And a call is made into the Retraced API with a list of 4 audit events with different actors",
       () => {
         beforeEach(async function () {
-          const retraced = new Retraced.Client({
+          const retraced = new Client({
             apiKey: Env.ApiKey,
             projectId: Env.ProjectID,
             endpoint: Env.Endpoint,
@@ -47,7 +47,7 @@ describe("Bulk Create Events", function () {
                 name: "RetracedQA",
               },
               created: now,
-              crud: "c",
+              crud: "c" as CRUD,
               source_ip: "192.168.0.1",
               actor: {
                 id: "NOW@retraced.io",
@@ -61,7 +61,7 @@ describe("Bulk Create Events", function () {
                 name: "RetracedQA",
               },
               created: next,
-              crud: "c",
+              crud: "c" as CRUD,
               source_ip: "192.168.0.1",
               actor: {
                 id: "NEXT@retraced.io",
@@ -75,7 +75,7 @@ describe("Bulk Create Events", function () {
                 name: "RetracedQA",
               },
               created: later,
-              crud: "c",
+              crud: "c" as CRUD,
               source_ip: "192.168.0.1",
               actor: {
                 id: "LATER@retraced.io",
@@ -89,7 +89,7 @@ describe("Bulk Create Events", function () {
                 name: "RetracedQA",
               },
               created: latest,
-              crud: "c",
+              crud: "c" as CRUD,
               source_ip: "192.168.0.1",
               actor: {
                 id: "LATEST@retraced.io",

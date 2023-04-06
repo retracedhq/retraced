@@ -27,7 +27,7 @@ export default function createProject(opts) {
         id: opts.id || uuid.v4().replace(/-/g, ""),
         name: opts.name,
         created: moment().unix(),
-        environments: getDefaultEnvironments(),
+        environments: opts.env ? opts.env : getDefaultEnvironments(),
         tokens: [] as ApiToken[],
       };
 

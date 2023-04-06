@@ -66,9 +66,7 @@ describe("Admin create admin token", function () {
               templateResponse = await new Promise<any>((resolve, reject) => {
                 chai
                   .request(Env.Endpoint)
-                  .post(
-                    `/admin/v1/project/${project.id}/templates?environment_id=${env.id}`
-                  )
+                  .post(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
                   .set("Authorization", `id=${id} token=${token}`)
                   .send(reqBody)
                   .end((err, res) => {
