@@ -3,22 +3,22 @@ import * as monkit from "monkit";
 import config from "../config";
 import { errToLog, jobDesc, stopwatchClick } from "./common";
 // import nsq from "./persistence/nsq";
-import normalizeEvent from "./workers/normalizeEvent";
-import saveEventToElasticsearch from "./workers/saveEventToElasticsearch";
-import saveUserReportingEvent from "./workers/saveUserReportingEvent";
-import saveActiveActor from "./workers/saveActiveActor";
-import saveActiveGroup from "./workers/saveActiveGroup";
-import analyzeDay from "./workers/analyzeDay";
+// import normalizeEvent from "./workers/normalizeEvent";
+// import saveEventToElasticsearch from "./workers/saveEventToElasticsearch";
+// import saveUserReportingEvent from "./workers/saveUserReportingEvent";
+// import saveActiveActor from "./workers/saveActiveActor";
+// import saveActiveGroup from "./workers/saveActiveGroup";
+// import analyzeDay from "./workers/analyzeDay";
 import scheduleDailyReportsDue from "./workers/scheduleDailyReportsDue";
 import streamEvent from "./workers/streamEvent";
 import prunePipeSessions from "./workers/prunePipeSessions";
-import pruneViewerDescriptors from "./workers/pruneViewerDescriptors";
+// import pruneViewerDescriptors from "./workers/pruneViewerDescriptors";
 import updateGeoData from "./workers/updateGeoData";
-import sendEmail from "./workers/sendEmail";
-import ingestFromBacklog from "./workers/ingestFromBacklog";
-import ingestFromQueue from "./workers/ingestFromQueue";
-import indexEvent from "./workers/indexEvent";
-import { worker as normalizeRepair } from "./workers/NormalizeRepairer";
+// import sendEmail from "./workers/sendEmail";
+// import ingestFromBacklog from "./workers/ingestFromBacklog";
+// import ingestFromQueue from "./workers/ingestFromQueue";
+// import indexEvent from "./workers/indexEvent";
+// import { worker as normalizeRepair } from "./workers/NormalizeRepairer";
 import {
   repair as elasticsearchAliasVerify,
   worker as elasticsearchIndexRotator,

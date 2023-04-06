@@ -11,7 +11,7 @@ export default async function () {
   for (const sessionId of allSessionIds) {
     const sessionKey = `session:${sessionId}`;
     const session = await redis.hgetallAsync(sessionKey);
-    const eitapi = session["eitapi.token"];
+    // const eitapi = session["eitapi.token"];
     const lastSeen = moment(Number(session["last.seen"]));
     if (lastSeen.isBefore(moment().subtract("1", "hour"))) {
       // Ephemeral topics are deleted when the last client disconnects, but

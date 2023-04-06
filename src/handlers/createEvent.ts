@@ -4,7 +4,7 @@ import pg from "pg";
 import pgFormat from "pg-format";
 import util from "util";
 import * as monkit from "monkit";
-import { WorkflowClient } from "@temporalio/client";
+import type { WorkflowClient } from "@temporalio/client";
 
 import { instrument, instrumented } from "../metrics";
 import createCanonicalHash from "../models/event/canonicalize";

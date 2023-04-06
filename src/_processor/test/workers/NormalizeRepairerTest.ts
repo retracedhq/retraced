@@ -13,7 +13,7 @@ const isAny = TypeMoq.It.isAny;
 class NormalizeRepairerTest {
   @test public async "NormalizeRepairer#repairOldEvents() with no events"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
-    // const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const nsq = TypeMoq.Mock.ofType(NSQClient);
     const registry = new monkit.Registry();
     const minAgeMs = 10000;
     const maxEvents = 20000;

@@ -32,10 +32,10 @@ export default async function (job) {
     return;
   }
 
-  for (const eitapi of eitapis) {
-    const topic = eitapi + "#ephemeral";
-    // await nsq.produce(topic, JSON.stringify(normalizedEvent));
-  }
+  // for (const eitapi of eitapis) {
+  //   const topic = eitapi + "#ephemeral";
+  //   await nsq.produce(topic, JSON.stringify(normalizedEvent));
+  // }
 
   const now = moment.utc().valueOf();
 
