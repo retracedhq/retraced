@@ -112,7 +112,7 @@ jobs:
           npm run cover:all
 
   build:
-    needs: ci, ci-PG_SEARCH
+    needs: [ci, ci-PG_SEARCH]
     runs-on: ubuntu-latest
     strategy:
       matrix:
