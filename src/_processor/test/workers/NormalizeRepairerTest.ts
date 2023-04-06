@@ -2,10 +2,12 @@ import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 import pg from "pg";
-import monkit from "monkit";
+import { Registry } from "monkit";
 import { QueryResult } from "pg";
+import { WorkflowClient } from "@temporalio/client";
 
 import NormalizeRepairer from "../../workers/NormalizeRepairer";
+import { normalizeEventWorkflow } from "../../temporal/workflows";
 
 const isAny = TypeMoq.It.isAny;
 
@@ -13,8 +15,8 @@ const isAny = TypeMoq.It.isAny;
 class NormalizeRepairerTest {
   @test public async "NormalizeRepairer#repairOldEvents() with no events"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
-    const registry = new monkit.Registry();
+    const workflowClient = TypeMoq.Mock.ofType(WorkflowClient);
+    const registry = new Registry();
     const minAgeMs = 10000;
     const maxEvents = 20000;
 
@@ -36,14 +38,15 @@ class NormalizeRepairerTest {
 
     await repairer.repairOldEvents();
 
-    // nsq.verify((x) => x.produce(isAny(), isAny()), TypeMoq.Times.never());
+    workflowClient.verify((x) => x.start(isAny(), isAny()), TypeMoq.Times.never());
+
     expect(registry.meter("NormalizeRepairer.repairOldEvents.allClear").count).to.equal(1);
   }
 
   @test public async "NormalizeRepairer#repairOldEvents()"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
-    // const nsq = TypeMoq.Mock.ofType(NSQClient);
-    const registry = new monkit.Registry();
+    const workflowClient = TypeMoq.Mock.ofType(WorkflowClient);
+    const registry = new Registry();
     const minAgeMs = 10000;
     const maxEvents = 20000;
 
@@ -69,6 +72,8 @@ class NormalizeRepairerTest {
     const repairer = new NormalizeRepairer(minAgeMs, pool.object, registry, maxEvents);
 
     await repairer.repairOldEvents();
+
+    // workflowClient.verify((x) => x.start(normalizeEventWorkflow, isAny()), TypeMoq.Times.once());
 
     // nsq.verify((x) => x.produce("raw_events", JSON.stringify({ taskId: rows[0].id })), TypeMoq.Times.once());
 
