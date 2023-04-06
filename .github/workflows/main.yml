@@ -77,7 +77,7 @@ jobs:
           echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
           echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
 
-  ci-PG_SEARECH:
+  ci-PG_SEARCH:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -112,7 +112,7 @@ jobs:
           npm run cover:all
 
   build:
-    needs: ci
+    needs: ci, ci-PG_SEARCH
     runs-on: ubuntu-latest
     strategy:
       matrix:
