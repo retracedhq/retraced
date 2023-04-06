@@ -2,13 +2,13 @@ import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 import moment from "moment";
-
 import pg from "pg";
-import { NSQClient } from "../../persistence/nsq";
+import { WorkflowClient } from "@temporalio/client";
 
 import { EventCreater, CreateEventRequest, CreateEventResponse } from "../../handlers/createEvent";
 import Authenticator from "../../security/Authenticator";
 import { Connection } from "./Connection";
+import { ingestFromQueueWorkflow, normalizeEventWorkflow } from "../../_processor/temporal/workflows";
 
 @suite
 class EventCreaterTest {
@@ -16,7 +16,7 @@ class EventCreaterTest {
   public async "EventCreater#createEventsBulk() throws if more than max events are passed"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(pg.Client);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const workflowClient = TypeMoq.Mock.ofType(WorkflowClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -60,7 +60,15 @@ class EventCreaterTest {
         })
       );
 
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 2, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      workflowClient.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      2,
+      1000
+    );
 
     const expected = new Error("A maximum of 2 events may be created at once, received 3");
 
@@ -81,7 +89,7 @@ class EventCreaterTest {
   public async "EventCreater#createEventsBulk() with many invalid inputs"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(pg.Client);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const workflowClient = TypeMoq.Mock.ofType(WorkflowClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -125,7 +133,15 @@ class EventCreaterTest {
       .returns(() => Promise.resolve(conn.object) as Promise<any>)
       .verifiable(TypeMoq.Times.once());
 
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      workflowClient.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
 
     try {
       await creater.createEventBulk("token=some-token", "a-project", body);
@@ -181,13 +197,13 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    workflowClient.verify((x) => x.start(normalizeEventWorkflow, TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test public async "EventCreater#createEvent()"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(Connection);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const workflowClient = TypeMoq.Mock.ofType(WorkflowClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -225,13 +241,21 @@ class EventCreaterTest {
       .returns(() => Promise.resolve(conn.object) as Promise<any>)
       .verifiable(TypeMoq.Times.once());
 
-    // set up nsq
-    const jobBody = JSON.stringify({ taskId: "kfbr392" });
-    nsq.setup((x) => x.produce("raw_events", jobBody)).returns(() => Promise.resolve());
+    workflowClient
+      .setup((x) => x.start(ingestFromQueueWorkflow, TypeMoq.It.isAny()))
+      .returns(() => Promise.resolve() as any);
 
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      workflowClient.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
 
-    const created: any = await creater.createEvent("token=some-token", "a-project", body);
+    const created = await creater.createEvent("token=some-token", "a-project", body);
 
     expect(created.id).to.equal("kfbr392");
     expect(created.hash).to.equal("fake-hash");
@@ -240,7 +264,7 @@ class EventCreaterTest {
   @test public async "EventCreater#createEvent() ipv6"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(Connection);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const workflowClient = TypeMoq.Mock.ofType(WorkflowClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -278,11 +302,19 @@ class EventCreaterTest {
       .returns(() => Promise.resolve(conn.object) as Promise<any>)
       .verifiable(TypeMoq.Times.once());
 
-    // set up nsq
-    const jobBody = JSON.stringify({ taskId: "kfbr392" });
-    nsq.setup((x) => x.produce("raw_events", jobBody)).returns(() => Promise.resolve());
+    workflowClient
+      .setup((x) => x.start(ingestFromQueueWorkflow, TypeMoq.It.isAny()))
+      .returns(() => Promise.resolve() as any);
 
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      workflowClient.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
 
     const created: any = await creater.createEvent("token=some-token", "a-project", body);
 
@@ -293,7 +325,7 @@ class EventCreaterTest {
   @test public async "EventCreater#createEventsBulk()"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(Connection);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const workflowClient = TypeMoq.Mock.ofType(WorkflowClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -345,15 +377,26 @@ class EventCreaterTest {
     conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
     conn.setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).verifiable(TypeMoq.Times.once());
 
-    // set up nsq
-    nsq
-      .setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
-      .returns(() => Promise.resolve())
+    workflowClient
+      .setup((x) => x.start(normalizeEventWorkflow, TypeMoq.It.isAny()))
+      .returns(() => Promise.resolve() as any)
       .verifiable(TypeMoq.Times.exactly(3));
 
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      workflowClient.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
 
-    const created: CreateEventResponse[] = await creater.createEventBulk("token=some-token", "a-project", body);
+    const created: CreateEventResponse[] = await creater.createEventBulk(
+      "token=some-token",
+      "a-project",
+      body
+    );
 
     expect(created.length).to.equal(3);
 
@@ -363,12 +406,15 @@ class EventCreaterTest {
     expect(created[1].hash).to.equal("fake-hash");
     expect(created[2].id).to.equal("kfbr392");
     expect(created[2].hash).to.equal("fake-hash");
+
+    pool.verifyAll();
+    workflowClient.verifyAll();
   }
 
   @test public async "EventCreater#createEventsBulk() with postgres error"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(Connection);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const workflowClient = TypeMoq.Mock.ofType(WorkflowClient);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -404,15 +450,19 @@ class EventCreaterTest {
       .verifiable(TypeMoq.Times.once());
     // conn.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())).returns(() => Promise.resolve({ rowCount: 1 }));
     conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
-    conn.setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).throws(new Error("Postgres went away :("));
+    conn
+      .setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()))
+      .throws(new Error("Postgres went away :("));
 
-    // set up nsq
-    nsq
-      .setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
-      .returns(() => Promise.resolve())
-      .verifiable(TypeMoq.Times.exactly(1));
-
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      workflowClient.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
 
     const expected = new Error("Postgres went away :(");
 
@@ -423,8 +473,10 @@ class EventCreaterTest {
       expect(err.message).to.equal(expected.message);
     }
 
-    // make sure we didn't send any nsq messages if the txn is ROLLBACK'd
-    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    pool.verifyAll();
+
+    // Make sure we didn't start any workflows if the txn is ROLLBACK'd
+    workflowClient.verify((x) => x.start(normalizeEventWorkflow, TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test public async "EventCreater.persistEvent()"() {
@@ -489,7 +541,7 @@ class EventCreaterTest {
     for (const testElement of tests) {
       const creater = new EventCreater(
         TypeMoq.Mock.ofType(pg.Pool).object,
-        TypeMoq.Mock.ofType(NSQClient).object,
+        TypeMoq.Mock.ofType(WorkflowClient).object,
         () => "fake-hash",
         () => "fake-uuid",
         TypeMoq.Mock.ofType(Authenticator).object,
@@ -535,7 +587,9 @@ class EventCreaterTest {
       testElement.persisters.forEach((p, i) => {
         if (p.called !== calls[i]) {
           throw new Error(
-            `${testElement.description}: persister[${i}] ${p.called ? "should" : "should not"} have been called`
+            `${testElement.description}: persister[${i}] ${
+              p.called ? "should" : "should not"
+            } have been called`
           );
         }
       });
