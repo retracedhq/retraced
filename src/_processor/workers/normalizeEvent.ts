@@ -216,13 +216,13 @@ function processEvent(
   }
 
   if (locInfo) {
-    if (locInfo.lat) {
-      result["lat"] = locInfo.lat;
-    }
+    // if (locInfo.lat) {
+    //   result["lat"] = locInfo.lat;
+    // }
 
-    if (locInfo.lon) {
-      result["lon"] = locInfo.lon;
-    }
+    // if (locInfo.lon) {
+    //   result["lon"] = locInfo.lon;
+    // }
 
     if (locInfo.country) {
       result["country"] = locInfo.country;
@@ -236,13 +236,13 @@ function processEvent(
       result["loc_subdiv2"] = locInfo.subdiv2;
     }
 
-    if (locInfo.timeZone) {
-      result["time_zone"] = locInfo.timeZone;
-    }
+    // if (locInfo.timezone) {
+    //   result["time_zone"] = locInfo.timezone;
+    // }
   }
 
   if (origEvent.external_id) {
-    result.external_id = origEvent.external_id;
+    result["external_id"] = origEvent.external_id;
   }
 
   if (!_.isEmpty(origEvent.metadata)) {
@@ -331,6 +331,8 @@ interface Event {
   actor: Actor;
   target: Target;
   fields: string[];
+  metadata: string;
+  external_id: string;
 }
 
 interface NormalizedEvent extends Event {
