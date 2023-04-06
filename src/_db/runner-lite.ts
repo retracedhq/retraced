@@ -15,7 +15,7 @@ import * as geoIP from "./commands/geoip";
 import * as reindex from "./commands/reindex/postgres";
 import * as reindexRange from "./commands/reindex/range";
 
-const res = yargs
+yargs
   .command(upPG.command, upPG.describe, upPG.builder, upPG.handler)
   .command(upEs.command, upEs.describe, upEs.builder, upEs.handler)
   .command(geoIP.command, geoIP.describe, geoIP.builder, geoIP.handler)
