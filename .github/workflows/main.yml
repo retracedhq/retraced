@@ -68,13 +68,13 @@ jobs:
           echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
 
   test:
+    needs: ci
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18]
 
     steps:
-      needs: ci
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -100,13 +100,13 @@ jobs:
           npm run cover:all
 
   test-pg-search:
+    needs: ci
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18]
 
     steps:
-      needs: ci
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
