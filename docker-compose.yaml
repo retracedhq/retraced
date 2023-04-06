@@ -51,48 +51,6 @@ services:
   #     - retraced
   #   command: /bin/sleep infinity
 
-  retraced-processor:
-    build:
-      context: .
-      dockerfile: ./deploy/Dockerfile-slim
-    ports:
-      - "3001:3000"
-      - "9191:9229"
-    environment: *common-variables
-    networks:
-      - retraced
-    depends_on:
-      - postgres
-    restart: "always"
-    command: node --inspect=0.0.0.0 --enable-source-maps build/src/_processor/index.js
-
-  retraced-cron:
-    build:
-      context: .
-      dockerfile: ./deploy/Dockerfile-slim
-    environment: *common-variables
-    networks:
-      - retraced
-    depends_on:
-      - postgres
-    restart: "always"
-    command: /usr/local/bin/retraced-auditlog-cron --quiet /crontab
-
-  nsqd:
-    image: nsqio/nsq:v1.2.1
-    ports:
-      - "4150:4150"
-      - "4151:4151"
-    environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata
-      - POSTGRES_USER=retraced
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=retraced
-    networks:
-      - retraced
-    restart: "always"
-    command: nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd." -log-level ${LOG_LEVEL}
-
   postgres:
     image: postgres:14.2
     ports:
