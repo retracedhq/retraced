@@ -1,8 +1,9 @@
 import { checkAdminAccessUnwrapped } from "../../security/helpers";
 import { Invite } from "../../models/invite";
 import createInviteModel from "../../models/invite/create";
-import nsq from "../../persistence/nsq";
 import config from "../../config";
+import { temporalClient } from "../../_processor/persistence/temporal";
+import { sendEmailWorkflow } from "../../_processor/temporal/workflows/sendEmailWorkflow";
 
 export default async function createInvite(
   auth: string,
@@ -18,18 +19,21 @@ export default async function createInvite(
     id,
   });
 
+  const job = {
+    to: invite.email,
+    subject: "You have been invited to join a group on Retraced.",
+    template: "retraced/invite-to-team",
+    context: {
+      invite_url: `${config.RETRACED_APP_BASE}/invitations/${invite.id}`,
+    },
+  };
+
   // Send the email
-  await nsq.produce(
-    "emails",
-    JSON.stringify({
-      to: invite.email,
-      subject: "You have been invited to join a group on Retraced.",
-      template: "retraced/invite-to-team",
-      context: {
-        invite_url: `${config.RETRACED_APP_BASE}/invitations/${invite.id}`,
-      },
-    })
-  );
+  await temporalClient.start(sendEmailWorkflow, {
+    workflowId: invite.id,
+    taskQueue: "events",
+    args: [job],
+  });
 
   return invite;
 }

@@ -2,7 +2,7 @@ import moment from "moment";
 import monkit from "monkit";
 import _ from "lodash";
 
-import nsq from "../persistence/nsq";
+// import nsq from "../persistence/nsq";
 import getRedis from "../persistence/redis";
 import config from "../../config";
 
@@ -34,17 +34,13 @@ export default async function (job) {
 
   for (const eitapi of eitapis) {
     const topic = eitapi + "#ephemeral";
-    await nsq.produce(topic, JSON.stringify(normalizedEvent));
+    // await nsq.produce(topic, JSON.stringify(normalizedEvent));
   }
 
   const now = moment.utc().valueOf();
 
   if (normalizedEvent.created) {
-    monkit
-      .histogram("workers.streamEvent.latencyCreated")
-      .update(now - normalizedEvent.created);
+    monkit.histogram("workers.streamEvent.latencyCreated").update(now - normalizedEvent.created);
   }
-  monkit
-    .histogram("workers.streamEvent.latencyReceived")
-    .update(now - normalizedEvent.received);
+  monkit.histogram("workers.streamEvent.latencyReceived").update(now - normalizedEvent.received);
 }

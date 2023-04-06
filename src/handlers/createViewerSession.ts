@@ -1,8 +1,11 @@
 import * as uuid from "uuid";
 import moment from "moment";
+
 import getViewerDescriptor from "../models/viewer_descriptor/get";
-import nsq from "../persistence/nsq";
 import { createViewerDescriptorVoucher } from "../security/vouchers";
+import { temporalClient } from "../_processor/persistence/temporal";
+import { createWorkflowId } from "../_processor/temporal/helper";
+import { saveUserReportingEventWorkflow } from "../_processor/temporal/workflows";
 
 export default async function handler(req) {
   // Note that, because these "viewer descriptor" values are being read from redis,
@@ -11,21 +14,28 @@ export default async function handler(req) {
   const desc = await getViewerDescriptor({
     id: req.body.token,
   });
+
   if (!desc) {
     throw { status: 401, err: new Error("Unauthorized") };
   }
+
   desc.ip = req.ip;
 
   const voucher = createViewerDescriptorVoucher(desc);
 
-  const job = JSON.stringify({
+  const job = {
     taskId: uuid.v4().replace(/-/g, ""),
     projectId: desc.projectId,
     environmentId: desc.environmentId,
     event: "viewer_session",
     timestamp: moment().valueOf(),
+  };
+
+  await temporalClient.start(saveUserReportingEventWorkflow, {
+    workflowId: createWorkflowId(desc.projectId, desc.environmentId),
+    taskQueue: "events",
+    args: [job],
   });
-  await nsq.produce("user_reporting_task", job);
 
   return {
     status: 200,

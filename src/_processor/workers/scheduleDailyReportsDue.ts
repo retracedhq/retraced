@@ -3,8 +3,10 @@ import _ from "lodash";
 
 import { offsetsWithLocalTimeDuringUTCHour } from "../common";
 import environmentDailyReports from "../models/environment/daily_report";
-import nsq from "../persistence/nsq";
 import { logger } from "../logger";
+import { temporalClient } from "../persistence/temporal";
+import { analyzeDayWorkflow } from "../temporal/workflows";
+import { createWorkflowId } from "../temporal/helper";
 
 const reportDueLocalHour = 7;
 
@@ -19,7 +21,7 @@ export default async function scheduleDailyReportsDue() {
   );
 
   for (const r of _.flatten(results)) {
-    const jobBody = JSON.stringify({
+    const job = {
       projectId: r.project_id,
       projectName: r.project_name,
       environmentId: r.environment_id,
@@ -27,13 +29,18 @@ export default async function scheduleDailyReportsDue() {
       date: moment.utc().add(r.utc_offset, "minutes").subtract(1, "day").format("YYYY-MM-DD"),
       offset: r.utc_offset,
       recipients: r.recipients,
-    });
+    };
 
     logger.info(
       `scheduling environment_day reporting job for environment ${r.environment_id} at UTC offset ${
         r.utc_offset
       } with recipients ${JSON.stringify(r.recipients.map(({ email }) => email))}`
     );
-    await nsq.produce("environment_day", jobBody);
+
+    await temporalClient.start(analyzeDayWorkflow, {
+      workflowId: createWorkflowId(r.project_id, r.environment_id),
+      taskQueue: "events",
+      args: [job],
+    });
   }
 }
