@@ -7,8 +7,6 @@ import { QueryResult } from "pg";
 import { WorkflowClient } from "@temporalio/client";
 
 import NormalizeRepairer from "../../workers/NormalizeRepairer";
-import { normalizeEventWorkflow } from "../../temporal/workflows";
-import workflowClient from "../../persistence/temporal";
 
 const isAny = TypeMoq.It.isAny;
 
