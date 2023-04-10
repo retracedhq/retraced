@@ -39,20 +39,10 @@ jobs:
       - run: node -v
       - run: npm -v
 
-      # Run the docker-compose up
-      - name: Run docker-compose up
-        id: docker_compose
-        uses: isbang/compose-action@v1.4.1
-        with:
-          compose-file: "./docker-compose.yaml"
-
-      # Run e2e tests
-      - name: Run tests
+      - name: Install Dependencies & check lint
         run: |
           npm install
           npm run lint
-          npm run build
-          npm run cover:all
 
       - id: version
         run: |
@@ -77,8 +67,70 @@ jobs:
           echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
           echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
 
-  build:
+  test:
     needs: ci
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          check-latest: true
+      - run: node -v
+      - run: npm -v
+
+      - name: Run docker-compose up
+        id: docker_compose
+        uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: "./docker-compose.yaml"
+
+      - name: Run tests
+        run: |
+          npm install
+          npm run build
+          npm run cover:all
+
+  test-pg-search:
+    needs: ci
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          check-latest: true
+      - run: node -v
+      - run: npm -v
+
+      - name: Run docker-compose up
+        id: docker_compose
+        uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: "./docker-compose.yaml"
+        env:
+          PG_SEARCH: "true"
+
+      - name: Run tests
+        run: |
+          npm install
+          npm run build
+          npm run cover:all
+
+  build:
+    needs: [test, test-pg-search]
     runs-on: ubuntu-latest
     strategy:
       matrix:
