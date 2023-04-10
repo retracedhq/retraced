@@ -23,6 +23,7 @@ x-common-variables: &common-variables
   ADMIN_ROOT_TOKEN: dev
   MAXMIND_GEOLITE2_LICENSE_KEY: ${MAXMIND_GEOLITE2_LICENSE_KEY}
   TEMPORAL_ADDRESS: temporal:7233
+  PG_SEARCH: ${PG_SEARCH}
 
 services:
   retraced-api:
