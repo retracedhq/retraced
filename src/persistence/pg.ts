@@ -1,5 +1,4 @@
 import pg from "pg";
-import { gauge, meter } from "../metrics";
 import { logger } from "../logger";
 import config from "../config";
 import { incrementOtelCounter, observeOtelGauge } from "../metrics/opentelemetry/instrumentation";
@@ -22,7 +21,6 @@ export default function getPgPool(): pg.Pool {
     pgPool.on("error", () => {
       logger.error("postgres client connection error");
       incrementOtelCounter("PgPool.connection.error");
-      meter("PgPool.connection.error").mark();
     });
   }
 
@@ -40,13 +38,9 @@ function updatePoolGauges() {
   // but @types for 7.0 aren't out as of 7/27/2017
   const pool: any = getPgPool();
   observeOtelGauge("PgPool.clients.waiting.count", pool.waitingCount);
-  gauge("PgPool.clients.waiting.count").set(pool.waitingCount);
   observeOtelGauge("PgPool.clients.total.count", pool.totalCount);
-  gauge("PgPool.clients.total.count").set(pool.totalCount);
   observeOtelGauge("PgPool.clients.idle.count", pool.idleCount);
-  gauge("PgPool.clients.idle.count").set(pool.idleCount);
   observeOtelGauge("PgPool.clients.active.count", pool.totalCount - pool.idleCount);
-  gauge("PgPool.clients.active.count").set(pool.totalCount - pool.idleCount);
 }
 
 setInterval(updatePoolGauges, reportInterval);

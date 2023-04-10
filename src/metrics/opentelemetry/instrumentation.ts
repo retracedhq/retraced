@@ -1,86 +1,198 @@
-import otel, {
-  type Histogram,
-  type ObservableGauge,
-  type Attributes,
-  type Counter,
-} from "@opentelemetry/api";
+import {
+  CounterOperationParams,
+  incrementCounter,
+  instrument,
+  instrumented,
+  observeGauge,
+  recordHistogram,
+} from "@boxyhq/metrics";
 
-let counters;
-let gauges;
-let histograms;
+const METER = "retraced";
 
-const initOtelInstruments = () => {
-  const otelMeter = otel.metrics.getMeter("retraced-meter");
-
-  counters = {
-    "EventCreater.handled.events": otelMeter.createCounter("EventCreater.handled.events"),
-    "ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair": otelMeter.createCounter(
-      "ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair"
-    ),
-    "processor.waitForJobs.errors": otelMeter.createCounter("processor.waitForJobs.errors"),
-    "Emailer.mandrillRejectHandler": otelMeter.createCounter("Emailer.mandrillRejectHandler"),
-    "NSQClient.forceReconnect.destroy": otelMeter.createCounter("NSQClient.forceReconnect.destroy"),
-    "PgPool.connection.error": otelMeter.createCounter("PgPool.connection.error"),
-    "method.errors": otelMeter.createCounter("method.errors"),
-  };
-  gauges = {
-    "PgPool.clients.waiting.count": otelMeter.createObservableGauge("PgPool.clients.waiting.count"),
-    "PgPool.clients.total.count": otelMeter.createObservableGauge("PgPool.clients.total.count"),
-    "PgPool.clients.idle.count": otelMeter.createObservableGauge("PgPool.clients.idle.count"),
-    "PgPool.clients.active.count": otelMeter.createObservableGauge("PgPool.clients.active.count"),
-  };
-  histograms = {
-    "ElasticsearchIndexRotator.createWriteIndexIfNecessary.multipleWriteAliases": otelMeter.createHistogram(
-      "ElasticsearchIndexRotator.createWriteIndexIfNecessary.multipleWriteAliases"
-    ),
-    "NormalizeRepairer.repairOldEvents.oldest": otelMeter.createHistogram(
-      "NormalizeRepairer.repairOldEvents.oldest",
-      { unit: "ms" }
-    ),
-    "NormalizeRepairer.repairOldEvents.age": otelMeter.createHistogram(
-      "NormalizeRepairer.repairOldEvents.age",
-      { unit: "ms" }
-    ),
-    "workers.saveEventToElasticSearch.latencyCreated": otelMeter.createHistogram(
-      "workers.saveEventToElasticSearch.latencyCreated",
-      { unit: "ms" }
-    ),
-    "workers.saveEventToElasticSearch.latencyReceived": otelMeter.createHistogram(
-      "workers.saveEventToElasticSearch.latencyReceived",
-      { unit: "ms" }
-    ),
-    "workers.streamEvent.latencyCreated": otelMeter.createHistogram("workers.streamEvent.latencyCreated", {
-      unit: "ms",
+const counters = {
+  "EventCreater.handled.events": ({ inc, counterAttributes }: Partial<CounterOperationParams>) =>
+    incrementCounter({ meter: METER, name: "EventCreater.handled.events", inc, counterAttributes }),
+  "ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair": ({
+    inc,
+    counterAttributes,
+  }: Partial<CounterOperationParams>) =>
+    incrementCounter({
+      meter: METER,
+      name: "ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair",
+      inc,
+      counterAttributes,
     }),
-    "workers.streamEvent.latencyReceived": otelMeter.createHistogram("workers.streamEvent.latencyReceived", {
-      unit: "ms",
+  "NormalizeRepairer.repairOldEvents.hits": ({ inc, counterAttributes }: Partial<CounterOperationParams>) =>
+    incrementCounter({
+      meter: METER,
+      name: "NormalizeRepairer.repairOldEvents.hits",
+      inc,
+      counterAttributes,
     }),
-    "NSQClient.produce.errorPct": otelMeter.createHistogram("NSQClient.produce.errorPct"),
-    "method.executionTime": otelMeter.createHistogram("method.executionTime", { unit: "ns" }),
-  };
+  "NormalizeRepairer.repairOldEvents.allClear": ({
+    inc,
+    counterAttributes,
+  }: Partial<CounterOperationParams>) =>
+    incrementCounter({
+      meter: METER,
+      name: "NormalizeRepairer.repairOldEvents.allClear",
+      inc,
+      counterAttributes,
+    }),
+  "processor.waitForJobs.errors": ({ inc, counterAttributes }: Partial<CounterOperationParams>) =>
+    incrementCounter({
+      meter: METER,
+      name: "processor.waitForJobs.errors",
+      inc,
+      counterAttributes,
+    }),
+  "Emailer.mandrillRejectHandler": ({ inc, counterAttributes }: Partial<CounterOperationParams>) =>
+    incrementCounter({
+      meter: METER,
+      name: "Emailer.mandrillRejectHandler",
+      inc,
+      counterAttributes,
+    }),
+  "NSQClient.forceReconnect.destroy": ({ inc, counterAttributes }: Partial<CounterOperationParams>) =>
+    incrementCounter({
+      meter: METER,
+      name: "NSQClient.forceReconnect.destroy",
+      inc,
+      counterAttributes,
+    }),
+  "PgPool.connection.error": ({ inc, counterAttributes }: Partial<CounterOperationParams>) =>
+    incrementCounter({
+      meter: METER,
+      name: "PgPool.connection.error",
+      inc,
+      counterAttributes,
+    }),
+  "method.errors": ({ inc, counterAttributes }: Partial<CounterOperationParams>) =>
+    incrementCounter({
+      meter: METER,
+      name: "method.errors",
+      inc,
+      counterAttributes,
+    }),
 };
 
-const incrementOtelCounter = (name: string, inc = 1, metricAttributes?: Attributes) => {
-  const counter: Counter = counters?.[name];
-  if (counter) {
-    counter.add(inc, metricAttributes);
+const incrementOtelCounter = (
+  action: keyof typeof counters,
+  inc?: number,
+  counterAttributes?: CounterOperationParams["counterAttributes"]
+) => {
+  const counterIncrement = counters[action];
+  if (typeof counterIncrement === "function") {
+    counterIncrement({ inc, counterAttributes });
   }
 };
 
-const recordOtelHistogram = (name: string, val: number, metricAttributes?: Attributes) => {
-  const histogram: Histogram = histograms?.[name];
-  if (histogram) {
-    histogram.record(val, metricAttributes);
+const gauges = {
+  "PgPool.clients.waiting.count": (val: number) =>
+    observeGauge({ meter: METER, name: "PgPool.clients.waiting.count", val }),
+  "PgPool.clients.total.count": (val: number) =>
+    observeGauge({ meter: METER, name: "PgPool.clients.total.count", val }),
+  "PgPool.clients.idle.count": (val: number) =>
+    observeGauge({ meter: METER, name: "PgPool.clients.idle.count", val }),
+  "PgPool.clients.active.count": (val: number) =>
+    observeGauge({ meter: METER, name: "PgPool.clients.active.count", val }),
+};
+
+const observeOtelGauge = (action: keyof typeof gauges, val: number) => {
+  const gaugeObserve = gauges[action];
+  if (typeof gaugeObserve === "function") {
+    gaugeObserve(val);
   }
 };
 
-const observeOtelGauge = (name: string, val: number, metricAttributes?: Attributes) => {
-  const gauge: ObservableGauge = gauges?.[name];
-  if (gauge) {
-    gauge.addCallback((result) => {
-      result.observe(val, metricAttributes);
-    });
+const histograms = {
+  "ElasticsearchIndexRotator.createWriteIndexIfNecessary.multipleWriteAliases": (val: number) =>
+    recordHistogram({
+      meter: METER,
+      name: "ElasticsearchIndexRotator.createWriteIndexIfNecessary.multipleWriteAliases",
+      val,
+    }),
+  "NormalizeRepairer.repairOldEvents.oldest": (val: number) =>
+    recordHistogram({
+      meter: METER,
+      name: "NormalizeRepairer.repairOldEvents.oldest",
+      val,
+      histogramOptions: { unit: "ms" },
+    }),
+  "NormalizeRepairer.repairOldEvents.age": (val: number) =>
+    recordHistogram({
+      meter: METER,
+      name: "NormalizeRepairer.repairOldEvents.age",
+      val,
+      histogramOptions: { unit: "ms" },
+    }),
+  "workers.saveEventToElasticSearch.latencyCreated": (val: number) =>
+    recordHistogram({
+      meter: METER,
+      name: "workers.saveEventToElasticSearch.latencyCreated",
+      val,
+      histogramOptions: { unit: "ms" },
+    }),
+  "workers.saveEventToElasticSearch.latencyReceived": (val: number) =>
+    recordHistogram({
+      meter: METER,
+      name: "workers.saveEventToElasticSearch.latencyCreated",
+      val,
+      histogramOptions: { unit: "ms" },
+    }),
+  "workers.streamEvent.latencyCreated": (val: number) =>
+    recordHistogram({
+      meter: METER,
+      name: "workers.streamEvent.latencyCreated",
+      val,
+      histogramOptions: { unit: "ms" },
+    }),
+  "workers.streamEvent.latencyReceived": (val: number) =>
+    recordHistogram({
+      meter: METER,
+      name: "workers.streamEvent.latencyReceived",
+      val,
+      histogramOptions: { unit: "ms" },
+    }),
+  "method.executionTime": (val: number) =>
+    recordHistogram({
+      meter: METER,
+      name: "method.executionTime",
+      val,
+      histogramOptions: { unit: "ms" },
+    }),
+};
+
+const recordOtelHistogram = (action: keyof typeof histograms, val: number) => {
+  const histogramRecord = histograms[action];
+  if (typeof histogramRecord === "function") {
+    histogramRecord(val);
   }
 };
 
-export { initOtelInstruments, incrementOtelCounter, recordOtelHistogram, observeOtelGauge };
+const instruments = {
+  "PgPool.connect": async (delegate) => await instrument({ meter: METER, name: "PgPool.connect", delegate }),
+  "EventCreater.insertMany": async (delegate) =>
+    await instrument({ meter: METER, name: "EventCreater.insertMany", delegate }),
+  "EventCreater.insertOne": async (delegate) =>
+    await instrument({ meter: METER, name: "EventCreater.insertOne", delegate }),
+  "EventCreater.insertOneIntoBacklog": async (delegate) =>
+    await instrument({ meter: METER, name: "EventCreater.insertOneIntoBacklog", delegate }),
+};
+
+const applyOtelInstrument = async (action: keyof typeof instruments, delegate) => {
+  const instrumentApply = instruments[action];
+  if (typeof instrumentApply === "function") {
+    await instrumentApply(delegate);
+  }
+};
+
+const retracedInstrumented = instrumented(METER);
+
+export {
+  incrementOtelCounter,
+  recordOtelHistogram,
+  observeOtelGauge,
+  applyOtelInstrument,
+  retracedInstrumented as instrumented,
+};

@@ -2,13 +2,16 @@ import _ from "lodash";
 import moment from "moment";
 import * as uuid from "uuid";
 import pg from "pg";
-import { histogram, instrumented, meter } from "monkit";
 import { AliasDesc, AliasRotator, putAliases, getESWithoutRetry } from "../../persistence/elasticsearch";
 import getPg from "../persistence/pg";
 import { logger } from "../logger";
 import config from "../../config";
 import { Client } from "@opensearch-project/opensearch";
-import { incrementOtelCounter, recordOtelHistogram } from "../../metrics/opentelemetry/instrumentation";
+import {
+  incrementOtelCounter,
+  instrumented,
+  recordOtelHistogram,
+} from "../../metrics/opentelemetry/instrumentation";
 
 export type IndexNamer = (newDate: moment.Moment) => string;
 
@@ -84,7 +87,6 @@ export class ElasticsearchIndexRotator {
     const count = await Promise.all(environments.map((e) => this.verifyIndexAliases(e))).then(_.sum);
     logger.info(`Completed Elasticsearch Index Alias review with ${count} repairs performed.`);
     incrementOtelCounter("ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair", count);
-    meter(`ElasticsearchIndexRotator.createWriteIndexIfNecessary.performRepair`).mark(count);
   }
 
   @instrumented
@@ -134,9 +136,6 @@ export class ElasticsearchIndexRotator {
       logger.info(`WARN found ${existingWriteAliases.body.length} write aliases`);
       recordOtelHistogram(
         "ElasticsearchIndexRotator.createWriteIndexIfNecessary.multipleWriteAliases",
-        existingWriteAliases.body.length
-      );
-      histogram(`ElasticsearchIndexRotator.createWriteIndexIfNecessary.multipleWriteAliases`).update(
         existingWriteAliases.body.length
       );
       const toRemove = existingWriteAliases.body.slice(1);

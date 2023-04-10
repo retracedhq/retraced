@@ -1,8 +1,7 @@
 import nsq from "nsqjs";
-import { histogram, instrumented, meter, timer } from "../metrics";
 import { logger } from "../logger";
 import config from "../config";
-import { incrementOtelCounter, recordOtelHistogram } from "../metrics/opentelemetry/instrumentation";
+import { instrumented } from "../metrics/opentelemetry/instrumentation";
 
 export class NSQClient {
   public static fromEnv() {
@@ -57,36 +56,34 @@ export class NSQClient {
       return;
     }
 
-    const errorPct = this.computeErrorPercentage();
-    recordOtelHistogram("NSQClient.produce.errorPct", errorPct);
-    histogram("NSQClient.produce.errorPct").update(errorPct);
+    // const errorPct = this.computeErrorPercentage();
+    // histogram("NSQClient.produce.errorPct").update(errorPct);
 
-    if (errorPct > this.circuitBreakerThreshold) {
-      this.forceReconnect(errorPct);
-    }
+    // if (errorPct > this.circuitBreakerThreshold) {
+    //   this.forceReconnect(errorPct);
+    // }
   }
 
-  private computeErrorPercentage() {
-    const errorRate = meter("NSQClient.produce.errors").fifteenMinuteRate();
-    const callRate = timer("NSQClient.produce.timer").fifteenMinuteRate();
-    const errorPct = callRate ? errorRate / callRate : 0;
-    return errorPct;
-  }
+  // private computeErrorPercentage() {
+  //   const errorRate = meter("NSQClient.produce.errors").fifteenMinuteRate();
+  //   const callRate = timer("NSQClient.produce.timer").fifteenMinuteRate();
+  //   const errorPct = callRate ? errorRate / callRate : 0;
+  //   return errorPct;
+  // }
 
   // Destroy the writer, forcing a reconnect on the next produce operation.
-  private forceReconnect(errorPct: number) {
-    logger.warn(
-      `Error Percentage ${errorPct} is greater than threshold` +
-        `${this.circuitBreakerThreshold}, reconnecting to nsq at` +
-        `${this.host}:${this.port}`
-    );
-    if (this.writer) {
-      this.writer.then((w) => w.close());
-      delete this.writer;
-    }
-    incrementOtelCounter("NSQClient.forceReconnect.destroy");
-    meter("NSQClient.forceReconnect.destroy").mark();
-  }
+  // private forceReconnect(errorPct: number) {
+  //   logger.warn(
+  //     `Error Percentage ${errorPct} is greater than threshold` +
+  //       `${this.circuitBreakerThreshold}, reconnecting to nsq at` +
+  //       `${this.host}:${this.port}`
+  //   );
+  //   if (this.writer) {
+  //     this.writer.then((w) => w.close());
+  //     delete this.writer;
+  //   }
+  //   incrementOtelCounter("NSQClient.forceReconnect.destroy");
+  // }
 
   private connect() {
     this.writer = new Promise((resolve, reject) => {
