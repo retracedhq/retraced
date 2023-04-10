@@ -64,14 +64,6 @@ services:
 
   elasticsearch:
     image: elasticsearch:7.8.0
-    environment:
-      - cluster.routing.allocation.disk.threshold_enabled=true
-      - cluster.routing.allocation.disk.watermark.low=512mb
-      - cluster.routing.allocation.disk.watermark.high=256mb
-      - cluster.routing.allocation.disk.watermark.flood_stage=128mb
-      - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms256m -Xmx256m
-      - xpack.security.enabled=false
     volumes:
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
@@ -169,7 +161,6 @@ services:
     container_name: temporal
     depends_on:
       - postgres
-      - elasticsearch
     environment:
       - DB=postgres
       - DB_PORT=5432
@@ -177,9 +168,6 @@ services:
       - POSTGRES_PWD=password
       - POSTGRES_SEEDS=postgres
       - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
-      - ENABLE_ES=true
-      - ES_SEEDS=elasticsearch
-      - ES_VERSION=v7
     image: temporalio/auto-setup:1.20.0
     networks:
       - retraced
@@ -190,7 +178,7 @@ services:
     volumes:
       - ./temporal:/etc/temporal/config/dynamicconfig
 
-  # Temporal UI
+  # Temporal Admin UI
   temporal-ui:
     container_name: temporal-ui
     depends_on:
@@ -203,16 +191,3 @@ services:
       - retraced
     ports:
       - 8080:8080
-
-  # Temporal CLI
-  temporal-admin-tools:
-    container_name: temporal-admin-tools
-    depends_on:
-      - temporal
-    environment:
-      - TEMPORAL_CLI_ADDRESS=temporal:7233
-    image: temporalio/admin-tools:1.20.0
-    networks:
-      - retraced
-    stdin_open: true
-    tty: true
