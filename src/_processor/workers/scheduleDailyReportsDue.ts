@@ -4,9 +4,9 @@ import _ from "lodash";
 import { offsetsWithLocalTimeDuringUTCHour } from "../common";
 import environmentDailyReports from "../models/environment/daily_report";
 import { logger } from "../logger";
-import { workflowClient } from "../persistence/temporal";
 import { analyzeDayWorkflow } from "../temporal/workflows";
 import { createWorkflowId } from "../temporal/helper";
+import workflowClient from "../persistence/temporal";
 
 const reportDueLocalHour = 7;
 
@@ -37,7 +37,7 @@ export default async function scheduleDailyReportsDue() {
       } with recipients ${JSON.stringify(r.recipients.map(({ email }) => email))}`
     );
 
-    await workflowClient.start(analyzeDayWorkflow, {
+    (await workflowClient()).start(analyzeDayWorkflow, {
       workflowId: createWorkflowId(r.project_id, r.environment_id),
       taskQueue: "events",
       args: [job],

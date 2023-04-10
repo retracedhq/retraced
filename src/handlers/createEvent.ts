@@ -4,7 +4,7 @@ import pg from "pg";
 import pgFormat from "pg-format";
 import util from "util";
 import * as monkit from "monkit";
-import { WorkflowClient } from "@temporalio/client";
+import type { WorkflowClient } from "@temporalio/client";
 
 import { instrument, instrumented } from "../metrics";
 import createCanonicalHash from "../models/event/canonicalize";
@@ -16,8 +16,8 @@ import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
 import config from "../config";
 import { ingestFromQueueWorkflow, normalizeEventWorkflow } from "../_processor/temporal/workflows";
-// import { workflowClient  } from "../_processor/persistence/temporal";
 import { createWorkflowId } from "../_processor/temporal/helper";
+import createWorkflowClient from "../persistence/temporal";
 
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 const IPV6_REGEX =
@@ -146,7 +146,7 @@ export class EventCreater {
 
   constructor(
     private readonly pgPool: pg.Pool,
-    private readonly workflowClient: WorkflowClient,
+    private readonly getWorkflowClient: () => Promise<WorkflowClient>,
     private readonly hasher: (event: Event) => string,
     private readonly idSource: () => string,
     private readonly authenticator: Authenticator,
@@ -391,8 +391,10 @@ export class EventCreater {
       received,
     };
 
+    const workflowClient = await this.getWorkflowClient();
+
     try {
-      await this.workflowClient.start(ingestFromQueueWorkflow, {
+      await workflowClient.start(ingestFromQueueWorkflow, {
         workflowId: createWorkflowId(projectId, envId),
         taskQueue: "events",
         args: [job],
@@ -547,7 +549,9 @@ export class EventCreater {
 
   private async startWorkflow({ taskId }: { taskId: string }) {
     try {
-      await this.workflowClient.start(normalizeEventWorkflow, {
+      const workflowClient = await this.getWorkflowClient();
+
+      await workflowClient.start(normalizeEventWorkflow, {
         workflowId: taskId,
         taskQueue: "events",
         args: [taskId],
@@ -570,7 +574,7 @@ interface Violation {
 
 export const defaultEventCreater = new EventCreater(
   getPgPool(),
-  new WorkflowClient(),
+  createWorkflowClient,
   createCanonicalHash,
   uniqueId,
   Authenticator.default(),

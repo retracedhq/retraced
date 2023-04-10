@@ -13,7 +13,7 @@ import listTeamMembers from "../../models/team/listTeamMembers";
 import { logger } from "../../logger";
 import util from "util";
 import config from "../../config";
-import { workflowClient } from "../../_processor/persistence/temporal";
+import workflowClient from "../../_processor/persistence/temporal";
 import { sendEmailWorkflow } from "../../_processor/temporal/workflows/sendEmailWorkflow";
 import { createWorkflowId } from "../../_processor/temporal/helper";
 
@@ -141,7 +141,7 @@ export default async function handle(
         },
       };
 
-      await workflowClient.start(sendEmailWorkflow, {
+      (await workflowClient()).start(sendEmailWorkflow, {
         workflowId: createWorkflowId(projectId, environmentId),
         taskQueue: "events",
         args: [task],

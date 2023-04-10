@@ -1,7 +1,7 @@
 import moment from "moment";
 
 import { logger } from "../logger";
-import { workflowClient } from "../persistence/temporal";
+import workflowClient from "../persistence/temporal";
 import { analyzeDayWorkflow } from "../temporal/workflows";
 import { createWorkflowId } from "../temporal/helper";
 
@@ -59,7 +59,7 @@ export const handler = async (argv) => {
     } with recipients ${JSON.stringify([argv.recipient])}`
   );
 
-  await workflowClient.start(analyzeDayWorkflow, {
+  (await workflowClient()).start(analyzeDayWorkflow, {
     workflowId: createWorkflowId(argv.projectId, argv.environmentId),
     taskQueue: "events",
     args: [job],

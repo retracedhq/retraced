@@ -2,7 +2,7 @@ import { checkAdminAccessUnwrapped } from "../../security/helpers";
 import { Invite } from "../../models/invite";
 import createInviteModel from "../../models/invite/create";
 import config from "../../config";
-import { workflowClient } from "../../_processor/persistence/temporal";
+import workflowClient from "../../_processor/persistence/temporal";
 import { sendEmailWorkflow } from "../../_processor/temporal/workflows/sendEmailWorkflow";
 
 export default async function createInvite(
@@ -29,7 +29,7 @@ export default async function createInvite(
   };
 
   // Send the email
-  await workflowClient.start(sendEmailWorkflow, {
+  (await workflowClient()).start(sendEmailWorkflow, {
     workflowId: invite.id,
     taskQueue: "events",
     args: [job],

@@ -1,3 +1,3 @@
-import { WorkflowClient } from "@temporalio/client";
+import createWorkflowClient from "../../persistence/temporal";
 
-export const workflowClient = new WorkflowClient();
+export default createWorkflowClient;

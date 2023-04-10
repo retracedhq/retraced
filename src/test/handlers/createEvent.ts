@@ -62,7 +62,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      workflowClient.object,
+      async () => workflowClient.object,
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -135,7 +135,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      workflowClient.object,
+      async () => workflowClient.object,
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -247,7 +247,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      workflowClient.object,
+      async () => workflowClient.object,
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -308,7 +308,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      workflowClient.object,
+      async () => workflowClient.object,
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -384,7 +384,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      workflowClient.object,
+      async () => workflowClient.object,
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -456,7 +456,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      workflowClient.object,
+      async () => workflowClient.object,
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -541,7 +541,7 @@ class EventCreaterTest {
     for (const testElement of tests) {
       const creater = new EventCreater(
         TypeMoq.Mock.ofType(pg.Pool).object,
-        TypeMoq.Mock.ofType(WorkflowClient).object,
+        async () => TypeMoq.Mock.ofType(WorkflowClient).object,
         () => "fake-hash",
         () => "fake-uuid",
         TypeMoq.Mock.ofType(Authenticator).object,

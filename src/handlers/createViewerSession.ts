@@ -3,7 +3,7 @@ import moment from "moment";
 
 import getViewerDescriptor from "../models/viewer_descriptor/get";
 import { createViewerDescriptorVoucher } from "../security/vouchers";
-import { workflowClient } from "../_processor/persistence/temporal";
+import workflowClient from "../persistence/temporal";
 import { createWorkflowId } from "../_processor/temporal/helper";
 import { saveUserReportingEventWorkflow } from "../_processor/temporal/workflows";
 
@@ -31,11 +31,16 @@ export default async function handler(req) {
     timestamp: moment().valueOf(),
   };
 
-  await workflowClient.start(saveUserReportingEventWorkflow, {
-    workflowId: createWorkflowId(desc.projectId, desc.environmentId),
-    taskQueue: "events",
-    args: [job],
-  });
+  try {
+    (await workflowClient()).start(saveUserReportingEventWorkflow, {
+      workflowId: createWorkflowId(desc.projectId, desc.environmentId),
+      taskQueue: "events",
+      args: [job],
+    });
+  } catch (err) {
+    console.log("Error starting workflow: saveUserReportingEventWorkflow " + err.message);
+    console.error(err);
+  }
 
   return {
     status: 200,
