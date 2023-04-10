@@ -2,6 +2,7 @@ import getPgPool from "../../persistence/pg";
 import { getESWithoutRetry } from "../../persistence/elasticsearch";
 import { logger } from "../../logger";
 import { Client } from "@opensearch-project/opensearch";
+import config from "../../config";
 
 const pgPool = getPgPool();
 const es: Client = getESWithoutRetry();
@@ -65,50 +66,52 @@ export default async function (opts: Options) {
     }
   }
 
-  // Kill the ES index before committing the Postgres deletions
-  try {
-    await new Promise((resolve, reject) => {
-      const aliasName = `retraced.${opts.projectId}.${opts.environmentId}`;
-      es.cat.aliases({ format: "json", name: aliasName }, (err, resp) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        if (!Array.isArray(resp.body) || resp.body.length === 0) {
-          reject(new Error(`No ES alias found with name '${aliasName}'`));
-          return;
-        } else if (resp.body.length > 1) {
-          reject(new Error(`System is in disarray: more than one ES alias found with name '${aliasName}'`));
-          return;
-        }
-
-        const indexName = resp.body[0].index;
-
-        // Delete all aliases attached to the soon-to-be-deleted index
-        es.indices.deleteAlias({ index: indexName, name: "_all" }, (err2) => {
-          if (err2) {
-            reject(err2);
+  if (!config.PG_SEARCH) {
+    // Kill the ES index before committing the Postgres deletions
+    try {
+      await new Promise((resolve, reject) => {
+        const aliasName = `retraced.${opts.projectId}.${opts.environmentId}`;
+        es.cat.aliases({ format: "json", name: aliasName }, (err, resp) => {
+          if (err) {
+            reject(err);
             return;
           }
 
-          // Finally, delete the index itself
-          es.indices.delete({ index: indexName }, (err3) => {
-            if (err3) {
-              reject(err3);
+          if (!Array.isArray(resp.body) || resp.body.length === 0) {
+            reject(new Error(`No ES alias found with name '${aliasName}'`));
+            return;
+          } else if (resp.body.length > 1) {
+            reject(new Error(`System is in disarray: more than one ES alias found with name '${aliasName}'`));
+            return;
+          }
+
+          const indexName = resp.body[0].index;
+
+          // Delete all aliases attached to the soon-to-be-deleted index
+          es.indices.deleteAlias({ index: indexName, name: "_all" }, (err2) => {
+            if (err2) {
+              reject(err2);
               return;
             }
 
-            resolve({});
+            // Finally, delete the index itself
+            es.indices.delete({ index: indexName }, (err3) => {
+              if (err3) {
+                reject(err3);
+                return;
+              }
+
+              resolve({});
+            });
           });
         });
       });
-    });
-  } catch (esErr) {
-    logger.info(`Elasticsearch index deletion failed: ${esErr}`);
-    await rollback();
-    pg.release();
-    throw esErr;
+    } catch (esErr) {
+      logger.info(`Elasticsearch index deletion failed: ${esErr}`);
+      await rollback();
+      pg.release();
+      throw esErr;
+    }
   }
 
   await pg.query("COMMIT");

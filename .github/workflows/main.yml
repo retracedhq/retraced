@@ -38,10 +38,22 @@ jobs:
           check-latest: true
       - run: node -v
       - run: npm -v
-      - run: npm install
-      - run: npm run lint
-      - run: npm run build
-      - run: npm run cover
+
+      # Run the docker-compose up
+      - name: Run docker-compose up
+        id: docker_compose
+        uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: "./docker-compose.yaml"
+
+      # Run e2e tests
+      - name: Run tests
+        run: |
+          npm install
+          npm run lint
+          npm run build
+          npm run cover:all
+
       - id: version
         run: |
           npm install -g json

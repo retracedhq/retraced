@@ -1,4 +1,3 @@
-import { crud } from "../../models/event";
 import { checkEitapiAccess } from "../../security/helpers";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 
@@ -16,7 +15,7 @@ export default async function (req) {
   const thisViewEvent: CreateEventRequest = {
     created: new Date(),
     action: eitapiToken.view_log_action,
-    crud: crud.r,
+    crud: "r",
     actor: {
       id: `enterprise:${eitapiToken.id.substring(0, 7)}`,
       name: eitapiToken.display_name,

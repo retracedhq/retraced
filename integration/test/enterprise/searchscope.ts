@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import * as Retraced from "@retracedhq/retraced";
+import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
 import "chai-http";
@@ -14,7 +14,7 @@ chai.use(chaiHttp);
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
 const currentTime = new Date();
-currentTime.setMilliseconds(0); // api only returns seconds preceision
+currentTime.setMilliseconds(0); // api only returns seconds precision
 
 describe("Enterprise Search Group Scoping", function () {
   describe("Given the Retraced API is up and running", function () {
@@ -28,7 +28,7 @@ describe("Enterprise Search Group Scoping", function () {
       "And a call is made into the Retraced API with a standard audit event for the RetracedQA group",
       function () {
         beforeEach(async function () {
-          const retraced = new Retraced.Client({
+          const retraced = new Client({
             apiKey: Env.ApiKey,
             projectId: Env.ProjectID,
             endpoint: Env.Endpoint,
@@ -41,7 +41,7 @@ describe("Enterprise Search Group Scoping", function () {
               name: "RetracedQA",
             },
             created: currentTime,
-            crud: "c",
+            crud: "c" as CRUD,
             source_ip: "192.168.0.1",
             actor: {
               id: "qa@retraced.io",
