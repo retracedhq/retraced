@@ -19,17 +19,6 @@ import { ingestFromQueueWorkflow, normalizeEventWorkflow } from "../_processor/t
 import { createWorkflowId } from "../_processor/temporal/helper";
 import createWorkflowClient from "../persistence/temporal";
 
-let temporalWorkflowClient: WorkflowClient | undefined;
-
-// TODO: Find a better way to do this
-(async function getWorkflowClient() {
-  if (!temporalWorkflowClient) {
-    temporalWorkflowClient = await createWorkflowClient();
-  }
-
-  console.log("workflowClient", temporalWorkflowClient);
-})();
-
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 const IPV6_REGEX =
   /^((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}$/;
@@ -154,10 +143,11 @@ export class EventCreater {
     )`;
 
   private registry: monkit.Registry;
+  private workflowClient: WorkflowClient;
 
   constructor(
     private readonly pgPool: pg.Pool,
-    private readonly workflowClient: WorkflowClient,
+    private readonly getWorkflowClient: () => Promise<WorkflowClient>,
     private readonly hasher: (event: Event) => string,
     private readonly idSource: () => string,
     private readonly authenticator: Authenticator,
@@ -165,6 +155,8 @@ export class EventCreater {
     private readonly timeoutMS: number
   ) {
     this.registry = monkit.getRegistry();
+
+    this.getWorkflowClient().then((client) => (this.workflowClient = client));
   }
 
   @instrumented
@@ -402,8 +394,6 @@ export class EventCreater {
       received,
     };
 
-    // const workflowClient = await this.getWorkflowClient();
-
     try {
       await this.workflowClient.start(ingestFromQueueWorkflow, {
         workflowId: createWorkflowId(projectId, envId),
@@ -560,8 +550,6 @@ export class EventCreater {
 
   private async startWorkflow({ taskId }: { taskId: string }) {
     try {
-      // const workflowClient = await this.getWorkflowClient();
-
       await this.workflowClient.start(normalizeEventWorkflow, {
         workflowId: taskId,
         taskQueue: "events",
@@ -585,7 +573,7 @@ interface Violation {
 
 export const defaultEventCreater = new EventCreater(
   getPgPool(),
-  temporalWorkflowClient as any, // TODO: fix this
+  async () => await createWorkflowClient(),
   createCanonicalHash,
   uniqueId,
   Authenticator.default(),
