@@ -137,6 +137,8 @@ jobs:
         node-version: [18]
 
     steps:
+      - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
+      - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
       - name: Check Out Repo
         uses: actions/checkout@v3
 
