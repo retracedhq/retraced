@@ -195,17 +195,15 @@ services:
 
   # Temporal Workers
   temporal-workers:
+    container_name: temporal-workers
     build:
       context: .
-      dockerfile: ./deploy/Dockerfile-slim
-    # ports:
-    #   - "3001:3000"
-    #   - "9191:9229"
+      dockerfile: ./temporal/Dockerfile
     environment: *common-variables
     networks:
       - retraced
-    # depends_on:
-    #   - retraced-api
-    #   - temporal
+    depends_on:
+      temporal:
+        condition: service_started
     restart: "always"
     command: node build/src/_processor/temporal/workers/index.js
