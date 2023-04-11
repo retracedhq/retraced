@@ -1,8 +1,7 @@
-import { proxyActivities, executeChild } from "@temporalio/workflow";
+import { proxyActivities, startChild } from "@temporalio/workflow";
 
 import type * as activities from "../../workers";
 import { normalizeEventWorkflow } from "./normalizeEventWorkflow";
-import { createWorkflowId } from "../helper";
 
 const { ingestFromBacklog } = proxyActivities<typeof activities>({
   startToCloseTimeout: "10 seconds",
@@ -20,7 +19,7 @@ export async function ingestFromBacklogWorkflow() {
 
   await Promise.all(
     tasks.map((task) =>
-      executeChild(normalizeEventWorkflow, {
+      startChild(normalizeEventWorkflow, {
         args: [task.id],
         workflowId: task.id,
       })

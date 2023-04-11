@@ -1,4 +1,4 @@
-import { proxyActivities, executeChild } from "@temporalio/workflow";
+import { proxyActivities, startChild } from "@temporalio/workflow";
 
 import type * as activities from "../../workers";
 import { normalizeEventWorkflow } from "./normalizeEventWorkflow";
@@ -19,7 +19,7 @@ export async function normalizeRepairWorkflow() {
 
   await Promise.all(
     taskIds.map((taskId) =>
-      executeChild(normalizeEventWorkflow, {
+      startChild(normalizeEventWorkflow, {
         args: [taskId],
         workflowId: taskId,
       })
