@@ -52,6 +52,8 @@ const createEventRequestSchema = Joi.object({
   metadata: Joi.object().pattern(Joi.string(), Joi.string()),
 });
 
+const createEventBulkRequestSchema = Joi.array().items(createEventRequestSchema);
+
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 const IPV6_REGEX =
   /^((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}$/;
@@ -490,6 +492,14 @@ export class EventCreater {
             .join("\n- ")}`
         ),
         invalid: invalidEvents,
+      };
+    }
+
+    const { error } = createEventBulkRequestSchema.validate(events);
+    if (error) {
+      throw {
+        status: 400,
+        err: new Error(error.details.map((i) => i.message).join("\n--")),
       };
     }
   }
