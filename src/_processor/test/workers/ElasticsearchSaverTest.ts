@@ -130,12 +130,16 @@ class ElasticsearchSaverTest {
       .verifiable(TypeMoq.Times.once());
 
     histogramRecord
-      .setup((x) => x("workers.saveEventToElasticSearch.latencyCreated", 400))
-      .verifiable(TypeMoq.Times.once());
+      .setup((x) =>
+        x(TypeMoq.It.isValue("workers.saveEventToElasticSearch.latencyCreated"), TypeMoq.It.isValue(400))
+      )
+      .verifiable(TypeMoq.Times.once(), TypeMoq.ExpectedCallType.InSequence);
 
     histogramRecord
-      .setup((x) => x("workers.saveEventToElasticSearch.latencyReceived", 300))
-      .verifiable(TypeMoq.Times.once());
+      .setup((x) =>
+        x(TypeMoq.It.isValue("workers.saveEventToElasticSearch.latencyReceived"), TypeMoq.It.isValue(300))
+      )
+      .verifiable(TypeMoq.Times.once(), TypeMoq.ExpectedCallType.InSequence);
 
     const saver = new ElasticsearchSaver(es.object, clock.object);
     await saver.saveEventToElasticsearch({ body: Buffer.from(jobBody) });
