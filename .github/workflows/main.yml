@@ -61,7 +61,6 @@ jobs:
             imageSuffix="-beta"
             RETRACED_VERSION="${RETRACED_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
-          echo "${imagePath}"
 
           echo "NPM_VERSION=${RETRACED_VERSION}" >> $GITHUB_OUTPUT
           echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
@@ -176,7 +175,7 @@ jobs:
         if: github.ref == 'refs/heads/release'
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          username: boxyhq
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build and push
