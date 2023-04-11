@@ -131,7 +131,7 @@ jobs:
           npm run cover:all
 
   build:
-    needs: [test, test-pg-search]
+    needs: [ci]
     runs-on: ubuntu-latest
     strategy:
       matrix:
