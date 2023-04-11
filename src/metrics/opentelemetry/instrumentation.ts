@@ -1,5 +1,6 @@
 import {
-  CounterOperationParams,
+  type CounterOperationParams,
+  type InstrumentOperationParams,
   incrementCounter,
   instrument,
   instrumented,
@@ -136,7 +137,7 @@ const histograms = {
   "workers.saveEventToElasticSearch.latencyReceived": (val: number) =>
     recordHistogram({
       meter: METER,
-      name: "workers.saveEventToElasticSearch.latencyCreated",
+      name: "workers.saveEventToElasticSearch.latencyReceived",
       val,
       histogramOptions: { unit: "ms" },
     }),
@@ -178,12 +179,22 @@ const instruments = {
     await instrument({ meter: METER, name: "EventCreater.insertOne", delegate }),
   "EventCreater.insertOneIntoBacklog": async (delegate) =>
     await instrument({ meter: METER, name: "EventCreater.insertOneIntoBacklog", delegate }),
+  processor: async (delegate, instrumentAttributes?: InstrumentOperationParams["instrumentAttributes"]) =>
+    await instrument({ meter: METER, name: "processor", delegate, instrumentAttributes }),
+  "adminToken.bcrypt": async (delegate) =>
+    await instrument({ meter: METER, name: "adminToken.bcrypt", delegate }),
+  "Elasticsearch.countBy": async (delegate) =>
+    await instrument({ meter: METER, name: "Elasticsearch.countBy", delegate }),
 };
 
-const applyOtelInstrument = async (action: keyof typeof instruments, delegate) => {
+const applyOtelInstrument = async (
+  action: keyof typeof instruments,
+  delegate,
+  instrumentAttributes?: InstrumentOperationParams["instrumentAttributes"]
+) => {
   const instrumentApply = instruments[action];
   if (typeof instrumentApply === "function") {
-    await instrumentApply(delegate);
+    return await instrumentApply(delegate, instrumentAttributes);
   }
 };
 

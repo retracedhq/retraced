@@ -1,5 +1,4 @@
 import _ from "lodash";
-import * as monkit from "monkit";
 import config from "../config";
 import { errToLog, jobDesc, stopwatchClick } from "./common";
 import nsq from "./persistence/nsq";
@@ -23,12 +22,12 @@ import {
   repair as elasticsearchAliasVerify,
   worker as elasticsearchIndexRotator,
 } from "./workers/ElasticsearchIndexRotator";
-import * as metrics from "./metrics";
+import "../metrics";
+import { applyOtelInstrument, incrementOtelCounter } from "../metrics/opentelemetry/instrumentation";
 import { logger } from "./logger";
 import { startHealthz, updateLastNSQ } from "./healthz";
 import getPgPool from "../persistence/pg";
 import { notifyError, startErrorNotifier } from "../error-notifier";
-import { incrementOtelCounter, initOtelInstruments } from "../metrics/opentelemetry/instrumentation";
 
 startHealthz();
 
@@ -52,10 +51,6 @@ if (config.REDIS_URI) {
 }
 
 const leftPad = (s, n) => (n > s.length ? " ".repeat(n - s.length) + s : s);
-const registry = monkit.getRegistry();
-
-metrics.bootstrapFromEnv();
-initOtelInstruments();
 
 const slowElapsedThreshold = 250.0; // ms
 
@@ -246,10 +241,10 @@ for (const consumer of nsqConsumers) {
     const attempt = msg.attempt > 1 ? ` attempt ${msg.attempts} of ${maxAttempts}` : "";
 
     logger.debug(`-> ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${attempt}...`);
-    await monkit.instrument(
-      `processor.${topic}__${channel}`,
-      handle(topic, channel, worker, msg, doAck, requeue)
-    );
+    await applyOtelInstrument("processor", handle(topic, channel, worker, msg, doAck, requeue), {
+      topic,
+      channel,
+    });
   };
 
   nsq.consume(topic, channel, receive, {
@@ -272,7 +267,6 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
     updateLastNSQ();
   } catch (err) {
     incrementOtelCounter("processor.waitForJobs.errors");
-    registry.meter("processor.waitForJobs.errors").mark();
     notifyError(err);
     const elapsed = stopwatchClick(startTime);
     let retry = false;

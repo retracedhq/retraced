@@ -1,5 +1,4 @@
 import moment from "moment";
-import monkit from "monkit";
 import _ from "lodash";
 
 import nsq from "../persistence/nsq";
@@ -42,9 +41,7 @@ export default async function (job) {
 
   if (normalizedEvent.created) {
     recordOtelHistogram("workers.streamEvent.latencyCreated", now - normalizedEvent.created);
-    monkit.histogram("workers.streamEvent.latencyCreated").update(now - normalizedEvent.created);
   }
 
   recordOtelHistogram("workers.streamEvent.latencyReceived", now - normalizedEvent.received);
-  monkit.histogram("workers.streamEvent.latencyReceived").update(now - normalizedEvent.received);
 }

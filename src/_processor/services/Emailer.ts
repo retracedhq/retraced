@@ -14,14 +14,13 @@ import nodemailer from "nodemailer";
 import mandrillTransport from "nodemailer-mandrill-transport";
 import _ from "lodash";
 import pg from "pg";
-import { instrumented } from "monkit";
 import inviteTmpl from "./templates/inviteToTeam";
 import reportTmpl from "./templates/reportDay";
 import deletionRequestTmpl from "./templates/deletionRequest";
 import getPgPool from "../persistence/pg";
 import { logger } from "../logger";
 import config from "../../config";
-import { incrementOtelCounter } from "../../metrics/opentelemetry/instrumentation";
+import { incrementOtelCounter, instrumented } from "../../metrics/opentelemetry/instrumentation";
 
 export interface Email {
   to: string | string[];

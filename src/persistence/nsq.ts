@@ -1,7 +1,7 @@
 import nsq from "nsqjs";
 import { logger } from "../logger";
 import config from "../config";
-import { instrumented } from "../metrics/opentelemetry/instrumentation";
+import { incrementOtelCounter, instrumented } from "../metrics/opentelemetry/instrumentation";
 
 export class NSQClient {
   public static fromEnv() {
@@ -50,17 +50,19 @@ export class NSQClient {
   // we maybe want to use something like hystrixjs,
   // but it seems a little heavy for what we need at this point.
   private checkCircuitBreaker() {
-    const shouldCheck = this.circuitBreakerThreshold >= 0 && this.circuitBreakerThreshold <= 1;
+    // TODO: Implement exponential backoff
+    this.forceReconnect();
+    // const shouldCheck = this.circuitBreakerThreshold >= 0 && this.circuitBreakerThreshold <= 1;
 
-    if (!shouldCheck) {
-      return;
-    }
+    // if (!shouldCheck) {
+    //   return;
+    // }
 
     // const errorPct = this.computeErrorPercentage();
     // histogram("NSQClient.produce.errorPct").update(errorPct);
 
     // if (errorPct > this.circuitBreakerThreshold) {
-    //   this.forceReconnect(errorPct);
+    // this.forceReconnect(errorPct);
     // }
   }
 
@@ -72,18 +74,17 @@ export class NSQClient {
   // }
 
   // Destroy the writer, forcing a reconnect on the next produce operation.
-  // private forceReconnect(errorPct: number) {
-  //   logger.warn(
-  //     `Error Percentage ${errorPct} is greater than threshold` +
-  //       `${this.circuitBreakerThreshold}, reconnecting to nsq at` +
-  //       `${this.host}:${this.port}`
-  //   );
-  //   if (this.writer) {
-  //     this.writer.then((w) => w.close());
-  //     delete this.writer;
-  //   }
-  //   incrementOtelCounter("NSQClient.forceReconnect.destroy");
-  // }
+  private forceReconnect(/** errorPct: number */) {
+    logger.warn(
+      // `Error Percentage ${errorPct} is greater than threshold` +
+      `${this.circuitBreakerThreshold}, reconnecting to nsq at` + `${this.host}:${this.port}`
+    );
+    if (this.writer) {
+      this.writer.then((w) => w.close());
+      delete this.writer;
+    }
+    incrementOtelCounter("NSQClient.forceReconnect.destroy");
+  }
 
   private connect() {
     this.writer = new Promise((resolve, reject) => {
