@@ -53,7 +53,7 @@ jobs:
           publishTag="latest"
           imageSuffix=""
 
-          if [[ "$GITHUB_REF" == *\/release ]]
+          if [[ "$GITHUB_REF" == *\/gh-actions-fix ]]
           then
             echo "Release branch"
           else
