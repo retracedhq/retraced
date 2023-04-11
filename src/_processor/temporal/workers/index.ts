@@ -1,17 +1,27 @@
-import { Worker } from "@temporalio/worker";
+import { Worker, NativeConnection } from "@temporalio/worker";
 import type { WorkerOptions } from "@temporalio/worker";
 
 import * as activities from "../../workers";
+import config from "../../../config";
 
-const workers: WorkerOptions[] = [
-  {
-    workflowsPath: require.resolve("../workflows"),
-    activities,
-    taskQueue: "events",
-  },
-];
+let connection: NativeConnection;
 
 async function run() {
+  if (!connection) {
+    connection = await NativeConnection.connect({
+      address: config.TEMPORAL_ADDRESS,
+    });
+  }
+
+  const workers: WorkerOptions[] = [
+    {
+      workflowsPath: require.resolve("../workflows"),
+      activities,
+      taskQueue: "events",
+      connection,
+    },
+  ];
+
   await Promise.all(workers.map((worker) => Worker.create(worker).then((w) => w.run())));
 }
 
