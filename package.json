@@ -1,6 +1,6 @@
 {
   "name": "retraced",
-  "version": "1.5.9",
+  "version": "1.6.0",
   "description": "A fully open source audit log service and embeddable UI easily deployed to your own Kubernetes cluster",
   "main": "./build/index.js",
   "license": "Apache-2.0",
@@ -13,7 +13,7 @@
     "@temporalio/common": "1.6.0",
     "@temporalio/worker": "1.6.0",
     "@temporalio/workflow": "1.6.0",
-    "@retracedhq/retraced": "0.6.2-beta.83",
+    "@retracedhq/retraced": "0.6.3",
     "analytics-node": "6.2.0",
     "axios": "1.3.4",
     "bcryptjs": "2.4.3",
@@ -53,7 +53,7 @@
     "unzipper": "0.10.11",
     "uuid": "9.0.0",
     "walk": "2.3.15",
-    "yargs": "17.7.0"
+    "yargs": "17.7.1"
   },
   "devDependencies": {
     "@testdeck/mocha": "0.3.3",
@@ -66,9 +66,9 @@
     "@types/statsd-client": "0.4.3",
     "@types/swagger-jsdoc": "6.0.1",
     "@types/uuid": "9.0.1",
-    "@types/yargs": "17.0.22",
+    "@types/yargs": "17.0.24",
     "@typescript-eslint/eslint-plugin": "5.56.0",
-    "@typescript-eslint/parser": "5.57.1",
+    "@typescript-eslint/parser": "5.58.0",
     "chai": "4.3.7",
     "chai-http": "4.3.0",
     "eslint": "8.37.0",
@@ -79,12 +79,12 @@
     "mocha": "10.2.0",
     "nodemon": "2.0.21",
     "nyc": "15.1.0",
-    "rimraf": "4.4.1",
+    "rimraf": "5.0.0",
     "swagger-jsdoc": "6.2.8",
     "ts-node": "10.9.1",
     "tv4": "1.3.0",
     "typemoq": "2.1.0",
-    "typescript": "5.0.2"
+    "typescript": "5.0.4"
   },
   "scripts": {
     "swagger": "tsoa spec",
