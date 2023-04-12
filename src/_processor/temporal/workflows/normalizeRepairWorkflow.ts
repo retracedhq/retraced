@@ -21,7 +21,6 @@ export async function normalizeRepairWorkflow() {
     taskIds.map((taskId) =>
       startChild(normalizeEventWorkflow, {
         args: [taskId],
-        workflowId: taskId,
         parentClosePolicy: ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON,
       })
     )

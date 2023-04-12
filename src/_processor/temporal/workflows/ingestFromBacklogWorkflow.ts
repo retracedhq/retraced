@@ -21,7 +21,6 @@ export async function ingestFromBacklogWorkflow() {
     tasks.map((task) =>
       startChild(normalizeEventWorkflow, {
         args: [task.id],
-        workflowId: task.id,
         parentClosePolicy: ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON,
       })
     )
