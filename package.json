@@ -98,7 +98,7 @@
     "cover": "nyc mocha",
     "cover:all": "nyc mocha --recursive -r ts-node/register src/e2e-tests/**/*.ts integration/test/**/*.ts src/test/**/*.ts",
     "mintest": "mocha --recursive -r ts-node/register --reporter 'min' src/test/**/*.ts",
-    "dev:api": "node -r ts-node/register src/index.ts",
+    "dev:api": "node --inspect=0.0.0.0 -r ts-node/register src/index.ts",
     "dev:processor": "PROCESSOR_DEV_PORT=3001 node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts",
     "dev:geo": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/workers/updateGeoData.ts",
     "dev:elastic-migration": "node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts es",
@@ -111,8 +111,8 @@
     "demo:delete:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold delete -f skaffold-demo.yaml",
     "demo-services:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo-services.yaml --status-check=false --force=true",
     "demo-services:delete:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold delete -f skaffold-demo-services.yaml",
-    "temporal:worker:start": "nodemon ./src/_processor/temporal/workers/index.ts",
-    "temporal:schedule:start": "ts-node ./src/_processor/temporal/schedule/start.ts"
+    "dev:temporal:worker:start": "nodemon ./src/_processor/temporal/workers/index.ts",
+    "dev:temporal:schedule:start": "ts-node ./src/_processor/temporal/schedule/start.ts"
   },
   "author": "",
   "nyc": {
