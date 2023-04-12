@@ -6,6 +6,8 @@ import {
   ingestFromBacklogWorkflow,
   normalizeRepairWorkflow,
   pruneViewerDescriptorsWorkflow,
+  elasticsearchAliasVerifyWorkflow,
+  updateGeoDataWorkflow,
 } from "../workflows";
 
 const schedules: ScheduleOptions[] = [
@@ -24,7 +26,6 @@ const schedules: ScheduleOptions[] = [
       intervals: [{ every: "1s" }],
     },
   },
-
   {
     action: {
       type: "startWorkflow",
@@ -40,7 +41,6 @@ const schedules: ScheduleOptions[] = [
       intervals: [{ every: "10m" }],
     },
   },
-
   {
     action: {
       type: "startWorkflow",
@@ -56,7 +56,47 @@ const schedules: ScheduleOptions[] = [
       intervals: [{ every: "10m" }],
     },
   },
+  {
+    action: {
+      type: "startWorkflow",
+      taskQueue: "events",
+      workflowType: elasticsearchAliasVerifyWorkflow,
+    },
+    scheduleId: "workflow-elasticsearch-alias-verify",
+    policies: {
+      catchupWindow: "1 day",
+      overlap: ScheduleOverlapPolicy.SKIP,
+    },
+    spec: {
+      intervals: [{ every: "1m" }],
+    },
+  },
 ];
+
+if (!process.env.RETRACED_DISABLE_GEOSYNC && config.MAXMIND_GEOLITE2_LICENSE_KEY) {
+  schedules.push({
+    action: {
+      type: "startWorkflow",
+      taskQueue: "events",
+      workflowType: updateGeoDataWorkflow,
+    },
+    scheduleId: "workflow-update-geo-data",
+    policies: {
+      catchupWindow: "1 day",
+      overlap: ScheduleOverlapPolicy.SKIP,
+    },
+    spec: {
+      calendars: [
+        {
+          comment: "Run on the first day of every month at 3 AM UTC",
+          month: "*",
+          dayOfMonth: 1,
+          hour: 3,
+        },
+      ],
+    },
+  });
+}
 
 async function run() {
   await waitForNamespaceToBeReady();

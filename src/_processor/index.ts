@@ -106,22 +106,22 @@ const pgSearchConsumers: Consumer[] = [
 ];
 
 const warpPipeConsumers: Consumer[] = [
-  {
-    topic: "nineteen_past_hour",
-    channel: "prune_pipe_sessions",
-    worker: prunePipeSessions,
-    maxAttempts: 1,
-    timeoutSeconds: 60,
-    maxInFlight: 1,
-  },
-  {
-    topic: "normalized_events",
-    channel: "stream_event",
-    worker: streamEvent,
-    maxAttempts: 1,
-    timeoutSeconds: 10,
-    maxInFlight: 5,
-  },
+  // {
+  //   topic: "nineteen_past_hour",
+  //   channel: "prune_pipe_sessions",
+  //   worker: prunePipeSessions,
+  //   maxAttempts: 1,
+  //   timeoutSeconds: 60,
+  //   maxInFlight: 1,
+  // },
+  // {
+  //   topic: "normalized_events",
+  //   channel: "stream_event",
+  //   worker: streamEvent,
+  //   maxAttempts: 1,
+  //   timeoutSeconds: 10,
+  //   maxInFlight: 5,
+  // },
 ];
 
 const geoDataConsumers: Consumer[] = [
