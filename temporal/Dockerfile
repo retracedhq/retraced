@@ -14,5 +14,3 @@ RUN npm install
 ADD . /src
 
 RUN npm run build
-
-# CMD ["node", "build/src/_processor/temporal/workers/index.js"]

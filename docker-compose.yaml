@@ -182,12 +182,13 @@ services:
   # Temporal Admin UI
   temporal-ui:
     container_name: temporal-ui
-    depends_on:
-      - temporal
+    image: temporalio/ui:2.10.3
     environment:
       - TEMPORAL_ADDRESS=temporal:7233
       - TEMPORAL_CORS_ORIGINS=http://localhost:3000
-    image: temporalio/ui:2.10.3
+    depends_on:
+      temporal:
+        condition: service_started
     networks:
       - retraced
     ports:
@@ -207,3 +208,18 @@ services:
         condition: service_started
     restart: "always"
     command: node build/src/_processor/temporal/workers/index.js
+
+  # Temporal Scheduler
+  temporal-scheduler:
+    container_name: temporal-scheduler
+    build:
+      context: .
+      dockerfile: ./temporal/Dockerfile
+    environment: *common-variables
+    networks:
+      - retraced
+    depends_on:
+      temporal:
+        condition: service_started
+    command: node build/src/_processor/temporal/schedule/start.js
+    restart: "on-failure"
