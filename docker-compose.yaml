@@ -72,6 +72,11 @@ services:
     networks:
       - retraced
     restart: "always"
+    healthcheck:
+      test: curl -s http://elasticsearch:9200 >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 50
 
   # opensearch:
   #   image: opensearchproject/opensearch:1.3.2
@@ -129,7 +134,7 @@ services:
       - retraced
     depends_on:
       elasticsearch:
-        condition: service_started
+        condition: service_healthy
     command: node --inspect=0.0.0.0 --enable-source-maps build/src/_db/runner-lite.js es
     restart: "on-failure"
 
