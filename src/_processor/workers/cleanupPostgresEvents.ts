@@ -14,12 +14,12 @@ export default async function cleanupPostgres(job: any) {
         project_id = $1 AND
         environment_id = $2 AND
         to_timestamp(CAST(doc->>'received' AS BIGINT) / 1000) < $3`;
-    const values = [projectId, environemntId, +new Date(beforeTimestamp)];
+    const values = [projectId, environemntId, new Date(beforeTimestamp)];
     const result = await pgPool.query(q, values);
     logger.info(`Old events deleted from indexed_events: ${result.rowCount}`);
   }
   // Delete from ingest_tasks
-  const q = `DELETE FROM ingest_tasks WHERE project_id = $1 AND environment_id = $2 AND received < $3`;
+  const q = `DELETE FROM ingest_task WHERE project_id = $1 AND environment_id = $2 AND received < $3`;
   const values = [projectId, environemntId, new Date(beforeTimestamp)];
   const result = await pgPool.query(q, values);
   logger.info(`Old events deleted from ingest_tasks: ${result.rowCount}`);
