@@ -31,25 +31,24 @@ import { notifyError, startErrorNotifier } from "../error-notifier";
 
 startHealthz();
 
-// QUESTION: Why is this here?
-if (config.MAXMIND_GEOLITE2_LICENSE_KEY) {
-  updateGeoData();
-}
+// if (config.MAXMIND_GEOLITE2_LICENSE_KEY) {
+//   updateGeoData();
+// }
 
 startErrorNotifier();
 
-if (config.PG_SEARCH) {
-  console.log("PG_SEARCH  set, using Postgres search");
-} else {
-  console.log("PG_SEARCH not set, using ElasticSearch");
-}
-let WARP_PIPE = false;
-if (config.REDIS_URI) {
-  WARP_PIPE = true;
-  logger.info("REDIS_URI set - Warp Pipe jobs enabled");
-} else {
-  logger.info("REDIS_URI not set, disabling Warp Pipe jobs");
-}
+// if (config.PG_SEARCH) {
+//   console.log("PG_SEARCH  set, using Postgres search");
+// } else {
+//   console.log("PG_SEARCH not set, using ElasticSearch");
+// }
+// let WARP_PIPE = false;
+// if (config.REDIS_URI) {
+//   WARP_PIPE = true;
+//   logger.info("REDIS_URI set - Warp Pipe jobs enabled");
+// } else {
+//   logger.info("REDIS_URI not set, disabling Warp Pipe jobs");
+// }
 
 const leftPad = (s, n) => (n > s.length ? " ".repeat(n - s.length) + s : s);
 const registry = monkit.getRegistry();
@@ -139,9 +138,9 @@ const geoDataConsumers: Consumer[] = [
 // If the worker does not throw any errors with the retry flag set, there is
 // no point setting the maxAttempts above 1 here.
 const nsqConsumers: Consumer[] = [
-  ...(config.PG_SEARCH ? pgSearchConsumers : esConsumers),
-  ...(WARP_PIPE ? warpPipeConsumers : []),
-  ...(config.MAXMIND_GEOLITE2_LICENSE_KEY ? geoDataConsumers : []),
+  // ...(config.PG_SEARCH ? pgSearchConsumers : esConsumers),
+  // ...(WARP_PIPE ? warpPipeConsumers : []),
+  // ...(config.MAXMIND_GEOLITE2_LICENSE_KEY ? geoDataConsumers : []),
   // {
   //   topic: "raw_events",
   //   channel: "normalize",
@@ -232,9 +231,9 @@ const nsqConsumers: Consumer[] = [
   // },
 ];
 
-if (!config.PG_SEARCH) {
-  elasticsearchAliasVerify();
-}
+// if (!config.PG_SEARCH) {
+//   elasticsearchAliasVerify();
+// }
 
 for (const consumer of nsqConsumers) {
   const { topic, channel, worker, maxAttempts, timeoutSeconds, maxInFlight } = consumer;

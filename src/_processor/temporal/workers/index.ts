@@ -22,6 +22,12 @@ async function run() {
     },
   ];
 
+  if (config.PG_SEARCH) {
+    console.log("PG_SEARCH set, using Postgres search");
+  } else {
+    console.log("PG_SEARCH not set, using ElasticSearch");
+  }
+
   await Promise.all(workers.map((worker) => Worker.create(worker).then((w) => w.run())));
 }
 

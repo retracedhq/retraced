@@ -33,7 +33,7 @@ export default async function handler(req) {
 
   try {
     (await workflowClient()).start(saveUserReportingEventWorkflow, {
-      workflowId: createWorkflowId(desc.projectId, desc.environmentId),
+      workflowId: createWorkflowId(),
       taskQueue: "events",
       args: [job],
     });

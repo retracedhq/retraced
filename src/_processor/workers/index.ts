@@ -12,3 +12,4 @@ export { default as saveUserReportingEvent } from "./saveUserReportingEvent";
 export { repair as elasticsearchAliasVerify } from "./ElasticsearchIndexRotator";
 export { default as updateGeoData } from "./updateGeoData";
 export { default as sendEmail } from "./sendEmail";
+export { default as indexEventToDataStore } from "./indexEventToDataStore";

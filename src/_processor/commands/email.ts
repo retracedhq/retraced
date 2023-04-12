@@ -60,7 +60,7 @@ export const handler = async (argv) => {
   );
 
   (await workflowClient()).start(analyzeDayWorkflow, {
-    workflowId: createWorkflowId(argv.projectId, argv.environmentId),
+    workflowId: createWorkflowId(),
     taskQueue: "events",
     args: [job],
   });

@@ -38,7 +38,7 @@ export default async function scheduleDailyReportsDue() {
     );
 
     (await workflowClient()).start(analyzeDayWorkflow, {
-      workflowId: createWorkflowId(r.project_id, r.environment_id),
+      workflowId: createWorkflowId(),
       taskQueue: "events",
       args: [job],
     });

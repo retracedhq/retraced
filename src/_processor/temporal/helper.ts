@@ -1,5 +1,5 @@
 import * as uuid from "uuid";
 
-export const createWorkflowId = (projectId: string, environmentId: string) => {
-  return `${projectId}-${environmentId}-${uuid.v4()}`;
+export const createWorkflowId = () => {
+  return uuid.v4();
 };

@@ -112,7 +112,7 @@ export default async function (req) {
     };
 
     (await workflowClient()).start(saveUserReportingEventWorkflow, {
-      workflowId: createWorkflowId(job.projectId, job.environmentId),
+      workflowId: createWorkflowId(),
       taskQueue: "events",
       args: [job],
     });

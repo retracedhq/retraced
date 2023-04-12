@@ -142,7 +142,7 @@ export default async function handle(
       };
 
       (await workflowClient()).start(sendEmailWorkflow, {
-        workflowId: createWorkflowId(projectId, environmentId),
+        workflowId: createWorkflowId(),
         taskQueue: "events",
         args: [task],
       });

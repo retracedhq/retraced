@@ -396,7 +396,7 @@ export class EventCreater {
 
     try {
       await this.workflowClient.start(ingestFromQueueWorkflow, {
-        workflowId: createWorkflowId(projectId, envId),
+        workflowId: createWorkflowId(),
         taskQueue: "events",
         args: [job],
       });

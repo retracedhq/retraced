@@ -73,7 +73,7 @@ const schedules: ScheduleOptions[] = [
   },
 ];
 
-if (!process.env.RETRACED_DISABLE_GEOSYNC && config.MAXMIND_GEOLITE2_LICENSE_KEY) {
+if (config.MAXMIND_GEOLITE2_LICENSE_KEY) {
   schedules.push({
     action: {
       type: "startWorkflow",
@@ -102,7 +102,7 @@ async function run() {
   await waitForNamespaceToBeReady();
 
   // Wait for namespace cache to be updated
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 10000));
 
   const connection = await Connection.connect({
     address: config.TEMPORAL_ADDRESS,

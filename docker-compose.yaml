@@ -227,4 +227,3 @@ services:
       temporal:
         condition: service_started
     command: node build/src/_processor/temporal/schedule/start.js
-    restart: "on-failure"
