@@ -21,7 +21,7 @@ class EventCreaterTest {
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
 
-    workflowClient.setup((x: any) => x.then).returns(() => undefined);
+    workflowClient.setup((x: any) => x.then).returns(() => Promise.resolve());
 
     const body: CreateEventRequest[] = [
       {
@@ -64,7 +64,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      async () => workflowClient.object,
+      async () => Promise.resolve(workflowClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -137,7 +137,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      async () => workflowClient.object,
+      async () => Promise.resolve(workflowClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -249,7 +249,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      async () => workflowClient.object,
+      async () => Promise.resolve(workflowClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -310,7 +310,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      async () => workflowClient.object,
+      async () => Promise.resolve(workflowClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -386,7 +386,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      async () => workflowClient.object,
+      async () => Promise.resolve(workflowClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -458,7 +458,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      async () => workflowClient.object,
+      async () => Promise.resolve(workflowClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -543,7 +543,7 @@ class EventCreaterTest {
     for (const testElement of tests) {
       const creater = new EventCreater(
         TypeMoq.Mock.ofType(pg.Pool).object,
-        async () => TypeMoq.Mock.ofType(WorkflowClient).object,
+        async () => Promise.resolve(TypeMoq.Mock.ofType(WorkflowClient).object),
         () => "fake-hash",
         () => "fake-uuid",
         TypeMoq.Mock.ofType(Authenticator).object,
