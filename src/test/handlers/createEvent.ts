@@ -21,8 +21,6 @@ class EventCreaterTest {
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
 
-    workflowClient.setup((x: any) => x.then).returns(() => Promise.resolve());
-
     const body: CreateEventRequest[] = [
       {
         action: "largeTazoTea.purchase",
