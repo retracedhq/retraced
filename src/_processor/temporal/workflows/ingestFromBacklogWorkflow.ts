@@ -1,4 +1,4 @@
-import { proxyActivities, startChild } from "@temporalio/workflow";
+import { ParentClosePolicy, proxyActivities, startChild } from "@temporalio/workflow";
 
 import type * as activities from "../../workers";
 import { normalizeEventWorkflow } from "./normalizeEventWorkflow";
@@ -22,6 +22,7 @@ export async function ingestFromBacklogWorkflow() {
       startChild(normalizeEventWorkflow, {
         args: [task.id],
         workflowId: task.id,
+        parentClosePolicy: ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON,
       })
     )
   );

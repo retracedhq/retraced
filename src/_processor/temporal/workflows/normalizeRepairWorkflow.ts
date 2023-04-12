@@ -1,4 +1,4 @@
-import { proxyActivities, startChild } from "@temporalio/workflow";
+import { proxyActivities, startChild, ParentClosePolicy } from "@temporalio/workflow";
 
 import type * as activities from "../../workers";
 import { normalizeEventWorkflow } from "./normalizeEventWorkflow";
@@ -22,6 +22,7 @@ export async function normalizeRepairWorkflow() {
       startChild(normalizeEventWorkflow, {
         args: [taskId],
         workflowId: taskId,
+        parentClosePolicy: ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON,
       })
     )
   );
