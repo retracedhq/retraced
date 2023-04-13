@@ -14,14 +14,13 @@ import nodemailer from "nodemailer";
 import mandrillTransport from "nodemailer-mandrill-transport";
 import _ from "lodash";
 import pg from "pg";
-import { getRegistry, instrumented, Registry } from "monkit";
-
 import inviteTmpl from "./templates/inviteToTeam";
 import reportTmpl from "./templates/reportDay";
 import deletionRequestTmpl from "./templates/deletionRequest";
 import getPgPool from "../persistence/pg";
 import { logger } from "../logger";
 import config from "../../config";
+import { incrementOtelCounter, instrumented } from "../../metrics/opentelemetry/instrumentation";
 
 export interface Email {
   to: string | string[];
@@ -58,7 +57,7 @@ export class Emailer {
 
       if (!transport) {
         transport = Emailer.mandrillFromEnv();
-        handleRejects = Emailer.mandrillRejectHandler(getPgPool(), getRegistry());
+        handleRejects = Emailer.mandrillRejectHandler(getPgPool());
       }
 
       if (!transport) {
@@ -112,7 +111,7 @@ export class Emailer {
     );
   }
 
-  public static mandrillRejectHandler(pgPool: pg.Pool, registry: Registry) {
+  public static mandrillRejectHandler(pgPool: pg.Pool) {
     return (results: MandrillResult[]) => {
       // the list of email addresses that cannot ever receive or do not want more emails
       const rejections = results
@@ -121,8 +120,7 @@ export class Emailer {
             logger.error(`Mandrill send to ${result.email} invalid`);
             return false;
           }
-
-          registry.meter(`Emailer.mandrillRejectHandler.${result.reject_reason}`).mark();
+          incrementOtelCounter("Emailer.mandrillRejectHandler", 1, { reject_reason: result.reject_reason });
           logger.warn(`Mandrill send to ${result.email} rejected: ${result.reject_reason}`);
 
           switch (result.reject_reason) {

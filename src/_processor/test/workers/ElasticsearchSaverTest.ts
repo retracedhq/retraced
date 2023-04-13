@@ -2,31 +2,19 @@ import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 import moment from "moment";
-import monkit from "monkit";
 import { Client } from "@opensearch-project/opensearch";
 
 import { Clock } from "../../common";
 import { ElasticsearchSaver } from "../../workers/saveEventToElasticsearch";
+import { recordOtelHistogram } from "../../../metrics/opentelemetry/instrumentation";
 
 const isAny = TypeMoq.It.isAny;
-
-/**
- * return an object that expects to have
- * a method `update` called with the specified value
- */
-function expectUpdate(expectedValue) {
-  return () => {
-    return {
-      update: (val) => expect(val).to.equal(expectedValue),
-    };
-  };
-}
 
 @suite
 class ElasticsearchSaverTest {
   @test public async "ElasticSearchSaver#saveEventToElasticsearch()"() {
     const es = TypeMoq.Mock.ofType(Client);
-    const registry = TypeMoq.Mock.ofType(monkit.Registry);
+    const histogramRecord = TypeMoq.Mock.ofInstance(recordOtelHistogram);
     const clock = TypeMoq.Mock.ofType<Clock>();
     const jobBody = {
       environmentId: "env01",
@@ -139,22 +127,24 @@ class ElasticsearchSaverTest {
       .returns(() => moment(500))
       .verifiable(TypeMoq.Times.once());
 
-    registry
-      .setup((x) => x.histogram("workers.saveEventToElasticSearch.latencyCreated"))
-      .returns(expectUpdate(400))
-      .verifiable(TypeMoq.Times.once());
+    histogramRecord
+      .setup((x) =>
+        x(TypeMoq.It.isValue("workers.saveEventToElasticSearch.latencyCreated"), TypeMoq.It.isValue(400))
+      )
+      .verifiable(TypeMoq.Times.once(), TypeMoq.ExpectedCallType.InSequence);
 
-    registry
-      .setup((x) => x.histogram("workers.saveEventToElasticSearch.latencyReceived"))
-      .returns(expectUpdate(300))
-      .verifiable(TypeMoq.Times.once());
+    histogramRecord
+      .setup((x) =>
+        x(TypeMoq.It.isValue("workers.saveEventToElasticSearch.latencyReceived"), TypeMoq.It.isValue(300))
+      )
+      .verifiable(TypeMoq.Times.once(), TypeMoq.ExpectedCallType.InSequence);
 
-    const saver = new ElasticsearchSaver(es.object, registry.object, clock.object);
+    const saver = new ElasticsearchSaver(es.object, clock.object);
     await saver.saveEventToElasticsearch(jobBody as any);
 
     es.verifyAll();
     clock.verifyAll();
-    registry.verifyAll();
+    histogramRecord.verifyAll();
   }
 }
 
