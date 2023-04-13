@@ -10,7 +10,7 @@ export default async function cleanupElasticsearch(job: any) {
     // Delee from elasticsearch by query with timestamp less than beforeTimestamp
     const alias = `retraced.${projectId}.${environemntId}.current`;
     const es: Client = getESWithoutRetry();
-    let result = await es.deleteByQuery({
+    const result = await es.deleteByQuery({
       index: alias,
       body: {
         query: {
