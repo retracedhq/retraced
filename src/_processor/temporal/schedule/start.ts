@@ -105,7 +105,7 @@ async function run() {
   await new Promise((resolve) => setTimeout(resolve, 10000));
 
   const connection = await Connection.connect({
-    address: config.TEMPORAL_ADDRESS,
+    address: config.TEMPORAL_HOST,
   });
 
   const client = new Client({
@@ -119,7 +119,7 @@ async function run() {
 
 async function waitForNamespaceToBeReady() {
   const connection = await Connection.connect({
-    address: config.TEMPORAL_ADDRESS,
+    address: config.TEMPORAL_HOST,
   });
 
   let namespaceExist = false;

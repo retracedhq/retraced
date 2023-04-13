@@ -9,7 +9,7 @@ let connection: NativeConnection;
 async function run() {
   if (!connection) {
     connection = await NativeConnection.connect({
-      address: config.TEMPORAL_ADDRESS,
+      address: config.TEMPORAL_HOST,
     });
   }
 

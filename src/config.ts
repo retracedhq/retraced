@@ -74,5 +74,5 @@ export default {
     env.RETRACED_NO_ANALYTICS ||
     process.env.DO_NOT_TRACK ||
     env.DO_NOT_TRACK,
-  TEMPORAL_ADDRESS: process.env.TEMPORAL_ADDRESS || env.TEMPORAL_ADDRESS || "localhost:7233",
+  TEMPORAL_HOST: process.env.TEMPORAL_HOST || env.TEMPORAL_HOST || "localhost:7233",
 };
