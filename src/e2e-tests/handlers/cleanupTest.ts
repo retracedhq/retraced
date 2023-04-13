@@ -1,6 +1,6 @@
 import { suite, test } from "@testdeck/mocha";
-import cleanupPostgres from "../../_processor/workers/cleanupPostgresEvents";
-import cleanupElasticsearch from "../../_processor/workers/cleanupElasticsearchEvents";
+import cleanupIngestTask from "../../_processor/workers/cleanupIngestTask";
+import cleanupIndexedEvents from "../../_processor/workers/cleanupIndexedEvents";
 import getPgPool from "../../persistence/pg";
 import { expect } from "chai";
 import { AdminTokenStore } from "../../models/admin_token/store";
@@ -13,20 +13,17 @@ const newIndex = `retraced.api.${randomHex()}`;
 
 @suite
 class CleanupTest {
-  @test public async "CleanupTest#Postgres()"() {
+  @test public async "CleanupTest#IngestTask()"() {
     const pool = getPgPool();
     try {
       await cleanup(pool);
       await setup(pool);
-      const result = await cleanupPostgres({
+      const result = await cleanupIngestTask({
         projectId: "test",
         environemntId: "test",
         beforeTimestamp: new Date().toISOString(),
       });
-      expect(result["ingest_task"]).to.equal(1);
-      if (config.PG_SEARCH) {
-        expect(result["indexed_events"]).to.equal(1);
-      }
+      expect(result).to.equal(20);
       return true;
     } catch (ex) {
       console.log(ex);
@@ -34,23 +31,19 @@ class CleanupTest {
       await cleanup(pool);
     }
   }
-  @test public async "CleanupTest#Elasticsearch()"() {
+  @test public async "CleanupTest#IndexedEvents()"() {
     const pool = getPgPool();
     const es: Client = getESWithoutRetry();
     try {
       await cleanup(pool, es);
       await setup(pool, es);
-      const result = await cleanupElasticsearch({
+      const result = await cleanupIndexedEvents({
         projectId: "test",
         environemntId: "test",
         beforeTimestamp: new Date().toISOString(),
       });
 
-      if (config.PG_SEARCH) {
-        expect(result).to.equal(0);
-      } else {
-        expect(result).to.equal(1);
-      }
+      expect(result).to.equal(1);
       return true;
     } catch (ex) {
       console.log(ex);
@@ -98,22 +91,30 @@ async function setup(pool, es?: Client) {
     crud: "c",
     received: new Date().toISOString(),
   };
-  await pool.query(
-    "INSERT INTO ingest_task (id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres, saved_to_elasticsearch, saved_to_scylla, project_id, environment_id, new_event_id, received) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ",
-    [
-      randomHex(),
-      JSON.stringify(event),
-      JSON.stringify(event),
-      "false",
-      "false",
-      "false",
-      "false",
-      "test",
-      "test",
-      randomHex(),
-      new Date().toISOString(),
-    ]
-  );
+  for (let i = 0; i < 20; i++) {
+    const event = {
+      action: "integration18141",
+      group: { id: "rtrcdqa1234", name: "RetracedQA" },
+      crud: "c",
+      received: new Date().toISOString(),
+    };
+    await pool.query(
+      "INSERT INTO ingest_task (id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres, saved_to_elasticsearch, saved_to_scylla, project_id, environment_id, new_event_id, received) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ",
+      [
+        randomHex(),
+        JSON.stringify(event),
+        JSON.stringify(event),
+        "false",
+        "false",
+        "false",
+        "false",
+        "test",
+        "test",
+        randomHex(),
+        new Date().toISOString(),
+      ]
+    );
+  }
 
   await pool.query(
     "INSERT INTO indexed_events (id, project_id, environment_id, doc) VALUES ($1, $2, $3, $4)",
@@ -141,7 +142,8 @@ async function setup(pool, es?: Client) {
       },
     });
   }
-  await sleep(1000);
+  // Need to sleep for events to be available in ES
+  await sleep(800);
   return res;
 }
 
