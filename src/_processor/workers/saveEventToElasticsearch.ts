@@ -98,6 +98,6 @@ export class ElasticsearchSaver {
   }
 }
 
-export default async function saveEventToElasticsearch(job: Job): Promise<void> {
+export default async function saveEventToElasticsearch(job: Job) {
   return ElasticsearchSaver.getDefault().saveEventToElasticsearch(job);
 }

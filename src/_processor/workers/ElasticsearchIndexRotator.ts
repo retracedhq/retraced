@@ -222,9 +222,9 @@ export const worker = async () =>
     : () => {
         /* nope */
       };
-export const repair = async () =>
-  rotator
-    ? rotator.repairAliases()
-    : () => {
-        /* nope */
-      };
+
+export const repair = rotator
+  ? rotator.repairAliases
+  : async () => {
+      Promise.resolve();
+    };

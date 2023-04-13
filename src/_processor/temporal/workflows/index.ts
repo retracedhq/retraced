@@ -7,4 +7,4 @@ export { analyzeDayWorkflow } from "./analyzeDayWorkflow";
 export { elasticsearchAliasVerifyWorkflow } from "./elasticsearchAliasVerifyWorkflow";
 export { saveUserReportingEventWorkflow } from "./saveUserReportingEventWorkflow";
 export { sendEmailWorkflow } from "./sendEmailWorkflow";
-export { updateGeoDataWorkflow } from "./updateGeoDataWorkflow"; // Schedule not done yet
+export { updateGeoDataWorkflow } from "./updateGeoDataWorkflow";
