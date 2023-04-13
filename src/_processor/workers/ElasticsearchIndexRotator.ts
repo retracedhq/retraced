@@ -231,5 +231,5 @@ export const worker = async () =>
 export const repair = rotator
   ? rotator.repairAliases
   : async () => {
-      Promise.resolve();
+      await Promise.resolve();
     };

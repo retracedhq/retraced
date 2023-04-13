@@ -676,7 +676,7 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    //workflowClient.verify((x) => x.start(normalizeEventWorkflow, TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // workflowClient.verify((x) => x.start(normalizeEventWorkflow, TypeMoq.It.isAny()), TypeMoq.Times.never());
     // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
@@ -927,7 +927,7 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    //nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test
@@ -1008,7 +1008,7 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    //nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test
@@ -1089,7 +1089,7 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    //nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test
@@ -1172,7 +1172,7 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    //nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 }
 

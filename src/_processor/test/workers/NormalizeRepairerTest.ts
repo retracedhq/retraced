@@ -29,9 +29,9 @@ class NormalizeRepairerTest {
       })
       .verifiable(TypeMoq.Times.once());
 
-    // const repairer = new NormalizeRepairer(minAgeMs, nsq.object, pool.object, maxEvents);
+    const repairer = new NormalizeRepairer(minAgeMs, pool.object, maxEvents);
 
-    // await repairer.repairOldEvents();
+    await repairer.repairOldEvents();
 
     // expect(registry.meter("NormalizeRepairer.repairOldEvents.allClear").count).to.equal(1);
     // expect(registry.meter("NormalizeRepairer.repairOldEvents.allClear").count).to.equal(1);
@@ -61,9 +61,9 @@ class NormalizeRepairerTest {
       })
       .verifiable(TypeMoq.Times.once());
 
-    // const repairer = new NormalizeRepairer(minAgeMs, nsq.object, pool.object, maxEvents);
+    const repairer = new NormalizeRepairer(minAgeMs, pool.object, maxEvents);
 
-    // await repairer.repairOldEvents();
+    await repairer.repairOldEvents();
 
     // expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").max).to.equal(20050);
     // expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").min).to.equal(15000);
