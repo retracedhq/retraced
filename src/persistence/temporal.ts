@@ -7,7 +7,7 @@ let connection: Connection;
 const createWorkflowClient = async (): Promise<WorkflowClient> => {
   if (!connection) {
     connection = await Connection.connect({
-      address: config.TEMPORAL_HOST,
+      address: config.TEMPORAL_ADDRESS,
     });
   }
 
