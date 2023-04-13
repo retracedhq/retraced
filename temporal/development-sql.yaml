@@ -1,3 +1,7 @@
 limit.maxIDLength:
   - value: 255
     constraints: {}
+
+history.MaxBufferedQueryCount:
+  - value: 5
+    constraints: {}

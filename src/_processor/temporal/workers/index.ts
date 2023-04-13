@@ -4,14 +4,10 @@ import type { WorkerOptions } from "@temporalio/worker";
 import * as activities from "../../workers";
 import config from "../../../config";
 
-let connection: NativeConnection;
-
 async function run() {
-  if (!connection) {
-    connection = await NativeConnection.connect({
-      address: config.TEMPORAL_ADDRESS,
-    });
-  }
+  const connection = await NativeConnection.connect({
+    address: config.TEMPORAL_ADDRESS,
+  });
 
   const workers: WorkerOptions[] = [
     {

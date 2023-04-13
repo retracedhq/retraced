@@ -190,7 +190,7 @@ services:
     image: temporalio/ui:2.10.3
     environment:
       - TEMPORAL_ADDRESS=temporal:7233
-      # - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
     depends_on:
       temporal:
         condition: service_started

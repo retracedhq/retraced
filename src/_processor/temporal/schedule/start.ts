@@ -114,6 +114,8 @@ async function run() {
 
   await Promise.all(schedules.map((schedule) => client.schedule.create(schedule)));
 
+  console.log("Schedules created");
+
   await client.connection.close();
 }
 
