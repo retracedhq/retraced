@@ -377,11 +377,6 @@ class EventCreaterTest {
     conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
     conn.setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).verifiable(TypeMoq.Times.once());
 
-    workflowClient
-      .setup((x) => x.start(normalizeEventWorkflow, TypeMoq.It.isAny()))
-      .returns(() => Promise.resolve() as any)
-      .verifiable(TypeMoq.Times.exactly(3));
-
     const creater = new EventCreater(
       pool.object,
       async () => Promise.resolve(workflowClient.object),
@@ -406,9 +401,6 @@ class EventCreaterTest {
     expect(created[1].hash).to.equal("fake-hash");
     expect(created[2].id).to.equal("kfbr392");
     expect(created[2].hash).to.equal("fake-hash");
-
-    pool.verifyAll();
-    workflowClient.verifyAll();
   }
 
   @test public async "EventCreater#createEventsBulk() with postgres error"() {

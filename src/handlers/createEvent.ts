@@ -604,7 +604,7 @@ export class EventCreater {
   private async startWorkflow({ taskId }: { taskId: string }) {
     try {
       await this.workflowClient.start(normalizeEventWorkflow, {
-        workflowId: taskId,
+        workflowId: createWorkflowId(),
         taskQueue: "events",
         args: [taskId],
       });
