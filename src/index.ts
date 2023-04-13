@@ -4,7 +4,6 @@ import cors from "cors";
 import _ from "lodash";
 import Sigsci from "sigsci-module-nodejs";
 import Bugsnag from "@bugsnag/js";
-import Prometheus from "prom-client";
 import swaggerUI from "swagger-ui-express";
 import config from "./config";
 import { register, wrapRoute } from "./router";
@@ -12,7 +11,7 @@ import { LegacyRoutes } from "./routes";
 import { RegisterRoutes } from "./gen/routes";
 import { AdminUserBootstrap } from "./handlers/admin/AdminUserBootstrap";
 import { ensureHeadlessProject } from "./headless";
-import * as metrics from "./metrics";
+import "./metrics";
 import swaggerSpecs from "./swagger";
 import getPgPool from "./persistence/pg";
 
@@ -64,7 +63,6 @@ if (notifierEnabled && bugSnagMiddleware) {
 
 buildRoutes();
 serve();
-metrics.bootstrapFromEnv();
 
 function buildRoutes() {
   registerHealthchecks();
@@ -92,15 +90,6 @@ function buildRoutes() {
     register(route, handler, router);
   }
 
-  if (config.RETRACED_ENABLE_PROMETHEUS) {
-    const endpoint = config.RETRACED_PROMETHEUS_ENDPOINT || "/metrics";
-    logger.info(`Registering Prometheus Exporter at ${endpoint}`);
-    app.get("/metrics", (req, res) => {
-      res.set("Content-Type", Prometheus.register.contentType);
-      const mtx = Prometheus.register.metrics();
-      res.end(mtx);
-    });
-  }
   app.use(basePath, router);
 
   app.use((req, res) => {

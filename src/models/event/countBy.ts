@@ -1,8 +1,8 @@
 import _ from "lodash";
-import { instrument } from "../../metrics";
 
 import { Scope } from "../../security/scope";
 import { scope, getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
+import { applyOtelInstrument } from "../../metrics/opentelemetry/instrumentation";
 
 const client: ClientWithRetry = getESWithRetry();
 
@@ -75,7 +75,7 @@ export async function countBy(es: ClientWithRetry, opts: Options): Promise<Resul
 }
 
 export default async function (opts: Options): Promise<Result[]> {
-  return await instrument("Elasticsearch.countBy", async () => {
+  return (await applyOtelInstrument("Elasticsearch.countBy", async () => {
     return await countBy(client, opts);
-  });
+  })) as Result[];
 }

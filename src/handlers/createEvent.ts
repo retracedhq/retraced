@@ -3,9 +3,11 @@ import moment from "moment";
 import pg from "pg";
 import pgFormat from "pg-format";
 import util from "util";
-import * as monkit from "monkit";
-import { instrument, instrumented } from "../metrics";
-
+import {
+  instrumented,
+  applyOtelInstrument,
+  incrementOtelCounter,
+} from "../metrics/opentelemetry/instrumentation";
 import createCanonicalHash from "../models/event/canonicalize";
 import Event, { EventFields } from "../models/event/";
 import { fromCreateEventInput } from "../models/event";
@@ -176,8 +178,6 @@ export class EventCreater {
       $1, $2, $3, to_timestamp($4::double precision / 1000), $5
     )`;
 
-  private registry: monkit.Registry;
-
   constructor(
     private readonly pgPool: pg.Pool,
     private readonly nsq: NSQClient,
@@ -186,9 +186,7 @@ export class EventCreater {
     private readonly authenticator: Authenticator,
     private readonly maxEvents: number,
     private readonly timeoutMS: number
-  ) {
-    this.registry = monkit.getRegistry();
-  }
+  ) {}
 
   @instrumented
   public async createEvent(authorization: string, projectId: string, event: CreateEventRequest) {
@@ -231,8 +229,7 @@ export class EventCreater {
       // Coerce the input event into a proper Event object.
       // Then, generate an authoritative hash from its contents.
       const hash = this.hasher(fromCreateEventInput(event, id));
-
-      this.registry.meter("EventCreater.handled.events").mark();
+      incrementOtelCounter("EventCreater.handled.events");
 
       return { id, hash };
     } catch (ex) {
@@ -319,10 +316,10 @@ export class EventCreater {
       events.map(({ values }) => values)
     );
 
-    const pgConn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
+    const pgConn: any = await applyOtelInstrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
 
     try {
-      await instrument("EventCreater.insertMany", async () => {
+      await applyOtelInstrument("EventCreater.insertMany", async () => {
         return await pgConn.query(query);
       });
     } finally {
@@ -332,7 +329,7 @@ export class EventCreater {
     events.forEach(this.nsqPublish.bind(this));
     events.forEach((e) => {
       this.nsqPublish(e);
-      this.registry.meter("EventCreater.handled.events").mark();
+      incrementOtelCounter("EventCreater.handled.events");
     });
 
     return events.map(({ id, hash }) => ({ id, hash }));
@@ -377,10 +374,10 @@ export class EventCreater {
     if (querier) {
       await querier.query(insertStmt, insertVals);
     } else {
-      const conn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
+      const conn: any = await applyOtelInstrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
 
       try {
-        await instrument("EventCreater.insertOne", async () => {
+        await applyOtelInstrument("EventCreater.insertOne", async () => {
           return await conn.query(insertStmt, insertVals);
         });
       } finally {
@@ -401,9 +398,9 @@ export class EventCreater {
     eventInput: CreateEventRequest
   ): Promise<void> {
     const insertStmt = EventCreater.insertIntoBacklog;
-    const conn: any = await instrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
+    const conn: any = await applyOtelInstrument("PgPool.connect", this.pgPool.connect.bind(this.pgPool));
     try {
-      await instrument("EventCreater.insertOneIntoBacklog", async () => {
+      await applyOtelInstrument("EventCreater.insertOneIntoBacklog", async () => {
         return await conn.query(insertStmt, [
           projectId,
           envId,

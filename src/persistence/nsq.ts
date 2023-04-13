@@ -1,7 +1,7 @@
 import nsq from "nsqjs";
-import { histogram, instrumented, meter, timer } from "../metrics";
 import { logger } from "../logger";
 import config from "../config";
+import { incrementOtelCounter, instrumented } from "../metrics/opentelemetry/instrumentation";
 
 export class NSQClient {
   public static fromEnv() {
@@ -50,40 +50,40 @@ export class NSQClient {
   // we maybe want to use something like hystrixjs,
   // but it seems a little heavy for what we need at this point.
   private checkCircuitBreaker() {
-    const shouldCheck =
-      this.circuitBreakerThreshold >= 0 && this.circuitBreakerThreshold <= 1;
+    // TODO: Implement exponential backoff
+    this.forceReconnect();
+    // const shouldCheck = this.circuitBreakerThreshold >= 0 && this.circuitBreakerThreshold <= 1;
 
-    if (!shouldCheck) {
-      return;
-    }
+    // if (!shouldCheck) {
+    //   return;
+    // }
 
-    const errorPct = this.computeErrorPercentage();
-    histogram("NSQClient.produce.errorPct").update(errorPct);
+    // const errorPct = this.computeErrorPercentage();
+    // histogram("NSQClient.produce.errorPct").update(errorPct);
 
-    if (errorPct > this.circuitBreakerThreshold) {
-      this.forceReconnect(errorPct);
-    }
+    // if (errorPct > this.circuitBreakerThreshold) {
+    // this.forceReconnect(errorPct);
+    // }
   }
 
-  private computeErrorPercentage() {
-    const errorRate = meter("NSQClient.produce.errors").fifteenMinuteRate();
-    const callRate = timer("NSQClient.produce.timer").fifteenMinuteRate();
-    const errorPct = callRate ? errorRate / callRate : 0;
-    return errorPct;
-  }
+  // private computeErrorPercentage() {
+  //   const errorRate = meter("NSQClient.produce.errors").fifteenMinuteRate();
+  //   const callRate = timer("NSQClient.produce.timer").fifteenMinuteRate();
+  //   const errorPct = callRate ? errorRate / callRate : 0;
+  //   return errorPct;
+  // }
 
   // Destroy the writer, forcing a reconnect on the next produce operation.
-  private forceReconnect(errorPct: number) {
+  private forceReconnect(/** errorPct: number */) {
     logger.warn(
-      `Error Percentage ${errorPct} is greater than threshold` +
-        `${this.circuitBreakerThreshold}, reconnecting to nsq at` +
-        `${this.host}:${this.port}`
+      // `Error Percentage ${errorPct} is greater than threshold` +
+      `${this.circuitBreakerThreshold}, reconnecting to nsq at` + `${this.host}:${this.port}`
     );
     if (this.writer) {
       this.writer.then((w) => w.close());
       delete this.writer;
     }
-    meter("NSQClient.forceReconnect.destroy").mark();
+    incrementOtelCounter("NSQClient.forceReconnect.destroy");
   }
 
   private connect() {
@@ -92,9 +92,7 @@ export class NSQClient {
       let connected = false;
 
       w.connect();
-      logger.info(
-        `NSQ writer attempting to connect to nsqd at ${this.host}:${this.port}`
-      );
+      logger.info(`NSQ writer attempting to connect to nsqd at ${this.host}:${this.port}`);
 
       w.on("ready", () => {
         connected = true;
