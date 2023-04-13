@@ -1,6 +1,5 @@
 import moment from "moment";
 
-// import nsq from "../persistence/nsq";
 import getRedis from "../persistence/redis";
 import { logger } from "../logger";
 import config from "../../config";
@@ -16,6 +15,7 @@ export default async function () {
     if (lastSeen.isBefore(moment().subtract("1", "hour"))) {
       // Ephemeral topics are deleted when the last client disconnects, but
       // created again on the next write to the topic.
+
       // await nsq.deleteTopic(eitapi + "#ephemeral");
 
       // Delete the redis structures

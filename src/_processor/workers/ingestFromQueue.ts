@@ -37,6 +37,7 @@ export default async function ingestFromQueue(task: Job) {
     ]);
 
     if (results.rows.length === 0) {
+      // conflict, already ingested
       return;
     }
   } catch (err) {
