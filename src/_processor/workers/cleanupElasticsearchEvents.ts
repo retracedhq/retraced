@@ -3,7 +3,7 @@ import { logger } from "../logger";
 import { getESWithoutRetry } from "../../persistence/elasticsearch";
 import { Client } from "@opensearch-project/opensearch";
 
-export default async function cleanupPostgres(job: any) {
+export default async function cleanupElasticsearch(job: any) {
   const { projectId, environemntId, beforeTimestamp } = job;
   // Delete from indexed_events
   if (!config.PG_SEARCH) {
@@ -21,5 +21,7 @@ export default async function cleanupPostgres(job: any) {
       },
     });
     logger.info(`Old events deleted from elasticsearch: ${result.body.deleted}}`);
+    return result.body.deleted;
   }
+  return 0;
 }
