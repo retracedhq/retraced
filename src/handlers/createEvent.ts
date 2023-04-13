@@ -18,6 +18,44 @@ import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
 import config from "../config";
 
+import Joi from "joi";
+
+// Define the schema for CreateEventRequest
+const createEventRequestSchema = Joi.object({
+  action: Joi.string().required(),
+  // crud can only be one of 'c', 'r', 'u', or 'd'
+  crud: Joi.string().valid("c", "r", "u", "d"),
+  group: Joi.object({
+    id: Joi.string(),
+    name: Joi.string(),
+  }).unknown(false),
+  created: Joi.date().iso(),
+  actor: Joi.object({
+    id: Joi.string(),
+    name: Joi.string(),
+    href: Joi.string(),
+    fields: Joi.object().pattern(Joi.string(), Joi.string()),
+  }).unknown(false),
+  target: Joi.object({
+    id: Joi.string(),
+    name: Joi.string(),
+    href: Joi.string(),
+    type: Joi.string(),
+    fields: Joi.object().pattern(Joi.string(), Joi.string()),
+  }).unknown(false),
+  source_ip: Joi.string(),
+  description: Joi.string(),
+  is_anonymous: Joi.boolean(),
+  is_failure: Joi.boolean(),
+  fields: Joi.object().pattern(Joi.string(), Joi.string()),
+  component: Joi.string(),
+  version: Joi.string(),
+  external_id: Joi.string(),
+  metadata: Joi.object().pattern(Joi.string(), Joi.string()),
+});
+
+const createEventBulkRequestSchema = Joi.array().items(createEventRequestSchema);
+
 const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
 const IPV6_REGEX =
   /^((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}$/;
@@ -159,6 +197,15 @@ export class EventCreater {
         throw {
           status: 400,
           err: new Error(violations.map((i) => i.message).join("\n--")),
+        };
+      }
+
+      const { error } = createEventRequestSchema.validate(event);
+
+      if (error) {
+        throw {
+          status: 400,
+          err: new Error(error.details.map((i) => i.message).join("\n--")),
         };
       }
 
@@ -442,6 +489,14 @@ export class EventCreater {
             .join("\n- ")}`
         ),
         invalid: invalidEvents,
+      };
+    }
+
+    const { error } = createEventBulkRequestSchema.validate(events);
+    if (error) {
+      throw {
+        status: 400,
+        err: new Error(error.details.map((i) => i.message).join("\n--")),
       };
     }
   }
