@@ -92,12 +92,7 @@ async function setup(pool, es?: Client) {
     received: new Date().toISOString(),
   };
   for (let i = 0; i < 20; i++) {
-    const event = {
-      action: "integration18141",
-      group: { id: "rtrcdqa1234", name: "RetracedQA" },
-      crud: "c",
-      received: new Date().toISOString(),
-    };
+    event.received = new Date().toISOString();
     await pool.query(
       "INSERT INTO ingest_task (id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres, saved_to_elasticsearch, saved_to_scylla, project_id, environment_id, new_event_id, received) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ",
       [

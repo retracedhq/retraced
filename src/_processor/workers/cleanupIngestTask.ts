@@ -29,7 +29,7 @@ export async function backupAndDeleteIngestTasks(events, batchSize = 1000) {
   }
 }
 
-export async function backupIngestTaskBatch(batch: any[]) {
+export function backupIngestTaskBatch(batch: any[]) {
   // Backup to s3
   // const s3 = new S3();
   // const params = {
