@@ -131,7 +131,6 @@ async function waitForNamespaceToBeReady() {
       });
 
       if (result) {
-        console.info("Namespace is ready.");
         namespaceExist = true;
         break;
       }
