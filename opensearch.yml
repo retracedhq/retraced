@@ -1,4 +1,4 @@
-http.host: localhost
+http.host: 0.0.0.0
 
 http.port: 9200
 http.cors.allow-origin: "/.*/"
