@@ -22,7 +22,7 @@ import Joi from "joi";
 const createEventRequestSchema = Joi.object({
   action: Joi.string().required(),
   // crud can only be one of 'c', 'r', 'u', or 'd'
-  crud: Joi.string().valid("c", "r", "u", "d").required(),
+  crud: Joi.string().valid("c", "r", "u", "d"),
   group: Joi.object({
     id: Joi.string(),
     name: Joi.string(),
