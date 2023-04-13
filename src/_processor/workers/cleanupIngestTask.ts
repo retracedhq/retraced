@@ -21,7 +21,7 @@ export async function backupAndDeleteIngestTasks(events, batchSize = 1000) {
     const ids = batch.map((row) => row.id);
     const q = `DELETE FROM ingest_task WHERE id = ANY($1)`;
     const values = [ids];
-    const backedup = await backupIngestTaskBatch(batch);
+    const backedup = backupIngestTaskBatch(batch);
     if (backedup !== ids.length) {
       const res = await pgPool.query(q, values);
       logger.info(`Old events deleted from ingest_tasks: ${res.rowCount}`);
