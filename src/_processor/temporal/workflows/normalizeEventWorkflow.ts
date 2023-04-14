@@ -5,7 +5,7 @@ import type * as activities from "../../workers";
 const { normalizeEvent, saveActiveActor, saveActiveGroup, indexEventToDataStore } = proxyActivities<
   typeof activities
 >({
-  startToCloseTimeout: "120 seconds",
+  startToCloseTimeout: "70 seconds",
   retry: {
     maximumAttempts: 1,
   },
@@ -18,7 +18,9 @@ export async function normalizeEventWorkflow(taskId: string) {
     return;
   }
 
-  await saveActiveActor(normalizedEvent);
-  await saveActiveGroup(normalizedEvent);
-  await indexEventToDataStore(normalizedEvent);
+  await Promise.all([
+    saveActiveActor(normalizedEvent),
+    saveActiveGroup(normalizedEvent),
+    indexEventToDataStore(normalizedEvent),
+  ]);
 }

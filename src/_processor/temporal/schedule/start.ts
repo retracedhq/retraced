@@ -56,21 +56,21 @@ const schedules: ScheduleOptions[] = [
       intervals: [{ every: "10m" }],
     },
   },
-  {
-    action: {
-      type: "startWorkflow",
-      taskQueue: "events",
-      workflowType: elasticsearchAliasVerifyWorkflow,
-    },
-    scheduleId: "workflow-elasticsearch-alias-verify",
-    policies: {
-      catchupWindow: "1 day",
-      overlap: ScheduleOverlapPolicy.SKIP,
-    },
-    spec: {
-      intervals: [{ every: "1m" }],
-    },
-  },
+  // {
+  //   action: {
+  //     type: "startWorkflow",
+  //     taskQueue: "events",
+  //     workflowType: elasticsearchAliasVerifyWorkflow,
+  //   },
+  //   scheduleId: "workflow-elasticsearch-alias-verify",
+  //   policies: {
+  //     catchupWindow: "1 day",
+  //     overlap: ScheduleOverlapPolicy.SKIP,
+  //   },
+  //   spec: {
+  //     intervals: [{ every: "1m" }],
+  //   },
+  // },
 ];
 
 if (config.MAXMIND_GEOLITE2_LICENSE_KEY) {
