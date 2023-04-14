@@ -3,7 +3,7 @@ import moment from "moment";
 import pg from "pg";
 import pgFormat from "pg-format";
 import util from "util";
-import type { WorkflowClient } from "@temporalio/client";
+import type { Client } from "@temporalio/client";
 import Joi from "joi";
 
 import {
@@ -21,7 +21,7 @@ import { logger } from "../logger";
 import config from "../config";
 import { ingestFromQueueWorkflow, normalizeEventWorkflow } from "../_processor/temporal/workflows";
 import { createWorkflowId } from "../_processor/temporal/helper";
-import createWorkflowClient from "../persistence/temporal";
+import getTemporalClient from "../persistence/temporal";
 
 // Define the schema for CreateEventRequest
 const createEventRequestSchema = Joi.object({
@@ -182,18 +182,18 @@ export class EventCreater {
       $1, $2, $3, to_timestamp($4::double precision / 1000), $5
     )`;
 
-  private workflowClient: WorkflowClient;
+  private temporalClient: Client;
 
   constructor(
     private readonly pgPool: pg.Pool,
-    private readonly getWorkflowClient: () => Promise<WorkflowClient>,
+    private readonly getTemporalClient: () => Promise<Client>,
     private readonly hasher: (event: Event) => string,
     private readonly idSource: () => string,
     private readonly authenticator: Authenticator,
     private readonly maxEvents: number,
     private readonly timeoutMS: number
   ) {
-    this.getWorkflowClient().then((client) => (this.workflowClient = client));
+    this.getTemporalClient().then((client) => (this.temporalClient = client));
   }
 
   @instrumented
@@ -440,7 +440,7 @@ export class EventCreater {
     };
 
     try {
-      await this.workflowClient.start(ingestFromQueueWorkflow, {
+      await this.temporalClient.workflow.start(ingestFromQueueWorkflow, {
         workflowId: createWorkflowId(),
         taskQueue: "events",
         args: [job],
@@ -603,7 +603,7 @@ export class EventCreater {
 
   private async startWorkflow({ taskId }: { taskId: string }) {
     try {
-      await this.workflowClient.start(normalizeEventWorkflow, {
+      await this.temporalClient.workflow.start(normalizeEventWorkflow, {
         workflowId: createWorkflowId(),
         taskQueue: "events",
         args: [taskId],
@@ -626,7 +626,7 @@ interface Violation {
 
 export const defaultEventCreater = new EventCreater(
   getPgPool(),
-  async () => await createWorkflowClient(),
+  async () => await getTemporalClient(),
   createCanonicalHash,
   uniqueId,
   Authenticator.default(),

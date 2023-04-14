@@ -7,7 +7,7 @@ import { checkViewerAccess } from "../../security/helpers";
 import searchEvents, { Options } from "../../models/event/search";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
-import workflowClient from "../../persistence/temporal";
+import getTemporalClient from "../../persistence/temporal";
 import { saveUserReportingEventWorkflow } from "../../_processor/temporal/workflows";
 import { createWorkflowId } from "../../_processor/temporal/helper";
 
@@ -111,7 +111,9 @@ export default async function (req) {
       timestamp: moment().valueOf(),
     };
 
-    (await workflowClient()).start(saveUserReportingEventWorkflow, {
+    const temporalClient = await getTemporalClient();
+
+    await temporalClient.workflow.start(saveUserReportingEventWorkflow, {
       workflowId: createWorkflowId(),
       taskQueue: "events",
       args: [job],

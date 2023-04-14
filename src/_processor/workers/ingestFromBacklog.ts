@@ -1,5 +1,8 @@
 import getPgPool from "../../persistence/pg";
 import { logger } from "../../logger";
+import getTemporalClient from "../persistence/temporal";
+import { normalizeEventWorkflow } from "../temporal/workflows";
+import { createWorkflowId } from "../temporal/helper";
 
 const pgPool = getPgPool();
 
@@ -30,7 +33,15 @@ export default async function ingestFromBacklog() {
 
     const result = await pgPool.query<{ id: string }>(q, []);
 
-    return result.rows;
+    const temporalClient = await getTemporalClient();
+
+    for (const task of result.rows) {
+      temporalClient.workflow.start(normalizeEventWorkflow, {
+        workflowId: createWorkflowId(),
+        taskQueue: "events",
+        args: [task.id],
+      });
+    }
   } catch (ex) {
     logger.error("Error ingesting from backlog:", ex);
   }

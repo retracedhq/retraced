@@ -11,18 +11,26 @@ const { ingestFromBacklog } = proxyActivities<typeof activities>({
 });
 
 export async function ingestFromBacklogWorkflow() {
-  const tasks = await ingestFromBacklog();
+  await ingestFromBacklog();
 
-  if (!tasks) {
-    return;
-  }
+  // if (!tasks) {
+  //   return;
+  // }
 
-  await Promise.all(
-    tasks.map((task) =>
-      startChild(normalizeEventWorkflow, {
-        args: [task.id],
-        parentClosePolicy: ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON,
-      })
-    )
-  );
+  // await Promise.all(
+  //   tasks.map((task) =>
+  //     startChild(normalizeEventWorkflow, {
+  //       args: [task.id],
+  //       parentClosePolicy: ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON,
+  //     })
+  //   )
+  // );
+
+  // Rewrite using for loop to avoid "Maximum call stack size exceeded" error
+  // for (const task of tasks) {
+  //   await startChild(normalizeEventWorkflow, {
+  //     args: [task.id],
+  //     parentClosePolicy: ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON,
+  //   });
+  // }
 }

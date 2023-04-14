@@ -164,7 +164,6 @@ services:
 
   # Temporal server
   temporal:
-    container_name: temporal
     environment:
       - DB=postgres
       - DB_PORT=5432
@@ -186,7 +185,6 @@ services:
 
   # Temporal Admin UI
   temporal-ui:
-    container_name: temporal-ui
     image: temporalio/ui:2.10.3
     environment:
       - TEMPORAL_ADDRESS=temporal:7233
@@ -201,7 +199,6 @@ services:
 
   # Temporal Workers
   temporal-workers:
-    container_name: temporal-workers
     build:
       context: .
       dockerfile: ./temporal/Dockerfile
@@ -216,7 +213,6 @@ services:
 
   # Temporal Scheduler
   temporal-scheduler:
-    container_name: temporal-scheduler
     build:
       context: .
       dockerfile: ./temporal/Dockerfile

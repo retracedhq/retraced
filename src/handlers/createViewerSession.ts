@@ -3,7 +3,7 @@ import moment from "moment";
 
 import getViewerDescriptor from "../models/viewer_descriptor/get";
 import { createViewerDescriptorVoucher } from "../security/vouchers";
-import workflowClient from "../persistence/temporal";
+import getTemporalClient from "../persistence/temporal";
 import { createWorkflowId } from "../_processor/temporal/helper";
 import { saveUserReportingEventWorkflow } from "../_processor/temporal/workflows";
 
@@ -31,8 +31,10 @@ export default async function handler(req) {
     timestamp: moment().valueOf(),
   };
 
+  const temporalClient = await getTemporalClient();
+
   try {
-    (await workflowClient()).start(saveUserReportingEventWorkflow, {
+    await temporalClient.workflow.start(saveUserReportingEventWorkflow, {
       workflowId: createWorkflowId(),
       taskQueue: "events",
       args: [job],

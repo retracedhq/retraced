@@ -1,3 +1,3 @@
-import createWorkflowClient from "../../persistence/temporal";
+import getTemporalClient from "../../persistence/temporal";
 
-export default createWorkflowClient;
+export default getTemporalClient;

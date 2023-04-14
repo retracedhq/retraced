@@ -6,7 +6,7 @@ import environmentDailyReports from "../models/environment/daily_report";
 import { logger } from "../logger";
 import { analyzeDayWorkflow } from "../temporal/workflows";
 import { createWorkflowId } from "../temporal/helper";
-import workflowClient from "../persistence/temporal";
+import getTemporalClient from "../persistence/temporal";
 
 const reportDueLocalHour = 7;
 
@@ -37,7 +37,9 @@ export default async function scheduleDailyReportsDue() {
       } with recipients ${JSON.stringify(r.recipients.map(({ email }) => email))}`
     );
 
-    (await workflowClient()).start(analyzeDayWorkflow, {
+    const temporalClient = await getTemporalClient();
+
+    await temporalClient.workflow.start(analyzeDayWorkflow, {
       workflowId: createWorkflowId(),
       taskQueue: "events",
       args: [job],
