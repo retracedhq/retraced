@@ -31,12 +31,10 @@ export interface Querier {
   query(query: string, args?: any[]): Promise<pg.QueryResult>;
 }
 
-const reportInterval = config.STATSD_INTERVAL_MILLIS ? parseInt(config.STATSD_INTERVAL_MILLIS, 10) : 30000;
+const reportInterval = 30000;
 
 function updatePoolGauges() {
-  // pg 7.0 + uses pg-pool 2.0 +, which has pool.waitingCount, etc.
-  // but @types for 7.0 aren't out as of 7/27/2017
-  const pool: any = getPgPool();
+  const pool = getPgPool();
   observeOtelGauge("PgPool.clients.waiting.count", pool.waitingCount);
   observeOtelGauge("PgPool.clients.total.count", pool.totalCount);
   observeOtelGauge("PgPool.clients.idle.count", pool.idleCount);
