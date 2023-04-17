@@ -9,6 +9,13 @@ import getPgPool from "../../persistence/pg";
 import getLocationByIP from "../persistence/geoip";
 import { logger } from "../../logger";
 import { mapValues } from "../../common/mapper";
+import getTemporalClient from "../persistence/temporal";
+import { createWorkflowId } from "../temporal/helper";
+import {
+  saveActiveActorWorkflow,
+  saveActiveGroupWorkflow,
+  saveEventToElasticsearchWorkflow,
+} from "../temporal/workflows";
 
 const pgPool = getPgPool();
 
@@ -134,13 +141,31 @@ export default async function normalizeEvent(taskId: string) {
 
     // We only do these things if this is a fresh run.
     if (processingNewEvent) {
-      const message: Job = {
+      const message = {
         projectId: task.project_id,
         environmentId: task.environment_id,
         event: normalizedEvent,
       };
 
-      return message;
+      const temporalClient = await getTemporalClient();
+
+      await temporalClient.workflow.start(saveEventToElasticsearchWorkflow, {
+        workflowId: createWorkflowId(),
+        taskQueue: "events",
+        args: [message],
+      });
+
+      await temporalClient.workflow.start(saveActiveActorWorkflow, {
+        workflowId: createWorkflowId(),
+        taskQueue: "events",
+        args: [message],
+      });
+
+      await temporalClient.workflow.start(saveActiveGroupWorkflow, {
+        workflowId: createWorkflowId(),
+        taskQueue: "events",
+        args: [message],
+      });
     }
   } finally {
     pg.release();

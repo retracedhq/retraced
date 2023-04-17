@@ -35,11 +35,11 @@ export default async function ingestFromBacklog() {
 
     const temporalClient = await getTemporalClient();
 
-    for (const task of result.rows) {
-      temporalClient.workflow.start(normalizeEventWorkflow, {
+    for (const row of result.rows) {
+      await temporalClient.workflow.start(normalizeEventWorkflow, {
         workflowId: createWorkflowId(),
         taskQueue: "events",
-        args: [task.id],
+        args: [row.id],
       });
     }
   } catch (ex) {

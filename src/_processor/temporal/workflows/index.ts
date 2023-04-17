@@ -8,3 +8,6 @@ export { elasticsearchAliasVerifyWorkflow } from "./elasticsearchAliasVerifyWork
 export { saveUserReportingEventWorkflow } from "./saveUserReportingEventWorkflow";
 export { sendEmailWorkflow } from "./sendEmailWorkflow";
 export { updateGeoDataWorkflow } from "./updateGeoDataWorkflow";
+export { saveEventToElasticsearchWorkflow } from "./saveEventToElasticsearchWorkflow";
+export { saveActiveActorWorkflow } from "./saveActiveActorWorkflow";
+export { saveActiveGroupWorkflow } from "./saveActiveGroupWorkflow";
