@@ -160,7 +160,6 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
 
   result.id = newEventId;
   result.received = received;
-  result.raw = JSON.stringify(origEvent);
 
   if (_.isEmpty(result.source_ip)) {
     _.unset(result, "source_ip");
