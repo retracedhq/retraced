@@ -156,6 +156,8 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
     "is_anonymous",
     "crud",
     "fields",
+    "component",
+    "version",
   ]);
 
   result.id = newEventId;
