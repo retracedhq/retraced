@@ -120,6 +120,10 @@ export interface CreateEventRequest {
   action: string;
   /** Denotes whether this is a "Create", "Read", "Update", or "Delete" event. */
   crud: string;
+  /** Will be mapped to group.id, group.name if passed instead of group.
+   @deprecated This field exists for backward compatibility. Use group instead.
+  */
+  team_id?: string;
   group?: RequestGroup;
   /** ISO8601 date string representing when this event occurent. `created` will be tracked in addtion to `received` */
   created?: Date;
