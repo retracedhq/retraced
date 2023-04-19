@@ -131,7 +131,8 @@ export default async function normalizeEvent(job) {
       set normalized_event = $1
       where id = $2`;
     await pg.query(updateStmt, [JSON.stringify(normalizedEvent), task.id]);
-
+    // condense original_event
+    await condenseOriginalEvent(origEvent, normalizedEvent, task.id);
     // We only do these things if this is a fresh run.
     if (processingNewEvent) {
       const message = {
@@ -231,4 +232,22 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
   }
 
   return result;
+}
+
+async function condenseOriginalEvent(originalEvent, normalizedEvent, taskId) {
+  const pg = await pgPool.connect();
+  const newOriginalEvent = {};
+
+  Object.keys(originalEvent).forEach((key) => {
+    if (key in normalizedEvent && normalizedEvent[key] === originalEvent[key]) {
+      newOriginalEvent[key] = "";
+    } else {
+      newOriginalEvent[key] = originalEvent[key];
+    }
+  });
+
+  const updateStmt = `update ingest_task
+        set original_event = $1
+        where id = $2`;
+  await pg.query(updateStmt, [newOriginalEvent, taskId]);
 }
