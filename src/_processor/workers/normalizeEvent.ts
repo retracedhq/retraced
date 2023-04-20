@@ -149,15 +149,14 @@ export default async function normalizeEvent(job) {
 
 function processEvent(origEvent, received, group, actor, target, locInfo, newEventId: string) {
   const result: any = _.pick(origEvent, [
-    "created",
-    "description",
-    "source_ip",
     "action",
-    "is_failure",
-    "is_anonymous",
-    "crud",
-    "fields",
     "component",
+    "created",
+    "crud",
+    "description",
+    "is_anonymous",
+    "is_failure",
+    "source_ip",
     "version",
   ]);
 
