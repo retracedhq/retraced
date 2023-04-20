@@ -235,18 +235,75 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
 
 async function condenseOriginalEvent(originalEvent, normalizedEvent, taskId) {
   const pg = await pgPool.connect();
-  const newOriginalEvent = {};
 
-  Object.keys(originalEvent).forEach((key) => {
-    if (key in normalizedEvent && normalizedEvent[key] === originalEvent[key]) {
-      newOriginalEvent[key] = "";
+  let compressedEvent = _.pick(originalEvent, [
+    "action",
+    "actor",
+    "component",
+    "created",
+    "crud",
+    "description",
+    "external_id",
+    "fields",
+    "group",
+    "is_anonymous",
+    "is_failure",
+    "metadata",
+    "source_ip",
+    "target",
+    "version",
+  ]);
+
+  compressedEvent = _.mapValues(compressedEvent, (value, key) => {
+    if (key === "actor") {
+      return _.mapValues(compressedEvent.actor, (_value, _key) => {
+        if ((_key === "name" || _key === "fields") && _.isEqual(normalizedEvent.actor[_key], _value)) {
+          return "";
+        }
+        if (_key === "id" && _.isEqual(normalizedEvent.actor.foreign_id, _value)) {
+          return "";
+        }
+        if (_key === "href" && _.isEqual(normalizedEvent.actor.url, _value)) {
+          return "";
+        }
+        // Should not reach here as schema is validated much before in the flow
+        return _value;
+      });
+    } else if (key === "target") {
+      return _.mapValues(compressedEvent.target, (_value, _key) => {
+        if (["name", "type", "fields"].includes(_key) && _.isEqual(normalizedEvent.target[_key], _value)) {
+          return "";
+        }
+        if (_key === "id" && _.isEqual(normalizedEvent.target.foreign_id, _value)) {
+          return "";
+        }
+        if (_key === "href" && _.isEqual(normalizedEvent.target.url, _value)) {
+          return "";
+        }
+        // Should not reach here as schema is validated much before in the flow
+        return _value;
+      });
+    } else if (key === "group") {
+      return _.mapValues(compressedEvent.group, (_value, _key) => {
+        if (["name", "id"].includes(_key) && _.isEqual(normalizedEvent.group[_key], _value)) {
+          return "";
+        }
+        // Should not reach here as schema is validated much before in the flow
+        return _value;
+      });
+    } else if (key === "created") {
+      // created is transformed into unix timestamp inside normalized_event, hence retaining original value here
+      return value;
+    } else if (_.isEqual(normalizedEvent[key], value)) {
+      return "";
     } else {
-      newOriginalEvent[key] = originalEvent[key];
+      // Should not reach here as schema is validated much before in the flow
+      return value;
     }
   });
 
   const updateStmt = `update ingest_task
-        set original_event = $1
+        set original_event = '', compressed_event = $1
         where id = $2`;
-  await pg.query(updateStmt, [newOriginalEvent, taskId]);
+  await pg.query(updateStmt, [compressedEvent, taskId]);
 }
