@@ -1,5 +1,6 @@
 import process from "process";
 import moment from "moment";
+import _ from "lodash";
 
 export function jobDesc(job) {
   return job.id.substring(0, 8);
@@ -49,4 +50,59 @@ export function offsetsWithLocalTimeDuringUTCHour(utcHour: number, localHour: nu
   }
 
   return validOffsets;
+}
+
+/**
+ * Restores the `original_event` using `compressed_event` and `normalized_event`
+ */
+export function restoreOriginalEvent(compressedEvent, normalizedEvent) {
+  let originalEvent = _.pick(compressedEvent, [
+    "action",
+    "actor",
+    "component",
+    "created",
+    "crud",
+    "description",
+    "external_id",
+    "fields",
+    "group",
+    "is_anonymous",
+    "is_failure",
+    "metadata",
+    "source_ip",
+    "target",
+    "version",
+  ]);
+
+  originalEvent = _.mapValues(originalEvent, (value, key) => {
+    if (key === "actor") {
+      return _.mapValues(value, (_value, _key) => {
+        if (_key === "id") {
+          return _.get(normalizedEvent, "actor.foreign_id");
+        } else if (_key === "href") {
+          return _.get(normalizedEvent, "actor.url");
+        } else {
+          return _.get(normalizedEvent, `actor.${_key}`);
+        }
+      });
+    } else if (key === "target") {
+      return _.mapValues(value, (_value, _key) => {
+        if (_key === "id") {
+          return _.get(normalizedEvent, "target.foreign_id");
+        } else if (_key === "href") {
+          return _.get(normalizedEvent, "target.url");
+        } else {
+          return _.get(normalizedEvent, `target.${_key}`);
+        }
+      });
+    } else if (key === "group") {
+      return _.mapValues(value, (_value, _key) => _.get(normalizedEvent, `group.${_key}`));
+    } else if (key === "created") {
+      return value;
+    } else {
+      return _.get(normalizedEvent, key);
+    }
+  });
+
+  return originalEvent;
 }
