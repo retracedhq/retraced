@@ -127,17 +127,12 @@ export default async function normalizeEvent(job) {
       locInfo,
       newEventId
     );
+    const compressedEvent = compressOriginalEvent(origEvent, normalizedEvent);
 
     const updateStmt = `update ingest_task
-      set normalized_event = $1
-      where id = $2`;
-    await pg.query(updateStmt, [JSON.stringify(normalizedEvent), task.id]);
-    // condense original_event
-    const compressedEvent = compressOriginalEvent(origEvent, normalizedEvent);
-    const updateCompressed = `update ingest_task
-    set original_event = '', compressed_event = $1
-    where id = $2`;
-    await pg.query(updateCompressed, [compressedEvent, taskId]);
+      set original_event = '', normalized_event = $1, compressed_event = $2
+      where id = $3`;
+    await pg.query(updateStmt, [normalizedEvent, compressedEvent, task.id]);
 
     // We only do these things if this is a fresh run.
     if (processingNewEvent) {
