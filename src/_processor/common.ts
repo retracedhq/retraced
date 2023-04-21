@@ -74,37 +74,39 @@ export const ORIGINAL_EVENT_KEYS = [
  * Restores the `original_event` using `compressed_event` and `normalized_event`
  */
 export function restoreOriginalEvent(compressedEvent, normalizedEvent) {
-  let originalEvent = _.pick(compressedEvent, ORIGINAL_EVENT_KEYS);
+  const originalEvent = _.assign(
+    {},
+    _.pick(normalizedEvent, ORIGINAL_EVENT_KEYS),
+    _.pick(compressedEvent, ORIGINAL_EVENT_KEYS)
+  );
 
-  originalEvent = _.mapValues(originalEvent, (value, key) => {
-    if (key === "actor") {
-      return _.mapValues(value, (_value, _key) => {
-        if (_key === "id") {
-          return _.get(normalizedEvent, "actor.foreign_id");
-        } else if (_key === "href") {
-          return _.get(normalizedEvent, "actor.url");
-        } else {
-          return _.get(normalizedEvent, `actor.${_key}`);
-        }
-      });
-    } else if (key === "target") {
-      return _.mapValues(value, (_value, _key) => {
-        if (_key === "id") {
-          return _.get(normalizedEvent, "target.foreign_id");
-        } else if (_key === "href") {
-          return _.get(normalizedEvent, "target.url");
-        } else {
-          return _.get(normalizedEvent, `target.${_key}`);
-        }
-      });
-    } else if (key === "group") {
-      return _.mapValues(value, (_value, _key) => _.get(normalizedEvent, `group.${_key}`));
-    } else if (key === "created") {
-      return value;
-    } else {
-      return _.get(normalizedEvent, key);
+  originalEvent.actor = _.mapKeys(
+    _.pick(normalizedEvent.actor, ["foreign_id", "name", "fields", "url"]),
+    (value, key) => {
+      if (key === "foreign_id") {
+        return "id";
+      } else if (key === "url") {
+        return "href";
+      } else {
+        return key;
+      }
     }
-  });
+  );
+
+  originalEvent.target = _.mapKeys(
+    _.pick(normalizedEvent.target, ["foreign_id", "name", "type", "fields", "url"]),
+    (value, key) => {
+      if (key === "foreign_id") {
+        return "id";
+      } else if (key === "url") {
+        return "href";
+      } else {
+        return key;
+      }
+    }
+  );
+
+  originalEvent.group = _.pick(normalizedEvent.group, ["id", "name"]);
 
   return originalEvent;
 }
