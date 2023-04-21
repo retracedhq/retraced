@@ -271,7 +271,8 @@ function compressOriginalEvent(originalEvent, normalizedEvent) {
         if (_key === "href" && _.isEqual(normalizedEvent.target.url, _value)) {
           return false;
         }
-        // Should not reach here as schema is validated (fields not in schema will be rejected) much before in the flow
+        // Will only reach here if normalization mutated the value or failed to translate the value
+        // in which case we need to retain the field
         return true;
       });
       // All the fields are persisted in normalized, safe to empty out target
@@ -286,7 +287,8 @@ function compressOriginalEvent(originalEvent, normalizedEvent) {
         if (["name", "id"].includes(_key) && _.isEqual(normalizedEvent.group[_key], _value)) {
           return false;
         }
-        // Should not reach here as schema is validated (fields not in schema will be rejected) much before in the flow
+        // Will only reach here if normalization mutated the value or failed to translate the value
+        // in which case we need to retain the field
         return true;
       });
       // All the fields are persisted in normalized, safe to empty out group
