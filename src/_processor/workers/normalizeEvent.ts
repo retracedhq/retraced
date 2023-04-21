@@ -240,53 +240,73 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
 }
 
 function compressOriginalEvent(originalEvent, normalizedEvent) {
-  let compressedEvent = _.pick(originalEvent, ORIGINAL_EVENT_KEYS);
+  const compressedEvent = _.pick(originalEvent, ORIGINAL_EVENT_KEYS);
 
-  compressedEvent = _.mapValues(compressedEvent, (value, key) => {
+  _.forOwn(originalEvent, (value, key) => {
     if (key === "actor") {
-      return _.mapValues(compressedEvent.actor, (_value, _key) => {
+      const compressedActor = _.pickBy(compressedEvent.actor, (_value, _key) => {
         if ((_key === "name" || _key === "fields") && _.isEqual(normalizedEvent.actor[_key], _value)) {
-          return "";
+          return false;
         }
         if (_key === "id" && _.isEqual(normalizedEvent.actor.foreign_id, _value)) {
-          return "";
+          return false;
         }
         if (_key === "href" && _.isEqual(normalizedEvent.actor.url, _value)) {
-          return "";
+          return false;
         }
-        // Should not reach here as schema is validated much before in the flow
-        return _value;
+        // Will only reach here if normalization mutated the value or failed to translate the value
+        // in which case we need to retain the field
+        return true;
       });
+      // All the fields are persisted in normalized, safe to empty out actor
+      if (_.isEmpty(compressedActor)) {
+        _.unset(compressedEvent, "actor");
+      } else {
+        // Have to retain some fields inside actor
+        _.set(compressedEvent, "actor", compressedActor);
+      }
     } else if (key === "target") {
-      return _.mapValues(compressedEvent.target, (_value, _key) => {
+      const compressedTarget = _.pickBy(compressedEvent.target, (_value, _key) => {
         if (["name", "type", "fields"].includes(_key) && _.isEqual(normalizedEvent.target[_key], _value)) {
-          return "";
+          return false;
         }
         if (_key === "id" && _.isEqual(normalizedEvent.target.foreign_id, _value)) {
-          return "";
+          return false;
         }
         if (_key === "href" && _.isEqual(normalizedEvent.target.url, _value)) {
-          return "";
+          return false;
         }
-        // Should not reach here as schema is validated much before in the flow
-        return _value;
+        // Should not reach here as schema is validated (fields not in schema will be rejected) much before in the flow
+        return true;
       });
+      // All the fields are persisted in normalized, safe to empty out target
+      if (_.isEmpty(compressedTarget)) {
+        _.unset(compressedEvent, "target");
+      } else {
+        // Have to retain some fields inside target
+        _.set(compressedEvent, "target", compressedTarget);
+      }
     } else if (key === "group") {
-      return _.mapValues(compressedEvent.group, (_value, _key) => {
+      const compressedGroup = _.pickBy(compressedEvent.group, (_value, _key) => {
         if (["name", "id"].includes(_key) && _.isEqual(normalizedEvent.group[_key], _value)) {
-          return "";
+          return false;
         }
-        // Should not reach here as schema is validated much before in the flow
-        return _value;
+        // Should not reach here as schema is validated (fields not in schema will be rejected) much before in the flow
+        return true;
       });
-    } else if (key === "created") {
-      // created is transformed into unix timestamp inside normalized_event, hence retaining original value here
-      return value;
+      // All the fields are persisted in normalized, safe to empty out group
+      if (_.isEmpty(compressedGroup)) {
+        _.unset(compressedEvent, "group");
+      } else {
+        // Have to retain some fields inside group
+        _.set(compressedEvent, "group", compressedGroup);
+      }
     } else if (_.isEqual(normalizedEvent[key], value)) {
-      return "";
+      // Key is persisted in normalized, safe to empty it out inside compressed_event
+      _.unset(compressedEvent, key);
     } else {
-      // Should not reach here as schema is validated much before in the flow
-      return value;
+      // Have to retain the key and value inside compressed_event
+      return;
     }
   });
 
