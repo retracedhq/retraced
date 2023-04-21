@@ -52,27 +52,29 @@ export function offsetsWithLocalTimeDuringUTCHour(utcHour: number, localHour: nu
   return validOffsets;
 }
 
+export const ORIGINAL_EVENT_KEYS = [
+  "action",
+  "actor",
+  "component",
+  "created",
+  "crud",
+  "description",
+  "external_id",
+  "fields",
+  "group",
+  "is_anonymous",
+  "is_failure",
+  "metadata",
+  "source_ip",
+  "target",
+  "version",
+];
+
 /**
  * Restores the `original_event` using `compressed_event` and `normalized_event`
  */
 export function restoreOriginalEvent(compressedEvent, normalizedEvent) {
-  let originalEvent = _.pick(compressedEvent, [
-    "action",
-    "actor",
-    "component",
-    "created",
-    "crud",
-    "description",
-    "external_id",
-    "fields",
-    "group",
-    "is_anonymous",
-    "is_failure",
-    "metadata",
-    "source_ip",
-    "target",
-    "version",
-  ]);
+  let originalEvent = _.pick(compressedEvent, ORIGINAL_EVENT_KEYS);
 
   originalEvent = _.mapValues(originalEvent, (value, key) => {
     if (key === "actor") {

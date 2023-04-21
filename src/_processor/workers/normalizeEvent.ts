@@ -9,6 +9,7 @@ import getLocationByIP from "../persistence/geoip";
 import nsq from "../persistence/nsq";
 import { logger } from "../logger";
 import { mapValues } from "../../common/mapper";
+import { ORIGINAL_EVENT_KEYS } from "../common";
 
 const pgPool = getPgPool();
 
@@ -239,23 +240,7 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
 }
 
 function compressOriginalEvent(originalEvent, normalizedEvent) {
-  let compressedEvent = _.pick(originalEvent, [
-    "action",
-    "actor",
-    "component",
-    "created",
-    "crud",
-    "description",
-    "external_id",
-    "fields",
-    "group",
-    "is_anonymous",
-    "is_failure",
-    "metadata",
-    "source_ip",
-    "target",
-    "version",
-  ]);
+  let compressedEvent = _.pick(originalEvent, ORIGINAL_EVENT_KEYS);
 
   compressedEvent = _.mapValues(compressedEvent, (value, key) => {
     if (key === "actor") {
