@@ -149,23 +149,23 @@ export default async function normalizeEvent(taskId: string) {
 
       const temporalClient = await getTemporalClient();
 
-      await temporalClient.workflow.start(saveEventToElasticsearchWorkflow, {
-        workflowId: createWorkflowId(),
-        taskQueue: "events",
-        args: [message],
-      });
+      // await temporalClient.workflow.start(saveEventToElasticsearchWorkflow, {
+      //   workflowId: createWorkflowId(),
+      //   taskQueue: "events",
+      //   args: [message],
+      // });
 
-      await temporalClient.workflow.start(saveActiveActorWorkflow, {
-        workflowId: createWorkflowId(),
-        taskQueue: "events",
-        args: [message],
-      });
+      // await temporalClient.workflow.start(saveActiveActorWorkflow, {
+      //   workflowId: createWorkflowId(),
+      //   taskQueue: "events",
+      //   args: [message],
+      // });
 
-      await temporalClient.workflow.start(saveActiveGroupWorkflow, {
-        workflowId: createWorkflowId(),
-        taskQueue: "events",
-        args: [message],
-      });
+      // await temporalClient.workflow.start(saveActiveGroupWorkflow, {
+      //   workflowId: createWorkflowId(),
+      //   taskQueue: "events",
+      //   args: [message],
+      // });
     }
   } finally {
     pg.release();

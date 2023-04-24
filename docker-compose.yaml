@@ -2,27 +2,33 @@ version: "3.8"
 
 networks:
   retraced:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.1.0.0/24
+          gateway: 10.1.0.1
 
 x-common-variables: &common-variables
   POSTGRES_HOST: postgres
+  POSTGRES_USER: retraced
+  POSTGRES_PASSWORD: password
+  POSTGRES_PORT: 5432
+  POSTGRES_DATABASE: retraced
+  POSTGRES_POOL_SIZE: 10
+
   HMAC_SECRET_ADMIN: xxxxxxx
   SHLVL: 1
-  POSTGRES_USER: retraced
   EXPORT_PAGE_SIZE_INTERNAL: 2
-  POSTGRES_PASSWORD: password
-  POSTGRES_POOL_SIZE: 10
   HMAC_SECRET_VIEWER: xxxxxxxxx
-  POSTGRES_PORT: 5432
   API_BASE_URL_PATH: /auditlog
   RETRACED_API_BASE: http://localhost:3000/auditlog
-  POSTGRES_DATABASE: retraced
   LOG_LEVEL: warn
   ELASTICSEARCH_NODES: http://elasticsearch:9200
   HOSTNAME: retraced-api-67856674bf-kwq7f
   # Set admin root token here
   ADMIN_ROOT_TOKEN: dev
   MAXMIND_GEOLITE2_LICENSE_KEY: ${MAXMIND_GEOLITE2_LICENSE_KEY}
-  TEMPORAL_ADDRESS: temporal:7233
+  TEMPORAL_ADDRESS: ${TEMPORAL_ADDRESS}
   PG_SEARCH: ${PG_SEARCH}
 
 services:
@@ -158,46 +164,25 @@ services:
       - RETRACED_HOST_URL=http://retraced-api:3000/auditlog
       - RETRACED_EXTERNAL_URL=http://localhost:3000/auditlog
       - RETRACED_ADMIN_ROOT_TOKEN=dev
+      - NEXTAUTH_ADMIN_CREDENTIALS=kiran@boxyhq.com:password
     depends_on:
       - "retraced-api"
     restart: "always"
 
-  # Temporal server
-  temporal:
+  postgres-temporal:
+    container_name: postgres-temporal
+    image: postgres:14.2
+    ports:
+      - 5433:5432
     environment:
-      - DB=postgres
-      - DB_PORT=5432
-      - POSTGRES_USER=retraced
-      - POSTGRES_PWD=password
-      - POSTGRES_SEEDS=postgres
-      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
-    image: temporalio/auto-setup:1.20.1
+      - PGDATA=/var/lib/postgresql/data/pgdata-temporal
+      - POSTGRES_USER=${TEMPORAL_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${TEMPORAL_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${TEMPORAL_POSTGRES_DBNAME}
     networks:
       - retraced
-    ports:
-      - 7233:7233
-    labels:
-      kompose.volume.type: configMap
-    volumes:
-      - ./temporal:/etc/temporal/config/dynamicconfig
-    depends_on:
-      - postgres
+    restart: "always"
 
-  # Temporal Admin UI
-  temporal-ui:
-    image: temporalio/ui:2.10.3
-    environment:
-      - TEMPORAL_ADDRESS=temporal:7233
-      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
-    depends_on:
-      temporal:
-        condition: service_started
-    networks:
-      - retraced
-    ports:
-      - 8080:8080
-
-  # Temporal Workers
   temporal-workers:
     build:
       context: .
@@ -206,12 +191,11 @@ services:
     networks:
       - retraced
     depends_on:
-      temporal:
+      temporal-history:
         condition: service_started
     restart: "always"
     command: node build/src/_processor/temporal/workers/index.js
 
-  # Temporal Scheduler
   temporal-scheduler:
     build:
       context: .
@@ -220,6 +204,188 @@ services:
     networks:
       - retraced
     depends_on:
-      temporal:
+      temporal-history:
         condition: service_started
     command: node build/src/_processor/temporal/schedule/start.js
+
+  temporal-ui:
+    image: temporalio/ui:${TEMPORAL_UI_IMG}
+    environment:
+      - TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS}
+      # - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    depends_on:
+      - temporal-worker
+    networks:
+      retraced:
+        ipv4_address: "10.1.0.21"
+    ports:
+      - 8080:8080
+
+  temporal-history:
+    image: temporalio/server:latest
+    environment:
+      - DB=postgres
+      - DBNAME=${TEMPORAL_POSTGRES_DBNAME}
+      - DB_PORT=${TEMPORAL_POSTGRES_PORT}
+      - POSTGRES_USER=${TEMPORAL_POSTGRES_USER}
+      - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD}
+      - POSTGRES_SEEDS=${TEMPORAL_POSTGRES_HOST}
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development.yaml
+      - SERVICES=history
+      - TEMPORAL_BROADCAST_ADDRESS=10.1.0.22
+      # - STATSD_ENDPOINT=dogstatsd:8125
+      - PROMETHEUS_ENDPOINT=10.1.0.22:8000
+    networks:
+      retraced:
+        ipv4_address: "10.1.0.22"
+    ports:
+      - 7234:7234
+      - 8000:8000
+    restart: on-failure
+    volumes:
+      - ./temporal:/etc/temporal/config/dynamicconfig
+      - ./temporal/config_template.yaml:/etc/temporal/config/config_template.yaml
+    # depends_on:
+    #   - temporal-admin-tools
+
+  temporal-matching:
+    image: temporalio/server:${TEMPORAL_SERVER_IMG}
+    environment:
+      - DB=postgres
+      - DBNAME=${TEMPORAL_POSTGRES_DBNAME}
+      - DB_PORT=${TEMPORAL_POSTGRES_PORT}
+      - POSTGRES_USER=${TEMPORAL_POSTGRES_USER}
+      - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD}
+      - POSTGRES_SEEDS=${TEMPORAL_POSTGRES_HOST}
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development.yaml
+      - TEMPORAL_HISTORY_NAMESPACEDEFAULT_ARCHIVAL_FILESTORE=enabled
+      - TEMPORAL_VISIBILITY_NAMESPACEDEFAULT_ARCHIVAL_FILESTORE=enabled
+      - SERVICES=matching
+      - TEMPORAL_BROADCAST_ADDRESS=10.1.0.23
+      # - STATSD_ENDPOINT=dogstatsd:8125
+      - PROMETHEUS_ENDPOINT=0.0.0.0:8001
+    networks:
+      retraced:
+        ipv4_address: "10.1.0.23"
+    ports:
+      - 7235:7235
+      - 8001:8001
+    restart: on-failure
+    volumes:
+      - ./temporal:/etc/temporal/config/dynamicconfig
+      - ./temporal/config_template.yaml:/etc/temporal/config/config_template.yaml
+
+  temporal-frontend:
+    image: temporalio/server:${TEMPORAL_SERVER_IMG}
+    environment:
+      - DB=postgres
+      - DBNAME=${TEMPORAL_POSTGRES_DBNAME}
+      - DB_PORT=${TEMPORAL_POSTGRES_PORT}
+      - POSTGRES_USER=${TEMPORAL_POSTGRES_USER}
+      - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD}
+      - POSTGRES_SEEDS=${TEMPORAL_POSTGRES_HOST}
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development.yaml
+      - SERVICES=frontend
+      - TEMPORAL_BROADCAST_ADDRESS=10.1.0.24
+      # - STATSD_ENDPOINT=dogstatsd:8125
+      - PROMETHEUS_ENDPOINT=0.0.0.0:8002
+    networks:
+      retraced:
+        ipv4_address: "10.1.0.24"
+    ports:
+      - 7233:7233
+      - 8002:8002
+    restart: on-failure
+    volumes:
+      - ./temporal:/etc/temporal/config/dynamicconfig
+      - ./temporal/config_template.yaml:/etc/temporal/config/config_template.yaml
+
+  temporal-worker:
+    image: temporalio/server:${TEMPORAL_SERVER_IMG}
+    environment:
+      - DB=postgres
+      - PUBLIC_FRONTEND_ADDRESS=${TEMPORAL_ADDRESS}
+      - DBNAME=${TEMPORAL_POSTGRES_DBNAME}
+      - DB_PORT=${TEMPORAL_POSTGRES_PORT}
+      - POSTGRES_USER=${TEMPORAL_POSTGRES_USER}
+      - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD}
+      - POSTGRES_SEEDS=${TEMPORAL_POSTGRES_HOST}
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development.yaml
+      - SERVICES=worker
+      - TEMPORAL_HISTORY_NAMESPACEDEFAULT_ARCHIVAL_FILESTORE=enabled
+      - TEMPORAL_VISIBILITY_NAMESPACEDEFAULT_ARCHIVAL_FILESTORE=enabled
+      - TEMPORAL_BROADCAST_ADDRESS=10.1.0.25
+      # - STATSD_ENDPOINT=dogstatsd:8125
+      - PROMETHEUS_ENDPOINT=0.0.0.0:8003
+    networks:
+      retraced:
+        ipv4_address: "10.1.0.25"
+    ports:
+      - 7232:7232
+      - 8003:8003
+    restart: on-failure
+    volumes:
+      - ./temporal:/etc/temporal/config/dynamicconfig
+      - ./temporal/config_template.yaml:/etc/temporal/config/config_template.yaml
+    depends_on:
+      - temporal-frontend
+
+  temporal-admin-tools:
+    container_name: temporal-admin-tools
+    image: temporalio/admin-tools:1.20.2
+    environment:
+      - DB=postgres
+      - TEMPORAL_CLI_ADDRESS=${TEMPORAL_ADDRESS}
+      - PUBLIC_FRONTEND_ADDRESS=${TEMPORAL_ADDRESS}
+      - DBNAME=${TEMPORAL_POSTGRES_DBNAME}
+      - DB_PORT=${TEMPORAL_POSTGRES_PORT}
+      - POSTGRES_USER=${TEMPORAL_POSTGRES_USER}
+      - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD}
+      - POSTGRES_SEEDS=${TEMPORAL_POSTGRES_HOST}
+      - TEMPORAL_HOME=/etc/temporal
+    volumes:
+      - "./temporal/setup.sh:/etc/temporal/setup.sh"
+    entrypoint:
+      - /etc/temporal/setup.sh
+    restart: always
+    stdin_open: true
+    tty: true
+    depends_on:
+      - postgres-temporal
+    networks:
+      retraced:
+        ipv4_address: "10.1.0.26"
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./temporal/prometheus/config.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:7.5.16
+    environment:
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    ports:
+      - 8085:3000
+    volumes:
+      - type: bind
+        source: ./temporal/grafana/provisioning/datasources
+        target: /etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+
+  # dogstatsd:
+  #   container_name: dogstatsd
+  #   image: datadog/dogstatsd:latest
+  #   environment:
+  #     - DD_API_KEY=21b8ec1d182ac3d6e0dc278b6ac65f2b
+  #     - DD_HOSTNAME=dogstatsd
+  #   ports:
+  #     - "8125:8125/udp"
+  #   networks:
+  #     - retraced
