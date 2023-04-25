@@ -114,7 +114,7 @@ export default async function normalizeEvent(job) {
 
     let locInfo;
     if (origEvent.source_ip) {
-      locInfo = await getLocationByIP(origEvent.source_ip);
+      locInfo = await getLocationByIP(origEvent.source_ip, pg);
     }
 
     // TODO(zhaytee): Add typing
