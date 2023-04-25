@@ -11,16 +11,16 @@ const RECEIVED = new Date().getTime();
 
 @suite
 class NormalizeEventTest {
-  poolStub: sinon.SinonStub<any[], any>;
-  queryMock: sinon.SinonStub<any[], any>;
-  releaseMock: sinon.SinonStub<any[], any>;
+  queryStub: sinon.SinonStub<any[], any>;
+  releaseStub: sinon.SinonStub<any[], any>;
+  poolMock: sinon.SinonStub<any[], any>;
   before() {
-    this.queryMock = sinon.stub();
-    this.releaseMock = sinon.stub();
-    this.poolStub = sinon
+    this.queryStub = sinon.stub();
+    this.releaseStub = sinon.stub();
+    this.poolMock = sinon
       .mock(Pool.prototype)
       .expects("connect")
-      .callsFake(() => Promise.resolve({ query: this.queryMock, release: this.releaseMock }));
+      .callsFake(() => Promise.resolve({ query: this.queryStub, release: this.releaseStub }));
     sinon.stub(NSQClient.prototype, "produce").callsFake(() => Promise.resolve());
   }
 
@@ -115,7 +115,7 @@ class NormalizeEventTest {
     const normalizeQuery =
       "update ingest_task set original_event = '', normalized_event = $1, compressed_event = $2 where id = $3";
 
-    this.queryMock
+    this.queryStub
       .onCall(0)
       .resolves({
         command: "",
