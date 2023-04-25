@@ -88,7 +88,7 @@
     "prebuild": "rimraf build",
     "build": "npm run swagger && npm run routes && tsc && cp build/src/retracedctl.js build/src/retracedctl && chmod +x build/src/retracedctl",
     "lint": "eslint -c .eslintrc.js ./src",
-    "test": "mocha --recursive -r ts-node/register src/test/**/*.ts",
+    "test": "mocha --recursive -r ts-node/register src/test/**/*.ts src/_processor/test/**/*.ts",
     "test:integration": "mocha --recursive -r ts-node/register integration/test/**/*.ts",
     "test:e2e": "mocha --recursive -r ts-node/register src/e2e-tests/**/*.ts",
     "cover": "nyc mocha",
