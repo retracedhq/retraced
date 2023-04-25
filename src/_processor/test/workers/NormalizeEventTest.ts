@@ -174,7 +174,7 @@ class NormalizeEventTest {
         .calledWithMatch(normalizeQuery, [JSON.parse(normalizedEvent), JSON.parse(compressedEvent), "100"]),
       "updation of ingest_task with normalizedEvent, compressedEvent failed"
     ).to.be.true;
-    expect(this.releaseStub.calledOnce, "pg client to be released after use").to.be.true;
+    expect(this.releaseStub.calledOnce, "pg poolclient not released after use").to.be.true;
   }
 }
 
