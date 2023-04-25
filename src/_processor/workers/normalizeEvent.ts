@@ -19,9 +19,8 @@ export default async function normalizeEvent(job) {
 
   const pg = await pgPool.connect();
   try {
-    const fields = `id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres,
-      saved_to_elasticsearch, project_id, environment_id, new_event_id,
-      extract(epoch from received) * 1000 as received`;
+    const fields =
+      "id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres, saved_to_elasticsearch, project_id, environment_id, new_event_id, extract(epoch from received) * 1000 as received";
     const pgResp = await pg.query(`select ${fields} from ingest_task where id = $1`, [taskId]);
     if (!pgResp.rows.length) {
       throw new Error(`Couldn't find ingestion task with id '${taskId}'`);
@@ -129,9 +128,8 @@ export default async function normalizeEvent(job) {
     );
     const compressedEvent = compressOriginalEvent(origEvent, normalizedEvent);
 
-    const updateStmt = `update ingest_task
-      set original_event = '', normalized_event = $1, compressed_event = $2
-      where id = $3`;
+    const updateStmt =
+      "update ingest_task set original_event = '', normalized_event = $1, compressed_event = $2 where id = $3";
     await pg.query(updateStmt, [normalizedEvent, compressedEvent, task.id]);
 
     // We only do these things if this is a fresh run.
