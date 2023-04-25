@@ -165,11 +165,16 @@ class NormalizeEventTest {
       }),
     });
     expect(
-      this.queryMock
-        .getCall(10)
-        .calledWithMatch(normalizeQuery, [JSON.parse(normalizedEvent), JSON.parse(compressedEvent), "100"])
+      this.queryStub.getCall(0).calledWithMatch(ingestionTaskQuery, ["100"]),
+      "Failed to query ingest_task table correctly"
     ).to.be.true;
-    expect(this.queryMock.getCall(0).calledWithMatch(ingestionTaskQuery, ["100"])).to.be.true;
+    expect(
+      this.queryStub
+        .getCall(10)
+        .calledWithMatch(normalizeQuery, [JSON.parse(normalizedEvent), JSON.parse(compressedEvent), "100"]),
+      "updation of ingest_task with normalizedEvent, compressedEvent failed"
+    ).to.be.true;
+    expect(this.releaseStub.calledOnce, "pg client to be released after use").to.be.true;
   }
 }
 
