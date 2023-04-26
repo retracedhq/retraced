@@ -1,5 +1,6 @@
 data_dir = "/var/lib/vector/"
-
+[api]
+  enabled = true
 # The data source that Vector will collect logs from
 [sources.webhook]
 type = "http_server" # The protocol to use
@@ -27,7 +28,60 @@ type = "remap"
 inputs = [ "webhook" ]
 source = """
 # Set the values of the output object
-. = parse_json!(parse_json!(.message).message)
+. = parse_json!(.message)
+"""
+
+[transforms.ecs_transform]
+type = "remap"
+inputs = [ "webhook" ]
+source = """
+# Set the values of the output object
+. = parse_json!(.message)
+.host.name = "localhost"
+.host.ip = .source_ip
+.event.action = .action
+.event.code = .crud
+.event.module = .component
+if .event.received == null {
+  .event.received = now()
+} else {
+  .event.received = format_timestamp!(.event.received, format: "%+")
+}
+.event.dataset = "Audit Log"
+.user.id = .actor.id
+.user.name = .actor.name
+.user.domain = .actor.href
+.service.id = .target.id
+.service.name = .target.name
+.service.address = .target.href
+.service.type = .target.type
+.group.id = .group.id
+.group.name = .group.name
+.group.domain = .group.href
+.source.ip = .source_ip
+.message = .description
+if .event.is_failure == true {
+  .event.outcome = "failure"
+  } else {
+  .event.outcome = "success"
+}
+if .event.created == null {
+  .@timestamp = now()
+} else {
+  .@timestamp = format_timestamp!(.event.created, format: "%+")
+}
+del(.actor)
+del(.target)
+del(.received)
+del(.action)
+del(.crud)
+del(.is_failure)
+del(.component)
+del(.group)
+del(.source_ip)
+del(.description)
+del(.created)
+del(.canonical_time)
 """
 
 # The destination(s) to send the events to
@@ -58,3 +112,17 @@ acknowledgements.enabled = true
 auth.access_key_id="${EXPORT_S3_ACCESS_KEY_ID}"
 auth.secret_access_key="${EXPORT_S3_SECRET_ACCESS_KEY}"
 batch.max_events = 10
+
+[sinks.ecs_sink]
+type = "elasticsearch"
+inputs = [ "ecs_transform" ]
+acknowledgements.enabled = true
+api_version = "v7"
+auth.strategy = "basic"
+auth.user = "elastic"
+auth.password = "changeme"
+buffer.type = "memory"
+buffer.max_events = 10
+bulk.action = "index"
+bulk.index = "vector-%Y-%m-%d"
+endpoints = ["http://elasticsearch:9200"]

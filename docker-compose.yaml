@@ -124,16 +124,16 @@ services:
   #   networks:
   #     - retraced
 
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:7.8.0
-  #   environment:
-  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-  #   networks:
-  #     - retraced
-  #   depends_on:
-  #     - elasticsearch
-  #   ports:
-  #     - 5601:5601
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.8.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - retraced
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
 
   retraced-dev-bootstrap:
     build:
@@ -221,6 +221,7 @@ services:
       - retraced
     depends_on:
       - "minio"
+      - "elasticsearch"
 
   minio:
     image: quay.io/minio/minio:latest

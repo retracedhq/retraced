@@ -6,21 +6,15 @@ export default function sendToWebhook(event: any): void {
   if (config.EXPORT_WEBHOOK_URL) {
     delete event.raw;
     axios
-      .post(
-        config.EXPORT_WEBHOOK_URL,
-        {
-          message: JSON.stringify(event),
-        },
-        {
-          auth:
-            config.EXPORT_WEBHOOK_USERNAME && config.EXPORT_WEBHOOK_PASSWORD
-              ? {
-                  username: config.EXPORT_WEBHOOK_USERNAME,
-                  password: config.EXPORT_WEBHOOK_PASSWORD,
-                }
-              : undefined,
-        }
-      )
+      .post(config.EXPORT_WEBHOOK_URL, event, {
+        auth:
+          config.EXPORT_WEBHOOK_USERNAME && config.EXPORT_WEBHOOK_PASSWORD
+            ? {
+                username: config.EXPORT_WEBHOOK_USERNAME,
+                password: config.EXPORT_WEBHOOK_PASSWORD,
+              }
+            : undefined,
+      })
       .catch(() => {
         logger.info(`[VECTOR EXPORT] Failed to send to webhook`);
       })
