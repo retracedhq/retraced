@@ -3,7 +3,7 @@ const moment = require("moment");
 
 const apiUrl = "http://127.0.0.1:3000/auditlog/publisher/v1/project/dev/event";
 const token = "dev";
-const group = "boxyhq-4";
+const group = "boxyhq-2";
 
 async function ingestEvent(data, i) {
   try {

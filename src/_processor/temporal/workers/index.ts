@@ -15,7 +15,7 @@ async function run() {
       activities,
       taskQueue: "events",
       connection,
-      maxConcurrentActivityTaskExecutions: 500,
+      // maxConcurrentActivityTaskExecutions: 100,
       // maxConcurrentActivityTaskExecutions: 1000,
       // maxCachedWorkflows: 1000,
     },
