@@ -15,7 +15,9 @@ const isAny = TypeMoq.It.isAny;
 @suite
 class ElasticsearchSaverTest {
   @test public async "ElasticSearchSaver#saveEventToElasticsearch()"() {
-    const es = TypeMoq.Mock.ofType(Client);
+    const es = TypeMoq.Mock.ofType(Client, TypeMoq.MockBehavior.Loose, true, {
+      nodes: ["http://localhost:9200"],
+    });
     const histogramRecord = TypeMoq.Mock.ofInstance(recordOtelHistogram);
     const clock = TypeMoq.Mock.ofType<Clock>();
     const jobBody = JSON.stringify({
