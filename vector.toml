@@ -111,7 +111,7 @@ encoding.codec = "json"
 acknowledgements.enabled = true
 auth.access_key_id="${EXPORT_S3_ACCESS_KEY_ID}"
 auth.secret_access_key="${EXPORT_S3_SECRET_ACCESS_KEY}"
-batch.max_events = 10
+batch.max_events = 1000
 
 [sinks.ecs_sink]
 type = "elasticsearch"
