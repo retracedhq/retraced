@@ -1,5 +1,5 @@
 # Retraced Audit Log
-
+## Security Building Blocks for Developers
 <p>
     <a href="https://www.npmjs.com/package/@retracedhq/retraced"><img src="https://img.shields.io/npm/dt/@retracedhq/retraced" alt="npm" ></a>
     <a href="https://hub.docker.com/r/retracedhq/retraced"><img src="https://img.shields.io/docker/pulls/retracedhq/retraced" alt="Docker pulls"></a>
@@ -96,5 +96,5 @@ Reach out to the maintainers at one of the following places:
 
 ## Community
 
-- [Discord](https://discord.gg/uyb7pYt4Pa) (For live discussion with the Community and BoxyHQ team)
-- [Twitter](https://twitter.com/BoxyHQ) (Get the news fast)
+- [Discord](https://discord.gg/uyb7pYt4Pa) (For live discussion with the Open-Source Community and BoxyHQ team)
+- [Twitter](https://twitter.com/BoxyHQ) (Follow us)
