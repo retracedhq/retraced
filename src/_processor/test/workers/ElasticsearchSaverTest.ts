@@ -1,16 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
-
 import * as TypeMoq from "typemoq";
+import sinon from "sinon";
 
 import moment from "moment";
-
 import { Clock } from "../../common";
 import { ElasticsearchSaver } from "../../workers/saveEventToElasticsearch";
 import { Client } from "@opensearch-project/opensearch";
-import { recordOtelHistogram } from "../../../metrics/opentelemetry/instrumentation";
-
-const isAny = TypeMoq.It.isAny;
+import * as instrument from "../../../metrics/opentelemetry/instrumentation";
+import { ApiResponse, TransportRequestPromise } from "@opensearch-project/opensearch/lib/Transport.js";
 
 @suite
 class ElasticsearchSaverTest {
@@ -18,7 +17,7 @@ class ElasticsearchSaverTest {
     const es = TypeMoq.Mock.ofType(Client, TypeMoq.MockBehavior.Loose, true, {
       nodes: ["http://localhost:9200"],
     });
-    const histogramRecord = TypeMoq.Mock.ofInstance(recordOtelHistogram);
+    const recordOtelHistogramStub = sinon.stub(instrument, "recordOtelHistogram");
     const clock = TypeMoq.Mock.ofType<Clock>();
     const jobBody = JSON.stringify({
       environmentId: "env01",
@@ -115,15 +114,22 @@ class ElasticsearchSaverTest {
       },
     };
 
-    es.setup((x) => x.index(isAny()))
-      .returns((opts): any => {
-        expect(opts.body).to.deep.equal({
+    // es.setup((x: any) => x.index.then).returns(() => undefined);
+
+    es.setup((x) =>
+      x.index(
+        TypeMoq.It.isValue({
           index: "retraced.proj01.env01.current",
-          type: "event",
+          type: "_doc",
           body: expectedIndexed,
-        });
-        return Promise.resolve({});
-      })
+          id: expectedIndexed.canonical_time.toString() + "-" + expectedIndexed.id,
+        })
+      )
+    )
+      .returns(
+        () =>
+          Promise.resolve({ body: {} }) as TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
+      )
       .verifiable(TypeMoq.Times.once());
 
     clock
@@ -131,24 +137,18 @@ class ElasticsearchSaverTest {
       .returns(() => moment(500))
       .verifiable(TypeMoq.Times.once());
 
-    histogramRecord
-      .setup((x) =>
-        x(TypeMoq.It.isValue("workers.saveEventToElasticSearch.latencyCreated"), TypeMoq.It.isValue(400))
-      )
-      .verifiable(TypeMoq.Times.once(), TypeMoq.ExpectedCallType.InSequence);
-
-    histogramRecord
-      .setup((x) =>
-        x(TypeMoq.It.isValue("workers.saveEventToElasticSearch.latencyReceived"), TypeMoq.It.isValue(300))
-      )
-      .verifiable(TypeMoq.Times.once(), TypeMoq.ExpectedCallType.InSequence);
-
     const saver = new ElasticsearchSaver(es.object, clock.object);
     await saver.saveEventToElasticsearch({ body: Buffer.from(jobBody) });
-
+    expect(
+      recordOtelHistogramStub.calledWithExactly("workers.saveEventToElasticSearch.latencyCreated", 400),
+      "It should have tracked the time to make an event searchable from the point of creation"
+    ).to.be.true;
+    expect(
+      recordOtelHistogramStub.calledWithExactly("workers.saveEventToElasticSearch.latencyReceived", 300),
+      "It should have tracked the time to make an event searchable from the point of reception"
+    ).to.be.true;
     es.verifyAll();
     clock.verifyAll();
-    histogramRecord.verifyAll();
   }
 }
 
