@@ -1,10 +1,10 @@
 /* eslint:disable */
 import _ from "lodash";
 {{#if canImportByAlias}}
-  import { ValidateParam } from 'tsoa';
+import { ValidateParam } from 'tsoa';
 {{else}}
-  import { ValidateParam } from '../../../src/routeGeneration/templateHelpers';
-  import { Controller } from '../../../src/interfaces/controller';
+import { ValidateParam } from '../../../src/routeGeneration/templateHelpers';
+import { Controller } from '../../../src/interfaces/controller';
 {{/if}}
 {{#if iocModule}}
 import { iocContainer } from '{{iocModule}}';

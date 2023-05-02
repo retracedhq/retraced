@@ -91,6 +91,12 @@ export const CreateEventSchema = {
     fields: {
       type: "object",
     },
+    external_id: {
+      type: "string",
+    },
+    metadata: {
+      type: "object",
+    },
   },
   required: ["action", "crud"],
   additionalProperties: false,
@@ -156,6 +162,11 @@ export const GraphQLQuery = {
                 loc_subdiv1
                 loc_subdiv2
                 fields {
+                    key
+                    value
+                }
+                external_id
+                metadata {
                     key
                     value
                 }

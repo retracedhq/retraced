@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import * as Retraced from "@retracedhq/retraced";
+import { Event, Client } from "@retracedhq/retraced";
 import "mocha";
 import "chai-http";
 import { search } from "../pkg/specs";
@@ -18,7 +18,7 @@ const FIRST_EVENT = randomNumber.toString();
 const SECOND_EVENT = (randomNumber + 1).toString();
 const GROUP_ID = (randomNumber + 2).toString();
 const currentTime = new Date();
-currentTime.setMilliseconds(0); // api only returns seconds preceision
+currentTime.setMilliseconds(0); // api only returns seconds precision
 
 describe("Group Name Resolution", function () {
   describe("Given the Retraced API is up and running", function () {
@@ -27,13 +27,13 @@ describe("Group Name Resolution", function () {
 
     context("And a call is made into the Retraced API with only a group.id", () => {
       beforeEach(async function () {
-        const retraced = new Retraced.Client({
+        const retraced = new Client({
           apiKey: Env.ApiKey,
           projectId: Env.ProjectID,
           endpoint: Env.Endpoint,
         });
 
-        const event: Retraced.Event = {
+        const event: Event = {
           action: "integration" + FIRST_EVENT,
           group: {
             id: "rtrcdqa1234" + GROUP_ID,
@@ -47,13 +47,13 @@ describe("Group Name Resolution", function () {
         "And another call is made into the Retraced API with the same group.id and a group.name",
         () => {
           beforeEach(function (done) {
-            const retraced = new Retraced.Client({
+            const retraced = new Client({
               apiKey: Env.ApiKey,
               projectId: Env.ProjectID,
               endpoint: Env.Endpoint,
             });
 
-            const event: Retraced.Event = {
+            const event: Event = {
               action: "integration" + SECOND_EVENT,
               group: {
                 id: "rtrcdqa1234" + GROUP_ID,

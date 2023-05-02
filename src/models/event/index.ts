@@ -1,49 +1,13 @@
 import searchQueryParser from "search-query-parser";
 import moment from "moment";
 import _ from "lodash";
+import { EventInternal } from "@retracedhq/retraced";
 
-export interface Group {
-  id: string;
-  name?: string;
-}
+export { EventFields } from "@retracedhq/retraced";
 
-export interface Actor {
-  id: string;
-  name?: string;
-  href?: string;
-}
-
-export interface Target {
-  id: string;
-  name: string;
-  href?: string;
-  type?: string;
-}
-
-export interface EventFields {
-  [key: string]: string;
-}
-
-export enum crud {
-  "c" = "c",
-  "r" = "r",
-  "u" = "u",
-  "d" = "d",
-}
-
-export interface RetracedEvent {
+export interface RetracedEvent extends EventInternal {
   id?: string;
-  action: string;
-  group?: Group;
   created?: number;
-  actor?: Actor;
-  target?: Target;
-  crud?: crud;
-  source_ip?: string;
-  description?: string;
-  is_anonymous?: boolean;
-  is_failure?: boolean;
-  fields?: EventFields;
   component?: string;
   version?: string;
 }
@@ -66,6 +30,8 @@ export function fromCreateEventInput(eventInput: any, newEventId: string): Retra
     fields: eventInput["fields"],
     component: eventInput["component"],
     version: eventInput["version"],
+    external_id: eventInput["external_id"],
+    metadata: eventInput["metadata"],
   };
 }
 
@@ -83,6 +49,7 @@ export interface ParsedQuery {
   actor_name?: string[];
   description?: string[];
   location?: string[];
+  external_id?: string[];
   text?: string;
 }
 
@@ -95,6 +62,8 @@ const structuredQueryKeywords = [
   "actor.name",
   "description",
   "location",
+  "external_id",
+  "fields.*",
 ];
 
 function toArray(x: string | string[]): string[] {
@@ -144,6 +113,9 @@ export function parseQuery(query: string): ParsedQuery {
   }
   if (intermediate["actor.name"]) {
     parsed.actor_name = toArray(intermediate["actor.name"]);
+  }
+  if (intermediate["external_id"]) {
+    parsed.external_id = toArray(intermediate["external_id"]);
   }
 
   if (intermediate.created) {

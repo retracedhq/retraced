@@ -2,10 +2,7 @@ import { checkAdminAccessUnwrapped } from "../../security/helpers";
 import deleteEnvironment from "../../models/environment/delete";
 import getDeletionRequestByResourceId from "../../models/deletion_request/getByResourceId";
 import deleteDeletionRequest from "../../models/deletion_request/delete";
-import {
-  deletionRequestBackoffRemaining,
-  deletionRequestHasExpired,
-} from "../../models/deletion_request";
+import { deletionRequestBackoffRemaining, deletionRequestHasExpired } from "../../models/deletion_request";
 import getDeletionConfirmationsByDeletionRequest from "../../models/deletion_confirmation/getByDeletionRequest";
 import environmentIsEmpty from "../../models/environment/isEmpty";
 import { logger } from "../../logger";
@@ -14,14 +11,13 @@ export default async function handle(
   authorization: string,
   projectId: string,
   environmentId: string,
-  preDeleteHook?: () => Promise<void>,
+  preDeleteHook?: () => Promise<void>
 ) {
   await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
-
   // If no events exists for this env, fine, allow the deletion.
-  if (true === await environmentIsEmpty({ projectId, environmentId })) {
+  if (true === (await environmentIsEmpty({ projectId, environmentId }))) {
     if (typeof preDeleteHook === "function") {
-        await preDeleteHook();
+      await preDeleteHook();
     }
     await deleteEnvironment({ projectId, environmentId });
     return;
@@ -52,11 +48,12 @@ export default async function handle(
   if (backoffRemaining) {
     throw {
       status: 403,
-      err: new Error(`Cannot delete this environment until its deletion request ` +
-        `backoff period has passed (${backoffRemaining.humanize(true)}).`),
+      err: new Error(
+        `Cannot delete this environment until its deletion request ` +
+          `backoff period has passed (${backoffRemaining.humanize(true)}).`
+      ),
     };
   }
-
   // ... and whose confirmations (if any) have all been received.
   const confirmations = await getDeletionConfirmationsByDeletionRequest(deletionRequest.id);
   if (confirmations.length > 0) {
@@ -70,19 +67,23 @@ export default async function handle(
     if (outstandingConfirmations > 0) {
       throw {
         status: 403,
-        err: new Error(`Cannot delete this environment until all confirmations have ` +
-          `been received (${outstandingConfirmations} still outstanding).`),
+        err: new Error(
+          `Cannot delete this environment until all confirmations have ` +
+            `been received (${outstandingConfirmations} still outstanding).`
+        ),
       };
     }
   }
 
   // Holy crap, this environment can be deleted now!
   if (typeof preDeleteHook === "function") {
-      await preDeleteHook();
+    await preDeleteHook();
   }
   await deleteEnvironment({ projectId, environmentId });
 
   // This should cascade-delete all related deletion_confirmation rows as well.
   await deleteDeletionRequest(deletionRequest.id);
-  logger.info(`AUDIT deletion request ${deletionRequest.id} for environment ${environmentId} closed successfully`);
+  logger.info(
+    `AUDIT deletion request ${deletionRequest.id} for environment ${environmentId} closed successfully`
+  );
 }

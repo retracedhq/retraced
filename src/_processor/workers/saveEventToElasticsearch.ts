@@ -1,26 +1,21 @@
 import _ from "lodash";
 import moment from "moment";
-import { Registry, getRegistry, instrumented } from "monkit";
-
 import { Clock } from "../common";
 import { ClientWithRetry, getESWithRetry } from "../../persistence/elasticsearch";
 import sendToWebhook from "../../ee/export/index";
+import { instrumented, recordOtelHistogram } from "../../metrics/opentelemetry/instrumentation";
 
 export class ElasticsearchSaver {
   public static getDefault(): ElasticsearchSaver {
     if (!ElasticsearchSaver.instance) {
-      ElasticsearchSaver.instance = new ElasticsearchSaver(getESWithRetry(), getRegistry(), moment.utc);
+      ElasticsearchSaver.instance = new ElasticsearchSaver(getESWithRetry(), moment.utc);
     }
     return ElasticsearchSaver.instance;
   }
 
   private static instance: ElasticsearchSaver;
 
-  constructor(
-    private readonly es: ClientWithRetry,
-    private readonly registry: Registry,
-    private readonly clock: Clock
-  ) {}
+  constructor(private readonly es: ClientWithRetry, private readonly clock: Clock) {}
 
   public async saveEventToElasticsearch(job): Promise<void> {
     const jobObj = JSON.parse(job.body);
@@ -81,9 +76,9 @@ export class ElasticsearchSaver {
   private trackTimeUntilSearchable(created: number | undefined, received: number) {
     const now = this.clock().valueOf();
     if (created) {
-      this.registry.histogram("workers.saveEventToElasticSearch.latencyCreated").update(now - created);
+      recordOtelHistogram("workers.saveEventToElasticSearch.latencyCreated", now - created);
     }
-    this.registry.histogram("workers.saveEventToElasticSearch.latencyReceived").update(now - received);
+    recordOtelHistogram("workers.saveEventToElasticSearch.latencyReceived", now - received);
   }
 
   private buildErrorString(resp: any): string {
