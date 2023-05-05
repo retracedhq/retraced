@@ -1,7 +1,9 @@
 import moment from "moment";
 
-import nsq from "../persistence/nsq";
 import { logger } from "../logger";
+import getTemporalClient from "../persistence/temporal";
+import { analyzeDayWorkflow } from "../temporal/workflows";
+import { createWorkflowId } from "../temporal/helper";
 
 /**
  * retraced exec processor /bin/bash
@@ -40,8 +42,8 @@ export const builder = {
   },
 };
 
-export const handler = (argv) => {
-  const jobBody = JSON.stringify({
+export const handler = async (argv) => {
+  const job = {
     projectId: argv.projectId,
     projectName: argv.projectName,
     environmentId: argv.environmentId,
@@ -49,13 +51,23 @@ export const handler = (argv) => {
     date: moment.utc().add(argv.utcOffset, "minutes").add(1, "day").format("YYYY-MM-DD"),
     offset: argv.utcOffset,
     recipients: [{ email: argv.recipient, id: "test id", token: "fake-token" }],
-  });
+  };
+
   logger.info(
     `scheduling analyze_day reporting job for environment ${argv.environmentId} at UTC offset ${
       argv.utcOffset
     } with recipients ${JSON.stringify([argv.recipient])}`
   );
-  nsq.produce("environment_day", jobBody).catch((err) => logger.info(err));
+
+  const temporalClient = await getTemporalClient();
+
+  await temporalClient.workflow.start(analyzeDayWorkflow, {
+    workflowId: createWorkflowId(),
+    taskQueue: "events",
+    args: [job],
+  });
+
   setTimeout(() => process.exit(0), 2000);
+
   return argv;
 };

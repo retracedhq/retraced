@@ -1,5 +1,6 @@
 import moment from "moment";
 import util from "util";
+
 import countActions from "../models/active_actor/count";
 import selectNewActions from "../models/action/select_new";
 import selectStoppedActions from "../models/action/select_stopped";
@@ -10,7 +11,7 @@ import { Emailer } from "../services/Emailer";
 import { logger } from "../logger";
 import config from "../../config";
 
-interface Opts {
+export interface Opts {
   projectId: string;
   projectName: string;
   environmentId: string;
@@ -26,8 +27,7 @@ interface Opts {
   }[];
 }
 
-export default async function analyzeDay(job) {
-  const opts: Opts = JSON.parse(job.body);
+export default async function analyzeDay(opts: Opts) {
   const start = moment.utc(opts.date).add(opts.offset, "minutes");
   const envDay: EnvironmentTimeRange = {
     projectId: opts.projectId,
@@ -64,9 +64,9 @@ export default async function analyzeDay(job) {
   };
 
   logger.info(
-    `analyze_day job completed for ${opts.environmentId} ${opts.date} ${
-      opts.offset
-    }: ${JSON.stringify(context)}`
+    `analyze_day job completed for ${opts.environmentId} ${opts.date} ${opts.offset}: ${JSON.stringify(
+      context
+    )}`
   );
 
   // TODO(areed) schedule for 7AM

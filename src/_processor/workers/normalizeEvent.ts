@@ -1,27 +1,34 @@
 import _ from "lodash";
 import moment from "moment";
+
 import upsertActor from "../models/actor/upsert";
 import upsertGroup from "../models/group/upsert";
 import upsertAction from "../models/action/upsert";
 import upsertTarget from "../models/target/upsert";
-import getPgPool from "../persistence/pg";
+import getPgPool from "../../persistence/pg";
 import getLocationByIP from "../persistence/geoip";
-import nsq from "../persistence/nsq";
-import { logger } from "../logger";
+import { logger } from "../../logger";
 import { mapValues } from "../../common/mapper";
+import getTemporalClient from "../persistence/temporal";
+import { createWorkflowId } from "../temporal/helper";
+import {
+  saveActiveActorWorkflow,
+  saveActiveGroupWorkflow,
+  saveEventToElasticsearchWorkflow,
+} from "../temporal/workflows";
 
 const pgPool = getPgPool();
 
-export default async function normalizeEvent(job) {
-  const jobObj = JSON.parse(job.body);
-  const taskId = jobObj.taskId;
-
+export default async function normalizeEvent(taskId: string) {
   const pg = await pgPool.connect();
+
   try {
     const fields = `id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres,
       saved_to_elasticsearch, project_id, environment_id, new_event_id,
       extract(epoch from received) * 1000 as received`;
-    const pgResp = await pg.query(`select ${fields} from ingest_task where id = $1`, [taskId]);
+
+    const pgResp = await pg.query<IngestTask>(`select ${fields} from ingest_task where id = $1`, [taskId]);
+
     if (!pgResp.rows.length) {
       throw new Error(`Couldn't find ingestion task with id '${taskId}'`);
     }
@@ -117,7 +124,7 @@ export default async function normalizeEvent(job) {
     }
 
     // TODO(zhaytee): Add typing
-    const normalizedEvent: any = processEvent(
+    const normalizedEvent = processEvent(
       origEvent,
       parseInt(task.received, 10),
       Object.assign({}, group),
@@ -139,15 +146,43 @@ export default async function normalizeEvent(job) {
         environmentId: task.environment_id,
         event: normalizedEvent,
       };
-      await nsq.produce("normalized_events", JSON.stringify(message));
+
+      const temporalClient = await getTemporalClient();
+
+      // await temporalClient.workflow.start(saveEventToElasticsearchWorkflow, {
+      //   workflowId: createWorkflowId(),
+      //   taskQueue: "events",
+      //   args: [message],
+      // });
+
+      // await temporalClient.workflow.start(saveActiveActorWorkflow, {
+      //   workflowId: createWorkflowId(),
+      //   taskQueue: "events",
+      //   args: [message],
+      // });
+
+      // await temporalClient.workflow.start(saveActiveGroupWorkflow, {
+      //   workflowId: createWorkflowId(),
+      //   taskQueue: "events",
+      //   args: [message],
+      // });
     }
   } finally {
     pg.release();
   }
 }
 
-function processEvent(origEvent, received, group, actor, target, locInfo, newEventId: string) {
-  const result: any = _.pick(origEvent, [
+// Process the event and return a normalized event.
+function processEvent(
+  origEvent: Event,
+  received: number,
+  group: Group,
+  actor: Actor,
+  target: Target,
+  locInfo: LocationInfo,
+  newEventId: string
+) {
+  const result = _.pick(origEvent, [
     "created",
     "description",
     "source_ip",
@@ -158,16 +193,17 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
     "fields",
   ]);
 
-  result.id = newEventId;
-  result.received = received;
-  result.raw = JSON.stringify(origEvent);
+  result["id"] = newEventId;
+  result["received"] = received;
+  result["raw"] = JSON.stringify(origEvent);
 
   if (_.isEmpty(result.source_ip)) {
     _.unset(result, "source_ip");
   }
 
   if (result.created) {
-    result.created = moment(result.created).valueOf();
+    result["created"] = moment(result.created).valueOf();
+
     // Anything after year 3000 is interpreted as micro or nanoseconds
     while (result.created > 32503680000000) {
       result.created = Math.floor(result.created / 1000);
@@ -176,9 +212,9 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
 
   // Favor "created" timestamp over "received".
   if (result.created) {
-    result.canonical_time = result.created;
+    result["canonical_time"] = result.created;
   } else {
-    result.canonical_time = result.received;
+    result["canonical_time"] = result.received;
   }
 
   if (!_.isEmpty(origEvent.fields)) {
@@ -189,45 +225,147 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
   if (group) {
     group.id = group.group_id;
     _.unset(group, "group_id");
-    result.group = mapValues(group);
+
+    result["group"] = mapValues(group) as Group;
   }
 
   if (actor) {
-    result.actor = mapValues(actor);
+    result["actor"] = mapValues(actor) as Actor;
   }
 
   if (target) {
-    result.target = mapValues(target);
+    result["target"] = mapValues(target) as Target;
   }
 
   if (locInfo) {
     // if (locInfo.lat) {
-    //   result.lat = locInfo.lat;
+    //   result["lat"] = locInfo.lat;
     // }
+
     // if (locInfo.lon) {
-    //   result.lon = locInfo.lon;
+    //   result["lon"] = locInfo.lon;
     // }
+
     if (locInfo.country) {
-      result.country = locInfo.country;
+      result["country"] = locInfo.country;
     }
+
     if (locInfo.subdiv1) {
-      result.loc_subdiv1 = locInfo.subdiv1;
+      result["loc_subdiv1"] = locInfo.subdiv1;
     }
+
     if (locInfo.subdiv2) {
-      result.loc_subdiv2 = locInfo.subdiv2;
+      result["loc_subdiv2"] = locInfo.subdiv2;
     }
+
     // if (locInfo.timezone) {
-    //   result.time_zone = locInfo.timezone;
+    //   result["time_zone"] = locInfo.timezone;
     // }
   }
 
   if (origEvent.external_id) {
-    result.external_id = origEvent.external_id;
+    result["external_id"] = origEvent.external_id;
   }
 
   if (!_.isEmpty(origEvent.metadata)) {
     result.metadata = origEvent.metadata;
   }
 
-  return result;
+  return result as NormalizedEvent;
+}
+
+export interface IngestTask {
+  id: string;
+  original_event: string;
+  normalized_event: string;
+  saved_to_dynamo: string;
+  saved_to_postgres: string;
+  saved_to_elasticsearch: string;
+  project_id: string;
+  environment_id: string;
+  new_event_id: string;
+  received: string;
+}
+
+export interface Job {
+  projectId: string;
+  environmentId: string;
+  event: NormalizedEvent;
+}
+
+interface LocationInfo {
+  lat: number;
+  lon: number;
+  country: string;
+  subdiv1: string;
+  subdiv2: string;
+  timeZone: string;
+}
+
+interface Group {
+  id: string;
+  project_id: string;
+  environment_id: string;
+  group_id: string;
+  name: string;
+  event_count: string;
+  created_at: string;
+  last_active: string;
+}
+
+interface Actor {
+  id: string;
+  project_id: string;
+  environment_id: string;
+  event_count: string;
+  foreign_id: string;
+  name: string;
+  url: string;
+  fields: string;
+  created: string;
+  first_active: string;
+  last_active: string;
+}
+
+interface Target {
+  id: string;
+  project_id: string;
+  environment_id: string;
+  event_count: string;
+  foreign_id: string;
+  name: string;
+  url: string;
+  type: string;
+  fields: string;
+  created: string;
+  first_active: string;
+  last_active: string;
+}
+
+interface Event {
+  action: string;
+  teamId: string;
+  crud: string;
+  created: number;
+  source_ip: string;
+  fields: string[];
+  metadata: string;
+  external_id: string;
+  received: number;
+  actor: Actor;
+  target: Target;
+  group: Group;
+}
+
+interface NormalizedEvent extends Event {
+  id: string;
+  received: number;
+  raw: string;
+  lat: number;
+  lon: number;
+  country: string;
+  loc_subdiv1: string;
+  loc_subdiv2: string;
+  time_zone: string;
+  canonical_time: number;
 }

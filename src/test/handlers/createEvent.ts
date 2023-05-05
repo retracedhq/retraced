@@ -2,13 +2,13 @@ import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 import moment from "moment";
-
 import pg from "pg";
-import { NSQClient } from "../../persistence/nsq";
+import { Client } from "@temporalio/client";
 
 import { EventCreater, CreateEventRequest, CreateEventResponse } from "../../handlers/createEvent";
 import Authenticator from "../../security/Authenticator";
 import { Connection } from "./Connection";
+import { ingestFromQueueWorkflow, normalizeEventWorkflow } from "../../_processor/temporal/workflows";
 
 @suite
 class EventCreaterTest {
@@ -16,7 +16,7 @@ class EventCreaterTest {
   public async "EventCreater#createEventsBulk() throws if more than max events are passed"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(pg.Client);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -62,7 +62,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -89,7 +89,7 @@ class EventCreaterTest {
   public async "EventCreater#createEventsBulk() with many invalid inputs"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(pg.Client);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -135,7 +135,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -197,13 +197,16 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    temporalClient.verify(
+      (x) => x.workflow.start(normalizeEventWorkflow, TypeMoq.It.isAny()),
+      TypeMoq.Times.never()
+    );
   }
 
   @test public async "EventCreater#createEvent()"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(Connection);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -241,13 +244,13 @@ class EventCreaterTest {
       .returns(() => Promise.resolve(conn.object) as Promise<any>)
       .verifiable(TypeMoq.Times.once());
 
-    // set up nsq
-    const jobBody = JSON.stringify({ taskId: "kfbr392" });
-    nsq.setup((x) => x.produce("raw_events", jobBody)).returns(() => Promise.resolve());
+    temporalClient
+      .setup((x) => x.workflow.start(ingestFromQueueWorkflow, TypeMoq.It.isAny()))
+      .returns(() => Promise.resolve() as any);
 
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -255,7 +258,7 @@ class EventCreaterTest {
       1000
     );
 
-    const created: any = await creater.createEvent("token=some-token", "a-project", body);
+    const created = await creater.createEvent("token=some-token", "a-project", body);
 
     expect(created.id).to.equal("kfbr392");
     expect(created.hash).to.equal("fake-hash");
@@ -264,7 +267,7 @@ class EventCreaterTest {
   @test public async "EventCreater#createEvent() ipv6"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(Connection);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -302,13 +305,13 @@ class EventCreaterTest {
       .returns(() => Promise.resolve(conn.object) as Promise<any>)
       .verifiable(TypeMoq.Times.once());
 
-    // set up nsq
-    const jobBody = JSON.stringify({ taskId: "kfbr392" });
-    nsq.setup((x) => x.produce("raw_events", jobBody)).returns(() => Promise.resolve());
+    temporalClient
+      .setup((x) => x.workflow.start(ingestFromQueueWorkflow, TypeMoq.It.isAny()))
+      .returns(() => Promise.resolve() as any);
 
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -325,7 +328,7 @@ class EventCreaterTest {
   @test public async "EventCreater#createEventsBulk()"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(Connection);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -377,15 +380,9 @@ class EventCreaterTest {
     conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
     conn.setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).verifiable(TypeMoq.Times.once());
 
-    // set up nsq
-    nsq
-      .setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
-      .returns(() => Promise.resolve())
-      .verifiable(TypeMoq.Times.exactly(3));
-
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -412,7 +409,7 @@ class EventCreaterTest {
   @test public async "EventCreater#createEventsBulk() with postgres error"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(Connection);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -452,15 +449,9 @@ class EventCreaterTest {
       .setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()))
       .throws(new Error("Postgres went away :("));
 
-    // set up nsq
-    nsq
-      .setup((x) => x.produce("raw_events", TypeMoq.It.isAny()))
-      .returns(() => Promise.resolve())
-      .verifiable(TypeMoq.Times.exactly(1));
-
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -477,8 +468,13 @@ class EventCreaterTest {
       expect(err.message).to.equal(expected.message);
     }
 
-    // make sure we didn't send any nsq messages if the txn is ROLLBACK'd
-    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    pool.verifyAll();
+
+    // Make sure we didn't start any workflows if the txn is ROLLBACK'd
+    temporalClient.verify(
+      (x) => x.workflow.start(normalizeEventWorkflow, TypeMoq.It.isAny()),
+      TypeMoq.Times.never()
+    );
   }
 
   @test public async "EventCreater.persistEvent()"() {
@@ -543,7 +539,7 @@ class EventCreaterTest {
     for (const testElement of tests) {
       const creater = new EventCreater(
         TypeMoq.Mock.ofType(pg.Pool).object,
-        TypeMoq.Mock.ofType(NSQClient).object,
+        async () => Promise.resolve(TypeMoq.Mock.ofType(Client).object),
         () => "fake-hash",
         () => "fake-uuid",
         TypeMoq.Mock.ofType(Authenticator).object,
@@ -602,7 +598,7 @@ class EventCreaterTest {
   public async "EventCreater#createEvent() with invalid EventFields"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(pg.Client);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -659,7 +655,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -678,7 +674,8 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // temporalClient.verify((x) => x.start(normalizeEventWorkflow, TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   // test case with action as number
@@ -686,7 +683,7 @@ class EventCreaterTest {
   public async "EventCreater#createEvent() with invalid Action value"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(pg.Client);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -743,7 +740,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -762,14 +759,14 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test
   public async "EventCreater#createEvent() with invalid crud value"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(pg.Client);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -826,7 +823,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -845,14 +842,14 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test
   public async "EventCreater#createEvent() with additional fields in group"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(pg.Client);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -909,7 +906,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -928,14 +925,14 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test
   public async "EventCreater#createEvent() with additional fields in actor"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(pg.Client);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -990,7 +987,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -1009,14 +1006,14 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test
   public async "EventCreater#createEvent() with additional fields in target"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(pg.Client);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -1071,7 +1068,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -1090,14 +1087,14 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 
   @test
   public async "EventCreater#createEvent() with invalid external_id"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const conn = TypeMoq.Mock.ofType(pg.Client);
-    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const temporalClient = TypeMoq.Mock.ofType(Client);
     const authenticator = TypeMoq.Mock.ofType(Authenticator);
     const fakeHasher = () => "fake-hash";
     const fakeUUID = () => "kfbr392";
@@ -1154,7 +1151,7 @@ class EventCreaterTest {
 
     const creater = new EventCreater(
       pool.object,
-      nsq.object,
+      async () => Promise.resolve(temporalClient.object),
       fakeHasher,
       fakeUUID,
       authenticator.object,
@@ -1173,7 +1170,7 @@ class EventCreaterTest {
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
     conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
-    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+    // nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 }
 

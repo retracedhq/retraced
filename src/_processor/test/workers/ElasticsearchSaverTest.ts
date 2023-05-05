@@ -1,13 +1,11 @@
 import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
-
 import * as TypeMoq from "typemoq";
-
 import moment from "moment";
+import { Client } from "@opensearch-project/opensearch";
 
 import { Clock } from "../../common";
 import { ElasticsearchSaver } from "../../workers/saveEventToElasticsearch";
-import { Client } from "@opensearch-project/opensearch";
 import { recordOtelHistogram } from "../../../metrics/opentelemetry/instrumentation";
 
 const isAny = TypeMoq.It.isAny;
@@ -18,7 +16,7 @@ class ElasticsearchSaverTest {
     const es = TypeMoq.Mock.ofType(Client);
     const histogramRecord = TypeMoq.Mock.ofInstance(recordOtelHistogram);
     const clock = TypeMoq.Mock.ofType<Clock>();
-    const jobBody = JSON.stringify({
+    const jobBody = {
       environmentId: "env01",
       projectId: "proj01",
       event: {
@@ -75,7 +73,7 @@ class ElasticsearchSaverTest {
           },
         },
       },
-    });
+    };
 
     const expectedIndexed = {
       action: "license.update",
@@ -142,7 +140,7 @@ class ElasticsearchSaverTest {
       .verifiable(TypeMoq.Times.once(), TypeMoq.ExpectedCallType.InSequence);
 
     const saver = new ElasticsearchSaver(es.object, clock.object);
-    await saver.saveEventToElasticsearch({ body: Buffer.from(jobBody) });
+    await saver.saveEventToElasticsearch(jobBody as any);
 
     es.verifyAll();
     clock.verifyAll();

@@ -99,10 +99,7 @@ async function download() {
 
 async function write(pathname, stream) {
   return new Promise((resolve, reject) => {
-    stream
-      .pipe(fs.createWriteStream(pathname))
-      .on("error", reject)
-      .on("finish", resolve);
+    stream.pipe(fs.createWriteStream(pathname)).on("error", reject).on("finish", resolve);
   });
 }
 
@@ -235,9 +232,9 @@ async function translateIPBlockData(csvReadStream, locations, date) {
       const valuesString = queuedValues
         .map((v, i) => {
           const offset = i * 8;
-          return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${
-            offset + 4
-          }, $${offset + 5}, $${offset + 6}, $${offset + 7}, $${offset + 8})`;
+          return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${
+            offset + 6
+          }, $${offset + 7}, $${offset + 8})`;
         })
         .join(",");
 
@@ -253,8 +250,7 @@ async function translateIPBlockData(csvReadStream, locations, date) {
 // Delete geoip records not synced within two days of date. (If the job is
 // running at midnight some records from this batch could be 1 day old.)
 async function clean(date) {
-  await pgPool.query(
-    `delete from geoip where synced is null or synced < ($1::date - interval '2 days')`,
-    [date]
-  );
+  await pgPool.query(`delete from geoip where synced is null or synced < ($1::date - interval '2 days')`, [
+    date,
+  ]);
 }

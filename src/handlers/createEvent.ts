@@ -3,6 +3,9 @@ import moment from "moment";
 import pg from "pg";
 import pgFormat from "pg-format";
 import util from "util";
+import type { Client } from "@temporalio/client";
+import Joi from "joi";
+
 import {
   instrumented,
   applyOtelInstrument,
@@ -12,13 +15,13 @@ import createCanonicalHash from "../models/event/canonicalize";
 import Event, { EventFields } from "../models/event/";
 import { fromCreateEventInput } from "../models/event";
 import uniqueId from "../models/uniqueId";
-import { NSQClient } from "../persistence/nsq";
 import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
 import config from "../config";
-
-import Joi from "joi";
+import { ingestFromQueueWorkflow, normalizeEventWorkflow } from "../_processor/temporal/workflows";
+import { createWorkflowId } from "../_processor/temporal/helper";
+import getTemporalClient from "../persistence/temporal";
 
 // Define the schema for CreateEventRequest
 const createEventRequestSchema = Joi.object({
@@ -146,6 +149,7 @@ export interface CreateEventRequest {
 }
 
 export type CreateEventBulkResponse = CreateEventResponse[];
+
 export interface CreateEventResponse {
   id: string;
   hash: string;
@@ -178,15 +182,19 @@ export class EventCreater {
       $1, $2, $3, to_timestamp($4::double precision / 1000), $5
     )`;
 
+  private temporalClient: Client;
+
   constructor(
     private readonly pgPool: pg.Pool,
-    private readonly nsq: NSQClient,
+    private readonly getTemporalClient: () => Promise<Client>,
     private readonly hasher: (event: Event) => string,
     private readonly idSource: () => string,
     private readonly authenticator: Authenticator,
     private readonly maxEvents: number,
     private readonly timeoutMS: number
-  ) {}
+  ) {
+    this.getTemporalClient().then((client) => (this.temporalClient = client));
+  }
 
   @instrumented
   public async createEvent(authorization: string, projectId: string, event: CreateEventRequest) {
@@ -326,9 +334,9 @@ export class EventCreater {
       pgConn.release();
     }
 
-    events.forEach(this.nsqPublish.bind(this));
+    events.forEach(this.startWorkflow.bind(this));
     events.forEach((e) => {
-      this.nsqPublish(e);
+      this.startWorkflow(e);
       incrementOtelCounter("EventCreater.handled.events");
     });
 
@@ -349,7 +357,7 @@ export class EventCreater {
   }
 
   /**
-   * Save an event to postgres ingest_task and publish to NSQ for processing
+   * Save an event to postgres ingest_task and start the workflow to process it.
    */
   @instrumented
   public async saveEvent(
@@ -385,7 +393,7 @@ export class EventCreater {
       }
     }
 
-    this.nsqPublish({ taskId: newTaskId });
+    this.startWorkflow({ taskId: newTaskId });
   }
 
   // Add a record to Postgres to be later moved to ingest_task.
@@ -423,36 +431,29 @@ export class EventCreater {
     received: number,
     eventInput: CreateEventRequest
   ): Promise<void> {
-    const job = JSON.stringify({
+    const job = {
       project_id: projectId,
       environment_id: envId,
       new_event_id: newEventId,
       original_event: eventInput,
       received,
-    });
+    };
 
-    return this.nsq
-      .produce("unsaved_events", job)
-      .then(() => {
-        logger.info(`sent new event ${newEventId} to unsaved_events`);
-      })
-      .catch((err) => {
-        logger.error(`failed to send ${newEventId} to raw_events`);
-
-        throw err;
+    try {
+      await this.temporalClient.workflow.start(ingestFromQueueWorkflow, {
+        workflowId: createWorkflowId(),
+        taskQueue: "events",
+        args: [job],
       });
-  }
 
-  private async nsqPublish({ taskId }) {
-    const job = JSON.stringify({ taskId });
-    return this.nsq
-      .produce("raw_events", job)
-      .then(() => {
-        logger.info(`sent task ${job} to raw_events`);
-      })
-      .catch((err) => {
-        logger.error(`failed to send task ${job} to raw_events: ${util.inspect(err)}`);
-      });
+      logger.info(`started workflow ingestFromQueueWorkflow for ${newEventId}`);
+    } catch (err) {
+      logger.error(
+        `failed to start workflow ingestFromQueueWorkflow for ${newEventId}: ${util.inspect(err)}`
+      );
+
+      throw err;
+    }
   }
 
   private validateEventInputs(events: CreateEventRequest[]): void {
@@ -599,6 +600,21 @@ export class EventCreater {
 
     return violations;
   }
+
+  private async startWorkflow({ taskId }: { taskId: string }) {
+    try {
+      await this.temporalClient.workflow.start(normalizeEventWorkflow, {
+        workflowId: createWorkflowId(),
+        taskQueue: "events",
+        args: [taskId],
+      });
+
+      logger.info(`started workflow normalizeEventWorkflow for ${taskId}`);
+    } catch (err) {
+      logger.error(`failed to start workflow normalizeEventWorkflow for ${taskId}: ${util.inspect(err)}`);
+      throw err;
+    }
+  }
 }
 
 interface Violation {
@@ -610,7 +626,7 @@ interface Violation {
 
 export const defaultEventCreater = new EventCreater(
   getPgPool(),
-  NSQClient.fromEnv(),
+  async () => await getTemporalClient(),
   createCanonicalHash,
   uniqueId,
   Authenticator.default(),

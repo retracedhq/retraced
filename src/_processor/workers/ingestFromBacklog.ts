@@ -1,6 +1,8 @@
-import getPgPool from "../persistence/pg";
-import nsq from "../persistence/nsq";
-import { logger } from "../logger";
+import getPgPool from "../../persistence/pg";
+import { logger } from "../../logger";
+import getTemporalClient from "../persistence/temporal";
+import { normalizeEventWorkflow } from "../temporal/workflows";
+import { createWorkflowId } from "../temporal/helper";
 
 const pgPool = getPgPool();
 
@@ -29,13 +31,16 @@ export default async function ingestFromBacklog() {
         ON CONFLICT DO NOTHING
         RETURNING id`;
 
-    const result = await pgPool.query(q, []);
+    const result = await pgPool.query<{ id: string }>(q, []);
+
+    const temporalClient = await getTemporalClient();
 
     for (const row of result.rows) {
-      const job = JSON.stringify({
-        taskId: row.id,
+      await temporalClient.workflow.start(normalizeEventWorkflow, {
+        workflowId: createWorkflowId(),
+        taskQueue: "events",
+        args: [row.id],
       });
-      await nsq.produce("raw_events", job);
     }
   } catch (ex) {
     logger.error("Error ingesting from backlog:", ex);

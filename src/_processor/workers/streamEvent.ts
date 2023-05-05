@@ -1,7 +1,6 @@
 import moment from "moment";
 import _ from "lodash";
 
-import nsq from "../persistence/nsq";
 import getRedis from "../persistence/redis";
 import config from "../../config";
 import { recordOtelHistogram } from "../../metrics/opentelemetry/instrumentation";
@@ -34,7 +33,7 @@ export default async function (job) {
 
   for (const eitapi of eitapis) {
     const topic = eitapi + "#ephemeral";
-    await nsq.produce(topic, JSON.stringify(normalizedEvent));
+    // await nsq.produce(topic, JSON.stringify(normalizedEvent));
   }
 
   const now = moment.utc().valueOf();

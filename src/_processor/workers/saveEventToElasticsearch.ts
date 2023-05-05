@@ -1,7 +1,9 @@
 import _ from "lodash";
 import moment from "moment";
+
 import { Clock } from "../common";
 import { ClientWithRetry, getESWithRetry } from "../../persistence/elasticsearch";
+import type { Job } from "./normalizeEvent";
 import { instrumented, recordOtelHistogram } from "../../metrics/opentelemetry/instrumentation";
 
 export class ElasticsearchSaver {
@@ -16,13 +18,12 @@ export class ElasticsearchSaver {
 
   constructor(private readonly es: ClientWithRetry, private readonly clock: Clock) {}
 
-  public async saveEventToElasticsearch(job): Promise<void> {
-    const jobObj = JSON.parse(job.body);
-    const event = jobObj.event;
+  public async saveEventToElasticsearch(job: Job) {
+    const event = job.event;
 
     this.cleanEvent(event);
 
-    const alias = `retraced.${jobObj.projectId}.${jobObj.environmentId}.current`;
+    const alias = `retraced.${job.projectId}.${job.environmentId}.current`;
     try {
       await this.esIndex(event, alias);
     } catch (e) {
@@ -33,7 +34,7 @@ export class ElasticsearchSaver {
     this.trackTimeUntilSearchable(event.created, event.received);
   }
 
-  private cleanEvent(event: any): any {
+  private cleanEvent(event: any) {
     if (event.group) {
       event.group = _.pick(event.group, ["id", "name"]);
     }
@@ -93,6 +94,6 @@ export class ElasticsearchSaver {
   }
 }
 
-export default async function saveEventToElasticsearch(job): Promise<void> {
+export default async function saveEventToElasticsearch(job: Job) {
   return ElasticsearchSaver.getDefault().saveEventToElasticsearch(job);
 }

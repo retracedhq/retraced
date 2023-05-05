@@ -1,12 +1,11 @@
 import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
-
 import * as TypeMoq from "typemoq";
-
 import moment from "moment";
 import pg from "pg";
-import { ElasticsearchIndexRotator } from "../../workers/ElasticsearchIndexRotator";
 import { QueryResult } from "pg";
+
+import { ElasticsearchIndexRotator } from "../../workers/ElasticsearchIndexRotator";
 
 @suite
 class ElasticsearchIndexRotatorTest {
@@ -39,7 +38,10 @@ class ElasticsearchIndexRotatorTest {
 
     pool
       .setup((x) => x.query("SELECT * FROM environment"))
-      .returns(() => Promise.resolve({ rowCount: 1, rows: [{ id: environmentId, projectId }] }) as Promise<QueryResult>)
+      .returns(
+        () =>
+          Promise.resolve({ rowCount: 1, rows: [{ id: environmentId, projectId }] }) as Promise<QueryResult>
+      )
       .verifiable(TypeMoq.Times.once());
 
     const rotator = new ElasticsearchIndexRotator(
