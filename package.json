@@ -8,7 +8,7 @@
     "@boxyhq/metrics": "0.2.2",
     "@bugsnag/js": "7.20.0",
     "@bugsnag/plugin-express": "7.19.0",
-    "@opensearch-project/opensearch": "2.2.0",
+    "@opensearch-project/opensearch": "2.2.1",
     "@retracedhq/retraced": "0.6.3",
     "analytics-node": "6.2.0",
     "axios": "1.4.0",
