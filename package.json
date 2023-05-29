@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@boxyhq/metrics": "0.2.2",
-    "@bugsnag/js": "7.20.0",
+    "@bugsnag/js": "7.20.2",
     "@bugsnag/plugin-express": "7.19.0",
     "@opensearch-project/opensearch": "2.2.1",
     "@retracedhq/retraced": "0.6.3",
