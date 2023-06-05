@@ -47,7 +47,7 @@
     "ssl-config": "1.0.0",
     "swagger-ui-express": "4.6.3",
     "tsoa": "5.1.1",
-    "unzipper": "0.10.11",
+    "unzipper": "0.10.14",
     "uuid": "9.0.0",
     "walk": "2.3.15",
     "yargs": "17.7.2"
