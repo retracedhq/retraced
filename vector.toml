@@ -1,5 +1,8 @@
 data_dir = "/var/lib/vector/"
 
+[api]
+enabled = true
+
 # The data source that Vector will collect logs from
 [sources.webhook]
 type = "http_server" # The protocol to use
@@ -9,20 +12,8 @@ body_size_limit = "1mb" # Maximum size of request body
 auth.password = "${EXPORT_WEBHOOK_PASSWORD}"
 auth.username = "${EXPORT_WEBHOOK_USERNAME}"
 
-# The transformation(s) to apply to each event for DataDog
-[transforms.add_datadog_info]
-type = "remap"
-inputs = [ "webhook" ]
-source = """
-# Set the values of the output object
-.ddsource = "${EXPORT_DDSOURCE}"
-.ddtags = "${EXPORT_DDTAGS}"
-.hostname = "${EXPORT_DATADOG_HOSTNAME}"
-.service = "${EXPORT_SERVICE}"
-"""
-
 # The transformation(s) to apply to each event for s3
-[transforms.s3_transform]
+[transforms.iceberg_transform]
 type = "remap"
 inputs = [ "webhook" ]
 source = """
@@ -30,31 +21,10 @@ source = """
 . = parse_json!(parse_json!(.message).message)
 """
 
-# The destination(s) to send the events to
-[sinks.datadog_sink]
-type = "datadog_logs"
-inputs = [ "add_datadog_info" ]
-default_api_key = "${EXPORT_DATADOG_API_KEY}"
-compression = "gzip"
-region = "${EXPORT_DATADOG_REGION}"
-site = "${EXPORT_DATADOG_SITE}"
-acknowledgements.enabled = true
-healthcheck.enabled = true
-request.concurrency = 10
-request.rate_limit_duration_secs = 1
-request.rate_limit_num = 10
-buffer.type = "disk"
-# 1GB
-buffer.max_size = 1073741952
-
-[sinks.s3_sink]
-type = "aws_s3"
-inputs = ["s3_transform"]
-bucket = "test"
-region = "${EXPORT_S3_REGION}"
-endpoint = "http://minio:9000"
+[sinks.iceberg]
+inputs = ["iceberg_transform"]
+type = "http"
+uri = "http://iceberg-server:9090/ingest"
+method = "post"
 encoding.codec = "json"
-acknowledgements.enabled = true
-auth.access_key_id="${EXPORT_S3_ACCESS_KEY_ID}"
-auth.secret_access_key="${EXPORT_S3_SECRET_ACCESS_KEY}"
-batch.max_events = 10
+batch.max_events = 1
