@@ -167,6 +167,7 @@ services:
     ports:
       - 9090:9090
       # - 5105:5105
+    restart: "always"
     networks:
       retraced:
 
