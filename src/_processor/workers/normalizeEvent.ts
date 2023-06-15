@@ -201,12 +201,12 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
   }
 
   if (locInfo) {
-    if (locInfo.lat) {
-      result.lat = locInfo.lat;
-    }
-    if (locInfo.lon) {
-      result.lon = locInfo.lon;
-    }
+    // if (locInfo.lat) {
+    //   result.lat = locInfo.lat;
+    // }
+    // if (locInfo.lon) {
+    //   result.lon = locInfo.lon;
+    // }
     if (locInfo.country) {
       result.country = locInfo.country;
     }
@@ -216,9 +216,17 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
     if (locInfo.subdiv2) {
       result.loc_subdiv2 = locInfo.subdiv2;
     }
-    if (locInfo.timeZone) {
-      result.time_zone = locInfo.timeZone;
-    }
+    // if (locInfo.timezone) {
+    //   result.time_zone = locInfo.timezone;
+    // }
+  }
+
+  if (origEvent.external_id) {
+    result.external_id = origEvent.external_id;
+  }
+
+  if (!_.isEmpty(origEvent.metadata)) {
+    result.metadata = origEvent.metadata;
   }
 
   return result;

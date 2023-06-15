@@ -143,8 +143,7 @@ const eventType = new GraphQLObjectType({
     },
 
     crud: {
-      description:
-        "The classification of this event as create, read, update, or delete.",
+      description: "The classification of this event as create, read, update, or delete.",
       type: new GraphQLEnumType({
         description: "Create  | Read | Update | Delete",
         name: "CRUD",
@@ -197,20 +196,17 @@ const eventType = new GraphQLObjectType({
     canonical_time: {
       type: GraphQLString,
       description: "The created time if specified; else the received time.",
-      resolve: ({ canonical_time }) =>
-        canonical_time && moment.utc(canonical_time).format(),
+      resolve: ({ canonical_time }) => canonical_time && moment.utc(canonical_time).format(),
     },
 
     is_failure: {
       type: GraphQLBoolean,
-      description:
-        "Set to true if the event represents a failed use of permissions.",
+      description: "Set to true if the event represents a failed use of permissions.",
     },
 
     is_anonymous: {
       type: GraphQLBoolean,
-      description:
-        "Set to true if the user was not logged in when performing this action.",
+      description: "Set to true if the user was not logged in when performing this action.",
     },
 
     source_ip: {
@@ -220,32 +216,27 @@ const eventType = new GraphQLObjectType({
 
     country: {
       type: GraphQLString,
-      description:
-        "The country that the actor was in when the action was performed.",
+      description: "The country that the actor was in when the action was performed.",
     },
 
     loc_subdiv1: {
       type: GraphQLString,
-      description:
-        "The large area of the country the actor was in when the action was performed (State).",
+      description: "The large area of the country the actor was in when the action was performed (State).",
     },
 
     loc_subdiv2: {
       type: GraphQLString,
-      description:
-        "The granular area of the country the actor was in when the action was performed (City).",
+      description: "The granular area of the country the actor was in when the action was performed (City).",
     },
 
     component: {
       type: GraphQLString,
-      description:
-        "An identifier for the vendor app component that sent the event.",
+      description: "An identifier for the vendor app component that sent the event.",
     },
 
     version: {
       type: GraphQLString,
-      description:
-        "An identifier for the version of the vendor app that sent the event, usually a git SHA",
+      description: "An identifier for the version of the vendor app that sent the event, usually a git SHA",
     },
 
     // GraphQL does not have a map type. Fields is a list of key-value objects.
@@ -258,6 +249,16 @@ const eventType = new GraphQLObjectType({
       type: GraphQLString,
       description: "The raw event sent to the Retraced API.",
     },
+
+    external_id: {
+      type: GraphQLString,
+      description: "The external id associated with this event.",
+    },
+
+    metadata: {
+      description: "The set of fields associated with this event.",
+      type: fieldsType,
+    },
   }),
 });
 
@@ -266,13 +267,11 @@ const pageInfoType = new GraphQLObjectType({
   fields: {
     hasNextPage: {
       type: GraphQLBoolean,
-      description:
-        "When paging forward with <code>first</code>, indicates more results are available.",
+      description: "When paging forward with <code>first</code>, indicates more results are available.",
     },
     hasPreviousPage: {
       type: GraphQLBoolean,
-      description:
-        "When paging backward with <code>last</code>, indicates more results are available.",
+      description: "When paging backward with <code>last</code>, indicates more results are available.",
     },
   },
 });
@@ -312,8 +311,7 @@ const queryType = new GraphQLObjectType({
             type: pageInfoType,
           },
           totalCount: {
-            description:
-              "The total number of search results matched by the query.",
+            description: "The total number of search results matched by the query.",
             type: GraphQLInt,
           },
         },
@@ -363,8 +361,7 @@ const queryType = new GraphQLObjectType({
                     type: new GraphQLUnionType({
                       name: "ActionOrGroup",
                       types: [actionType, groupType],
-                      description:
-                        "Type depends on type argument passed to the counts query.",
+                      description: "Type depends on type argument passed to the counts query.",
                       resolveType(value) {
                         if (value.action) {
                           return actionType.name;

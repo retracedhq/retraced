@@ -25,6 +25,7 @@ x-common-variables: &common-variables
   # Set admin root token here
   ADMIN_ROOT_TOKEN: dev
   MAXMIND_GEOLITE2_LICENSE_KEY: ${MAXMIND_GEOLITE2_LICENSE_KEY}
+  PG_SEARCH: ${PG_SEARCH}
 
 services:
   retraced-api:
@@ -105,6 +106,7 @@ services:
       - "9200:9200"
     networks:
       - retraced
+    restart: "always"
 
   spark-iceberg:
     image: tabulario/spark-iceberg
@@ -216,7 +218,8 @@ services:
     networks:
       - retraced
     depends_on:
-      - postgres-migration
+      elastic-migration:
+        condition: service_completed_successfully
     command: ./build/src/retracedctl bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev
 
   postgres-migration:
@@ -248,7 +251,7 @@ services:
     restart: "on-failure"
 
   admin-portal:
-    image: boxyhq/jackson:1.9.0
+    image: boxyhq/jackson:1.9.11
     ports:
       - "5225:5225"
     networks:

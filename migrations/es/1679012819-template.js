@@ -21,6 +21,16 @@ module.exports = () => {
                 tokenizer: "standard",
                 filter: ["lowercase", "autocomplete_filter"],
               },
+              comma_analyzer: {
+                type: "custom",
+                tokenizer: "comma_tokenizer",
+              },
+            },
+            tokenizer: {
+              comma_tokenizer: {
+                type: "pattern",
+                pattern: ",",
+              },
             },
           },
         },
@@ -41,6 +51,9 @@ module.exports = () => {
                   type: "text",
                 },
               },
+            },
+            crud: {
+              type: "keyword",
             },
             actor: {
               properties: {
@@ -65,8 +78,27 @@ module.exports = () => {
                 },
               },
             },
+            source_ip: {
+              type: "ip",
+            },
             description: {
               type: "text",
+            },
+            is_failure: {
+              type: "boolean",
+            },
+            is_anonymous: {
+              type: "boolean",
+            },
+            fields: {
+              type: "object",
+            },
+            external_id: {
+              type: "keyword",
+            },
+            metadata: {
+              type: "object",
+              enabled: false,
             },
             created: {
               type: "date",
@@ -80,9 +112,6 @@ module.exports = () => {
               type: "date",
               format: "epoch_millis",
             },
-            source_ip: {
-              type: "ip",
-            },
             raw: {
               type: "text",
               index: false,
@@ -90,7 +119,24 @@ module.exports = () => {
             country: {
               type: "text",
             },
+            loc_subdiv1: {
+              type: "text",
+            },
+            loc_subdiv2: {
+              type: "text",
+            },
           },
+          dynamic_templates: [
+            {
+              fields: {
+                path_match: "fields.*",
+                mapping: {
+                  type: "text",
+                  analyzer: "comma_analyzer",
+                },
+              },
+            },
+          ],
         },
       },
     },

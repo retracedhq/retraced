@@ -1,8 +1,8 @@
 import express from "express";
-import { crud, EventFields } from "./models/event";
+import { EventFields } from "./models/event";
 import { adminIdentity } from "./security/helpers";
 import _ from "lodash";
-import { Client, Event } from "@retracedhq/retraced";
+import { Client, Event, CRUD } from "@retracedhq/retraced";
 import getProject from "./models/project/get";
 import hydrateProject from "./models/project/hydrate";
 import createProject from "./models/project/create";
@@ -27,7 +27,7 @@ export async function reportEvents(events: Event[]) {
   }
 }
 
-export async function audit(req: express.Request, action: string, crudOperation: crud, record?: any) {
+export async function audit(req: express.Request, action: string, crudOperation: CRUD, record?: any) {
   if (!enabled) {
     return;
   }
@@ -78,7 +78,7 @@ async function fromRequest(req: express.Request) {
   return event;
 }
 
-function makeEvent(action: string, crudOperation: crud, fromRequestInfo: any, record?: any) {
+function makeEvent(action: string, crudOperation: CRUD, fromRequestInfo: any, record?: any) {
   const event: any = _.merge(
     {
       action,
@@ -141,6 +141,7 @@ export async function bootstrapProject(opts: BootstrapOpts) {
     project = await createProject({
       id: opts.projectId,
       name: opts.projectName,
+      env: opts.environmentId ? [] : undefined,
     });
   }
 

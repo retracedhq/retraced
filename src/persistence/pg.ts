@@ -1,7 +1,7 @@
 import pg from "pg";
-import { gauge, meter } from "../metrics";
 import { logger } from "../logger";
 import config from "../config";
+import { incrementOtelCounter, observeOtelGauge } from "../metrics/opentelemetry/instrumentation";
 
 let pgPool: pg.Pool;
 
@@ -20,7 +20,7 @@ export default function getPgPool(): pg.Pool {
 
     pgPool.on("error", () => {
       logger.error("postgres client connection error");
-      meter("PgPool.connection.error").mark();
+      incrementOtelCounter("PgPool.connection.error");
     });
   }
 
@@ -31,17 +31,14 @@ export interface Querier {
   query(query: string, args?: any[]): Promise<pg.QueryResult>;
 }
 
-const reportInterval = config.STATSD_INTERVAL_MILLIS ? parseInt(config.STATSD_INTERVAL_MILLIS, 10) : 30000;
+const reportInterval = 30000;
 
 function updatePoolGauges() {
-  // pg 7.0 + uses pg-pool 2.0 +, which has pool.waitingCount, etc.
-  // but @types for 7.0 aren't out as of 7/27/2017
-  const pool: any = getPgPool();
-
-  gauge("PgPool.clients.waiting.count").set(pool.waitingCount);
-  gauge("PgPool.clients.total.count").set(pool.totalCount);
-  gauge("PgPool.clients.idle.count").set(pool.idleCount);
-  gauge("PgPool.clients.active.count").set(pool.totalCount - pool.idleCount);
+  const pool = getPgPool();
+  observeOtelGauge("PgPool.clients.waiting.count", pool.waitingCount);
+  observeOtelGauge("PgPool.clients.total.count", pool.totalCount);
+  observeOtelGauge("PgPool.clients.idle.count", pool.idleCount);
+  observeOtelGauge("PgPool.clients.active.count", pool.totalCount - pool.idleCount);
 }
 
 setInterval(updatePoolGauges, reportInterval);
