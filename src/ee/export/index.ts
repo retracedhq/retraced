@@ -2,14 +2,20 @@ import axios from "axios";
 import config from "../../config";
 import { logger } from "../../logger";
 
-export default function sendToWebhook(event: any): void {
+export default function sendToWebhook(
+  event: any,
+  eventInfo: {
+    project_id: string;
+    environment_id: string;
+  }
+): void {
   if (config.EXPORT_WEBHOOK_URL) {
     delete event.raw;
     axios
       .post(
         config.EXPORT_WEBHOOK_URL,
         {
-          message: JSON.stringify(event),
+          message: JSON.stringify({ ...event, ...eventInfo }),
         },
         {
           auth:

@@ -31,7 +31,10 @@ export class ElasticsearchSaver {
     const alias = `retraced.${jobObj.projectId}.${jobObj.environmentId}.current`;
     try {
       await this.esIndex(event, alias);
-      sendToWebhook(event);
+      sendToWebhook(event, {
+        project_id: jobObj.projectId,
+        environment_id: jobObj.environmentId,
+      });
     } catch (e) {
       e.retry = true;
       throw e;

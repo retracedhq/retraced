@@ -148,13 +148,14 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    image: iceberg-java-web:2.5
+    image: iceberg-java-web:3.8
     container_name: iceberg-java-web
     depends_on:
       - rest
       - minio
       - mc
     environment:
+      # - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:5105,server=y,suspend=n
       - LOG_LEVEL=info
       - AWS_ACCESS_KEY_ID=admin
       - AWS_SECRET_ACCESS_KEY=password
@@ -165,6 +166,7 @@ services:
       - ENV=Prod
     ports:
       - 9090:9090
+      # - 5105:5105
     networks:
       retraced:
 
