@@ -148,7 +148,7 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    image: iceberg-java-web:3.8
+    image: iceberg-java-web:3.9
     container_name: iceberg-java-web
     depends_on:
       - rest
