@@ -1,6 +1,6 @@
 {
   "name": "retraced",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "description": "A fully open source audit log service and embeddable UI easily deployed to your own Kubernetes cluster",
   "main": "./build/index.js",
   "license": "Apache-2.0",

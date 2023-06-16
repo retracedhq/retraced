@@ -16,6 +16,7 @@ export default function getPgPool(): pg.Pool {
       port: Number(config.POSTGRES_PORT),
       max: Number(config.POSTGRES_POOL_SIZE) || 20,
       idleTimeoutMillis: Number(config.PUBLISHER_CREATE_EVENT_TIMEOUT) || 2000, // how long a client is allowed to remain idle before being closed
+      statement_timeout: Number(config.POSTGRES_STATEMENT_TIMEOUT) || 60000, // how long a query is allowed to run before being canceled
     });
 
     pgPool.on("error", () => {
