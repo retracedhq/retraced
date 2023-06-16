@@ -1,10 +1,11 @@
 import getPgPool from "../persistence/pg";
+import config from "../../config";
 
 const pgPool = getPgPool();
 
 export default function getLocationByIP(ipAddress) {
   return new Promise((resolve, reject) => {
-    if (!ipAddress) {
+    if (!ipAddress || config.RETRACED_DISABLE_GEOSYNC) {
       resolve(undefined);
       return;
     }
