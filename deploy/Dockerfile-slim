@@ -8,9 +8,9 @@ FROM --platform=${BUILDPLATFORM:-linux/amd64} $ALPINE_IMAGE as cron
 RUN apk add --update --no-cache ca-certificates curl \
   && rm -rf /tmp/* /var/cache/apk/*
 
-ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.1/supercronic-linux-amd64
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.25/supercronic-linux-amd64
 ENV SUPERCRONIC=supercronic-linux-amd64
-ENV SUPERCRONIC_SHA1SUM=d7f4c0886eb85249ad05ed592902fa6865bb9d70
+ENV SUPERCRONIC_SHA1SUM=642f4f5a2b67f3400b5ea71ff24f18c0a7d77d49
 RUN curl -fsSLO "$SUPERCRONIC_URL" \
   && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
   && chmod +x "$SUPERCRONIC" \
