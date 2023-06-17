@@ -203,7 +203,7 @@ class NormalizeEventTest {
     ];
 
     const fields =
-      "id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres, saved_to_elasticsearch, project_id, environment_id, new_event_id, extract(epoch from received) * 1000 as received";
+      "id, original_event, normalized_event, project_id, environment_id, new_event_id, extract(epoch from received) * 1000 as received";
     const ingestionTaskQuery = `select ${fields} from ingest_task where id = $1`;
     const normalizeQuery =
       "update ingest_task set original_event = '', normalized_event = $1, compressed_event = $2 where id = $3";
