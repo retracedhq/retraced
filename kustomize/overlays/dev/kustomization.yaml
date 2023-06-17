@@ -20,4 +20,4 @@ images:
   - name: boxyhq/jackson
     newTag: 1.9.11
   - name: retracedhq/retraced
-    newTag: 1.6.2
+    newTag: 1.6.3

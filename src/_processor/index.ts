@@ -31,7 +31,7 @@ import { notifyError, startErrorNotifier } from "../error-notifier";
 
 startHealthz();
 
-if (config.MAXMIND_GEOLITE2_LICENSE_KEY) {
+if (!config.RETRACED_DISABLE_GEOSYNC && config.MAXMIND_GEOLITE2_LICENSE_KEY) {
   updateGeoData();
 }
 
