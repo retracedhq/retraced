@@ -56,7 +56,6 @@ class ElasticsearchSaverTest {
         id: "738ef2617df7490ba7e180ccb34a2391",
         is_anonymous: false,
         is_failure: false,
-        raw: '{"action":"license.update","group":{"id":"602f21a3fbd3f92302133762808b39af","name":"dexcorp"},"created":"2017-05-02T20:10:34.90124976Z","crud":"u","target":{"id":"428317855d274f3f68f664638a06c62f","name":"Pollos Hermanos","type":"license","url":"","fields":{"assignee":"Pollos Hermanos","channel_name":"Beta","expiration_date":null,"grant_date":"2017-05-02T18:25:10Z"}},"description":"Updated license for \\"Pollos Hermanos\\", changed \\"foo\\" from \\"shabazz shabang\\" to \\"shabazz shabang shabog\\"","source_ip":"172.19.0.1","actor":{"id":"060dbbd5da8c43b57b26179a3bfb7b1a","name":"dexter@replicated.com","type":"user","url":"http://localhost:8011/#/team/member/060dbbd5da8c43b57b26179a3bfb7b1a"},"is_failure":false,"is_anonymous":false,"component":"vendor-api","version":"fake-version-lol"}',
         received: 200,
         source_ip: "172.19.0.1",
         target: {
@@ -100,7 +99,6 @@ class ElasticsearchSaverTest {
       id: "738ef2617df7490ba7e180ccb34a2391",
       is_anonymous: false,
       is_failure: false,
-      raw: '{"action":"license.update","group":{"id":"602f21a3fbd3f92302133762808b39af","name":"dexcorp"},"created":"2017-05-02T20:10:34.90124976Z","crud":"u","target":{"id":"428317855d274f3f68f664638a06c62f","name":"Pollos Hermanos","type":"license","url":"","fields":{"assignee":"Pollos Hermanos","channel_name":"Beta","expiration_date":null,"grant_date":"2017-05-02T18:25:10Z"}},"description":"Updated license for \\"Pollos Hermanos\\", changed \\"foo\\" from \\"shabazz shabang\\" to \\"shabazz shabang shabog\\"","source_ip":"172.19.0.1","actor":{"id":"060dbbd5da8c43b57b26179a3bfb7b1a","name":"dexter@replicated.com","type":"user","url":"http://localhost:8011/#/team/member/060dbbd5da8c43b57b26179a3bfb7b1a"},"is_failure":false,"is_anonymous":false,"component":"vendor-api","version":"fake-version-lol"}',
       received: 200,
       source_ip: "172.19.0.1",
       target: {
