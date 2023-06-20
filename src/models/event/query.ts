@@ -49,16 +49,7 @@ export default async function query(opts: Options): Promise<Result> {
 async function doQuery(opts: Options): Promise<Result> {
   const params = searchParams(opts);
 
-  logger.debug(`raw newParams: ${JSON.stringify(params)}\n`);
-
   const newResp = await es.search(params);
-
-  if (!newResp.body || !newResp.body.hits) {
-    logger.info(`raw newParams: ${JSON.stringify(params)}\n`);
-    logger.info(`raw newResp: ${JSON.stringify(newResp)}\n`);
-  } else {
-    logger.debug(`raw newResp: ${JSON.stringify(newResp)}\n`);
-  }
 
   const bodyAny: any = params.body;
   const countParams = {
@@ -85,16 +76,7 @@ export async function doAllQuery(opts: Options): Promise<Result> {
   const params = searchParams(opts);
   params.scroll = "30s"; // this means we have 30s to get the next entry in the scroll
 
-  logger.debug(`raw newParams: ${JSON.stringify(params)}\n`);
-
   const newResp = await es.search(params);
-
-  if (!newResp.body || !newResp.body.hits) {
-    logger.info(`raw newParams: ${JSON.stringify(params)}\n`);
-    logger.info(`raw newResp: ${JSON.stringify(newResp)}\n`);
-  } else {
-    logger.debug(`raw newResp: ${JSON.stringify(newResp)}\n`);
-  }
 
   responseQueue.push(newResp);
   while (responseQueue.length) {
