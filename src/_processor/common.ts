@@ -2,7 +2,7 @@ import process from "process";
 import moment from "moment";
 
 export function jobDesc(job) {
-  return job.id.substring(0, 8);
+  return job.id.slice(-8);
 }
 
 export function stopwatchClick(startTime: [number, number]): number {
@@ -36,10 +36,7 @@ export interface EnvironmentTimeRange {
 // Offsets range from -12:00 to +14:00. Does not include offsets within the
 // hour such as -08:30.
 // Example: For utcHour 18 and localTime 7, returns [-11, 13].
-export function offsetsWithLocalTimeDuringUTCHour(
-  utcHour: number,
-  localHour: number
-) {
+export function offsetsWithLocalTimeDuringUTCHour(utcHour: number, localHour: number) {
   const backOffset = localHour - utcHour;
   const forwardOffset = backOffset + 24;
   const validOffsets: number[] = [];

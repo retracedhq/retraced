@@ -47,17 +47,13 @@ export default class NormalizeRepairer {
   }
 
   public async repairOldEvents() {
-    logger.warn(`Looking for jobs older than ${this.minAgeMs}ms missing 'normalized_event'`);
     const resp = await this.pgPool.query(NormalizeRepairer.selectFromIngestTask, [
       this.minAgeMs,
       this.maxEvents,
     ]);
-    logger.warn(`Found ${resp.rows.length} jobs older than ${this.minAgeMs}ms missing 'normalized_event'`);
 
     if (!resp.rows.length) {
-      logger.debug(`No jobs older than ${this.minAgeMs}ms missing 'normalized_event'`);
       incrementOtelCounter("NormalizeRepairer.repairOldEvents.allClear");
-
       return;
     }
 
