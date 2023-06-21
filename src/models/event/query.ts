@@ -5,7 +5,6 @@ import { ApiResponse, RequestParams } from "@opensearch-project/opensearch";
 
 import { Scope } from "../../security/scope";
 import { scope, getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
-import { logger } from "../../logger";
 
 const es: ClientWithRetry = getESWithRetry();
 
