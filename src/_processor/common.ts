@@ -3,7 +3,7 @@ import moment from "moment";
 import _ from "lodash";
 
 export function jobDesc(job) {
-  return job.id.substring(0, 8);
+  return job.id.slice(-8);
 }
 
 export function stopwatchClick(startTime: [number, number]): number {
