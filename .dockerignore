@@ -1,6 +1,7 @@
 config
 deploy
 !deploy/crontab
+!deploy/GeoIP.conf
 node_modules
 .idea/workspace.xml
 kustomize

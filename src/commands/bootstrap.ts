@@ -1,9 +1,12 @@
 import { bootstrapProject } from "../headless";
+import { spawn } from "child_process";
+import config from "../config";
+import { execGeoipUpdate } from "../common/mmdb";
+
 // import getPgPool from "../persistence/pg";
 
 export const name = "bootstrap";
-export const describe =
-  "Bootstrap a retraced project with a specified projectId, environmentId, and apiKey";
+export const describe = "Bootstrap a retraced project with a specified projectId, environmentId, and apiKey";
 export const builder = {
   projectId: {
     demand: true,
@@ -54,17 +57,13 @@ const sleep = async (time) => {
 // }
 
 export const handler = async (argv) => {
-  const {
-    projectId,
-    apiKey,
-    environmentId,
-    projectName,
-    environmentName,
-    tokenName,
-  } = argv;
+  const { projectId, apiKey, environmentId, projectName, environmentName, tokenName } = argv;
 
   do {
     try {
+      if (config.USE_MMDB) {
+        execGeoipUpdate();
+      }
       await bootstrapProject({
         projectId,
         apiKey,

@@ -1,8 +1,9 @@
+ARG NODEJS_IMAGE=node:18.16-alpine3.17
+ARG ALPINE_IMAGE=alpine:3.17
+
 # # #
 # Cron build
 #
-ARG NODEJS_IMAGE=node:18.16-alpine3.17
-ARG ALPINE_IMAGE=alpine:3.17
 FROM --platform=${BUILDPLATFORM:-linux/amd64} $ALPINE_IMAGE as cron
 
 RUN apk add --update --no-cache ca-certificates curl \
@@ -17,6 +18,26 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
   && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
   && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/retraced-auditlog-cron
 COPY deploy/crontab /crontab
+
+# # #
+# GeoIpUpdate build
+#
+FROM --platform=${BUILDPLATFORM:-linux/amd64} $ALPINE_IMAGE as geoipupdate
+
+RUN apk add --update --no-cache ca-certificates curl \
+  && rm -rf /tmp/* /var/cache/apk/*
+
+ENV GEOIPUPDATE_URL=https://github.com/maxmind/geoipupdate/releases/download/v5.1.1/geoipupdate_5.1.1_linux_amd64.deb
+ENV GEOIPUPDATE_SHA1SUM=a566c26128858d9b8967b7df8b94bae1042e49fe5b086b7cafe96443ebfa92ea
+ENV GEOIPUPDATE=geoipupdate_5.1.1_linux_amd64.deb
+RUN curl -fsSLO "$GEOIPUPDATE_URL" \
+  && echo "${GEOIPUPDATE_SHA1SUM}  ${GEOIPUPDATE}" | sha256sum -c - \
+  && apk add --no-cache --virtual .build-deps \
+    dpkg \
+  && dpkg --add-architecture amd64 \
+  && dpkg -i "$GEOIPUPDATE" \
+  && apk del .build-deps \
+  && rm "$GEOIPUPDATE"
 
 # # #
 # Node build
@@ -71,5 +92,7 @@ COPY --from=node /src/build /app/build
 COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercronic-linux-amd64
 COPY --from=cron /usr/local/bin/retraced-auditlog-cron /usr/local/bin/retraced-auditlog-cron
 COPY --from=cron /crontab /crontab
+COPY --from=geoipupdate /usr/bin/geoipupdate /usr/bin/geoipupdate
+COPY deploy/GeoIP.conf /etc/GeoIP.conf
 
 CMD ["node", "build/src/index.js"]
