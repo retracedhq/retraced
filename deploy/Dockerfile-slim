@@ -93,6 +93,5 @@ COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercron
 COPY --from=cron /usr/local/bin/retraced-auditlog-cron /usr/local/bin/retraced-auditlog-cron
 COPY --from=cron /crontab /crontab
 COPY --from=geoipupdate /usr/bin/geoipupdate /usr/bin/geoipupdate
-COPY deploy/GeoIP.conf /etc/GeoIP.conf
 
 CMD ["node", "build/src/index.js"]
