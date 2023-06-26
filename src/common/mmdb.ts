@@ -30,10 +30,6 @@ export const execGeoipUpdate = () => {
 };
 
 export const queryMMDB = (ip: string) => {
-  const dbBuffer = fs.readFileSync(config.MMDB_PATH);
-
-  // This reader object should be reused across lookups as creation of it is
-  // expensive.
   reader = getMMDBReader();
 
   const response: City = reader.city(ip);
