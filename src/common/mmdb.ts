@@ -12,13 +12,6 @@ export const mmdbExists = () => {
 
 export const execGeoipUpdate = async () => {
   return new Promise((resolve, reject) => {
-    // const command = "/opt/homebrew/bin/geoipupdate";
-    // const args = [
-    //   "-f",
-    //   "/Users/deepak/workspace/retraced/GeoIP.conf",
-    //   "-d",
-    //   "/Users/deepak/workspace/retraced/mmdb",
-    // ];
     const command = "/usr/bin/geoipupdate";
     const args = ["-f", "/etc/GeoIP.conf", "-d", "/etc/mmdb"];
 
