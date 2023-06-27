@@ -245,11 +245,6 @@ const eventType = new GraphQLObjectType({
       type: fieldsType,
     },
 
-    raw: {
-      type: GraphQLString,
-      description: "The raw event sent to the Retraced API.",
-    },
-
     external_id: {
       type: GraphQLString,
       description: "The external id associated with this event.",
