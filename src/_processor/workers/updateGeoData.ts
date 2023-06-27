@@ -32,34 +32,35 @@ export default async function updateGeoData() {
   }
 
   if (config.GEO_USE_MMDB) {
-    logger.info("UpdateGeoData: GeoIP sync disabled when using MMDB");
+    logger.info("UpdateGeoData: Downloading MMDB file");
     execGeoipUpdate();
     return;
-  } else {
-    // Use cached files if less than a day old.
-    const downloadsNeeded = await Promise.all([
-      downloadNeeded(locFilePath),
-      downloadNeeded(ipv4FilePath),
-      downloadNeeded(ipv6FilePath),
-    ]);
-    if (_.some(downloadsNeeded)) {
-      logger.info("UpdateGeoData: Downloading new GeoIP data files");
-      await download();
-    } else {
-      logger.info("UpdateGeoData: Using cached GeoIP data files");
-    }
-
-    const locStream = fs.createReadStream(locFilePath);
-    const ipv4Stream = fs.createReadStream(ipv4FilePath);
-    const ipv6Stream = fs.createReadStream(ipv6FilePath);
-
-    const locations = await parseLocationData(locStream);
-    const date = moment.utc();
-
-    await translateIPBlockData(ipv4Stream, locations, date);
-    await translateIPBlockData(ipv6Stream, locations, date);
-    await clean(date);
   }
+
+  // Postgres records update
+  // Use cached files if less than a day old.
+  const downloadsNeeded = await Promise.all([
+    downloadNeeded(locFilePath),
+    downloadNeeded(ipv4FilePath),
+    downloadNeeded(ipv6FilePath),
+  ]);
+  if (_.some(downloadsNeeded)) {
+    logger.info("UpdateGeoData: Downloading new GeoIP data files");
+    await download();
+  } else {
+    logger.info("UpdateGeoData: Using cached GeoIP data files");
+  }
+
+  const locStream = fs.createReadStream(locFilePath);
+  const ipv4Stream = fs.createReadStream(ipv4FilePath);
+  const ipv6Stream = fs.createReadStream(ipv6FilePath);
+
+  const locations = await parseLocationData(locStream);
+  const date = moment.utc();
+
+  await translateIPBlockData(ipv4Stream, locations, date);
+  await translateIPBlockData(ipv6Stream, locations, date);
+  await clean(date);
 }
 
 // Check if a file is missing or more than a day old.

@@ -1,9 +1,9 @@
 import { bootstrapProject } from "../headless";
-import { spawn } from "child_process";
 import config from "../config";
-import { execGeoipUpdate } from "../common/mmdb";
-
-// import getPgPool from "../persistence/pg";
+import updateGeoData from "../_processor/workers/updateGeoData";
+import { mmdbExists } from "../common/mmdb";
+import getPgPool from "../_db/persistence/pg";
+import { logger } from "../_processor/logger";
 
 export const name = "bootstrap";
 export const describe = "Bootstrap a retraced project with a specified projectId, environmentId, and apiKey";
@@ -36,34 +36,11 @@ const sleep = async (time) => {
   });
 };
 
-// async function checkTableAvailability(tableName) {
-//   const pool = getPgPool();
-//   let count = 0;
-//   let sql;
-//   if (pool) {
-//     do {
-//       try {
-//         sql = "SELECT * FROM " + tableName[count] + " LIMIT 1";
-//         await pool.query(sql);
-//         console.log(`Found table ${tableName[count]}`);
-//         count++;
-//       } catch (ex) {
-//         console.log(`Table ${tableName[count]} not found`);
-//       } finally {
-//         await sleep(300);
-//       }
-//     } while (tableName.length > count);
-//   }
-// }
-
 export const handler = async (argv) => {
   const { projectId, apiKey, environmentId, projectName, environmentName, tokenName } = argv;
 
   do {
     try {
-      if (config.GEO_USE_MMDB) {
-        execGeoipUpdate();
-      }
       await bootstrapProject({
         projectId,
         apiKey,
@@ -76,11 +53,26 @@ export const handler = async (argv) => {
         envVarRef: "environmentId",
       });
       console.log(`Bootstraped project ${argv.projectId}`);
+
+      await startGeoSync();
+
       process.exit(0);
     } catch (ex) {
-      console.log(`Retrying in 300ms`, ex);
+      console.log("Retrying in 300ms", ex);
     } finally {
       await sleep(300);
     }
   } while (true);
+};
+
+const startGeoSync = async () => {
+  const pgPool = getPgPool();
+  const shouldSync = await pgPool.query("SELECT 1 FROM geoip LIMIT 1");
+  if (
+    !config.RETRACED_DISABLE_GEOSYNC &&
+    ((config.MAXMIND_GEOLITE2_LICENSE_KEY && shouldSync.rowCount === 0) ||
+      (config.GEO_USE_MMDB && !mmdbExists()))
+  ) {
+    await updateGeoData();
+  }
 };

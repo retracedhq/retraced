@@ -10,26 +10,37 @@ export const mmdbExists = () => {
   return fs.existsSync(config.GEO_MMDB_PATH);
 };
 
-export const execGeoipUpdate = () => {
-  const command = "/usr/bin/geoipupdate";
-  const args = ["-f", "/etc/GeoIP.conf", "-d", "/etc/mmdb"];
+export const execGeoipUpdate = async () => {
+  return new Promise((resolve, reject) => {
+    // const command = "/opt/homebrew/bin/geoipupdate";
+    // const args = [
+    //   "-f",
+    //   "/Users/deepak/workspace/retraced/GeoIP.conf",
+    //   "-d",
+    //   "/Users/deepak/workspace/retraced/mmdb",
+    // ];
+    const command = "/usr/bin/geoipupdate";
+    const args = ["-f", "/etc/GeoIP.conf", "-d", "/etc/mmdb"];
 
-  const child = spawn(command, args);
+    const child = spawn(command, args);
 
-  child.stdout.on("data", (data) => {
-    logger.info(`stdout: ${data}`);
-  });
+    child.stdout.on("data", (data) => {
+      logger.info(`stdout: ${data}`);
+    });
 
-  child.stderr.on("data", (data) => {
-    logger.info(`stderr: ${data}`);
-  });
+    child.stderr.on("data", (data) => {
+      logger.info(`stderr: ${data}`);
+    });
 
-  child.on("close", (code) => {
-    if (code !== 0) {
-      logger.info(`GeoIPUpdate process exited with code ${code}`);
-    } else {
-      logger.info(`GeoIPUpdate done!`);
-    }
+    child.on("close", (code) => {
+      if (code !== 0) {
+        logger.info(`GeoIP update process exited with code ${code}`);
+        reject(new Error(`GeoIP update process exited with code ${code}`));
+      } else {
+        logger.info(`GeoIP update done!`);
+        resolve(undefined);
+      }
+    });
   });
 };
 

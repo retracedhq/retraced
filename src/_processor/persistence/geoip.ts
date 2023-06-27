@@ -10,7 +10,6 @@ export default async function getLocationByIP(ipAddress, pg: PoolClient) {
     }
     if (config.GEO_USE_MMDB) {
       const response: any = queryMMDB(ipAddress);
-
       if (response) {
         const ret = {
           lat: response.location?.latitude,
@@ -42,7 +41,7 @@ export default async function getLocationByIP(ipAddress, pg: PoolClient) {
       }
     }
   } catch (err) {
-    logger.error("Error resolving IP to geo: ", err);
+    logger.info(`Error resolving IP to geo: ${err}`);
     return undefined;
   }
 }

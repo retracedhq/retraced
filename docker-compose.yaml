@@ -17,7 +17,7 @@ x-common-variables: &common-variables
   API_BASE_URL_PATH: /auditlog
   RETRACED_API_BASE: http://localhost:3000/auditlog
   POSTGRES_DATABASE: retraced
-  LOG_LEVEL: warn
+  LOG_LEVEL: ${LOG_LEVEL}
   ELASTICSEARCH_NODES: http://elasticsearch:9200
   NSQD_HOST: nsqd
   HOSTNAME: retraced-api-67856674bf-kwq7f
@@ -26,8 +26,7 @@ x-common-variables: &common-variables
   ADMIN_ROOT_TOKEN: dev
   MAXMIND_GEOLITE2_LICENSE_KEY: ${MAXMIND_GEOLITE2_LICENSE_KEY}
   PG_SEARCH: ${PG_SEARCH}
-  GEO_USE_MMDB: 1
-  GEO_MMDB_PATH: /etc/mmdb/GeoLite2-City.mmdb
+  GEO_USE_MMDB: ${GEO_USE_MMDB}
 
 services:
   retraced-api:
