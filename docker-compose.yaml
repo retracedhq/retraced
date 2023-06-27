@@ -26,8 +26,8 @@ x-common-variables: &common-variables
   ADMIN_ROOT_TOKEN: dev
   MAXMIND_GEOLITE2_LICENSE_KEY: ${MAXMIND_GEOLITE2_LICENSE_KEY}
   PG_SEARCH: ${PG_SEARCH}
-  USE_MMDB: 1
-  MMDB_PATH: /etc/mmdb/GeoLite2-City.mmdb
+  GEO_USE_MMDB: 1
+  GEO_MMDB_PATH: /etc/mmdb/GeoLite2-City.mmdb
 
 services:
   retraced-api:

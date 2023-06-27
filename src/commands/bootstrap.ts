@@ -61,7 +61,7 @@ export const handler = async (argv) => {
 
   do {
     try {
-      if (config.USE_MMDB) {
+      if (config.GEO_USE_MMDB) {
         execGeoipUpdate();
       }
       await bootstrapProject({

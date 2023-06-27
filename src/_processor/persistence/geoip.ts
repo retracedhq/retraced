@@ -12,7 +12,7 @@ export default function getLocationByIP(ipAddress): Promise<any> {
         resolve(undefined);
         return;
       }
-      if (config.USE_MMDB) {
+      if (config.GEO_USE_MMDB) {
         const response: any = queryMMDB(ipAddress);
 
         // console.log(response);

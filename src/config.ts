@@ -68,6 +68,6 @@ export default {
     env.RETRACED_NO_ANALYTICS ||
     process.env.DO_NOT_TRACK ||
     env.DO_NOT_TRACK,
-  USE_MMDB: process.env.USE_MMDB || env.USE_MMDB,
-  MMDB_PATH: process.env.MMDB_PATH || env.MMDB_PATH || "/etc/mmdb/GeoLite2-City.mmdb",
+  GEO_USE_MMDB: process.env.GEO_USE_MMDB || env.GEO_USE_MMDB,
+  GEO_MMDB_PATH: process.env.GEO_MMDB_PATH || env.GEO_MMDB_PATH || "/etc/mmdb/GeoLite2-City.mmdb",
 };

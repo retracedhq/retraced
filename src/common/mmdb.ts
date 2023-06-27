@@ -6,6 +6,10 @@ import { logger } from "../logger";
 
 let reader: ReaderModel;
 
+export const mmdbExists = () => {
+  return fs.existsSync(config.GEO_MMDB_PATH);
+};
+
 export const execGeoipUpdate = () => {
   const command = "/usr/bin/geoipupdate";
   const args = ["-f", "/etc/GeoIP.conf", "-d", "/etc/mmdb"];
@@ -30,15 +34,20 @@ export const execGeoipUpdate = () => {
 };
 
 export const queryMMDB = (ip: string) => {
-  reader = getMMDBReader();
+  if (mmdbExists()) {
+    reader = getMMDBReader();
 
-  const response: City = reader.city(ip);
-  return response;
+    const response: City = reader.city(ip);
+    return response;
+  } else {
+    logger.info(`MMDB file not found at ${config.GEO_MMDB_PATH}`);
+    return null;
+  }
 };
 
 const getMMDBReader = (): ReaderModel => {
   if (!reader) {
-    const dbBuffer = fs.readFileSync(config.MMDB_PATH);
+    const dbBuffer = fs.readFileSync(config.GEO_MMDB_PATH);
 
     // This reader object should be reused across lookups as creation of it is
     // expensive.
