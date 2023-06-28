@@ -63,7 +63,7 @@
     "@types/sinon": "10.0.14",
     "@types/statsd-client": "0.4.3",
     "@types/swagger-jsdoc": "6.0.1",
-    "@types/uuid": "9.0.1",
+    "@types/uuid": "9.0.2",
     "@types/yargs": "17.0.24",
     "@typescript-eslint/eslint-plugin": "5.60.0",
     "@typescript-eslint/parser": "5.60.1",
