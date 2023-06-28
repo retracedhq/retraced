@@ -33,7 +33,7 @@ export default async function updateGeoData() {
 
   if (config.GEO_USE_MMDB) {
     logger.info("UpdateGeoData: Downloading MMDB file");
-    execGeoipUpdate();
+    await execGeoipUpdate();
     return;
   }
 
