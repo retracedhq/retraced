@@ -1,4 +1,5 @@
 -- SQL goes here
+-- SQL goes here
 CREATE TABLE IF NOT EXISTS backlog (
 	new_event_id text,
 	project_id text,
