@@ -26,12 +26,15 @@ const ipv4FilePath = path.join(config.TMPDIR || "/tmp", ipv4FileName);
 const ipv6FilePath = path.join(config.TMPDIR || "/tmp", ipv6FileName);
 
 export default async function updateGeoData() {
-  if (config.RETRACED_DISABLE_GEOSYNC || (!config.MAXMIND_GEOLITE2_LICENSE_KEY && !config.GEO_USE_MMDB)) {
+  if (
+    config.RETRACED_DISABLE_GEOSYNC ||
+    (!config.MAXMIND_GEOLITE2_LICENSE_KEY && !config.MAXMIND_GEOLITE2_USE_MMDB)
+  ) {
     logger.info("UpdateGeoData: GeoIP sync disabled");
     return;
   }
 
-  if (config.GEO_USE_MMDB) {
+  if (config.MAXMIND_GEOLITE2_USE_MMDB) {
     logger.info("UpdateGeoData: Downloading MMDB file");
     await execGeoipUpdate();
     return;

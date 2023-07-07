@@ -68,6 +68,9 @@ export default {
     env.RETRACED_NO_ANALYTICS ||
     process.env.DO_NOT_TRACK ||
     env.DO_NOT_TRACK,
-  GEO_USE_MMDB: process.env.GEO_USE_MMDB || env.GEO_USE_MMDB,
-  GEO_MMDB_PATH: process.env.GEO_MMDB_PATH || env.GEO_MMDB_PATH || "/etc/mmdb/GeoLite2-City.mmdb",
+  MAXMIND_GEOLITE2_USE_MMDB: process.env.MAXMIND_GEOLITE2_USE_MMDB || env.MAXMIND_GEOLITE2_USE_MMDB,
+  MAXMIND_GEOLITE2_MMDB_PATH:
+    process.env.MAXMIND_GEOLITE2_MMDB_PATH ||
+    env.MAXMIND_GEOLITE2_MMDB_PATH ||
+    "/etc/mmdb/GeoLite2-City.mmdb",
 };

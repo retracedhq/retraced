@@ -8,7 +8,7 @@ import chokidar from "chokidar";
 let reader: ReaderModel;
 
 export const mmdbExists = () => {
-  return fs.existsSync(config.GEO_MMDB_PATH);
+  return fs.existsSync(config.MAXMIND_GEOLITE2_MMDB_PATH);
 };
 
 export const execGeoipUpdate = async () => {
@@ -45,7 +45,7 @@ export const queryMMDB = (ip: string) => {
     const response: City = reader.city(ip);
     return response;
   } else {
-    logger.info(`MMDB file not found at ${config.GEO_MMDB_PATH}`);
+    logger.info(`MMDB file not found at ${config.MAXMIND_GEOLITE2_MMDB_PATH}`);
     return null;
   }
 };
@@ -55,7 +55,7 @@ const getMMDBReader = (refresh = false): ReaderModel => {
     if (refresh) {
       logger.info("Refreshing MMDB reader");
     }
-    const dbBuffer = fs.readFileSync(config.GEO_MMDB_PATH);
+    const dbBuffer = fs.readFileSync(config.MAXMIND_GEOLITE2_MMDB_PATH);
 
     // This reader object should be reused across lookups as creation of it is
     // expensive.
@@ -65,15 +65,15 @@ const getMMDBReader = (refresh = false): ReaderModel => {
 };
 
 const initialiseFileWatcher = () => {
-  if (config.GEO_USE_MMDB && config.GEO_MMDB_PATH) {
-    const watcher = chokidar.watch(config.GEO_MMDB_PATH);
+  if (config.MAXMIND_GEOLITE2_USE_MMDB && config.MAXMIND_GEOLITE2_MMDB_PATH) {
+    const watcher = chokidar.watch(config.MAXMIND_GEOLITE2_MMDB_PATH);
 
     // Event: ready - triggered when initial scan is complete
     watcher.on("ready", () => {
-      logger.info(`Watching file: ${config.GEO_MMDB_PATH}`);
+      logger.info(`Watching file: ${config.MAXMIND_GEOLITE2_MMDB_PATH}`);
 
       // Check if the file exists initially
-      if (watcher.getWatched()[config.GEO_MMDB_PATH]) {
+      if (watcher.getWatched()[config.MAXMIND_GEOLITE2_MMDB_PATH]) {
         logger.info("MMDB file found.");
       } else {
         logger.info("Watcher coutld not find MMDB file. GeoIP update might be in progress");
