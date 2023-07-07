@@ -70,7 +70,7 @@ const startGeoSync = async () => {
   const shouldSync = await pgPool.query("SELECT 1 FROM geoip LIMIT 1");
   if (
     !config.RETRACED_DISABLE_GEOSYNC &&
-    ((config.MAXMIND_GEOLITE2_LICENSE_KEY && shouldSync.rowCount === 0) ||
+    ((config.GEOIPUPDATE_LICENSE_KEY && shouldSync.rowCount === 0) ||
       (config.MAXMIND_GEOLITE2_USE_MMDB && !mmdbExists()))
   ) {
     await updateGeoData();

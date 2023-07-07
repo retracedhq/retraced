@@ -6,36 +6,10 @@ import { logger } from "../logger";
 import chokidar from "chokidar";
 
 let reader: ReaderModel;
+const mmdbPath = config.GEOIPUPDATE_DB_DIR + "/GeoLite2-City.mmdb";
 
 export const mmdbExists = () => {
-  return fs.existsSync(config.MAXMIND_GEOLITE2_MMDB_PATH);
-};
-
-export const execGeoipUpdate = async () => {
-  return new Promise((resolve, reject) => {
-    const command = "/usr/bin/geoipupdate";
-    const args = ["-f", "/etc/GeoIP.conf", "-d", "/etc/mmdb"];
-
-    const child = spawn(command, args);
-
-    child.stdout.on("data", (data) => {
-      logger.info(`stdout: ${data}`);
-    });
-
-    child.stderr.on("data", (data) => {
-      logger.info(`stderr: ${data}`);
-    });
-
-    child.on("close", (code) => {
-      if (code !== 0) {
-        logger.info(`GeoIP update process exited with code ${code}`);
-        reject(new Error(`GeoIP update process exited with code ${code}`));
-      } else {
-        logger.info(`GeoIP update done!`);
-        resolve(undefined);
-      }
-    });
-  });
+  return fs.existsSync(mmdbPath);
 };
 
 export const queryMMDB = (ip: string) => {
@@ -45,7 +19,7 @@ export const queryMMDB = (ip: string) => {
     const response: City = reader.city(ip);
     return response;
   } else {
-    logger.info(`MMDB file not found at ${config.MAXMIND_GEOLITE2_MMDB_PATH}`);
+    logger.info(`MMDB file not found at ${mmdbPath}`);
     return null;
   }
 };
@@ -55,7 +29,7 @@ const getMMDBReader = (refresh = false): ReaderModel => {
     if (refresh) {
       logger.info("Refreshing MMDB reader");
     }
-    const dbBuffer = fs.readFileSync(config.MAXMIND_GEOLITE2_MMDB_PATH);
+    const dbBuffer = fs.readFileSync(mmdbPath);
 
     // This reader object should be reused across lookups as creation of it is
     // expensive.
@@ -65,15 +39,15 @@ const getMMDBReader = (refresh = false): ReaderModel => {
 };
 
 const initialiseFileWatcher = () => {
-  if (config.MAXMIND_GEOLITE2_USE_MMDB && config.MAXMIND_GEOLITE2_MMDB_PATH) {
-    const watcher = chokidar.watch(config.MAXMIND_GEOLITE2_MMDB_PATH);
+  if (config.MAXMIND_GEOLITE2_USE_MMDB && config.GEOIPUPDATE_DB_DIR) {
+    const watcher = chokidar.watch(mmdbPath);
 
     // Event: ready - triggered when initial scan is complete
     watcher.on("ready", () => {
-      logger.info(`Watching file: ${config.MAXMIND_GEOLITE2_MMDB_PATH}`);
+      logger.info(`Watching file: ${mmdbPath}`);
 
       // Check if the file exists initially
-      if (watcher.getWatched()[config.MAXMIND_GEOLITE2_MMDB_PATH]) {
+      if (watcher.getWatched()[mmdbPath]) {
         logger.info("MMDB file found.");
       } else {
         logger.info("Watcher coutld not find MMDB file. GeoIP update might be in progress");

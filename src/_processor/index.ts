@@ -133,7 +133,7 @@ const geoDataConsumers: Consumer[] = [
 const nsqConsumers: Consumer[] = [
   ...(config.PG_SEARCH ? pgSearchConsumers : esConsumers),
   ...(WARP_PIPE ? warpPipeConsumers : []),
-  ...(config.MAXMIND_GEOLITE2_LICENSE_KEY ? geoDataConsumers : []),
+  ...(config.GEOIPUPDATE_LICENSE_KEY ? geoDataConsumers : []),
   {
     topic: "raw_events",
     channel: "normalize",

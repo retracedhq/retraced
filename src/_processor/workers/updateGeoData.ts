@@ -10,12 +10,11 @@ import * as csv from "csv-string";
 import getPgPool from "../persistence/pg";
 import { logger } from "../logger";
 import config from "../../config";
-import { execGeoipUpdate } from "../../common/mmdb";
 
 const pgPool = getPgPool();
 
 // The zip archive has a folder named e.g. GeoLite2-City-CSV_20230106/
-const source = `https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=${config.MAXMIND_GEOLITE2_LICENSE_KEY}&suffix=zip`;
+const source = `https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=${config.GEOIPUPDATE_LICENSE_KEY}&suffix=zip`;
 const zipFileName = "GeoLite2-City-CSV.zip";
 const locFileName = "GeoLite2-City-Locations-en.csv";
 const ipv4FileName = "GeoLite2-City-Blocks-IPv4.csv";
@@ -28,15 +27,9 @@ const ipv6FilePath = path.join(config.TMPDIR || "/tmp", ipv6FileName);
 export default async function updateGeoData() {
   if (
     config.RETRACED_DISABLE_GEOSYNC ||
-    (!config.MAXMIND_GEOLITE2_LICENSE_KEY && !config.MAXMIND_GEOLITE2_USE_MMDB)
+    (!config.GEOIPUPDATE_LICENSE_KEY && !config.MAXMIND_GEOLITE2_USE_MMDB)
   ) {
     logger.info("UpdateGeoData: GeoIP sync disabled");
-    return;
-  }
-
-  if (config.MAXMIND_GEOLITE2_USE_MMDB) {
-    logger.info("UpdateGeoData: Downloading MMDB file");
-    await execGeoipUpdate();
     return;
   }
 
