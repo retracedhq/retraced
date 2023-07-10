@@ -43,7 +43,7 @@
     "ruler": "1.0.0",
     "sanitize-filename": "1.6.3",
     "search-query-parser": "1.6.0",
-    "sigsci-module-nodejs": "2.1.3",
+    "sigsci-module-nodejs": "2.2.0",
     "ssl-config": "1.0.0",
     "swagger-ui-express": "4.6.3",
     "tsoa": "5.1.1",
