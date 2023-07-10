@@ -1,4 +1,3 @@
-import { spawn } from "child_process";
 import { ReaderModel, Reader, City } from "@maxmind/geoip2-node";
 import config from "../config";
 import fs from "fs";
