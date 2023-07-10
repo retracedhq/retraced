@@ -178,7 +178,7 @@ services:
     restart: "on-failure"
 
   admin-portal:
-    image: boxyhq/jackson:1.9.11
+    image: boxyhq/jackson:1.11.0
     ports:
       - "5225:5225"
     networks:
