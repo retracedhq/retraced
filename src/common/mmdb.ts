@@ -39,7 +39,7 @@ const getMMDBReader = (refresh = false): ReaderModel => {
 };
 
 const initialiseFileWatcher = () => {
-  if (config.MAXMIND_GEOLITE2_USE_MMDB && config.GEOIPUPDATE_DB_DIR) {
+  if (config.GEOIPUPDATE_USE_MMDB && config.GEOIPUPDATE_DB_DIR) {
     const watcher = chokidar.watch(mmdbPath);
 
     // Event: ready - triggered when initial scan is complete

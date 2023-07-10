@@ -8,7 +8,7 @@ export default async function getLocationByIP(ipAddress, pg: PoolClient) {
     if (!ipAddress || config.RETRACED_DISABLE_GEOSYNC) {
       return undefined;
     }
-    if (config.MAXMIND_GEOLITE2_USE_MMDB) {
+    if (config.GEOIPUPDATE_USE_MMDB) {
       const response: any = queryMMDB(ipAddress);
       if (response) {
         const ret = {

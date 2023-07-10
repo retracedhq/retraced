@@ -71,7 +71,7 @@ const startGeoSync = async () => {
   if (
     !config.RETRACED_DISABLE_GEOSYNC &&
     ((config.GEOIPUPDATE_LICENSE_KEY && shouldSync.rowCount === 0) ||
-      (config.MAXMIND_GEOLITE2_USE_MMDB && !mmdbExists()))
+      (config.GEOIPUPDATE_USE_MMDB && !mmdbExists()))
   ) {
     await updateGeoData();
   }
