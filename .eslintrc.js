@@ -5,7 +5,7 @@ module.exports = {
   },
   extends: [
     "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/recommended-type-checked",
     "prettier",
   ],
   parser: "@typescript-eslint/parser",
@@ -13,7 +13,12 @@ module.exports = {
     project: "tsconfig.json",
     sourceType: "module",
   },
-  plugins: ["eslint-plugin-import", "eslint-plugin-jsdoc", "eslint-plugin-prefer-arrow", "@typescript-eslint"],
+  plugins: [
+    "eslint-plugin-import",
+    "eslint-plugin-jsdoc",
+    "eslint-plugin-prefer-arrow",
+    "@typescript-eslint",
+  ],
   root: true,
   rules: {
     "@typescript-eslint/adjacent-overload-signatures": "error",
