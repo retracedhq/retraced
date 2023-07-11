@@ -68,7 +68,12 @@ export const handler = async (argv) => {
 const startGeoSync = async () => {
   const pgPool = getPgPool();
   const shouldSync = await pgPool.query("SELECT 1 FROM geoip LIMIT 1");
-  if (!config.RETRACED_DISABLE_GEOSYNC && config.GEOIPUPDATE_LICENSE_KEY && shouldSync.rowCount === 0) {
+  if (
+    !config.RETRACED_DISABLE_GEOSYNC &&
+    config.GEOIPUPDATE_LICENSE_KEY &&
+    shouldSync.rowCount === 0 &&
+    !config.GEOIPUPDATE_USE_MMDB
+  ) {
     await updateGeoData();
   }
 };

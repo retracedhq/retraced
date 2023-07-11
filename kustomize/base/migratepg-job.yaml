@@ -25,5 +25,3 @@ spec:
                 secretKeyRef:
                   name: auditlog
                   key: DB_TOKEN
-            - name: SCHEMA_PATH
-              value: "/app/build/migrations/pg"
