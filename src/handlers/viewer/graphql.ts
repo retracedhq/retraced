@@ -1,7 +1,6 @@
 import querystring from "querystring";
 import { checkViewerAccess } from "../../security/helpers";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
-import config from "../../config";
 
 import handler from "../graphql/handler";
 
@@ -37,7 +36,7 @@ export default async function (req) {
     targetId,
   });
 
-  if (!config.SKIP_VIEW_LOG_EVENT) {
+  if (!req.query.skipViewLogEvent) {
     await defaultEventCreater.saveRawEvent(claims.projectId, claims.environmentId, thisViewEvent);
   }
 

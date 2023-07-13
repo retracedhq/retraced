@@ -68,5 +68,4 @@ export default {
     env.RETRACED_NO_ANALYTICS ||
     process.env.DO_NOT_TRACK ||
     env.DO_NOT_TRACK,
-  SKIP_VIEW_LOG_EVENT: process.env.SKIP_VIEW_LOG_EVENT || env.SKIP_VIEW_LOG_EVENT,
 };

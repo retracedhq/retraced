@@ -8,7 +8,6 @@ import searchEvents, { Options } from "../../models/event/search";
 import nsq from "../../persistence/nsq";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
-import config from "../../config";
 
 /*
 What we're expecting from clients:
@@ -103,7 +102,7 @@ export default async function (req) {
     await nsq.produce("user_reporting_task", job);
   }
 
-  if (!config.SKIP_VIEW_LOG_EVENT) {
+  if (!req.body.skipViewLogEvent) {
     defaultEventCreater.saveRawEvent(req.params.projectId, claims.environmentId, thisViewEvent);
   }
 
