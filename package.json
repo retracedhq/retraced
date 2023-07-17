@@ -67,7 +67,7 @@
     "@types/uuid": "9.0.2",
     "@types/yargs": "17.0.24",
     "@typescript-eslint/eslint-plugin": "6.1.0",
-    "@typescript-eslint/parser": "6.0.0",
+    "@typescript-eslint/parser": "6.1.0",
     "chai": "4.3.7",
     "chai-http": "4.4.0",
     "eslint": "8.45.0",
