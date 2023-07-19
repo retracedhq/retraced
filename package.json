@@ -77,6 +77,7 @@
     "eslint-plugin-prefer-arrow": "1.2.3",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
+    "release-it": "16.1.2",
     "rimraf": "5.0.1",
     "sinon": "15.2.0",
     "swagger-jsdoc": "6.2.8",
@@ -109,7 +110,8 @@
     "demo:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo.yaml --status-check=false --force=true",
     "demo:delete:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold delete -f skaffold-demo.yaml",
     "demo-services:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo-services.yaml --status-check=false --force=true",
-    "demo-services:delete:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold delete -f skaffold-demo-services.yaml"
+    "demo-services:delete:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold delete -f skaffold-demo-services.yaml",
+    "release": "git checkout release && git merge origin/main && release-it"
   },
   "author": "",
   "nyc": {
