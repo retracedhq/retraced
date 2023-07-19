@@ -28,7 +28,7 @@
     "mixpanel": "0.17.0",
     "moment": "2.29.4",
     "moment-timezone": "0.5.43",
-    "nodemailer": "6.9.3",
+    "nodemailer": "6.9.4",
     "nodemailer-mandrill-transport": "1.2.0",
     "nsqjs": "0.13.0",
     "pg": "8.11.1",
