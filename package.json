@@ -59,7 +59,7 @@
     "@types/lodash": "4.14.196",
     "@types/mocha": "10.0.1",
     "@types/node": "20.4.2",
-    "@types/nodemailer": "6.4.8",
+    "@types/nodemailer": "6.4.9",
     "@types/pg": "8.10.2",
     "@types/sinon": "10.0.15",
     "@types/statsd-client": "0.4.3",
