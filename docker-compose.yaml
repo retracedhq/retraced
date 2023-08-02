@@ -17,15 +17,18 @@ x-common-variables: &common-variables
   API_BASE_URL_PATH: /auditlog
   RETRACED_API_BASE: http://localhost:3000/auditlog
   POSTGRES_DATABASE: retraced
-  LOG_LEVEL: warn
+  LOG_LEVEL: ${LOG_LEVEL}
   ELASTICSEARCH_NODES: http://elasticsearch:9200
   NSQD_HOST: nsqd
   HOSTNAME: retraced-api-67856674bf-kwq7f
   NSQD_TCP_PORT: 4150
   # Set admin root token here
   ADMIN_ROOT_TOKEN: dev
-  MAXMIND_GEOLITE2_LICENSE_KEY: ${MAXMIND_GEOLITE2_LICENSE_KEY}
+  GEOIPUPDATE_LICENSE_KEY: ${GEOIPUPDATE_LICENSE_KEY}
+  GEOIPUPDATE_DB_DIR: ${GEOIPUPDATE_DB_DIR:-/etc/mmdb}
   PG_SEARCH: ${PG_SEARCH}
+  GEOIPUPDATE_USE_MMDB: ${GEOIPUPDATE_USE_MMDB}
+  GEOIPUPDATE_ACCOUNT_ID: ${GEOIPUPDATE_ACCOUNT_ID}
 
 services:
   retraced-api:
@@ -66,6 +69,8 @@ services:
       - postgres
     restart: "always"
     command: node --inspect=0.0.0.0 --enable-source-maps build/src/_processor/index.js
+    volumes:
+      - mmdb:${GEOIPUPDATE_DB_DIR:-/etc/mmdb}
 
   retraced-cron:
     build:
@@ -148,6 +153,22 @@ services:
       elastic-migration:
         condition: service_completed_successfully
     command: ./build/src/retracedctl bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev
+    volumes:
+      - mmdb:${GEOIPUPDATE_DB_DIR:-/etc/mmdb}
+
+  mmdb-update:
+    image: maxmindinc/geoipupdate:v5.1
+    environment:
+      - GEOIPUPDATE_ACCOUNT_ID=${GEOIPUPDATE_ACCOUNT_ID}
+      - GEOIPUPDATE_LICENSE_KEY=${GEOIPUPDATE_LICENSE_KEY}
+      - GEOIPUPDATE_EDITION_IDS=GeoLite2-City
+      - GEOIPUPDATE_DB_DIR=${GEOIPUPDATE_DB_DIR:-/etc/mmdb}
+      - GEOIPUPDATE_FREQUENCY=168
+      - GEOIPUPDATE_VERBOSE=1
+    volumes:
+      - mmdb:${GEOIPUPDATE_DB_DIR:-/etc/mmdb}
+    networks:
+      - retraced
 
   postgres-migration:
     build:
@@ -200,3 +221,5 @@ services:
     depends_on:
       - "retraced-api"
     restart: "always"
+volumes:
+  mmdb:

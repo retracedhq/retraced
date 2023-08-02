@@ -1,8 +1,9 @@
+ARG NODEJS_IMAGE=node:18.16.1-alpine3.18
+ARG ALPINE_IMAGE=alpine:3.18
+
 # # #
 # Cron build
 #
-ARG NODEJS_IMAGE=node:18.16-alpine3.17
-ARG ALPINE_IMAGE=alpine:3.17
 FROM --platform=${BUILDPLATFORM:-linux/amd64} $ALPINE_IMAGE as cron
 
 RUN apk add --update --no-cache ca-certificates curl \

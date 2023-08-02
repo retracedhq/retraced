@@ -29,17 +29,7 @@ import { startHealthz, updateLastNSQ } from "./healthz";
 import getPgPool from "../persistence/pg";
 import { notifyError, startErrorNotifier } from "../error-notifier";
 
-const startGeoSync = async () => {
-  const pgPool = getPgPool();
-  const shouldSync = await pgPool.query("SELECT 1 FROM geoip LIMIT 1");
-  if (!config.RETRACED_DISABLE_GEOSYNC && config.MAXMIND_GEOLITE2_LICENSE_KEY && shouldSync.rowCount === 0) {
-    updateGeoData();
-  }
-};
-
 startHealthz();
-
-startGeoSync();
 
 startErrorNotifier();
 
@@ -143,7 +133,7 @@ const geoDataConsumers: Consumer[] = [
 const nsqConsumers: Consumer[] = [
   ...(config.PG_SEARCH ? pgSearchConsumers : esConsumers),
   ...(WARP_PIPE ? warpPipeConsumers : []),
-  ...(config.MAXMIND_GEOLITE2_LICENSE_KEY ? geoDataConsumers : []),
+  ...(config.GEOIPUPDATE_LICENSE_KEY ? geoDataConsumers : []),
   {
     topic: "raw_events",
     channel: "normalize",

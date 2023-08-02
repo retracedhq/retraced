@@ -14,7 +14,7 @@ import config from "../../config";
 const pgPool = getPgPool();
 
 // The zip archive has a folder named e.g. GeoLite2-City-CSV_20230106/
-const source = `https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=${config.MAXMIND_GEOLITE2_LICENSE_KEY}&suffix=zip`;
+const source = `https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=${config.GEOIPUPDATE_LICENSE_KEY}&suffix=zip`;
 const zipFileName = "GeoLite2-City-CSV.zip";
 const locFileName = "GeoLite2-City-Locations-en.csv";
 const ipv4FileName = "GeoLite2-City-Blocks-IPv4.csv";
@@ -25,11 +25,12 @@ const ipv4FilePath = path.join(config.TMPDIR || "/tmp", ipv4FileName);
 const ipv6FilePath = path.join(config.TMPDIR || "/tmp", ipv6FileName);
 
 export default async function updateGeoData() {
-  if (config.RETRACED_DISABLE_GEOSYNC || !config.MAXMIND_GEOLITE2_LICENSE_KEY) {
+  if (config.RETRACED_DISABLE_GEOSYNC || !config.GEOIPUPDATE_LICENSE_KEY) {
     logger.info("UpdateGeoData: GeoIP sync disabled");
     return;
   }
 
+  // Postgres records update
   // Use cached files if less than a day old.
   const downloadsNeeded = await Promise.all([
     downloadNeeded(locFilePath),
