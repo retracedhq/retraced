@@ -71,7 +71,7 @@
     "chai": "4.3.7",
     "chai-http": "4.4.0",
     "eslint": "8.45.0",
-    "eslint-config-prettier": "8.8.0",
+    "eslint-config-prettier": "8.9.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-jsdoc": "46.4.4",
     "eslint-plugin-prefer-arrow": "1.2.3",
