@@ -8,7 +8,7 @@
     "@boxyhq/metrics": "0.2.4",
     "@bugsnag/js": "7.20.2",
     "@bugsnag/plugin-express": "7.19.0",
-    "@maxmind/geoip2-node": "4.0.0",
+    "@maxmind/geoip2-node": "4.1.0",
     "@opensearch-project/opensearch": "2.3.1",
     "@retracedhq/retraced": "0.7.0",
     "analytics-node": "6.2.0",
