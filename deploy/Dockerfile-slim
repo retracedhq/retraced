@@ -1,4 +1,4 @@
-ARG NODEJS_IMAGE=node:18.16.1-alpine3.18
+ARG NODEJS_IMAGE=node:18.17.0-alpine3.18
 ARG ALPINE_IMAGE=alpine:3.18
 
 # # #
@@ -9,9 +9,9 @@ FROM --platform=${BUILDPLATFORM:-linux/amd64} $ALPINE_IMAGE as cron
 RUN apk add --update --no-cache ca-certificates curl \
   && rm -rf /tmp/* /var/cache/apk/*
 
-ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.25/supercronic-linux-amd64
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.26/supercronic-linux-amd64
 ENV SUPERCRONIC=supercronic-linux-amd64
-ENV SUPERCRONIC_SHA1SUM=642f4f5a2b67f3400b5ea71ff24f18c0a7d77d49
+ENV SUPERCRONIC_SHA1SUM=7a79496cf8ad899b99a719355d4db27422396735
 RUN curl -fsSLO "$SUPERCRONIC_URL" \
   && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
   && chmod +x "$SUPERCRONIC" \
