@@ -63,7 +63,7 @@
     "@types/node": "20.4.6",
     "@types/nodemailer": "6.4.9",
     "@types/pg": "8.10.2",
-    "@types/sinon": "10.0.15",
+    "@types/sinon": "10.0.16",
     "@types/statsd-client": "0.4.3",
     "@types/swagger-jsdoc": "6.0.1",
     "@types/uuid": "9.0.2",
