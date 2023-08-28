@@ -12,7 +12,7 @@
     "@opensearch-project/opensearch": "2.3.1",
     "@retracedhq/retraced": "0.7.0",
     "analytics-node": "6.2.0",
-    "axios": "1.4.0",
+    "axios": "1.5.0",
     "bcryptjs": "2.4.3",
     "chance": "1.1.11",
     "chokidar": "3.5.3",
