@@ -5,7 +5,7 @@
   "main": "./build/index.js",
   "license": "Apache-2.0",
   "dependencies": {
-    "@boxyhq/metrics": "0.2.4",
+    "@boxyhq/metrics": "0.2.5",
     "@bugsnag/js": "7.21.0",
     "@bugsnag/plugin-express": "7.19.0",
     "@maxmind/geoip2-node": "4.2.0",
