@@ -29,7 +29,7 @@ jobs:
         node-version: [18]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -74,7 +74,7 @@ jobs:
         node-version: [18]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -104,7 +104,7 @@ jobs:
         node-version: [18]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -139,7 +139,7 @@ jobs:
       - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
       - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
       - name: Check Out Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
