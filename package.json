@@ -27,7 +27,7 @@
     "joi": "17.10.1",
     "jsonwebtoken": "9.0.2",
     "lodash": "4.17.21",
-    "mixpanel": "0.17.0",
+    "mixpanel": "0.18.0",
     "moment": "2.29.4",
     "moment-timezone": "0.5.43",
     "nodemailer": "6.9.4",
