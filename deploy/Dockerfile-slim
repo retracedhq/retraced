@@ -26,12 +26,15 @@ COPY deploy/crontab /crontab
 #
 FROM node:8 as node
 
+ARG snyk_token
+
 WORKDIR /src
 ADD package.json /src
 ADD yarn.lock /src
 ADD Makefile /src
 RUN yarn install --force
 ADD .snyk /src
+ENV SNYK_TOKEN=${snyk_token}
 RUN npm run snyk-protect
 
 ADD . /src
