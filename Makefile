@@ -1,7 +1,6 @@
 .PHONY: clean prebuild deps lint swagger routes build cover test report-coverage pkg build run run-processor run-debug
 SKIP :=
 REPO := retracedhq/api
-PATH := $(shell pwd)
 SHELL := /bin/bash -lo pipefail
 
 clean:
@@ -84,3 +83,26 @@ k8s-migrate:
 
 k8s: k8s-pre k8s-deployment k8s-service k8s-ingress k8s-migrate
 	: "Templated k8s yamls"
+
+grype:
+	curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
+
+scan-nsq: IMAGE=registry.replicated.com/library/retraced-nsq:local
+scan-nsq: DOCKERFILE=./deploy/Dockerfile-nsq
+scan-nsq: grype
+	docker build --pull -t ${IMAGE} -f ${DOCKERFILE} .
+	./grype --fail-on=medium --only-fixed -vv ${IMAGE}
+
+scan-postgres: IMAGE=registry.replicated.com/library/retraced-postgres:local
+scan-postgres: DOCKERFILE=./deploy/Dockerfile-postgres
+scan-postgres: grype
+	docker build --pull -t ${IMAGE} -f ${DOCKERFILE} .
+	./grype --fail-on=medium --only-fixed -vv ${IMAGE}
+
+scan-api: IMAGE=registry.replicated.com/library/retraced:local
+scan-api: DOCKERFILE=./deploy/Dockerfile-slim
+scan-api: grype
+	docker build --pull -t ${IMAGE} -f ${DOCKERFILE} .
+	./grype --fail-on=medium --only-fixed -vv ${IMAGE}
+
+scan: scan-nsq scan-postgres scan-api

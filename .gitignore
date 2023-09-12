@@ -13,6 +13,7 @@ lib/
 java/
 src/gen/routes.ts
 bin/
+grype
 
 *.DS_Store
 .AppleDouble

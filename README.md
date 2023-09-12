@@ -73,3 +73,14 @@ docker build --pull -t registry.replicated.com/library/retraced:${SEMVER} -f dep
 docker push registry.replicated.com/library/retraced:${SEMVER}
 ```
 
+## Scanning image prior to release
+
+```
+make scan
+```
+
+## Making a release
+
+git tag and push
+
+Current release tag can be found in this repo's tag list as well as in the latest [Replicated](https://github.com/replicatedcom/replicated/blob/fd6175faad47e9a990abe825e523fbda0301043c/pkg/projects/replicated/pkg/replicatedcomponents/defaults/replicatedcomponents.go#L20) code
