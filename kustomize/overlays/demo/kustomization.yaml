@@ -18,6 +18,6 @@ patches:
 
 images:
   - name: boxyhq/jackson
-    newTag: 1.11.0
+    newTag: 1.12.0
   - name: retracedhq/retraced
-    newTag: 1.7.1
+    newTag: 1.8.0

@@ -33,9 +33,6 @@ spec:
       volumes:
         - name: tmpdir
           emptyDir: {}
-        - name: retraced-mmdbdir
-          persistentVolumeClaim:
-            claimName: retraced-mmdbdir
       containers:
         - name: processor
           image: retracedhq/retraced-local
@@ -78,9 +75,6 @@ spec:
           volumeMounts:
             - mountPath: /tmp
               name: tmpdir
-            - name: retraced-mmdbdir
-              mountPath: /etc/mmdb
-              readOnly: true
 
           envFrom:
             - secretRef:
