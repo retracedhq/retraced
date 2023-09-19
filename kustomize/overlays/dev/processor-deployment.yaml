@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retraced-processor
+spec:
+  template:
+    spec:
+      volumes:
+        - name: retraced-mmdbdir
+          persistentVolumeClaim:
+            claimName: retraced-mmdbdir
+      containers:
+        - name: processor
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmpdir
