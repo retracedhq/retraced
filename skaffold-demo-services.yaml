@@ -1,6 +1,5 @@
-apiVersion: skaffold/v4beta1
+apiVersion: skaffold/v4beta6
 kind: Config
-build: {}
 manifests:
   kustomize:
     paths:
