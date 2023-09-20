@@ -1,4 +1,4 @@
-ARG NODEJS_IMAGE=node:18.17.1-alpine3.18
+ARG NODEJS_IMAGE=node:18.18.0-alpine3.18
 ARG ALPINE_IMAGE=alpine:3.18
 
 # # #
