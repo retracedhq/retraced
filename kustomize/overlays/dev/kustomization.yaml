@@ -10,14 +10,18 @@ resources:
   - ./admin-portal-secrets.yaml
 
 patches:
-  - ./admin-portal-service.yaml
-  - ./api-service.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: retraced-processor
+    path: processor-deployment.yaml
 
 commonLabels:
   retraceddev: "1"
 
 images:
   - name: boxyhq/jackson
-    newTag: 1.11.0
+    newTag: 1.12.0
   - name: retracedhq/retraced
-    newTag: 1.7.1
+    newTag: 1.8.0
