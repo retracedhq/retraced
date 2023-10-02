@@ -54,7 +54,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: API_TOKEN
-                  name: auditlog
+                  name: retraced-auditlog
             - name: PG_SEARCH
               value: ""
           resources:

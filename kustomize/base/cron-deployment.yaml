@@ -28,12 +28,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: NSQD_HOST
-                  name: auditlog
+                  name: retraced-auditlog
             - name: NSQD_HTTP_PORT
               valueFrom:
                 secretKeyRef:
                   key: NSQD_HTTP_PORT
-                  name: auditlog
+                  name: retraced-auditlog
             - name: RETRACED_DISABLE_GEOSYNC
               value: "1"
           resources:

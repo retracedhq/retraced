@@ -1,6 +1,8 @@
 ---
 bases:
   - ../../base
+  - ../dbs
+
 resources:
   - ./secrets.yaml
   - ./integrationtest.yaml

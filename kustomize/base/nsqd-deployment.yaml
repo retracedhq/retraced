@@ -29,12 +29,12 @@ spec:
             - name: STATSD_HOST
               valueFrom:
                 secretKeyRef:
-                  name: auditlog
+                  name: retraced-auditlog
                   key: STATSD_HOST
             - name: STATSD_PORT
               valueFrom:
                 secretKeyRef:
-                  name: auditlog
+                  name: retraced-auditlog
                   key: STATSD_PORT
           ports:
             - containerPort: 4150
