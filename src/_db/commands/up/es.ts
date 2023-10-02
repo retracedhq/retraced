@@ -78,7 +78,7 @@ export const handler = (argv) => {
           }
 
           return new Promise<any>((resolve, reject) => {
-            const esQuery = require(path.join(getSchemaPath(), stat.name))();
+            const esQuery = null as any; // require(path.join(getSchemaPath(), stat.name))();
             switch (esQuery.category) {
               default:
                 reject(new Error("Unknown category"));

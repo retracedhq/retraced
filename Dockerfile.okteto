@@ -20,6 +20,7 @@ EXPOSE 3000 9229
 ADD ./package.json /src/package.json
 ADD ./yarn.lock /src/yarn.lock
 WORKDIR /src
+RUN npm install -g node-gyp
 RUN yarn
 
 ADD . /src
@@ -31,4 +32,4 @@ RUN make swagger
 
 RUN chmod a+rwx /src
 
-CMD ["node", "--inspect=0.0.0.0", "--require", "ts-node/register", "src/index.ts"]
+CMD ["node", "--inspect=0.0.0.0", "src/index.ts"]

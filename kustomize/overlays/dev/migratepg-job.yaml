@@ -13,6 +13,7 @@ spec:
         image: retraced-api
         command:
         - node
+        - --no-deprecation
         - --inspect=0.0.0.0
         - -r
         - ts-node/register

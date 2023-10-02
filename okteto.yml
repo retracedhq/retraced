@@ -13,7 +13,7 @@ deploy:
 
 dev:
   retraced-api:
-    command: make okteto-dev && bash || bash
+    command: bash
     workdir: /go/src/github.com/retracedhq/retraced
     sync:
       - ./:/go/src/github.com/retracedhq/retraced
