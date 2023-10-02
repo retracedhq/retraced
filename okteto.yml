@@ -20,9 +20,9 @@ dev:
     resources:
       limits:
         cpu: "2"
-        memory: 4Gi
+        memory: 1Gi
     forward:
       - 2353:2345
     persistentVolume:
       enabled: true
-      size: 2Gi
+      size: 1Gi
