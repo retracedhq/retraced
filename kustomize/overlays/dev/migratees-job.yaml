@@ -10,6 +10,7 @@ spec:
         name: auditlog-imagepull-secret
       containers:
       - name: db
+        image: retraced-api
         command:
         - node
         - --inspect=0.0.0.0

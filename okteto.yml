@@ -7,7 +7,7 @@ build:
 deploy:
   # - envsubst < kustomize/overlays/dev/deployment.tmpl.yaml > kustomize/overlays/dev/deployment.yaml
 
-  - cd kustomize/overlays/skaffold && kustomize edit set image retraced-api=${OKTETO_BUILD_RETRACED_API_IMAGE}
+  - cd kustomize/overlays/dev && kustomize edit set image retraced-api=${OKTETO_BUILD_RETRACED_API_IMAGE}
 
   - kubectl apply -k kustomize/overlays/dev
 

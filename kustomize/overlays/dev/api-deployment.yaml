@@ -8,7 +8,7 @@ spec:
     spec:
       initContainers:
       - name: bootstrap
-        image: registry.replicated.com/shipretraced/retraced:1.4.6
+        image: retraced-api
         command:
         - /bin/sh
         args:

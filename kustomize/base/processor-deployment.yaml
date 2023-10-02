@@ -34,7 +34,7 @@ spec:
           emptyDir: {}
       containers:
         - name: processor
-          image: registry.replicated.com/shipretraced/retraced:1.4.6
+          image: retraced-api
           imagePullPolicy: IfNotPresent
 
           command:

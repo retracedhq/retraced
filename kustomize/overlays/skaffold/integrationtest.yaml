@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Pod
-metadata:
-  name: retraced-integrationtest
-spec:
-  containers:
-    - name: tests
-      image: retraced-api

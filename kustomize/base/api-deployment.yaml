@@ -31,13 +31,16 @@ spec:
                   values:
                   - api
               topologyKey: "kubernetes.io/hostname"
+      initContainers:
+      - name: bootstrap
+        image: retraced-api
       containers:
         - name: api
           readinessProbe:
             httpGet:
               port: 3000
               path: /healthz
-          image: registry.replicated.com/shipretraced/retraced:1.4.6
+          image: retraced-api
           imagePullPolicy: IfNotPresent
           command:
             - /src/api
