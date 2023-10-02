@@ -37,7 +37,8 @@ logger.info("registering handler");
 export const handler = (argv) => {
   logger.child({up: "pg", schemaPath: argv.schemaPath}).info("beginning handler");
   const cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`;
-  logger.info("initializing migrator");
+  logger.info("initializing migrator for");
+  console.log("++++++cs:", cs);
   postgrator.setConfig({
     migrationDirectory: argv.schemaPath,
     driver: "pg",
@@ -46,6 +47,7 @@ export const handler = (argv) => {
 
   logger.info("executing migration");
   postgrator.migrate("max", (err, migrations) => {
+    console.log("++++++++in migrate", err, "migrations", migrations);
     if (err) {
       bugsnag.notify(err);
       console.log(chalk.red(err));
