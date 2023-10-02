@@ -6,9 +6,6 @@ spec:
   replicas: 1
   template:
     spec:
-      imagePullSecrets:
-        - $patch: delete
-          name: auditlog-imagepull-secret
       containers:
         - name: cron
           command:

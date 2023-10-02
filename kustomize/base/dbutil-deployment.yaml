@@ -17,8 +17,6 @@ spec:
         app: retraced
         tier: dbutil
     spec:
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
       containers:
       - name: dbutil
         image: retraced-api
@@ -27,4 +25,4 @@ spec:
         - infinity
         envFrom:
           - secretRef:
-              name: auditlog
+              name: retraced-auditlog

@@ -13,8 +13,6 @@ spec:
         app: auditlog
         tier: api
     spec:
-      imagePullSecrets:
-        - name: auditlog-imagepull-secret
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -50,7 +48,7 @@ spec:
               protocol: TCP
           envFrom:
             - secretRef:
-                name: auditlog
+                name: retraced-auditlog
           env:
             - name: BUGSNAG_TOKEN
               valueFrom:

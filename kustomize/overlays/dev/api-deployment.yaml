@@ -21,7 +21,7 @@ spec:
             --apiKey        "$BOOTSTRAP_API_TOKEN"
         envFrom:
           - secretRef:
-              name: auditlog
+              name: retraced-auditlog
         env:
         - name: BOOTSTRAP_PROJECT_NAME
           value: dev

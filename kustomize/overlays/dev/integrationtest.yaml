@@ -24,4 +24,4 @@ spec:
           value: dev
       envFrom:
         - secretRef:
-            name: auditlog
+            name: retraced-auditlog

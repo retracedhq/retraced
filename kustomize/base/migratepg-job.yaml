@@ -16,14 +16,12 @@ spec:
         - up
         envFrom:
         - secretRef:
-            name: auditlog
+            name: retraced-auditlog
         env:
         - name: BUGSNAG_TOKEN
           valueFrom:
             secretKeyRef:
-              name: auditlog
+              name: retraced-auditlog
               key: DB_TOKEN
         - name: SCHEMA_PATH
           value: "/src/migrations/pg10"
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret

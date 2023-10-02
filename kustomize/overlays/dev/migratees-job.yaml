@@ -5,9 +5,6 @@ metadata:
 spec:
   template:
     spec:
-      imagePullSecrets:
-      - $patch: delete
-        name: auditlog-imagepull-secret
       containers:
       - name: db
         image: retraced-api

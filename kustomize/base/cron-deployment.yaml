@@ -41,6 +41,3 @@ spec:
               cpu: 10m
             limits:
               cpu: 100m
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
-
