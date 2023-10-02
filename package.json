@@ -62,7 +62,7 @@
     "@types/mocha": "10.0.1",
     "@types/node": "20.6.3",
     "@types/nodemailer": "6.4.11",
-    "@types/pg": "8.10.2",
+    "@types/pg": "8.10.3",
     "@types/sinon": "10.0.17",
     "@types/statsd-client": "0.4.3",
     "@types/swagger-jsdoc": "6.0.1",
