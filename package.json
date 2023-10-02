@@ -10,7 +10,7 @@
     "async": "^2.0.1",
     "auth0-js": "^8.0.4",
     "aws-sdk": "^2.6.12",
-    "bcrypt": "^2.0.0",
+    "bcrypt": "5.1.0",
     "bluebird": "^3.5.0",
     "body-parser": "^1.15.2",
     "bugsnag": "^1.9.1",

@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: migrate-es-1-4-6
-  namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   template:
     spec:
