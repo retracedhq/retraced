@@ -1,18 +1,18 @@
 
 build:
-  api:
+  retraced-api:
     context: .
     dockerfile: ./Dockerfile.okteto
 
 deploy:
   # - envsubst < kustomize/overlays/dev/deployment.tmpl.yaml > kustomize/overlays/dev/deployment.yaml
 
-  - cd kustomize/overlays/skaffold && kustomize edit set image api=${OKTETO_BUILD_API_IMAGE}
+  - cd kustomize/overlays/skaffold && kustomize edit set image retraced-api=${OKTETO_BUILD_RETRACED_API_IMAGE}
 
   - kubectl apply -k kustomize/overlays/dev
 
 dev:
-  api:
+  retraced-api:
     command: make okteto-dev && bash || bash
     workdir: /go/src/github.com/retracedhq/retraced
     sync:

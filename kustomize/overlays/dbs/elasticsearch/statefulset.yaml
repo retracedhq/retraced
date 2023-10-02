@@ -1,9 +1,9 @@
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
-  name: elasticsearch
+  name: retraced-elasticsearch
 spec:
-  serviceName: elasticearch
+  serviceName: retraced-elasticearch
   template:
     metadata:
       labels:

@@ -5,7 +5,7 @@ kind: Service
 metadata:
   labels:
     app: elasticsearch
-  name: elasticsearch
+  name: retraced-elasticsearch
 spec:
   type: NodePort
   ports:
@@ -18,7 +18,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: elasticsearch
+  name: retraced-elasticsearch
   labels:
     app: elasticsearch
 data:
@@ -37,9 +37,9 @@ data:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: elasticsearch
+  name: retraced-elasticsearch
 spec:
-  serviceName: elasticearch
+  serviceName: retraced-elasticearch
   selector:
     matchLabels:
       app: elasticsearch
