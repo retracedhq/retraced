@@ -1,15 +1,13 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrate-es-1-4-6
+  name: retraced-migrate-es-1-4-6
 spec:
   template:
     spec:
-      imagePullSecrets:
-      - $patch: delete
-        name: auditlog-imagepull-secret
       containers:
       - name: db
+        image: retraced-api
         command:
         - node
         - --inspect=0.0.0.0

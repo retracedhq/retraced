@@ -1,28 +1,24 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrate-es-1-4-6
-  namespace: '{{repl ConfigOption "namespace"}}'
+  name: retraced-migrate-es-1-4-6
 spec:
   template:
     spec:
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
       restartPolicy: Never
       containers:
       - name: db
-        image: registry.replicated.com/shipretraced/retraced:1.4.6
+        image: retraced-api
         command:
         - /src/retraceddb
         - es
         - up
         envFrom:
         - secretRef:
-            name: auditlog
+            name: retraced-auditlog
         env:
         - name: BUGSNAG_TOKEN
           valueFrom:
             secretKeyRef:
-              name: auditlog
+              name: retraced-auditlog
               key: DB_TOKEN
-

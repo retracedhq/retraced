@@ -1,8 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: processor
-  namespace: '{{repl ConfigOption "namespace"}}'
+  name: retraced-processor
 spec:
   selector:
     matchLabels:
@@ -35,7 +34,7 @@ spec:
           emptyDir: {}
       containers:
         - name: processor
-          image: registry.replicated.com/shipretraced/retraced:1.4.6
+          image: retraced-api
           imagePullPolicy: IfNotPresent
 
           command:
@@ -69,7 +68,7 @@ spec:
               name: tmpdir
           envFrom:
           - secretRef:
-              name: auditlog
+              name: retraced-auditlog
           env:
 
             - name: TMPDIR
@@ -79,10 +78,7 @@ spec:
             - name: BUGSNAG_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: auditlog
+                  name: retraced-auditlog
                   key: PROCESSOR_TOKEN
             - name: PG_SEARCH
               value: ""
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
-

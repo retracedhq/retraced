@@ -1,0 +1,26 @@
+
+build:
+  retraced-api:
+    context: .
+    dockerfile: ./Dockerfile.okteto
+
+deploy:
+  - cd kustomize/overlays/dev && kustomize edit set image retraced-api=${OKTETO_BUILD_RETRACED_API_IMAGE}
+
+  - kubectl apply -k kustomize/overlays/dev
+
+dev:
+  retraced-api:
+    command: bash
+    workdir: /go/src/github.com/retracedhq/retraced
+    sync:
+      - ./:/go/src/github.com/retracedhq/retraced
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+    forward:
+      - 2353:2345
+    persistentVolume:
+      enabled: true
+      size: 1Gi

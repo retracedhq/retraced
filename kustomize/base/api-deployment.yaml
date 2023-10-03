@@ -1,8 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
-  namespace: '{{repl ConfigOption "namespace"}}'
+  name: retraced-api
 spec:
   selector:
     matchLabels:
@@ -14,8 +13,6 @@ spec:
         app: auditlog
         tier: api
     spec:
-      imagePullSecrets:
-        - name: auditlog-imagepull-secret
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -32,13 +29,16 @@ spec:
                   values:
                   - api
               topologyKey: "kubernetes.io/hostname"
+      initContainers:
+      - name: bootstrap
+        image: retraced-api
       containers:
         - name: api
           readinessProbe:
             httpGet:
               port: 3000
               path: /healthz
-          image: registry.replicated.com/shipretraced/retraced:1.4.6
+          image: retraced-api
           imagePullPolicy: IfNotPresent
           command:
             - /src/api
@@ -48,13 +48,13 @@ spec:
               protocol: TCP
           envFrom:
             - secretRef:
-                name: auditlog
+                name: retraced-auditlog
           env:
             - name: BUGSNAG_TOKEN
               valueFrom:
                 secretKeyRef:
                   key: API_TOKEN
-                  name: auditlog
+                  name: retraced-auditlog
             - name: PG_SEARCH
               value: ""
           resources:

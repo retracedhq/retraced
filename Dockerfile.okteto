@@ -1,10 +1,5 @@
 FROM node:10 as node
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl
-
-
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.3/supercronic-linux-amd64
 ENV SUPERCRONIC=supercronic-linux-amd64
 ENV SUPERCRONIC_SHA1SUM=96960ba3207756bb01e6892c978264e5362e117e
@@ -24,6 +19,7 @@ RUN yarn install
 
 ADD . /src
 ADD migrations/pg /src/migrations/pg10
+ADD migrations/es /src/migrations/es
 RUN make routes
 RUN make swagger
 

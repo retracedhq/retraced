@@ -4,8 +4,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: elasticsearch
-  name: elasticsearch
+    app: retraced-elasticsearch
+  name: retraced-elasticsearch
 spec:
   type: NodePort
   ports:
@@ -13,14 +13,14 @@ spec:
     nodePort: 30920
     targetPort: estransport
   selector:
-    app: elasticsearch
+    app: retraced-elasticsearch
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: elasticsearch
+  name: retraced-elasticsearch
   labels:
-    app: elasticsearch
+    app: retraced-elasticsearch
 data:
   elasticsearch.yml: |-
     http.host: 0.0.0.0
@@ -32,21 +32,22 @@ data:
     http.cors.allow-credentials: true
 
     discovery.type: single-node
+    ### es.enforce.bootstrap.checks: false
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: elasticsearch
+  name: retraced-elasticsearch
 spec:
-  serviceName: elasticearch
+  serviceName: retraced-elasticearch
   selector:
     matchLabels:
-      app: elasticsearch
+      app: retraced-elasticsearch
   template:
     metadata:
       labels:
-        app: elasticsearch
+        app: retraced-elasticsearch
     spec:
       containers:
         - name: elasticsearch
@@ -57,7 +58,7 @@ spec:
               containerPort: 9200
           volumeMounts:
             - name: esdatadir
-              mountPath: /usr/share/elasticsearch/data
+              mountPath: /var/lib/elasticsearch/data
             - name: elasticsearch
               mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
               subPath: elasticsearch.yml
@@ -70,7 +71,7 @@ spec:
 
         - name: elasticsearch
           configMap:
-            name: elasticsearch
+            name: retraced-elasticsearch
             items:
             - key: elasticsearch.yml
               path: elasticsearch.yml

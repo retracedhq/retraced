@@ -8,4 +8,3 @@ resources:
 - ./nsqd-deployment.yaml
 - ./nsqd-service.yaml
 - ./processor-deployment.yaml
-namespace: default

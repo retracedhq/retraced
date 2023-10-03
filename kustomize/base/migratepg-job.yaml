@@ -1,15 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrate-pg-1-4-6
-  namespace: '{{repl ConfigOption "namespace"}}'
+  name: retraced-migrate-pg-1-4-6
 spec:
   template:
     spec:
       restartPolicy: Never
       containers:
       - name: db
-        image: registry.replicated.com/shipretraced/retraced:1.4.6
+        image: retraced-api
         imagePullPolicy: IfNotPresent
         command:
         - /src/retraceddb
@@ -17,14 +16,12 @@ spec:
         - up
         envFrom:
         - secretRef:
-            name: auditlog
+            name: retraced-auditlog
         env:
         - name: BUGSNAG_TOKEN
           valueFrom:
             secretKeyRef:
-              name: auditlog
+              name: retraced-auditlog
               key: DB_TOKEN
         - name: SCHEMA_PATH
           value: "/src/migrations/pg10"
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
