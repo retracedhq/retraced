@@ -1,8 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nsqd
-  namespace: '{{repl ConfigOption "namespace"}}'
+  name: retraced-nsqd
 spec:
   selector:
     matchLabels:
@@ -30,12 +29,12 @@ spec:
             - name: STATSD_HOST
               valueFrom:
                 secretKeyRef:
-                  name: auditlog
+                  name: retraced-auditlog
                   key: STATSD_HOST
             - name: STATSD_PORT
               valueFrom:
                 secretKeyRef:
-                  name: auditlog
+                  name: retraced-auditlog
                   key: STATSD_PORT
           ports:
             - containerPort: 4150

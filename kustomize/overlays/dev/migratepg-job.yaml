@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrate-pg-1-4-6
+  name: retraced-migrate-pg-1-4-6
 spec:
   template:
     spec:
@@ -10,8 +10,10 @@ spec:
         name: auditlog-imagepull-secret
       containers:
       - name: db
+        image: retraced-api
         command:
         - node
+        - --no-deprecation
         - --inspect=0.0.0.0
         - -r
         - ts-node/register

@@ -1,8 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cron
-  namespace: '{{repl ConfigOption "namespace"}}'
+  name: retraced-cron
 spec:
   selector:
     matchLabels:
@@ -18,7 +17,7 @@ spec:
     spec:
       containers:
         - name: cron
-          image: registry.replicated.com/shipretraced/retraced:1.4.6
+          image: retraced-api
           imagePullPolicy: IfNotPresent
           command:
             - /bin/bash
@@ -29,12 +28,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: NSQD_HOST
-                  name: auditlog
+                  name: retraced-auditlog
             - name: NSQD_HTTP_PORT
               valueFrom:
                 secretKeyRef:
                   key: NSQD_HTTP_PORT
-                  name: auditlog
+                  name: retraced-auditlog
             - name: RETRACED_DISABLE_GEOSYNC
               value: "1"
           resources:
@@ -42,6 +41,3 @@ spec:
               cpu: 10m
             limits:
               cpu: 100m
-      imagePullSecrets:
-      - name: auditlog-imagepull-secret
-

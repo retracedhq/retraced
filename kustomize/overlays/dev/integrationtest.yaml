@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: integrationtest
+  name: retraced-integrationtest
 spec:
   restartPolicy: OnFailure
   containers:
     - name: tests
-      image: registry.replicated.com/shipretraced/retraced:1.4.6
+      image: retraced-api
       command:
         - npx
         - mocha
@@ -24,4 +24,4 @@ spec:
           value: dev
       envFrom:
         - secretRef:
-            name: auditlog
+            name: retraced-auditlog

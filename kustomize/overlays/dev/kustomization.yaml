@@ -1,11 +1,11 @@
 ---
 bases:
   - ../../base
+  - ../dbs
+
 resources:
   - ./secrets.yaml
   - ./integrationtest.yaml
-commonLabels:
-  retraceddev: "1"
 
 patchesStrategicMerge:
   - ./api-deployment.yaml

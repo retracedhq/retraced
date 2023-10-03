@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: retraced-api
 spec:
   replicas: 1
   template:
     spec:
       initContainers:
       - name: bootstrap
-        image: registry.replicated.com/shipretraced/retraced:1.4.6
+        image: retraced-api
         command:
         - /bin/sh
         args:
@@ -21,7 +21,7 @@ spec:
             --apiKey        "$BOOTSTRAP_API_TOKEN"
         envFrom:
           - secretRef:
-              name: auditlog
+              name: retraced-auditlog
         env:
         - name: BOOTSTRAP_PROJECT_NAME
           value: dev
