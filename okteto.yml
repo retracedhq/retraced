@@ -20,7 +20,7 @@ dev:
         cpu: "2"
         memory: 1Gi
     forward:
-      - 2353:2345
+      - 3353:2345
     persistentVolume:
       enabled: true
       size: 1Gi
