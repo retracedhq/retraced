@@ -1,6 +1,7 @@
 // core
 import createAdminSession from "./handlers/createAdminSession";
 import createViewerDescriptor from "./handlers/createViewerDescriptor";
+import revokeViewerSessions from "./handlers/revokeViewerSessions";
 import createViewerSession from "./handlers/createViewerSession";
 import getInvite from "./handlers/getInvite";
 import graphQL from "./handlers/graphql";
@@ -312,6 +313,11 @@ export default {
     path: "/v1/viewersession",
     method: "post",
     handler: createViewerSession,
+  },
+  revokeViewerSessions: {
+    path: "/v1/project/:projectId/group/:groupId/actor/:actorId/viewersessions",
+    method: "delete",
+    handler: revokeViewerSessions,
   },
   getInvite: {
     path: "/v1/invite",
