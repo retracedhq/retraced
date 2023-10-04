@@ -44,7 +44,7 @@ jobs:
           keys:
           - v1-dependencies-node10-{{ checksum "package.json" }}
           - v1-dependencies-node10-
-      - run: docker build --pull -t registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
+      - run: docker build --pull --build-arg="snyk_token=${SNYK_TOKEN}" -t registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-slim .
       - anchore/analyze_local_image:
           image_name: registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
           dockerfile_path: ./deploy/Dockerfile-slim

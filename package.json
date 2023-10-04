@@ -111,7 +111,7 @@
     "test": "mocha --recursive -r ts-node/register src/test/**/*.ts",
     "cover": "nyc mocha",
     "mintest": "mocha --recursive -r ts-node/register --reporter 'min' src/test/**/*.ts",
-    "report-coverage": "coveralls < ./coverage/lcov.info && codeclimate-test-reporter < ./coverage/lcov.info",
+    "report-coverage": "coveralls < ./coverage/lcov.info",
     "snyk-protect": "snyk protect"
   },
   "author": "",
