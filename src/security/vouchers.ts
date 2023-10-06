@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import config from "../config";
 
 import ViewerDescriptor from "../models/viewer_descriptor/def";
+import getViewerToken from "../models/viewer_descriptor/get";
 
 export interface AdminClaims {
   userId: string;
@@ -31,7 +32,7 @@ export async function validateAdminVoucher(voucher: string): Promise<AdminClaims
 }
 
 export async function validateViewerDescriptorVoucher(voucher: string): Promise<ViewerDescriptor> {
-  return new Promise<ViewerDescriptor>((resolve, reject) => {
+  const claims = await new Promise<ViewerDescriptor>((resolve, reject) => {
     jwt.verify(voucher, config.HMAC_SECRET_VIEWER, (err, claims) => {
       if (err) {
         reject(err);
@@ -40,4 +41,14 @@ export async function validateViewerDescriptorVoucher(voucher: string): Promise<
       resolve(claims);
     });
   });
+
+  const token = await getViewerToken({
+    id: claims.id,
+  });
+
+  if (!token) {
+    throw new Error("Invalid token");
+  }
+
+  return claims;
 }
