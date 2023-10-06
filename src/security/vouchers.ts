@@ -33,12 +33,12 @@ export async function validateAdminVoucher(voucher: string): Promise<AdminClaims
 
 export async function validateViewerDescriptorVoucher(voucher: string): Promise<ViewerDescriptor> {
   const claims = await new Promise<ViewerDescriptor>((resolve, reject) => {
-    jwt.verify(voucher, config.HMAC_SECRET_VIEWER, (err, claims) => {
+    jwt.verify(voucher, config.HMAC_SECRET_VIEWER, (err, claimsObj) => {
       if (err) {
         reject(err);
         return;
       }
-      resolve(claims);
+      resolve(claimsObj);
     });
   });
 
