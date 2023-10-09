@@ -138,6 +138,7 @@ describe("Viewer API", function () {
                 const desc = {
                   environmentId: Env.EnvironmentID,
                   groupId: groupID,
+                  id: token,
                 };
                 const tkn = jwt.sign(desc, process.env.HMAC_SECRET_VIEWER);
                 chai

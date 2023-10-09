@@ -1,12 +1,12 @@
 import _ from "lodash";
 import pg from "pg";
 import bcrypt from "bcryptjs";
-import { instrument, instrumented } from "../../metrics";
 import { AdminToken } from "./types";
 import getPgPool from "../../persistence/pg";
 import uuidNoDashes from "../uniqueId";
 import { AdminClaims } from "../../security/vouchers";
 import { logger } from "../../logger";
+import { applyOtelInstrument, instrumented } from "../../metrics/opentelemetry/instrumentation";
 
 export class AdminTokenStore {
   public static default(): AdminTokenStore {
@@ -27,7 +27,9 @@ export class AdminTokenStore {
     const id = this.idSource();
     const token = this.idSource();
 
-    const tokenBcrypt = await instrument("adminToken.bcrypt", () => bcrypt.hash(token, 12));
+    const tokenBcrypt = (await applyOtelInstrument("adminToken.bcrypt", () =>
+      bcrypt.hash(token, 12)
+    )) as string;
     const created = new Date();
 
     const q = `

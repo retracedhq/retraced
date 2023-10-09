@@ -141,7 +141,7 @@ function scrubDatetimeRange(input: string | string[]): [number, number] {
     if (!m.isValid()) {
       throw {
         status: 400,
-        err: new Error(`Cannot parse received datetime ${range[0]}`),
+        err: new Error(`Cannot parse received datetime ${JSON.stringify(range[0])}`),
       };
     }
   });

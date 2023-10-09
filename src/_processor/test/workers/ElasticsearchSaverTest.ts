@@ -1,34 +1,23 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { suite, test } from "@testdeck/mocha";
 import { expect } from "chai";
-
 import * as TypeMoq from "typemoq";
+import sinon from "sinon";
 
 import moment from "moment";
-import monkit from "monkit";
-
 import { Clock } from "../../common";
 import { ElasticsearchSaver } from "../../workers/saveEventToElasticsearch";
 import { Client } from "@opensearch-project/opensearch";
-
-const isAny = TypeMoq.It.isAny;
-
-/**
- * return an object that expects to have
- * a method `update` called with the specified value
- */
-function expectUpdate(expectedValue) {
-  return () => {
-    return {
-      update: (val) => expect(val).to.equal(expectedValue),
-    };
-  };
-}
+import * as instrument from "../../../metrics/opentelemetry/instrumentation";
+import { ApiResponse, TransportRequestPromise } from "@opensearch-project/opensearch/lib/Transport.js";
 
 @suite
 class ElasticsearchSaverTest {
   @test public async "ElasticSearchSaver#saveEventToElasticsearch()"() {
-    const es = TypeMoq.Mock.ofType(Client);
-    const registry = TypeMoq.Mock.ofType(monkit.Registry);
+    const es = TypeMoq.Mock.ofType(Client, TypeMoq.MockBehavior.Loose, true, {
+      nodes: ["http://localhost:9200"],
+    });
+    const recordOtelHistogramStub = sinon.stub(instrument, "recordOtelHistogram");
     const clock = TypeMoq.Mock.ofType<Clock>();
     const jobBody = JSON.stringify({
       environmentId: "env01",
@@ -67,7 +56,6 @@ class ElasticsearchSaverTest {
         id: "738ef2617df7490ba7e180ccb34a2391",
         is_anonymous: false,
         is_failure: false,
-        raw: '{"action":"license.update","group":{"id":"602f21a3fbd3f92302133762808b39af","name":"dexcorp"},"created":"2017-05-02T20:10:34.90124976Z","crud":"u","target":{"id":"428317855d274f3f68f664638a06c62f","name":"Pollos Hermanos","type":"license","url":"","fields":{"assignee":"Pollos Hermanos","channel_name":"Beta","expiration_date":null,"grant_date":"2017-05-02T18:25:10Z"}},"description":"Updated license for \\"Pollos Hermanos\\", changed \\"foo\\" from \\"shabazz shabang\\" to \\"shabazz shabang shabog\\"","source_ip":"172.19.0.1","actor":{"id":"060dbbd5da8c43b57b26179a3bfb7b1a","name":"dexter@replicated.com","type":"user","url":"http://localhost:8011/#/team/member/060dbbd5da8c43b57b26179a3bfb7b1a"},"is_failure":false,"is_anonymous":false,"component":"vendor-api","version":"fake-version-lol"}',
         received: 200,
         source_ip: "172.19.0.1",
         target: {
@@ -111,7 +99,6 @@ class ElasticsearchSaverTest {
       id: "738ef2617df7490ba7e180ccb34a2391",
       is_anonymous: false,
       is_failure: false,
-      raw: '{"action":"license.update","group":{"id":"602f21a3fbd3f92302133762808b39af","name":"dexcorp"},"created":"2017-05-02T20:10:34.90124976Z","crud":"u","target":{"id":"428317855d274f3f68f664638a06c62f","name":"Pollos Hermanos","type":"license","url":"","fields":{"assignee":"Pollos Hermanos","channel_name":"Beta","expiration_date":null,"grant_date":"2017-05-02T18:25:10Z"}},"description":"Updated license for \\"Pollos Hermanos\\", changed \\"foo\\" from \\"shabazz shabang\\" to \\"shabazz shabang shabog\\"","source_ip":"172.19.0.1","actor":{"id":"060dbbd5da8c43b57b26179a3bfb7b1a","name":"dexter@replicated.com","type":"user","url":"http://localhost:8011/#/team/member/060dbbd5da8c43b57b26179a3bfb7b1a"},"is_failure":false,"is_anonymous":false,"component":"vendor-api","version":"fake-version-lol"}',
       received: 200,
       source_ip: "172.19.0.1",
       target: {
@@ -125,15 +112,22 @@ class ElasticsearchSaverTest {
       },
     };
 
-    es.setup((x) => x.index(isAny()))
-      .returns((opts): any => {
-        expect(opts.body).to.deep.equal({
+    // es.setup((x: any) => x.index.then).returns(() => undefined);
+
+    es.setup((x) =>
+      x.index(
+        TypeMoq.It.isValue({
           index: "retraced.proj01.env01.current",
-          type: "event",
+          type: "_doc",
           body: expectedIndexed,
-        });
-        return Promise.resolve({});
-      })
+          id: expectedIndexed.canonical_time.toString() + "-" + expectedIndexed.id,
+        })
+      )
+    )
+      .returns(
+        () =>
+          Promise.resolve({ body: {} }) as TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
+      )
       .verifiable(TypeMoq.Times.once());
 
     clock
@@ -141,22 +135,18 @@ class ElasticsearchSaverTest {
       .returns(() => moment(500))
       .verifiable(TypeMoq.Times.once());
 
-    registry
-      .setup((x) => x.histogram("workers.saveEventToElasticSearch.latencyCreated"))
-      .returns(expectUpdate(400))
-      .verifiable(TypeMoq.Times.once());
-
-    registry
-      .setup((x) => x.histogram("workers.saveEventToElasticSearch.latencyReceived"))
-      .returns(expectUpdate(300))
-      .verifiable(TypeMoq.Times.once());
-
-    const saver = new ElasticsearchSaver(es.object, registry.object, clock.object);
+    const saver = new ElasticsearchSaver(es.object, clock.object);
     await saver.saveEventToElasticsearch({ body: Buffer.from(jobBody) });
-
+    expect(
+      recordOtelHistogramStub.calledWithExactly("workers.saveEventToElasticSearch.latencyCreated", 400),
+      "It should have tracked the time to make an event searchable from the point of creation"
+    ).to.be.true;
+    expect(
+      recordOtelHistogramStub.calledWithExactly("workers.saveEventToElasticSearch.latencyReceived", 300),
+      "It should have tracked the time to make an event searchable from the point of reception"
+    ).to.be.true;
     es.verifyAll();
     clock.verifyAll();
-    registry.verifyAll();
   }
 }
 

@@ -15,7 +15,6 @@ export interface Event {
   country?: string;
   loc_subdiv1?: string;
   loc_subdiv2?: string;
-  raw: string;
   canonical_time: Date;
   fields?: any;
   external_id?: string;

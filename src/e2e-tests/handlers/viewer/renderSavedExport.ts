@@ -382,7 +382,7 @@ async function setup(pool, params?) {
     "INSERT INTO viewer_descriptors (id, project_id, environment_id, group_id, actor_id, created, is_admin, view_log_action, scope) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
     ["test", "test", "test", "test", "test", new Date(), false, "", scope]
   );
-  let res = await createSession({
+  const res = await createSession({
     get: (name) => {
       if (name === "Authorization") {
         return "token=test";
@@ -396,7 +396,7 @@ async function setup(pool, params?) {
     },
     ip: "127.0.0.1",
   });
-  res = JSON.parse(res.body).token;
+  const token = JSON.parse(res.body).token;
   await pool.query(
     `insert into saved_export (id, name, body, project_id, environment_id, group_id) values ($1, $2, $3, $4, $5, $6)`,
     ["test", "test", JSON.stringify(json), "test", "test", "test"]
@@ -405,7 +405,7 @@ async function setup(pool, params?) {
     "INSERT INTO eitapi_token (id, display_name, project_id, environment_id, group_id, view_log_action) VALUES ($1, $2, $3, $4, $5, $6)",
     ["test", "test", "test", "test", "test", "test"]
   );
-  return res;
+  return token;
 }
 
 async function cleanup(pool) {

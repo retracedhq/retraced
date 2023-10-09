@@ -26,4 +26,4 @@ spec:
                   name: auditlog
                   key: DB_TOKEN
             - name: SCHEMA_PATH
-              value: "/app/build/migrations/pg"
+              value: "/app/build/migrations/pg/*"

@@ -106,3 +106,5 @@ test-results.xml
 .env.development.local
 .env.test.local
 .env.production.local
+mmdb/**/**
+GeoIP.conf

@@ -50,12 +50,14 @@ spec:
               port: 3000
               path: /healthz
             periodSeconds: 10
+            timeoutSeconds: 10
             failureThreshold: 5
           readinessProbe:
             httpGet:
               port: 3000
               path: /healthz
             periodSeconds: 30
+            timeoutSeconds: 10
             failureThreshold: 5
             successThreshold: 2
           livenessProbe:
@@ -73,6 +75,7 @@ spec:
           volumeMounts:
             - mountPath: /tmp
               name: tmpdir
+
           envFrom:
             - secretRef:
                 name: auditlog

@@ -60,7 +60,15 @@ class EventCreaterTest {
         })
       );
 
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 2, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      2,
+      1000
+    );
 
     const expected = new Error("A maximum of 2 events may be created at once, received 3");
 
@@ -125,7 +133,15 @@ class EventCreaterTest {
       .returns(() => Promise.resolve(conn.object) as Promise<any>)
       .verifiable(TypeMoq.Times.once());
 
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
 
     try {
       await creater.createEventBulk("token=some-token", "a-project", body);
@@ -229,7 +245,15 @@ class EventCreaterTest {
     const jobBody = JSON.stringify({ taskId: "kfbr392" });
     nsq.setup((x) => x.produce("raw_events", jobBody)).returns(() => Promise.resolve());
 
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
 
     const created: any = await creater.createEvent("token=some-token", "a-project", body);
 
@@ -282,7 +306,15 @@ class EventCreaterTest {
     const jobBody = JSON.stringify({ taskId: "kfbr392" });
     nsq.setup((x) => x.produce("raw_events", jobBody)).returns(() => Promise.resolve());
 
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
 
     const created: any = await creater.createEvent("token=some-token", "a-project", body);
 
@@ -351,9 +383,21 @@ class EventCreaterTest {
       .returns(() => Promise.resolve())
       .verifiable(TypeMoq.Times.exactly(3));
 
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
 
-    const created: CreateEventResponse[] = await creater.createEventBulk("token=some-token", "a-project", body);
+    const created: CreateEventResponse[] = await creater.createEventBulk(
+      "token=some-token",
+      "a-project",
+      body
+    );
 
     expect(created.length).to.equal(3);
 
@@ -404,7 +448,9 @@ class EventCreaterTest {
       .verifiable(TypeMoq.Times.once());
     // conn.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())).returns(() => Promise.resolve({ rowCount: 1 }));
     conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
-    conn.setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).throws(new Error("Postgres went away :("));
+    conn
+      .setup((x) => x.query(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()))
+      .throws(new Error("Postgres went away :("));
 
     // set up nsq
     nsq
@@ -412,7 +458,15 @@ class EventCreaterTest {
       .returns(() => Promise.resolve())
       .verifiable(TypeMoq.Times.exactly(1));
 
-    const creater = new EventCreater(pool.object, nsq.object, fakeHasher, fakeUUID, authenticator.object, 50, 1000);
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
 
     const expected = new Error("Postgres went away :(");
 
@@ -535,11 +589,591 @@ class EventCreaterTest {
       testElement.persisters.forEach((p, i) => {
         if (p.called !== calls[i]) {
           throw new Error(
-            `${testElement.description}: persister[${i}] ${p.called ? "should" : "should not"} have been called`
+            `${testElement.description}: persister[${i}] ${
+              p.called ? "should" : "should not"
+            } have been called`
           );
         }
       });
     }
+  }
+
+  @test
+  public async "EventCreater#createEvent() with invalid EventFields"() {
+    const pool = TypeMoq.Mock.ofType(pg.Pool);
+    const conn = TypeMoq.Mock.ofType(pg.Client);
+    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const authenticator = TypeMoq.Mock.ofType(Authenticator);
+    const fakeHasher = () => "fake-hash";
+    const fakeUUID = () => "kfbr392";
+
+    const body: any = {
+      action: "some.action",
+      group: {
+        id: "boxyhq",
+        name: "BoxyHQ",
+      },
+      crud: "c",
+      created: new Date().toISOString(),
+      source_ip: "127.0.0.1",
+      actor: {
+        id: "retraced@boxyhq.com",
+        name: "Retraced",
+        fields: {
+          meta: "test-actor",
+        },
+      },
+      target: {
+        id: "100",
+        name: "tasks",
+        type: "Tasks",
+        fields: {
+          meta: "test-target",
+        },
+      },
+      external_id: "3242342",
+      fields: {
+        data: 2,
+      },
+    };
+
+    authenticator
+      .setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
+      .returns(() =>
+        Promise.resolve({
+          token: "some-token",
+          created: moment(),
+          name: "A Token",
+          disabled: false,
+          projectId: "a-project",
+          environmentId: "an-environment",
+          writeAccess: true,
+          readAccess: true,
+        })
+      );
+
+    pool
+      .setup((x) => x.connect())
+      .returns(() => Promise.resolve(conn.object) as Promise<any>)
+      .verifiable(TypeMoq.Times.once());
+
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
+
+    try {
+      await creater.createEvent("token=some-token", "a-project", body);
+      throw new Error(`Expected error to be thrown`);
+    } catch (err) {
+      expect(err.status).to.equal(400);
+      expect(err.err.message).to.deep.equal(`"fields.data" must be a string`);
+    }
+
+    conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
+    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+  }
+
+  // test case with action as number
+  @test
+  public async "EventCreater#createEvent() with invalid Action value"() {
+    const pool = TypeMoq.Mock.ofType(pg.Pool);
+    const conn = TypeMoq.Mock.ofType(pg.Client);
+    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const authenticator = TypeMoq.Mock.ofType(Authenticator);
+    const fakeHasher = () => "fake-hash";
+    const fakeUUID = () => "kfbr392";
+
+    const body: any = {
+      action: 1000,
+      group: {
+        id: "boxyhq",
+        name: "BoxyHQ",
+      },
+      crud: "c",
+      created: new Date().toISOString(),
+      source_ip: "127.0.0.1",
+      actor: {
+        id: "retraced@boxyhq.com",
+        name: "Retraced",
+        fields: {
+          meta: "test-actor",
+        },
+      },
+      target: {
+        id: "100",
+        name: "tasks",
+        type: "Tasks",
+        fields: {
+          meta: "test-target",
+        },
+      },
+      external_id: "3242342",
+      fields: {
+        data: 2,
+      },
+    };
+
+    authenticator
+      .setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
+      .returns(() =>
+        Promise.resolve({
+          token: "some-token",
+          created: moment(),
+          name: "A Token",
+          disabled: false,
+          projectId: "a-project",
+          environmentId: "an-environment",
+          writeAccess: true,
+          readAccess: true,
+        })
+      );
+
+    pool
+      .setup((x) => x.connect())
+      .returns(() => Promise.resolve(conn.object) as Promise<any>)
+      .verifiable(TypeMoq.Times.once());
+
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
+
+    try {
+      await creater.createEvent("token=some-token", "a-project", body);
+      throw new Error(`Expected error to be thrown`);
+    } catch (err) {
+      expect(err.status).to.equal(400);
+      expect(err.err.message).to.deep.equal(`Missing required field 'action'`);
+    }
+
+    conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
+    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+  }
+
+  @test
+  public async "EventCreater#createEvent() with invalid crud value"() {
+    const pool = TypeMoq.Mock.ofType(pg.Pool);
+    const conn = TypeMoq.Mock.ofType(pg.Client);
+    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const authenticator = TypeMoq.Mock.ofType(Authenticator);
+    const fakeHasher = () => "fake-hash";
+    const fakeUUID = () => "kfbr392";
+
+    const body: any = {
+      action: "some.action",
+      group: {
+        id: "boxyhq",
+        name: "BoxyHQ",
+      },
+      crud: "b",
+      created: new Date().toISOString(),
+      source_ip: "127.0.0.1",
+      actor: {
+        id: "retraced@boxyhq.com",
+        name: "Retraced",
+        fields: {
+          meta: "test-actor",
+        },
+      },
+      target: {
+        id: "100",
+        name: "tasks",
+        type: "Tasks",
+        fields: {
+          meta: "test-target",
+        },
+      },
+      external_id: "3242342",
+      fields: {
+        data: 2,
+      },
+    };
+
+    authenticator
+      .setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
+      .returns(() =>
+        Promise.resolve({
+          token: "some-token",
+          created: moment(),
+          name: "A Token",
+          disabled: false,
+          projectId: "a-project",
+          environmentId: "an-environment",
+          writeAccess: true,
+          readAccess: true,
+        })
+      );
+
+    pool
+      .setup((x) => x.connect())
+      .returns(() => Promise.resolve(conn.object) as Promise<any>)
+      .verifiable(TypeMoq.Times.once());
+
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
+
+    try {
+      await creater.createEvent("token=some-token", "a-project", body);
+      throw new Error(`Expected error to be thrown`);
+    } catch (err) {
+      expect(err.status).to.equal(400);
+      expect(err.err.message).to.deep.equal(`Invalid value for 'crud' field: b`);
+    }
+
+    conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
+    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+  }
+
+  @test
+  public async "EventCreater#createEvent() with additional fields in group"() {
+    const pool = TypeMoq.Mock.ofType(pg.Pool);
+    const conn = TypeMoq.Mock.ofType(pg.Client);
+    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const authenticator = TypeMoq.Mock.ofType(Authenticator);
+    const fakeHasher = () => "fake-hash";
+    const fakeUUID = () => "kfbr392";
+
+    const body: any = {
+      action: "some.action",
+      group: {
+        id: "boxyhq",
+        name: "BoxyHQ",
+        fields: {
+          meta: "test-group",
+        },
+      },
+      crud: "c",
+      created: new Date().toISOString(),
+      source_ip: "127.0.0.1",
+      actor: {
+        id: "retraced@boxyhq.com",
+        name: "Retraced",
+        fields: {
+          meta: "test-actor",
+        },
+      },
+      target: {
+        id: "100",
+        name: "tasks",
+        type: "Tasks",
+        fields: {
+          meta: "test-target",
+        },
+      },
+      external_id: "3242342",
+    };
+
+    authenticator
+      .setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
+      .returns(() =>
+        Promise.resolve({
+          token: "some-token",
+          created: moment(),
+          name: "A Token",
+          disabled: false,
+          projectId: "a-project",
+          environmentId: "an-environment",
+          writeAccess: true,
+          readAccess: true,
+        })
+      );
+
+    pool
+      .setup((x) => x.connect())
+      .returns(() => Promise.resolve(conn.object) as Promise<any>)
+      .verifiable(TypeMoq.Times.once());
+
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
+
+    try {
+      await creater.createEvent("token=some-token", "a-project", body);
+      throw new Error(`Expected error to be thrown`);
+    } catch (err) {
+      expect(err.status).to.equal(400);
+      expect(err.err.message).to.deep.equal(`"group.fields" is not allowed`);
+    }
+
+    conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
+    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+  }
+
+  @test
+  public async "EventCreater#createEvent() with additional fields in actor"() {
+    const pool = TypeMoq.Mock.ofType(pg.Pool);
+    const conn = TypeMoq.Mock.ofType(pg.Client);
+    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const authenticator = TypeMoq.Mock.ofType(Authenticator);
+    const fakeHasher = () => "fake-hash";
+    const fakeUUID = () => "kfbr392";
+
+    const body: any = {
+      action: "some.action",
+      group: {
+        id: "boxyhq",
+        name: "BoxyHQ",
+      },
+      crud: "c",
+      created: new Date().toISOString(),
+      source_ip: "127.0.0.1",
+      actor: {
+        id: "retraced@boxyhq.com",
+        name: "Retraced",
+        fields: {
+          meta: "test-actor",
+        },
+        phone: "555-555-5555",
+      },
+      target: {
+        id: "100",
+        name: "tasks",
+        type: "Tasks",
+        fields: {
+          meta: "test-target",
+        },
+      },
+      external_id: "3242342",
+    };
+
+    authenticator
+      .setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
+      .returns(() =>
+        Promise.resolve({
+          token: "some-token",
+          created: moment(),
+          name: "A Token",
+          disabled: false,
+          projectId: "a-project",
+          environmentId: "an-environment",
+          writeAccess: true,
+          readAccess: true,
+        })
+      );
+
+    pool
+      .setup((x) => x.connect())
+      .returns(() => Promise.resolve(conn.object) as Promise<any>)
+      .verifiable(TypeMoq.Times.once());
+
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
+
+    try {
+      await creater.createEvent("token=some-token", "a-project", body);
+      throw new Error(`Expected error to be thrown`);
+    } catch (err) {
+      expect(err.status).to.equal(400);
+      expect(err.err.message).to.deep.equal(`"actor.phone" is not allowed`);
+    }
+
+    conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
+    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+  }
+
+  @test
+  public async "EventCreater#createEvent() with additional fields in target"() {
+    const pool = TypeMoq.Mock.ofType(pg.Pool);
+    const conn = TypeMoq.Mock.ofType(pg.Client);
+    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const authenticator = TypeMoq.Mock.ofType(Authenticator);
+    const fakeHasher = () => "fake-hash";
+    const fakeUUID = () => "kfbr392";
+
+    const body: any = {
+      action: "some.action",
+      group: {
+        id: "boxyhq",
+        name: "BoxyHQ",
+      },
+      crud: "c",
+      created: new Date().toISOString(),
+      source_ip: "127.0.0.1",
+      actor: {
+        id: "retraced@boxyhq.com",
+        name: "Retraced",
+        fields: {
+          meta: "test-actor",
+        },
+      },
+      target: {
+        id: "100",
+        name: "tasks",
+        type: "Tasks",
+        fields: {
+          meta: "test-target",
+        },
+        meta: "test-target",
+      },
+      external_id: "3242342",
+    };
+
+    authenticator
+      .setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
+      .returns(() =>
+        Promise.resolve({
+          token: "some-token",
+          created: moment(),
+          name: "A Token",
+          disabled: false,
+          projectId: "a-project",
+          environmentId: "an-environment",
+          writeAccess: true,
+          readAccess: true,
+        })
+      );
+
+    pool
+      .setup((x) => x.connect())
+      .returns(() => Promise.resolve(conn.object) as Promise<any>)
+      .verifiable(TypeMoq.Times.once());
+
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
+
+    try {
+      await creater.createEvent("token=some-token", "a-project", body);
+      throw new Error(`Expected error to be thrown`);
+    } catch (err) {
+      expect(err.status).to.equal(400);
+      expect(err.err.message).to.deep.equal(`"target.meta" is not allowed`);
+    }
+
+    conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
+    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
+  }
+
+  @test
+  public async "EventCreater#createEvent() with invalid external_id"() {
+    const pool = TypeMoq.Mock.ofType(pg.Pool);
+    const conn = TypeMoq.Mock.ofType(pg.Client);
+    const nsq = TypeMoq.Mock.ofType(NSQClient);
+    const authenticator = TypeMoq.Mock.ofType(Authenticator);
+    const fakeHasher = () => "fake-hash";
+    const fakeUUID = () => "kfbr392";
+
+    const body: any = {
+      action: "some.action",
+      group: {
+        id: "boxyhq",
+        name: "BoxyHQ",
+      },
+      crud: "c",
+      created: new Date().toISOString(),
+      source_ip: "127.0.0.1",
+      actor: {
+        id: "retraced@boxyhq.com",
+        name: "Retraced",
+        fields: {
+          meta: "test-actor",
+        },
+      },
+      target: {
+        id: "100",
+        name: "tasks",
+        type: "Tasks",
+        fields: {
+          meta: "test-target",
+        },
+      },
+      external_id: 3242342,
+      fields: {
+        data: "2",
+      },
+    };
+
+    authenticator
+      .setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
+      .returns(() =>
+        Promise.resolve({
+          token: "some-token",
+          created: moment(),
+          name: "A Token",
+          disabled: false,
+          projectId: "a-project",
+          environmentId: "an-environment",
+          writeAccess: true,
+          readAccess: true,
+        })
+      );
+
+    pool
+      .setup((x) => x.connect())
+      .returns(() => Promise.resolve(conn.object) as Promise<any>)
+      .verifiable(TypeMoq.Times.once());
+
+    const creater = new EventCreater(
+      pool.object,
+      nsq.object,
+      fakeHasher,
+      fakeUUID,
+      authenticator.object,
+      50,
+      1000
+    );
+
+    try {
+      await creater.createEvent("token=some-token", "a-project", body);
+      throw new Error(`Expected error to be thrown`);
+    } catch (err) {
+      expect(err.status).to.equal(400);
+      expect(err.err.message).to.deep.equal(`"external_id" must be a string`);
+    }
+
+    conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("ROLLBACK"), TypeMoq.Times.never());
+    conn.verify((x: pg.Client) => x.query("COMMIT"), TypeMoq.Times.never());
+    nsq.verify((x) => x.produce("raw_events", TypeMoq.It.isAny()), TypeMoq.Times.never());
   }
 }
 
