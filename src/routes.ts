@@ -1,6 +1,7 @@
 // core
 import createViewerSession from "./handlers/createViewerSession";
 import getInvite from "./handlers/getInvite";
+import revokeViewerSessions from "./handlers/revokeViewerSessions";
 import graphQL from "./handlers/graphql";
 
 // admin
@@ -178,6 +179,11 @@ export default {
     path: "/viewer/v1/viewersession",
     method: "post",
     handler: createViewerSession,
+  },
+  revokeViewerSessions: {
+    path: "/viewer/v1/project/:projectId/group/:groupId/actor/:actorId/viewersessions",
+    method: "delete",
+    handler: revokeViewerSessions,
   },
   viewerCreateEitapiToken: {
     path: "/viewer/v1/project/:projectId/eitapi_token",
