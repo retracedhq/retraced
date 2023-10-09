@@ -1,6 +1,6 @@
 import * as querystring from "querystring";
 import { expect } from "chai";
-import * as Retraced from "@retracedhq/retraced";
+import { Client, CRUD } from "@retracedhq/retraced";
 import "mocha";
 import "chai-http";
 import { retracedUp } from "../pkg/retracedUp";
@@ -104,7 +104,7 @@ describe("Viewer API", function () {
               beforeEach(async function () {
                 this.timeout(Env.EsIndexWaitMs * 3);
 
-                const retraced = new Retraced.Client({
+                const retraced = new Client({
                   apiKey: Env.ApiKey,
                   projectId: Env.ProjectID,
                   endpoint: Env.Endpoint,
@@ -117,7 +117,7 @@ describe("Viewer API", function () {
                     name: "RetracedQA",
                   },
                   created: new Date(),
-                  crud: "c",
+                  crud: "c" as CRUD,
                   source_ip: "192.168.0.1",
                   actor: {
                     id: "qa@retraced.io",
@@ -138,6 +138,7 @@ describe("Viewer API", function () {
                 const desc = {
                   environmentId: Env.EnvironmentID,
                   groupId: groupID,
+                  id: token,
                 };
                 const tkn = jwt.sign(desc, process.env.HMAC_SECRET_VIEWER);
                 chai

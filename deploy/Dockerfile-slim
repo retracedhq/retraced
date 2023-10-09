@@ -1,16 +1,17 @@
+ARG NODEJS_IMAGE=node:18.18.0-alpine3.18
+ARG ALPINE_IMAGE=alpine:3.18
+
 # # #
 # Cron build
 #
-ARG NODEJS_IMAGE=node:18.15.0-alpine3.17
-ARG ALPINE_IMAGE=alpine:3.17
-FROM --platform=$BUILDPLATFORM $ALPINE_IMAGE as cron
+FROM --platform=${BUILDPLATFORM:-linux/amd64} $ALPINE_IMAGE as cron
 
 RUN apk add --update --no-cache ca-certificates curl \
   && rm -rf /tmp/* /var/cache/apk/*
 
-ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.1/supercronic-linux-amd64
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.26/supercronic-linux-amd64
 ENV SUPERCRONIC=supercronic-linux-amd64
-ENV SUPERCRONIC_SHA1SUM=d7f4c0886eb85249ad05ed592902fa6865bb9d70
+ENV SUPERCRONIC_SHA1SUM=7a79496cf8ad899b99a719355d4db27422396735
 RUN curl -fsSLO "$SUPERCRONIC_URL" \
   && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
   && chmod +x "$SUPERCRONIC" \
@@ -21,7 +22,7 @@ COPY deploy/crontab /crontab
 # # #
 # Node build
 #
-FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE as node
+FROM --platform=${BUILDPLATFORM:-linux/amd64} $NODEJS_IMAGE as node
 
 #python
 RUN apk add --no-cache --virtual .gyp \
@@ -38,7 +39,7 @@ ADD . /src
 
 RUN npm run build
 
-FROM --platform=$BUILDPLATFORM node as curl-builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} node as curl-builder
 
 WORKDIR /app
 

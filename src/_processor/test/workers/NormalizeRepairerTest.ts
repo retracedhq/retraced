@@ -4,7 +4,6 @@ import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 
 import pg from "pg";
-import monkit from "monkit";
 
 import { NSQClient } from "../../persistence/nsq";
 import NormalizeRepairer from "../../workers/NormalizeRepairer";
@@ -17,7 +16,6 @@ class NormalizeRepairerTest {
   @test public async "NormalizeRepairer#repairOldEvents() with no events"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const nsq = TypeMoq.Mock.ofType(NSQClient);
-    const registry = new monkit.Registry();
     const minAgeMs = 10000;
     const maxEvents = 20000;
 
@@ -35,26 +33,17 @@ class NormalizeRepairerTest {
       })
       .verifiable(TypeMoq.Times.once());
 
-    const repairer = new NormalizeRepairer(
-      minAgeMs,
-      nsq.object,
-      pool.object,
-      registry,
-      maxEvents
-    );
+    const repairer = new NormalizeRepairer(minAgeMs, nsq.object, pool.object, maxEvents);
 
     await repairer.repairOldEvents();
 
     nsq.verify((x) => x.produce(isAny(), isAny()), TypeMoq.Times.never());
-    expect(
-      registry.meter("NormalizeRepairer.repairOldEvents.allClear").count
-    ).to.equal(1);
+    // expect(registry.meter("NormalizeRepairer.repairOldEvents.allClear").count).to.equal(1);
   }
 
   @test public async "NormalizeRepairer#repairOldEvents()"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
     const nsq = TypeMoq.Mock.ofType(NSQClient);
-    const registry = new monkit.Registry();
     const minAgeMs = 10000;
     const maxEvents = 20000;
 
@@ -77,35 +66,17 @@ class NormalizeRepairerTest {
       })
       .verifiable(TypeMoq.Times.once());
 
-    const repairer = new NormalizeRepairer(
-      minAgeMs,
-      nsq.object,
-      pool.object,
-      registry,
-      maxEvents
-    );
+    const repairer = new NormalizeRepairer(minAgeMs, nsq.object, pool.object, maxEvents);
 
     await repairer.repairOldEvents();
 
-    nsq.verify(
-      (x) => x.produce("raw_events", JSON.stringify({ taskId: rows[0].id })),
-      TypeMoq.Times.once()
-    );
+    nsq.verify((x) => x.produce("raw_events", JSON.stringify({ taskId: rows[0].id })), TypeMoq.Times.once());
 
-    nsq.verify(
-      (x) => x.produce("raw_events", JSON.stringify({ taskId: rows[1].id })),
-      TypeMoq.Times.once()
-    );
+    nsq.verify((x) => x.produce("raw_events", JSON.stringify({ taskId: rows[1].id })), TypeMoq.Times.once());
 
-    expect(
-      registry.histogram("NormalizeRepairer.repairOldEvents.age").max
-    ).to.equal(20050);
-    expect(
-      registry.histogram("NormalizeRepairer.repairOldEvents.age").min
-    ).to.equal(15000);
-    expect(
-      registry.histogram("NormalizeRepairer.repairOldEvents.age").count
-    ).to.equal(2);
+    // expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").max).to.equal(20050);
+    // expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").min).to.equal(15000);
+    // expect(registry.histogram("NormalizeRepairer.repairOldEvents.age").count).to.equal(2);
   }
 }
 

@@ -54,6 +54,7 @@ export const handler = async (argv) => {
       _.forEach(migrations, (m) => {
         console.log(picocolors.green(m.name));
       });
+      logger.info(`executed ${migrations.length} migrations`);
       process.exit(0);
     });
   } catch (err) {

@@ -5,7 +5,6 @@ import { ApiResponse, RequestParams } from "@opensearch-project/opensearch";
 
 import { Scope } from "../../security/scope";
 import { scope, getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
-import { logger } from "../../logger";
 
 const es: ClientWithRetry = getESWithRetry();
 
@@ -32,18 +31,6 @@ export interface Result {
   events: any[];
 }
 
-export interface ParsedQuery {
-  action: string | string[];
-  crud: string | string[];
-  received: string | string[];
-  created: string | string[];
-  "actor.id": string | string[];
-  "actor.name": string | string[];
-  description: string | string[];
-  location: string | string[];
-  text?: string | string[];
-}
-
 export default async function query(opts: Options): Promise<Result> {
   const result = await doQuery(opts);
 
@@ -61,16 +48,7 @@ export default async function query(opts: Options): Promise<Result> {
 async function doQuery(opts: Options): Promise<Result> {
   const params = searchParams(opts);
 
-  logger.debug(`raw newParams: ${JSON.stringify(params)}\n`);
-
   const newResp = await es.search(params);
-
-  if (!newResp.body || !newResp.body.hits) {
-    logger.info(`raw newParams: ${JSON.stringify(params)}\n`);
-    logger.info(`raw newResp: ${JSON.stringify(newResp)}\n`);
-  } else {
-    logger.debug(`raw newResp: ${JSON.stringify(newResp)}\n`);
-  }
 
   const bodyAny: any = params.body;
   const countParams = {
@@ -97,16 +75,7 @@ export async function doAllQuery(opts: Options): Promise<Result> {
   const params = searchParams(opts);
   params.scroll = "30s"; // this means we have 30s to get the next entry in the scroll
 
-  logger.debug(`raw newParams: ${JSON.stringify(params)}\n`);
-
   const newResp = await es.search(params);
-
-  if (!newResp.body || !newResp.body.hits) {
-    logger.info(`raw newParams: ${JSON.stringify(params)}\n`);
-    logger.info(`raw newResp: ${JSON.stringify(newResp)}\n`);
-  } else {
-    logger.debug(`raw newResp: ${JSON.stringify(newResp)}\n`);
-  }
 
   responseQueue.push(newResp);
   while (responseQueue.length) {
@@ -148,7 +117,7 @@ function scrubDatetimeRange(input: string | string[]): [number, number] {
     if (!m.isValid()) {
       throw {
         status: 400,
-        err: new Error(`Cannot parse received datetime ${range[0]}`),
+        err: new Error(`Cannot parse received datetime ${JSON.stringify(range[0])}`),
       };
     }
   });
@@ -159,7 +128,17 @@ function scrubDatetimeRange(input: string | string[]): [number, number] {
 // exported for testing
 export function parse(searchQuery: string): any {
   const options = {
-    keywords: ["action", "crud", "received", "created", "actor.id", "actor.name", "description", "location"],
+    keywords: [
+      "action",
+      "crud",
+      "received",
+      "created",
+      "actor.id",
+      "actor.name",
+      "description",
+      "location",
+      "external_id",
+    ],
   };
   let keywords = searchQueryParser.parse(searchQuery, options);
   const q: any = {
@@ -250,6 +229,12 @@ export function parse(searchQuery: string): any {
           query: keywords.location,
           fields: ["country", "loc_subdiv1", "loc_subdiv2"],
         },
+      });
+    }
+
+    if (keywords.external_id) {
+      q.bool.filter.push({
+        match: { external_id: { query: keywords.external_id, operator: "and" } },
       });
     }
 

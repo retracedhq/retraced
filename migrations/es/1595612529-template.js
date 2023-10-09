@@ -5,97 +5,94 @@ module.exports = () => {
     params: {
       name: "retraced_main",
       body: {
-        "template": "retraced*",
-        "settings": {
-          "analysis": {
-            "filter": {
-              "autocomplete_filter": {
-                "type": "edge_ngram",
-                "min_gram": 1,
-                "max_gram": 20
-              }
+        template: "retraced*",
+        settings: {
+          analysis: {
+            filter: {
+              autocomplete_filter: {
+                type: "edge_ngram",
+                min_gram: 1,
+                max_gram: 20,
+              },
             },
-            "analyzer": {
-              "autocomplete": {
-                "type": "custom",
-                "tokenizer": "standard",
-                "filter": [
-                  "lowercase",
-                  "autocomplete_filter"
-                ]
-              }
-            }
-          }
+            analyzer: {
+              autocomplete: {
+                type: "custom",
+                tokenizer: "standard",
+                filter: ["lowercase", "autocomplete_filter"],
+              },
+            },
+          },
         },
-        "mappings": {
-          "properties": {
-            "id": {
-              "type": "keyword"
+        mappings: {
+          properties: {
+            id: {
+              type: "keyword",
             },
-            "action": {
-              "type": "text"
+            action: {
+              type: "text",
             },
-            "group": {
-              "properties": {
-                "id": {
-                  "type": "keyword"
+            group: {
+              properties: {
+                id: {
+                  type: "keyword",
                 },
-                "name": {
-                  "type": "text"
-                }
-              }
-            },
-            "actor": {
-              "properties": {
-                "id": {
-                  "type": "keyword"
+                name: {
+                  type: "text",
                 },
-                "name": {
-                  "type": "text"
-                }
-              }
+              },
             },
-            "target": {
-              "properties": {
-                "id": {
-                  "type": "keyword"
+            actor: {
+              properties: {
+                id: {
+                  type: "keyword",
                 },
-                "name": {
-                  "type": "text"
+                name: {
+                  type: "text",
                 },
-                "type": {
-                  "type": "text"
-                }
-              }
+              },
             },
-            "description": {
-              "type": "text"
+            target: {
+              properties: {
+                id: {
+                  type: "keyword",
+                },
+                name: {
+                  type: "text",
+                },
+                type: {
+                  type: "text",
+                },
+              },
             },
-            "created": {
-              "type": "date",
-              "format": "epoch_millis"
+            description: {
+              type: "text",
             },
-            "received": {
-              "type": "date",
-              "format": "epoch_millis"
+            created: {
+              type: "date",
+              format: "epoch_millis",
             },
-            "canonical_time": {
-              "type": "date",
-              "format": "epoch_millis"
+            received: {
+              type: "date",
+              format: "epoch_millis",
             },
-            "source_ip": {
-              "type": "ip"
+            canonical_time: {
+              type: "date",
+              format: "epoch_millis",
             },
-            "raw": {
-              "type": "text",
-              "index": false
+            source_ip: {
+              type: "ip",
             },
-            "country": {
-              "type": "text"
-            }
-          }
-        }
-      }
+            raw: {
+              type: "text",
+              index: false,
+            },
+            country: {
+              type: "text",
+            },
+          },
+        },
+      },
     },
   };
 };

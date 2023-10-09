@@ -1,8 +1,9 @@
 import process from "process";
 import moment from "moment";
+import _ from "lodash";
 
 export function jobDesc(job) {
-  return job.id.substring(0, 8);
+  return job.id.slice(-8);
 }
 
 export function stopwatchClick(startTime: [number, number]): number {
@@ -36,10 +37,7 @@ export interface EnvironmentTimeRange {
 // Offsets range from -12:00 to +14:00. Does not include offsets within the
 // hour such as -08:30.
 // Example: For utcHour 18 and localTime 7, returns [-11, 13].
-export function offsetsWithLocalTimeDuringUTCHour(
-  utcHour: number,
-  localHour: number
-) {
+export function offsetsWithLocalTimeDuringUTCHour(utcHour: number, localHour: number) {
   const backOffset = localHour - utcHour;
   const forwardOffset = backOffset + 24;
   const validOffsets: number[] = [];
@@ -52,4 +50,63 @@ export function offsetsWithLocalTimeDuringUTCHour(
   }
 
   return validOffsets;
+}
+
+export const ORIGINAL_EVENT_KEYS = [
+  "action",
+  "actor",
+  "component",
+  "created",
+  "crud",
+  "description",
+  "external_id",
+  "fields",
+  "group",
+  "is_anonymous",
+  "is_failure",
+  "metadata",
+  "source_ip",
+  "target",
+  "version",
+];
+
+/**
+ * Restores the `original_event` using `compressed_event` and `normalized_event`
+ */
+export function restoreOriginalEvent(compressedEvent, normalizedEvent) {
+  const originalEvent = _.assign(
+    {},
+    _.pick(normalizedEvent, ORIGINAL_EVENT_KEYS),
+    _.pick(compressedEvent, ORIGINAL_EVENT_KEYS)
+  );
+
+  originalEvent.actor = _.mapKeys(
+    _.pick(normalizedEvent.actor, ["foreign_id", "name", "fields", "url"]),
+    (value, key) => {
+      if (key === "foreign_id") {
+        return "id";
+      } else if (key === "url") {
+        return "href";
+      } else {
+        return key;
+      }
+    }
+  );
+
+  originalEvent.target = _.mapKeys(
+    _.pick(normalizedEvent.target, ["foreign_id", "name", "type", "fields", "url"]),
+    (value, key) => {
+      if (key === "foreign_id") {
+        return "id";
+      } else if (key === "url") {
+        return "href";
+      } else {
+        return key;
+      }
+    }
+  );
+
+  originalEvent.group = _.pick(normalizedEvent.group, ["id", "name"]);
+
+  return originalEvent;
 }

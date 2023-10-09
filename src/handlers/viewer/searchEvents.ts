@@ -101,7 +101,10 @@ export default async function (req) {
     });
     await nsq.produce("user_reporting_task", job);
   }
-  defaultEventCreater.saveRawEvent(req.params.projectId, claims.environmentId, thisViewEvent);
+
+  if (!req.body.skipViewLogEvent) {
+    defaultEventCreater.saveRawEvent(req.params.projectId, claims.environmentId, thisViewEvent);
+  }
 
   return {
     status: 200,

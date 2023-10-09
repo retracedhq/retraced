@@ -8,6 +8,10 @@ metadata:
     tier: api
 spec:
   type: LoadBalancer
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
   selector:
     app: auditlog
     tier: api

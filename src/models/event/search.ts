@@ -83,6 +83,7 @@ export default async function (opts: Options): Promise<Result> {
           "loc_subdiv2",
           "source_ip",
           "fields.*",
+          "external_id",
         ],
       },
     });

@@ -55,12 +55,14 @@ spec:
               port: 3000
               path: /healthz
             periodSeconds: 10
+            timeoutSeconds: 10
             failureThreshold: 5
           readinessProbe:
             httpGet:
               port: 3000
               path: /healthz
             periodSeconds: 30
+            timeoutSeconds: 10
             failureThreshold: 5
             successThreshold: 2
           image: retracedhq/retraced-local
@@ -88,4 +90,4 @@ spec:
             requests:
               cpu: 100m
             limits:
-              cpu: 500m
+              cpu: 1000m

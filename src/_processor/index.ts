@@ -1,5 +1,4 @@
 import _ from "lodash";
-import * as monkit from "monkit";
 import config from "../config";
 import { errToLog, jobDesc, stopwatchClick } from "./common";
 import nsq from "./persistence/nsq";
@@ -23,17 +22,14 @@ import {
   repair as elasticsearchAliasVerify,
   worker as elasticsearchIndexRotator,
 } from "./workers/ElasticsearchIndexRotator";
-import * as metrics from "./metrics";
+import "../metrics";
+import { applyOtelInstrument, incrementOtelCounter } from "../metrics/opentelemetry/instrumentation";
 import { logger } from "./logger";
 import { startHealthz, updateLastNSQ } from "./healthz";
 import getPgPool from "../persistence/pg";
 import { notifyError, startErrorNotifier } from "../error-notifier";
 
 startHealthz();
-
-if (config.MAXMIND_GEOLITE2_LICENSE_KEY) {
-  updateGeoData();
-}
 
 startErrorNotifier();
 
@@ -51,9 +47,6 @@ if (config.REDIS_URI) {
 }
 
 const leftPad = (s, n) => (n > s.length ? " ".repeat(n - s.length) + s : s);
-const registry = monkit.getRegistry();
-
-metrics.bootstrapFromEnv();
 
 const slowElapsedThreshold = 250.0; // ms
 
@@ -140,7 +133,7 @@ const geoDataConsumers: Consumer[] = [
 const nsqConsumers: Consumer[] = [
   ...(config.PG_SEARCH ? pgSearchConsumers : esConsumers),
   ...(WARP_PIPE ? warpPipeConsumers : []),
-  ...(config.MAXMIND_GEOLITE2_LICENSE_KEY ? geoDataConsumers : []),
+  ...(config.GEOIPUPDATE_LICENSE_KEY ? geoDataConsumers : []),
   {
     topic: "raw_events",
     channel: "normalize",
@@ -177,7 +170,7 @@ const nsqConsumers: Consumer[] = [
     topic: "every_ten_minutes",
     channel: "normalize_repair",
     worker: normalizeRepair,
-    maxAttempts: 1,
+    maxAttempts: 10,
     timeoutSeconds: 60,
     maxInFlight: 1,
   },
@@ -185,7 +178,7 @@ const nsqConsumers: Consumer[] = [
     topic: "every_ten_minutes",
     channel: "prune_viewer_descriptors",
     worker: pruneViewerDescriptors,
-    maxAttempts: 1,
+    maxAttempts: 10,
     timeoutSeconds: 60,
     maxInFlight: 1,
   },
@@ -244,10 +237,10 @@ for (const consumer of nsqConsumers) {
     const attempt = msg.attempt > 1 ? ` attempt ${msg.attempts} of ${maxAttempts}` : "";
 
     logger.debug(`-> ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${attempt}...`);
-    await monkit.instrument(
-      `processor.${topic}__${channel}`,
-      handle(topic, channel, worker, msg, doAck, requeue)
-    );
+    await applyOtelInstrument("processor", handle(topic, channel, worker, msg, doAck, requeue), {
+      topic,
+      channel,
+    });
   };
 
   nsq.consume(topic, channel, receive, {
@@ -265,11 +258,15 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
     logger.debug(`✓  ${leftPad(topic, 20)} ${leftPad(channel, 25)}`);
     await doAck(job);
     if (elapsed >= slowElapsedThreshold) {
-      logger.warn(`[${jobDesc(job)}] completed (slowly) in ${elapsed.toFixed(3)}ms`);
+      logger.warn(
+        `job [${jobDesc(
+          job
+        )}] in topic '${topic}' and channel '${channel}' completed (slowly) in ${elapsed.toFixed(3)}ms`
+      );
     }
     updateLastNSQ();
   } catch (err) {
-    registry.meter("processor.waitForJobs.errors").mark();
+    incrementOtelCounter("processor.waitForJobs.errors");
     notifyError(err);
     const elapsed = stopwatchClick(startTime);
     let retry = false;
@@ -277,13 +274,17 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
       retry = err.retry;
     }
     logger.error(`✘  ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${jobDesc(job)}`);
-    logger.error(`[${jobDesc(job)}] failed (took ${elapsed.toFixed(3)}ms): ${errToLog(err)}`);
+    logger.error(
+      `job [${jobDesc(job)}] in topic '${topic}' and channel '${channel}' failed (took ${elapsed.toFixed(
+        3
+      )}ms): ${errToLog(err)}`
+    );
     if (retry === true) {
-      logger.info(`[${jobDesc(job)}] this job will be retried later`);
+      logger.info(`job [${jobDesc(job)}] in topic '${topic}' and channel '${channel}' will be retried later`);
       requeue();
     } else {
       await doAck(job);
-      logger.error(`[${jobDesc(job)}] this job will NOT be retried`);
+      logger.error(`job [${jobDesc(job)}] in topic '${topic}' and channel '${channel}' will NOT be retried`);
     }
   }
 };

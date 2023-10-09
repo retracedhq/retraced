@@ -54,8 +54,10 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
       "country",
       "loc_subdiv1",
       "loc_subdiv2",
-      "raw",
       "canonical_time",
+      "fields",
+      "external_id",
+      "metadata",
     ]);
 
     indexableEvent = mapValues(indexableEvent);

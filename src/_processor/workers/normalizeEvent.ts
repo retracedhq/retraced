@@ -9,6 +9,7 @@ import getLocationByIP from "../persistence/geoip";
 import nsq from "../persistence/nsq";
 import { logger } from "../logger";
 import { mapValues } from "../../common/mapper";
+import { ORIGINAL_EVENT_KEYS } from "../common";
 
 const pgPool = getPgPool();
 
@@ -18,9 +19,8 @@ export default async function normalizeEvent(job) {
 
   const pg = await pgPool.connect();
   try {
-    const fields = `id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres,
-      saved_to_elasticsearch, project_id, environment_id, new_event_id,
-      extract(epoch from received) * 1000 as received`;
+    const fields =
+      "id, original_event, normalized_event, project_id, environment_id, new_event_id, extract(epoch from received) * 1000 as received";
     const pgResp = await pg.query(`select ${fields} from ingest_task where id = $1`, [taskId]);
     if (!pgResp.rows.length) {
       throw new Error(`Couldn't find ingestion task with id '${taskId}'`);
@@ -113,7 +113,7 @@ export default async function normalizeEvent(job) {
 
     let locInfo;
     if (origEvent.source_ip) {
-      locInfo = await getLocationByIP(origEvent.source_ip);
+      locInfo = await getLocationByIP(origEvent.source_ip, pg);
     }
 
     // TODO(zhaytee): Add typing
@@ -126,11 +126,11 @@ export default async function normalizeEvent(job) {
       locInfo,
       newEventId
     );
+    const compressedEvent = compressOriginalEvent(origEvent, normalizedEvent);
 
-    const updateStmt = `update ingest_task
-      set normalized_event = $1
-      where id = $2`;
-    await pg.query(updateStmt, [JSON.stringify(normalizedEvent), task.id]);
+    const updateStmt =
+      "update ingest_task set original_event = '', normalized_event = $1, compressed_event = $2 where id = $3";
+    await pg.query(updateStmt, [normalizedEvent, compressedEvent, task.id]);
 
     // We only do these things if this is a fresh run.
     if (processingNewEvent) {
@@ -148,19 +148,19 @@ export default async function normalizeEvent(job) {
 
 function processEvent(origEvent, received, group, actor, target, locInfo, newEventId: string) {
   const result: any = _.pick(origEvent, [
-    "created",
-    "description",
-    "source_ip",
     "action",
-    "is_failure",
-    "is_anonymous",
+    "component",
+    "created",
     "crud",
-    "fields",
+    "description",
+    "is_anonymous",
+    "is_failure",
+    "source_ip",
+    "version",
   ]);
 
   result.id = newEventId;
   result.received = received;
-  result.raw = JSON.stringify(origEvent);
 
   if (_.isEmpty(result.source_ip)) {
     _.unset(result, "source_ip");
@@ -201,12 +201,12 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
   }
 
   if (locInfo) {
-    if (locInfo.lat) {
-      result.lat = locInfo.lat;
-    }
-    if (locInfo.lon) {
-      result.lon = locInfo.lon;
-    }
+    // if (locInfo.lat) {
+    //   result.lat = locInfo.lat;
+    // }
+    // if (locInfo.lon) {
+    //   result.lon = locInfo.lon;
+    // }
     if (locInfo.country) {
       result.country = locInfo.country;
     }
@@ -216,10 +216,94 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
     if (locInfo.subdiv2) {
       result.loc_subdiv2 = locInfo.subdiv2;
     }
-    if (locInfo.timeZone) {
-      result.time_zone = locInfo.timeZone;
-    }
+    // if (locInfo.timezone) {
+    //   result.time_zone = locInfo.timezone;
+    // }
+  }
+
+  if (origEvent.external_id) {
+    result.external_id = origEvent.external_id;
+  }
+
+  if (!_.isEmpty(origEvent.metadata)) {
+    result.metadata = origEvent.metadata;
   }
 
   return result;
+}
+
+function compressOriginalEvent(originalEvent, normalizedEvent) {
+  const compressedEvent = _.pick(originalEvent, ORIGINAL_EVENT_KEYS);
+
+  _.forOwn(originalEvent, (value, key) => {
+    if (key === "actor") {
+      const compressedActor = _.pickBy(compressedEvent.actor, (_value, _key) => {
+        if ((_key === "name" || _key === "fields") && _.isEqual(normalizedEvent.actor[_key], _value)) {
+          return false;
+        }
+        if (_key === "id" && _.isEqual(normalizedEvent.actor.foreign_id, _value)) {
+          return false;
+        }
+        if (_key === "href" && _.isEqual(normalizedEvent.actor.url, _value)) {
+          return false;
+        }
+        // Will only reach here if normalization mutated the value or failed to translate the value
+        // in which case we need to retain the field
+        return true;
+      });
+      // All the fields are persisted in normalized, safe to empty out actor
+      if (_.isEmpty(compressedActor)) {
+        _.unset(compressedEvent, "actor");
+      } else {
+        // Have to retain some fields inside actor
+        _.set(compressedEvent, "actor", compressedActor);
+      }
+    } else if (key === "target") {
+      const compressedTarget = _.pickBy(compressedEvent.target, (_value, _key) => {
+        if (["name", "type", "fields"].includes(_key) && _.isEqual(normalizedEvent.target[_key], _value)) {
+          return false;
+        }
+        if (_key === "id" && _.isEqual(normalizedEvent.target.foreign_id, _value)) {
+          return false;
+        }
+        if (_key === "href" && _.isEqual(normalizedEvent.target.url, _value)) {
+          return false;
+        }
+        // Will only reach here if normalization mutated the value or failed to translate the value
+        // in which case we need to retain the field
+        return true;
+      });
+      // All the fields are persisted in normalized, safe to empty out target
+      if (_.isEmpty(compressedTarget)) {
+        _.unset(compressedEvent, "target");
+      } else {
+        // Have to retain some fields inside target
+        _.set(compressedEvent, "target", compressedTarget);
+      }
+    } else if (key === "group") {
+      const compressedGroup = _.pickBy(compressedEvent.group, (_value, _key) => {
+        if (["name", "id"].includes(_key) && _.isEqual(normalizedEvent.group[_key], _value)) {
+          return false;
+        }
+        // Will only reach here if normalization mutated the value or failed to translate the value
+        // in which case we need to retain the field
+        return true;
+      });
+      // All the fields are persisted in normalized, safe to empty out group
+      if (_.isEmpty(compressedGroup)) {
+        _.unset(compressedEvent, "group");
+      } else {
+        // Have to retain some fields inside group
+        _.set(compressedEvent, "group", compressedGroup);
+      }
+    } else if (_.isEqual(normalizedEvent[key], value)) {
+      // Key is persisted in normalized, safe to empty it out inside compressed_event
+      _.unset(compressedEvent, key);
+    } else {
+      // Have to retain the key and value inside compressed_event
+      return;
+    }
+  });
+
+  return compressedEvent;
 }

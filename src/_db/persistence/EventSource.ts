@@ -1,23 +1,24 @@
-
 export interface Event {
-    id: string;
-    actor_id?: string;
-    object_id?: string; // a.k.a target_id
-    team_id?: string;
+  id: string;
+  actor_id?: string;
+  object_id?: string; // a.k.a target_id
+  team_id?: string;
 
-    description: string;
-    action: string;
-    crud: string;
-    is_failure: boolean;
-    is_anonymous: boolean;
-    created: Date;
-    received: Date;
-    source_ip: string;
-    country?: string;
-    loc_subdiv1?: string;
-    loc_subdiv2?: string;
-    raw: string;
-    canonical_time: Date;
+  description: string;
+  action: string;
+  crud: string;
+  is_failure: boolean;
+  is_anonymous: boolean;
+  created: Date;
+  received: Date;
+  source_ip: string;
+  country?: string;
+  loc_subdiv1?: string;
+  loc_subdiv2?: string;
+  canonical_time: Date;
+  fields?: any;
+  external_id?: string;
+  metadata?: any;
 }
 
 /**
@@ -26,7 +27,7 @@ export interface Event {
  * feeding them to a callback function.
  */
 export interface EventSource {
-    iteratePaged(callback: EventConsumer): Promise<any>;
+  iteratePaged(callback: EventConsumer): Promise<any>;
 }
 
 /**
