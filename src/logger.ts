@@ -9,6 +9,7 @@ export function initLogger(logFile?: string, logLevel?: string): any {
 
   return pino({
     level: logLevel || "warn",
+    timestamp: () => `,"time":"${new Date().toISOString()}"`,
   });
 }
 

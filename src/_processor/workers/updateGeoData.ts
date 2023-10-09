@@ -14,7 +14,7 @@ import config from "../../config";
 const pgPool = getPgPool();
 
 // The zip archive has a folder named e.g. GeoLite2-City-CSV_20230106/
-const source = `https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=${config.MAXMIND_GEOLITE2_LICENSE_KEY}&suffix=zip`;
+const source = `https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=${config.GEOIPUPDATE_LICENSE_KEY}&suffix=zip`;
 const zipFileName = "GeoLite2-City-CSV.zip";
 const locFileName = "GeoLite2-City-Locations-en.csv";
 const ipv4FileName = "GeoLite2-City-Blocks-IPv4.csv";
@@ -25,6 +25,12 @@ const ipv4FilePath = path.join(config.TMPDIR || "/tmp", ipv4FileName);
 const ipv6FilePath = path.join(config.TMPDIR || "/tmp", ipv6FileName);
 
 export default async function updateGeoData() {
+  if (config.RETRACED_DISABLE_GEOSYNC || !config.GEOIPUPDATE_LICENSE_KEY) {
+    logger.info("UpdateGeoData: GeoIP sync disabled");
+    return;
+  }
+
+  // Postgres records update
   // Use cached files if less than a day old.
   const downloadsNeeded = await Promise.all([
     downloadNeeded(locFilePath),
@@ -99,10 +105,7 @@ async function download() {
 
 async function write(pathname, stream) {
   return new Promise((resolve, reject) => {
-    stream
-      .pipe(fs.createWriteStream(pathname))
-      .on("error", reject)
-      .on("finish", resolve);
+    stream.pipe(fs.createWriteStream(pathname)).on("error", reject).on("finish", resolve);
   });
 }
 
@@ -235,9 +238,9 @@ async function translateIPBlockData(csvReadStream, locations, date) {
       const valuesString = queuedValues
         .map((v, i) => {
           const offset = i * 8;
-          return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${
-            offset + 4
-          }, $${offset + 5}, $${offset + 6}, $${offset + 7}, $${offset + 8})`;
+          return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${
+            offset + 6
+          }, $${offset + 7}, $${offset + 8})`;
         })
         .join(",");
 
@@ -253,8 +256,7 @@ async function translateIPBlockData(csvReadStream, locations, date) {
 // Delete geoip records not synced within two days of date. (If the job is
 // running at midnight some records from this batch could be 1 day old.)
 async function clean(date) {
-  await pgPool.query(
-    `delete from geoip where synced is null or synced < ($1::date - interval '2 days')`,
-    [date]
-  );
+  await pgPool.query(`delete from geoip where synced is null or synced < ($1::date - interval '2 days')`, [
+    date,
+  ]);
 }

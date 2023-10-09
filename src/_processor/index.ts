@@ -31,10 +31,6 @@ import { notifyError, startErrorNotifier } from "../error-notifier";
 
 startHealthz();
 
-if (config.MAXMIND_GEOLITE2_LICENSE_KEY) {
-  updateGeoData();
-}
-
 startErrorNotifier();
 
 if (config.PG_SEARCH) {
@@ -137,7 +133,7 @@ const geoDataConsumers: Consumer[] = [
 const nsqConsumers: Consumer[] = [
   ...(config.PG_SEARCH ? pgSearchConsumers : esConsumers),
   ...(WARP_PIPE ? warpPipeConsumers : []),
-  ...(config.MAXMIND_GEOLITE2_LICENSE_KEY ? geoDataConsumers : []),
+  ...(config.GEOIPUPDATE_LICENSE_KEY ? geoDataConsumers : []),
   {
     topic: "raw_events",
     channel: "normalize",
@@ -174,7 +170,7 @@ const nsqConsumers: Consumer[] = [
     topic: "every_ten_minutes",
     channel: "normalize_repair",
     worker: normalizeRepair,
-    maxAttempts: 1,
+    maxAttempts: 10,
     timeoutSeconds: 60,
     maxInFlight: 1,
   },
@@ -182,7 +178,7 @@ const nsqConsumers: Consumer[] = [
     topic: "every_ten_minutes",
     channel: "prune_viewer_descriptors",
     worker: pruneViewerDescriptors,
-    maxAttempts: 1,
+    maxAttempts: 10,
     timeoutSeconds: 60,
     maxInFlight: 1,
   },
@@ -262,7 +258,11 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
     logger.debug(`✓  ${leftPad(topic, 20)} ${leftPad(channel, 25)}`);
     await doAck(job);
     if (elapsed >= slowElapsedThreshold) {
-      logger.warn(`[${jobDesc(job)}] completed (slowly) in ${elapsed.toFixed(3)}ms`);
+      logger.warn(
+        `job [${jobDesc(
+          job
+        )}] in topic '${topic}' and channel '${channel}' completed (slowly) in ${elapsed.toFixed(3)}ms`
+      );
     }
     updateLastNSQ();
   } catch (err) {
@@ -274,13 +274,17 @@ const handle = (topic, channel, worker, job, doAck, requeue) => async () => {
       retry = err.retry;
     }
     logger.error(`✘  ${leftPad(topic, 20)} ${leftPad(channel, 25)} ${jobDesc(job)}`);
-    logger.error(`[${jobDesc(job)}] failed (took ${elapsed.toFixed(3)}ms): ${errToLog(err)}`);
+    logger.error(
+      `job [${jobDesc(job)}] in topic '${topic}' and channel '${channel}' failed (took ${elapsed.toFixed(
+        3
+      )}ms): ${errToLog(err)}`
+    );
     if (retry === true) {
-      logger.info(`[${jobDesc(job)}] this job will be retried later`);
+      logger.info(`job [${jobDesc(job)}] in topic '${topic}' and channel '${channel}' will be retried later`);
       requeue();
     } else {
       await doAck(job);
-      logger.error(`[${jobDesc(job)}] this job will NOT be retried`);
+      logger.error(`job [${jobDesc(job)}] in topic '${topic}' and channel '${channel}' will NOT be retried`);
     }
   }
 };

@@ -1,14 +1,16 @@
-apiVersion: skaffold/v4beta1
+apiVersion: skaffold/v4beta6
 kind: Config
 build:
-  local:
-    push: false
-  platforms: ["linux/amd64", "linux/arm64"]
   artifacts:
     - image: retracedhq/retraced-local
       context: ./
       docker:
         dockerfile: ./deploy/Dockerfile-slim
+  platforms:
+    - linux/amd64
+    - linux/arm64
+  local:
+    push: false
 manifests:
   kustomize:
     paths:

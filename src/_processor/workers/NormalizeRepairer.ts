@@ -51,10 +51,9 @@ export default class NormalizeRepairer {
       this.minAgeMs,
       this.maxEvents,
     ]);
-    if (!resp.rows.length) {
-      logger.debug(`No jobs older than ${this.minAgeMs}ms missing 'normalized_event'`);
-      incrementOtelCounter("NormalizeRepairer.repairOldEvents.allClear");
 
+    if (!resp.rows.length) {
+      incrementOtelCounter("NormalizeRepairer.repairOldEvents.allClear");
       return;
     }
 

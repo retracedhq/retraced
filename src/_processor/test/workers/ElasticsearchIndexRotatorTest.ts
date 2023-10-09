@@ -23,7 +23,7 @@ class ElasticsearchIndexRotatorTest {
     expectedAliases[`retraced.${projectId}.${environmentId}`] = {};
 
     const expectedIndex = {
-      index: `${nextDay}`,
+      index: `${nextDay.format("YYYYMMDD")}`,
       body: {
         aliases: expectedAliases,
       },
@@ -39,7 +39,10 @@ class ElasticsearchIndexRotatorTest {
 
     pool
       .setup((x) => x.query("SELECT * FROM environment"))
-      .returns(() => Promise.resolve({ rowCount: 1, rows: [{ id: environmentId, projectId }] }) as Promise<QueryResult>)
+      .returns(
+        () =>
+          Promise.resolve({ rowCount: 1, rows: [{ id: environmentId, projectId }] }) as Promise<QueryResult>
+      )
       .verifiable(TypeMoq.Times.once());
 
     const rotator = new ElasticsearchIndexRotator(
@@ -49,7 +52,7 @@ class ElasticsearchIndexRotatorTest {
       async () => {
         /* ignore for now, still need to test this */
       },
-      (date) => `${date}`
+      (date) => `${date.format("YYYYMMDD")}`
     );
 
     rotator.worker(nextDay);

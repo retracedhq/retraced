@@ -108,3 +108,5 @@ test-results.xml
 .env.production.local
 vector/*
 minio/*
+mmdb/**/**
+GeoIP.conf
