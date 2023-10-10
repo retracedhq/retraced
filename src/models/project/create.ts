@@ -23,6 +23,11 @@ export default function createProject(opts) {
         return;
       }
 
+      if (!pg) {
+        reject(new Error("Couldn't connect to postgres"));
+        return;
+      }
+
       const project = {
         id: opts.id || uuid.v4().replace(/-/g, ""),
         name: opts.name,

@@ -23,6 +23,11 @@ const common = {
           return;
         }
 
+        if (!pg) {
+          reject(new Error("Couldn't connect to postgres"));
+          return;
+        }
+
         const q = "select * from actor where id = $1";
         const v = [id];
         pg.query(q, v, (qerr, result) => {
@@ -57,6 +62,11 @@ const common = {
           return;
         }
 
+        if (!pg) {
+          reject(new Error("Couldn't connect to postgres"));
+          return;
+        }
+
         const q = "select * from target where id = $1";
         const v = [id];
         pg.query(q, v, (qerr, result) => {
@@ -88,6 +98,11 @@ const common = {
       pgPool.connect((err, pg, done) => {
         if (err) {
           reject(err);
+          return;
+        }
+
+        if (!pg) {
+          reject(new Error("Couldn't connect to postgres"));
           return;
         }
 

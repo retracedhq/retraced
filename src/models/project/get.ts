@@ -13,6 +13,11 @@ export default function getProject(projectId): Promise<any> {
         return;
       }
 
+      if (!pg) {
+        reject(new Error("Couldn't connect to postgres"));
+        return;
+      }
+
       const q = "select * from project where id = $1";
       const v = [projectId];
       pg.query(q, v, (qerr, result) => {
