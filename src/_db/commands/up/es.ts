@@ -49,6 +49,12 @@ export const handler = () => {
       console.log(picocolors.red(util.inspect(err)));
       process.exit(1);
     }
+    if (!pg) {
+      notifyError(new Error("Couldn't connect to postgres"));
+      console.log(picocolors.red("Couldn't connect to postgres"));
+      process.exit(1);
+    }
+
     const walker = walk.walk(getSchemaPath(), {
       followLinks: false,
     });
