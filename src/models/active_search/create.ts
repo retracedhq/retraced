@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto";
+
 import getPgPool from "../../persistence/pg";
 import { ActiveSearch } from "./index";
 
@@ -12,7 +14,7 @@ export interface Options {
 
 export default async function (opts: Options): Promise<ActiveSearch> {
   const newActiveSearch: ActiveSearch = {
-    id: crypto.randomUUID().replace(/-/g, ""),
+    id: randomUUID().replace(/-/g, ""),
     project_id: opts.projectId,
     environment_id: opts.environmentId,
     group_id: opts.groupId,

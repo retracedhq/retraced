@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { randomUUID } from "crypto";
 
 import { checkEitapiAccess } from "../../security/helpers";
 import searchEvents, { Options } from "../../models/event/search";
@@ -92,7 +93,7 @@ export default async function handler(req) {
   const results = await searchEvents(searchOpts);
   let nextToken;
   if (results.events && results.events.length > 0) {
-    nextToken = crypto.randomUUID().replace(/-/g, "");
+    nextToken = randomUUID().replace(/-/g, "");
     const lastEvent = results.events[results.events.length - 1];
     let nextStartTime = lastEvent.created;
     if (!nextStartTime) {

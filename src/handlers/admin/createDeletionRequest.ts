@@ -1,4 +1,5 @@
 import moment from "moment";
+import { randomUUID } from "crypto";
 
 import nsq from "../../persistence/nsq";
 import getPgPool from "../../persistence/pg";
@@ -116,7 +117,7 @@ export default async function handle(
         continue;
       }
 
-      const code = crypto.randomUUID().replace(/-/g, "");
+      const code = randomUUID().replace(/-/g, "");
 
       await createDeletionConfirmation(
         {

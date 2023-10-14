@@ -1,4 +1,6 @@
 import moment from "moment";
+import { randomUUID } from "crypto";
+
 import getViewerDescriptor from "../models/viewer_descriptor/get";
 import nsq from "../persistence/nsq";
 import { createViewerDescriptorVoucher } from "../security/vouchers";
@@ -18,7 +20,7 @@ export default async function handler(req) {
   const voucher = createViewerDescriptorVoucher(desc);
 
   const job = JSON.stringify({
-    taskId: crypto.randomUUID().replace(/-/g, ""),
+    taskId: randomUUID().replace(/-/g, ""),
     projectId: desc.projectId,
     environmentId: desc.environmentId,
     event: "viewer_session",

@@ -1,4 +1,5 @@
 import moment from "moment";
+import { randomUUID } from "crypto";
 
 import getPgPool from "../../persistence/pg";
 import { Invite } from "./";
@@ -16,7 +17,7 @@ export interface Options {
  */
 export default async function createInvite(opts: Options): Promise<Invite> {
   const invite = {
-    id: opts.id || crypto.randomUUID().replace(/-/g, ""),
+    id: opts.id || randomUUID().replace(/-/g, ""),
     project_id: opts.project_id,
     created: moment(),
     email: opts.email,

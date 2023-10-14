@@ -1,5 +1,6 @@
 import picocolors from "picocolors";
 import util from "util";
+import { randomUUID } from "crypto";
 
 import { putAliases, getESWithoutRetry } from "../../../persistence/elasticsearch";
 import PostgresEventSource from "../../persistence/PostgresEventSource";
@@ -77,7 +78,7 @@ export const handler = async (argv) => {
 
   const eventSource = new PostgresEventSource(pgPool, argv.startDate, argv.endDate, argv.pageSize);
 
-  const esTempIndex = `retraced.reindex.${crypto.randomUUID()}`;
+  const esTempIndex = `retraced.reindex.${randomUUID()}`;
   const esTargetIndex = `retraced.${argv.projectId}.${argv.environmentId}`;
   const esTargetWriteIndex = `retraced.${argv.projectId}.${argv.environmentId}.current`;
 

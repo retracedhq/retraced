@@ -1,4 +1,5 @@
 import moment from "moment";
+import { randomUUID } from "crypto";
 
 import getPgPool, { Querier } from "../../persistence/pg";
 import { ApiToken, ApiTokenValues, rowFromApiToken } from "./";
@@ -15,7 +16,7 @@ export default async function create(
   querier = querier || pgPool;
 
   const newApiToken: ApiToken = {
-    token: token || crypto.randomUUID().replace(/-/g, ""),
+    token: token || randomUUID().replace(/-/g, ""),
     created: moment(),
     projectId,
     environmentId,

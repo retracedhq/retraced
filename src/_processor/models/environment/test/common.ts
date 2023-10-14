@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto";
+
 import getPgPool from "../../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -47,7 +49,7 @@ export function fixProject(project) {
       ) values (
         $1, $2, $3
       )`,
-        [crypto.randomUUID(), project.id, user.id]
+        [randomUUID(), project.id, user.id]
       )
     );
 

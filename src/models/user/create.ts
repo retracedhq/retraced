@@ -1,4 +1,5 @@
 import moment from "moment";
+import { randomUUID } from "crypto";
 
 import getPgPool from "../../persistence/pg";
 import { RetracedUser } from "./index";
@@ -29,14 +30,7 @@ export default async function createUser(opts: Options): Promise<RetracedUser> {
     ) values (
       $1, $2, to_timestamp($3), to_timestamp($4), $5, $6
     )`;
-  v = [
-    crypto.randomUUID().replace(/-/g, ""),
-    opts.email,
-    now.unix(),
-    now.unix(),
-    opts.authId,
-    defaultTimezone,
-  ];
+  v = [randomUUID().replace(/-/g, ""), opts.email, now.unix(), now.unix(), opts.authId, defaultTimezone];
   await pgPool.query(q, v);
 
   return {

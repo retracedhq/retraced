@@ -1,4 +1,5 @@
 import moment from "moment";
+import { randomUUID } from "crypto";
 
 import { Template } from "./index";
 import getPgPool from "../../persistence/pg";
@@ -16,7 +17,7 @@ interface Opts {
 
 export default async function createTemplate(opts: Opts): Promise<Template> {
   const template = {
-    id: opts.id || crypto.randomUUID().replace(/-/g, ""),
+    id: opts.id || randomUUID().replace(/-/g, ""),
     created: moment(),
     updated: null,
     project_id: opts.project_id,

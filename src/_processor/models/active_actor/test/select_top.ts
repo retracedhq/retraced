@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import moment from "moment";
+import { randomUUID } from "crypto";
 
 import getPgPool from "../../../persistence/pg";
 import selectTop from "../select_top";
@@ -11,16 +12,16 @@ describe("models.active_actor.select_top", () => {
     First actor has 5 actions but none during search period.
     Another actor has 1 action during search period.
     Five more actors have 2 actions during search period.`, () => {
-    const projectId = crypto.randomUUID();
-    const environmentId = crypto.randomUUID();
+    const projectId = randomUUID();
+    const environmentId = randomUUID();
     const actors = [
-      crypto.randomUUID(),
-      crypto.randomUUID(),
-      crypto.randomUUID(),
-      crypto.randomUUID(),
-      crypto.randomUUID(),
-      crypto.randomUUID(),
-      crypto.randomUUID(),
+      randomUUID(),
+      randomUUID(),
+      randomUUID(),
+      randomUUID(),
+      randomUUID(),
+      randomUUID(),
+      randomUUID(),
     ];
     const ref = moment.utc("2017-03-29");
     const actions = [

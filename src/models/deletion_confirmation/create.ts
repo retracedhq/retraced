@@ -1,4 +1,5 @@
 import pg from "pg";
+import { randomUUID } from "crypto";
 
 import getPgPool from "../../persistence/pg";
 import { DeletionConfirmation, DeletionConfirmationValues, rowFromDeletionConfirmation } from "./";
@@ -12,7 +13,7 @@ export default async function create(
   const query = queryIn || pgPool.query.bind(pgPool);
 
   const newDeletionConfirmation: DeletionConfirmation = {
-    id: crypto.randomUUID().replace(/-/g, ""),
+    id: randomUUID().replace(/-/g, ""),
     ...dcv,
   };
 

@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { randomUUID } from "crypto";
 
 import express from "express";
 import util from "util";
@@ -123,7 +124,7 @@ export const preRequest = (req: express.Request, reqId: string) => {
 };
 
 export const requestId = (req: express.Request, handlerName: string) => {
-  const id = `${handlerName}:${crypto.randomUUID().replace("-", "").substring(0, 8)}`;
+  const id = `${handlerName}:${randomUUID().replace("-", "").substring(0, 8)}`;
 
   const clientID = req.headers["x-request-uuid"];
 

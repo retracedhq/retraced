@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import moment from "moment";
+import { randomUUID } from "crypto";
 
 import getPgPool from "../../../persistence/pg";
 import selectStopped from "../select_stopped";
@@ -12,8 +13,8 @@ describe("models.action.select_stopped", () => {
     "a.update" was last seen on 2017-03-29 at 12AM.
     "a.get" was last seen on 2017-03-29 at 1AM.
     "a.list" was last seen on 2017-03-30 at 12AM.`, () => {
-    const projectId = crypto.randomUUID();
-    const environmentId = crypto.randomUUID();
+    const projectId = randomUUID();
+    const environmentId = randomUUID();
     const ref = moment.utc("2017-03-29");
     const actions = [
       ["a.create", ref.clone().subtract(1, "hour")],
@@ -28,7 +29,7 @@ describe("models.action.select_stopped", () => {
           `
         insert into action (id, project_id, environment_id, action, last_active)
         values ($1, $2, $3, $4, $5)`,
-          [crypto.randomUUID(), projectId, environmentId, action, lastActive]
+          [randomUUID(), projectId, environmentId, action, lastActive]
         )
       );
     });

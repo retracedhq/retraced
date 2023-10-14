@@ -1,5 +1,6 @@
 import QueryDescriptor from "../query_desc/def";
 import getPgPool from "../../persistence/pg";
+import { randomUUID } from "crypto";
 
 const pgPool = getPgPool();
 
@@ -27,7 +28,7 @@ export default async function (opts: Options) {
       startTime: opts.startTime,
     };
     const newSavedSearch = {
-      id: crypto.randomUUID().replace(/-/g, ""),
+      id: randomUUID().replace(/-/g, ""),
       name: opts.name,
       project_id: opts.projectId,
       environment_id: opts.environmentId,

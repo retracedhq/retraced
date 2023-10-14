@@ -1,6 +1,7 @@
 import _ from "lodash";
 import querystring from "querystring";
 import moment from "moment";
+import { randomUUID } from "crypto";
 
 import { checkViewerAccess } from "../../security/helpers";
 import searchEvents, { Options } from "../../models/event/search";
@@ -92,7 +93,7 @@ export default async function (req) {
   };
   if (!_.isEqual(defaultQuery, reqOpts)) {
     const job = JSON.stringify({
-      taskId: crypto.randomUUID().replace(/-/g, ""),
+      taskId: randomUUID().replace(/-/g, ""),
       projectId: req.params.projectId,
       environmentId: claims.environmentId,
       event: "viewer_search",

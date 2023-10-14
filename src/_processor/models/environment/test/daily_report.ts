@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import moment from "moment-timezone";
 import { describe, it } from "mocha";
+import { randomUUID } from "crypto";
 
 import dailyReport, { Record } from "../daily_report";
 import { fixProject } from "./common";
@@ -14,27 +15,27 @@ describe("models.environment.daily_report", () => {
     Charlie is in US/Pacific on Project Beta subscribed to environments Prod and Stage.
     `, () => {
     const alpha = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       name: "Alpha",
-      prodEnvID: crypto.randomUUID(),
-      stageEnvID: crypto.randomUUID(),
+      prodEnvID: randomUUID(),
+      stageEnvID: randomUUID(),
       users: [
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           email: "bob@example.com",
           timezone: "America/Los_Angeles",
           prod: true,
           stage: false,
         },
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           email: "ann@example.com",
           timezone: "US/Pacific",
           prod: true,
           stage: true,
         },
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           email: "sam@example.com",
           timezone: "America/Chicago",
           prod: true,
@@ -46,13 +47,13 @@ describe("models.environment.daily_report", () => {
     const [bob, ann, sam] = alpha.users;
     /* eslint-enable */
     const beta = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       name: "Beta",
-      prodEnvID: crypto.randomUUID(),
-      stageEnvID: crypto.randomUUID(),
+      prodEnvID: randomUUID(),
+      stageEnvID: randomUUID(),
       users: [
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           email: "charlie@example.com",
           timezone: "US/Pacific",
           prod: true,
@@ -135,27 +136,27 @@ describe("models.environment.daily_report", () => {
     Dan is in Dhaka (+6), Esther is in Calcutta (+5:30), and Frank is in Kathmandu (+5:45)
   `, () => {
     const gamma = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       name: "Gamma",
-      prodEnvID: crypto.randomUUID(),
-      stageEnvID: crypto.randomUUID(),
+      prodEnvID: randomUUID(),
+      stageEnvID: randomUUID(),
       users: [
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           email: "dan@example.com",
           timezone: "Asia/Dhaka",
           prod: true,
           stage: true,
         },
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           email: "esther@example.com",
           timezone: "Asia/Calcutta",
           prod: true,
           stage: true,
         },
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           email: "frank@example.com",
           timezone: "Asia/Kathmandu",
           prod: true,

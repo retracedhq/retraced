@@ -13,6 +13,7 @@ import {
   Request,
 } from "tsoa";
 import express from "express";
+import { randomUUID } from "crypto";
 
 import { TemplateSearchResults, TemplateResponse, TemplateValues } from "../models/template";
 import createTemplate from "../handlers/admin/createTemplate";
@@ -64,7 +65,7 @@ export class AdminAPI extends Controller {
     @Body() body: InviteValues,
     @Request() req: express.Request
   ): Promise<InviteResponse> {
-    const id = crypto.randomUUID().replace(/-/g, "");
+    const id = randomUUID().replace(/-/g, "");
 
     await audit(req, "invite.create", "c", {
       target: {
@@ -146,7 +147,7 @@ export class AdminAPI extends Controller {
     @Request() req: express.Request
   ): Promise<TemplateResponse> {
     // Generate ID here to audit before creating
-    const id = crypto.randomUUID().replace(/-/g, "");
+    const id = randomUUID().replace(/-/g, "");
 
     await audit(req, "template.create", "c", {
       target: {
@@ -236,7 +237,7 @@ export class AdminAPI extends Controller {
     @Body() body: EnvironmentValues,
     @Request() req: express.Request
   ): Promise<EnvironmentResponse> {
-    const id = crypto.randomUUID().replace(/-/g, "");
+    const id = randomUUID().replace(/-/g, "");
 
     await audit(req, "environment.create", "c", {
       target: {
@@ -368,7 +369,7 @@ export class AdminAPI extends Controller {
     @Request() req: express.Request
   ): Promise<ApiTokenResponse> {
     // generate here so audit event can complete first
-    const tokenId = crypto.randomUUID().replace(/-/g, "");
+    const tokenId = randomUUID().replace(/-/g, "");
     await audit(req, "api_token.create", "c", {
       target: {
         id: tokenId,
