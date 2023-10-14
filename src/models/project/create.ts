@@ -1,4 +1,3 @@
-import * as uuid from "uuid";
 import Analytics from "analytics-node";
 import moment from "moment";
 
@@ -29,7 +28,7 @@ export default function createProject(opts) {
       }
 
       const project = {
-        id: opts.id || uuid.v4().replace(/-/g, ""),
+        id: opts.id || crypto.randomUUID().replace(/-/g, ""),
         name: opts.name,
         created: moment().unix(),
         environments: opts.env ? opts.env : getDefaultEnvironments(),

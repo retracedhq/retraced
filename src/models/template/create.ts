@@ -1,4 +1,3 @@
-import * as uuid from "uuid";
 import moment from "moment";
 
 import { Template } from "./index";
@@ -17,7 +16,7 @@ interface Opts {
 
 export default async function createTemplate(opts: Opts): Promise<Template> {
   const template = {
-    id: opts.id || uuid.v4().replace(/-/g, ""),
+    id: opts.id || crypto.randomUUID().replace(/-/g, ""),
     created: moment(),
     updated: null,
     project_id: opts.project_id,

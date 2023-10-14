@@ -1,5 +1,3 @@
-import * as uuid from "uuid";
-
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -11,9 +9,8 @@ interface Opts {
 }
 
 export default async function createEnvironmentUser(opts: Opts) {
-  const dailyReport =
-    typeof opts.daily_report === "boolean" ? opts.daily_report : true;
-  const emailTkn = uuid.v4();
+  const dailyReport = typeof opts.daily_report === "boolean" ? opts.daily_report : true;
+  const emailTkn = crypto.randomUUID();
 
   const q = `
     insert into environmentuser (

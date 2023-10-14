@@ -1,5 +1,3 @@
-import * as uuid from "uuid";
-
 import getPgPool from "../../persistence/pg";
 import { EnterpriseToken } from "./";
 
@@ -17,7 +15,7 @@ export default async function createEitapiToken(opts): Promise<EnterpriseToken> 
   const pg = await pgPool.connect();
   try {
     const newEitapiToken: EnterpriseToken = {
-      id: uuid.v4().replace(/-/g, ""),
+      id: crypto.randomUUID().replace(/-/g, ""),
       display_name: opts.displayName,
       project_id: opts.projectId,
       environment_id: opts.environmentId,
@@ -40,7 +38,6 @@ export default async function createEitapiToken(opts): Promise<EnterpriseToken> 
     await pg.query(insertStmt, insertVals);
 
     return newEitapiToken;
-
   } finally {
     pg.release();
   }

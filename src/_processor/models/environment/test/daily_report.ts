@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import * as uuid from "uuid";
 import moment from "moment-timezone";
 import { describe, it } from "mocha";
 
@@ -15,27 +14,27 @@ describe("models.environment.daily_report", () => {
     Charlie is in US/Pacific on Project Beta subscribed to environments Prod and Stage.
     `, () => {
     const alpha = {
-      id: uuid.v4(),
+      id: crypto.randomUUID(),
       name: "Alpha",
-      prodEnvID: uuid.v4(),
-      stageEnvID: uuid.v4(),
+      prodEnvID: crypto.randomUUID(),
+      stageEnvID: crypto.randomUUID(),
       users: [
         {
-          id: uuid.v4(),
+          id: crypto.randomUUID(),
           email: "bob@example.com",
           timezone: "America/Los_Angeles",
           prod: true,
           stage: false,
         },
         {
-          id: uuid.v4(),
+          id: crypto.randomUUID(),
           email: "ann@example.com",
           timezone: "US/Pacific",
           prod: true,
           stage: true,
         },
         {
-          id: uuid.v4(),
+          id: crypto.randomUUID(),
           email: "sam@example.com",
           timezone: "America/Chicago",
           prod: true,
@@ -47,13 +46,13 @@ describe("models.environment.daily_report", () => {
     const [bob, ann, sam] = alpha.users;
     /* eslint-enable */
     const beta = {
-      id: uuid.v4(),
+      id: crypto.randomUUID(),
       name: "Beta",
-      prodEnvID: uuid.v4(),
-      stageEnvID: uuid.v4(),
+      prodEnvID: crypto.randomUUID(),
+      stageEnvID: crypto.randomUUID(),
       users: [
         {
-          id: uuid.v4(),
+          id: crypto.randomUUID(),
           email: "charlie@example.com",
           timezone: "US/Pacific",
           prod: true,
@@ -136,27 +135,27 @@ describe("models.environment.daily_report", () => {
     Dan is in Dhaka (+6), Esther is in Calcutta (+5:30), and Frank is in Kathmandu (+5:45)
   `, () => {
     const gamma = {
-      id: uuid.v4(),
+      id: crypto.randomUUID(),
       name: "Gamma",
-      prodEnvID: uuid.v4(),
-      stageEnvID: uuid.v4(),
+      prodEnvID: crypto.randomUUID(),
+      stageEnvID: crypto.randomUUID(),
       users: [
         {
-          id: uuid.v4(),
+          id: crypto.randomUUID(),
           email: "dan@example.com",
           timezone: "Asia/Dhaka",
           prod: true,
           stage: true,
         },
         {
-          id: uuid.v4(),
+          id: crypto.randomUUID(),
           email: "esther@example.com",
           timezone: "Asia/Calcutta",
           prod: true,
           stage: true,
         },
         {
-          id: uuid.v4(),
+          id: crypto.randomUUID(),
           email: "frank@example.com",
           timezone: "Asia/Kathmandu",
           prod: true,

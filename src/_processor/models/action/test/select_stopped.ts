@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import * as uuid from "uuid";
 import moment from "moment";
 
 import getPgPool from "../../../persistence/pg";
@@ -13,8 +12,8 @@ describe("models.action.select_stopped", () => {
     "a.update" was last seen on 2017-03-29 at 12AM.
     "a.get" was last seen on 2017-03-29 at 1AM.
     "a.list" was last seen on 2017-03-30 at 12AM.`, () => {
-    const projectId = uuid.v4();
-    const environmentId = uuid.v4();
+    const projectId = crypto.randomUUID();
+    const environmentId = crypto.randomUUID();
     const ref = moment.utc("2017-03-29");
     const actions = [
       ["a.create", ref.clone().subtract(1, "hour")],
@@ -29,13 +28,11 @@ describe("models.action.select_stopped", () => {
           `
         insert into action (id, project_id, environment_id, action, last_active)
         values ($1, $2, $3, $4, $5)`,
-          [uuid.v4(), projectId, environmentId, action, lastActive]
+          [crypto.randomUUID(), projectId, environmentId, action, lastActive]
         )
       );
     });
-    after(() =>
-      pgPool.query("delete from action where project_id = $1", [projectId])
-    );
+    after(() => pgPool.query("delete from action where project_id = $1", [projectId]));
 
     describe("searching 2017-03-29 00:00:00 to 2017-03-30 00:00:00", () => {
       it('should return "a.update" and "a.get".', () => {

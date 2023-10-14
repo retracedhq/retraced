@@ -1,25 +1,19 @@
-import * as uuid from "uuid";
 import moment from "moment";
 import pg from "pg";
 
 import getPgPool from "../../persistence/pg";
-import {
-  DeletionRequest,
-  DeletionRequestValues,
-  rowFromDeletionRequest,
-} from "./";
+import { DeletionRequest, DeletionRequestValues, rowFromDeletionRequest } from "./";
 
 const pgPool = getPgPool();
 
 export default async function create(
   drv: DeletionRequestValues,
-  queryIn?: (q: string, v: any[]) => Promise<pg.QueryResult>,
+  queryIn?: (q: string, v: any[]) => Promise<pg.QueryResult>
 ): Promise<DeletionRequest> {
-
   const query = queryIn || pgPool.query.bind(pgPool);
 
   const newDeletionRequest: DeletionRequest = {
-    id: uuid.v4().replace(/-/g, ""),
+    id: crypto.randomUUID().replace(/-/g, ""),
     created: moment(),
     ...drv,
   };
@@ -33,13 +27,7 @@ export default async function create(
       $1, to_timestamp($2), $3, $4, $5
     )
   `;
-  const insertVals = [
-    row.id,
-    row.created,
-    row.backoff_interval,
-    row.resource_kind,
-    row.resource_id,
-  ];
+  const insertVals = [row.id, row.created, row.backoff_interval, row.resource_kind, row.resource_id];
 
   await query(insertStmt, insertVals);
 

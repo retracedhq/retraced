@@ -1,5 +1,3 @@
-import * as uuid from "uuid";
-
 import getPgPool from "../../persistence/pg";
 import { ActiveSearch } from "./index";
 
@@ -12,9 +10,9 @@ export interface Options {
   groupId: string;
 }
 
-export default async function(opts: Options): Promise<ActiveSearch> {
+export default async function (opts: Options): Promise<ActiveSearch> {
   const newActiveSearch: ActiveSearch = {
-    id: uuid.v4().replace(/-/g, ""),
+    id: crypto.randomUUID().replace(/-/g, ""),
     project_id: opts.projectId,
     environment_id: opts.environmentId,
     group_id: opts.groupId,

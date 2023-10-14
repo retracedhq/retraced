@@ -1,6 +1,5 @@
 import _ from "lodash";
 import querystring from "querystring";
-import * as uuid from "uuid";
 import moment from "moment";
 
 import { checkViewerAccess } from "../../security/helpers";
@@ -93,7 +92,7 @@ export default async function (req) {
   };
   if (!_.isEqual(defaultQuery, reqOpts)) {
     const job = JSON.stringify({
-      taskId: uuid.v4().replace(/-/g, ""),
+      taskId: crypto.randomUUID().replace(/-/g, ""),
       projectId: req.params.projectId,
       environmentId: claims.environmentId,
       event: "viewer_search",

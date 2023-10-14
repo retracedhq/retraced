@@ -1,4 +1,3 @@
-import * as uuid from "uuid";
 import getPgPool from "../persistence/pg";
 import nsq from "../persistence/nsq";
 
@@ -14,7 +13,7 @@ export interface Task {
 
 export default async function ingestFromQueue(job: any) {
   const task: Task = JSON.parse(job.body);
-  const taskId = uuid.v4().replace(/-/g, "");
+  const taskId = crypto.randomUUID().replace(/-/g, "");
   const q = `
         INSERT INTO ingest_task (
             id,

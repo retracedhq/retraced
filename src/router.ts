@@ -2,7 +2,6 @@ import _ from "lodash";
 
 import express from "express";
 import util from "util";
-import * as uuid from "uuid";
 import { logger } from "./logger";
 import { notifyError } from "./error-notifier";
 
@@ -124,7 +123,7 @@ export const preRequest = (req: express.Request, reqId: string) => {
 };
 
 export const requestId = (req: express.Request, handlerName: string) => {
-  const id = `${handlerName}:${uuid.v4().replace("-", "").substring(0, 8)}`;
+  const id = `${handlerName}:${crypto.randomUUID().replace("-", "").substring(0, 8)}`;
 
   const clientID = req.headers["x-request-uuid"];
 

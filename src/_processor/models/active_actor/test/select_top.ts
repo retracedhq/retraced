@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import * as uuid from "uuid";
 import moment from "moment";
 
 import getPgPool from "../../../persistence/pg";
@@ -12,16 +11,16 @@ describe("models.active_actor.select_top", () => {
     First actor has 5 actions but none during search period.
     Another actor has 1 action during search period.
     Five more actors have 2 actions during search period.`, () => {
-    const projectId = uuid.v4();
-    const environmentId = uuid.v4();
+    const projectId = crypto.randomUUID();
+    const environmentId = crypto.randomUUID();
     const actors = [
-      uuid.v4(),
-      uuid.v4(),
-      uuid.v4(),
-      uuid.v4(),
-      uuid.v4(),
-      uuid.v4(),
-      uuid.v4(),
+      crypto.randomUUID(),
+      crypto.randomUUID(),
+      crypto.randomUUID(),
+      crypto.randomUUID(),
+      crypto.randomUUID(),
+      crypto.randomUUID(),
+      crypto.randomUUID(),
     ];
     const ref = moment.utc("2017-03-29");
     const actions = [
@@ -60,11 +59,7 @@ describe("models.active_actor.select_top", () => {
         )
       );
     });
-    after(() =>
-      pgPool.query("delete from active_actor where project_id = $1", [
-        projectId,
-      ])
-    );
+    after(() => pgPool.query("delete from active_actor where project_id = $1", [projectId]));
 
     describe("search 2017-03-29 00:00:00 to 2017-03-30 00:00:00", () => {
       it("should return the counts for the five actors active during the search period", () => {

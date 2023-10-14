@@ -1,5 +1,3 @@
-import * as uuid from "uuid";
-
 import getPgPool from "../../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -22,19 +20,10 @@ export function fixProject(project) {
     ) values
     (  $1, $2, $3 ),
     ( $4, $5, $6 )`,
-      [
-        project.prodEnvID,
-        "Prod",
-        project.id,
-        project.stageEnvID,
-        "Stage",
-        project.id,
-      ]
+      [project.prodEnvID, "Prod", project.id, project.stageEnvID, "Stage", project.id]
     )
   );
-  after(() =>
-    pgPool.query(`delete from environment where project_id = $1`, [project.id])
-  );
+  after(() => pgPool.query(`delete from environment where project_id = $1`, [project.id]));
 
   project.users.forEach((user) => {
     before(() =>
@@ -48,9 +37,7 @@ export function fixProject(project) {
         [user.id, user.email, user.timezone || "US/Pacific"]
       )
     );
-    after(() =>
-      pgPool.query(`delete from retraceduser where id = $1`, [user.id])
-    );
+    after(() => pgPool.query(`delete from retraceduser where id = $1`, [user.id]));
 
     before(() =>
       pgPool.query(
@@ -60,7 +47,7 @@ export function fixProject(project) {
       ) values (
         $1, $2, $3
       )`,
-        [uuid.v4(), project.id, user.id]
+        [crypto.randomUUID(), project.id, user.id]
       )
     );
 
@@ -73,24 +60,15 @@ export function fixProject(project) {
       ( $1, $2, $3, $3, 'xyz' ),
       ( $4, $5, $6, $6, 'xyz' )
       `,
-        [
-          user.id,
-          project.prodEnvID,
-          user.prod,
-          user.id,
-          project.stageEnvID,
-          user.stage,
-        ]
+        [user.id, project.prodEnvID, user.prod, user.id, project.stageEnvID, user.stage]
       )
     );
   });
+  after(() => pgPool.query(`delete from projectuser where project_id = $1`, [project.id]));
   after(() =>
-    pgPool.query(`delete from projectuser where project_id = $1`, [project.id])
-  );
-  after(() =>
-    pgPool.query(
-      `delete from environmentuser where environment_id in ($1, $2)`,
-      [project.prodEnvID, project.stageEnvID]
-    )
+    pgPool.query(`delete from environmentuser where environment_id in ($1, $2)`, [
+      project.prodEnvID,
+      project.stageEnvID,
+    ])
   );
 }

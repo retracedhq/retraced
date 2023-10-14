@@ -1,5 +1,3 @@
-import * as uuid from "uuid";
-
 import QueryDescriptor from "../query_desc/def";
 import getPgPool from "../../persistence/pg";
 
@@ -15,7 +13,7 @@ export interface Options {
   startTime?: number;
 }
 
-export default async function(opts: Options) {
+export default async function (opts: Options) {
   const pg = await pgPool.connect();
   try {
     const desc: QueryDescriptor = {
@@ -29,7 +27,7 @@ export default async function(opts: Options) {
       startTime: opts.startTime,
     };
     const newSavedSearch = {
-      id: uuid.v4().replace(/-/g, ""),
+      id: crypto.randomUUID().replace(/-/g, ""),
       name: opts.name,
       project_id: opts.projectId,
       environment_id: opts.environmentId,
@@ -52,7 +50,6 @@ export default async function(opts: Options) {
     await pg.query(insertStmt, insertVals);
 
     return newSavedSearch;
-
   } finally {
     pg.release();
   }

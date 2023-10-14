@@ -1,4 +1,3 @@
-import * as uuid from "uuid";
 import _ from "lodash";
 
 import { checkEitapiAccess } from "../../security/helpers";
@@ -93,7 +92,7 @@ export default async function handler(req) {
   const results = await searchEvents(searchOpts);
   let nextToken;
   if (results.events && results.events.length > 0) {
-    nextToken = uuid.v4().replace(/-/g, "");
+    nextToken = crypto.randomUUID().replace(/-/g, "");
     const lastEvent = results.events[results.events.length - 1];
     let nextStartTime = lastEvent.created;
     if (!nextStartTime) {
