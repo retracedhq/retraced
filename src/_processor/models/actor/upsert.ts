@@ -1,10 +1,10 @@
-import * as uuid from "uuid";
 import moment from "moment";
 import { PoolClient } from "pg";
+import uniqueId from "../../../models/uniqueId";
 
 export default async function (opts, pg: PoolClient) {
   const actor = {
-    id: uuid.v4().replace(/-/g, ""),
+    id: uniqueId(),
     foreign_id: opts.actor.id,
     project_id: opts.projectId,
     environment_id: opts.environmentId,

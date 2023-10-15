@@ -1,39 +1,39 @@
-import * as uuid from "uuid";
 import moment from "moment";
 
 import ViewerDescriptor from "./def";
 import getPgPool from "../../persistence/pg";
+import uniqueId from "../uniqueId";
 
 const pgPool = getPgPool();
 
 export interface Options {
-    projectId: string;
-    environmentId: string;
-    groupId: string;
-    isAdmin: boolean;
-    viewLogAction: string;
-    actorId: string;
-    targetId?: string;
+  projectId: string;
+  environmentId: string;
+  groupId: string;
+  isAdmin: boolean;
+  viewLogAction: string;
+  actorId: string;
+  targetId?: string;
 }
 
 export default async function createViewerDescriptor(opts: Options): Promise<ViewerDescriptor> {
-    const newDesc: ViewerDescriptor = {
-        id: uuid.v4().replace(/-/g, ""),
-        projectId: opts.projectId,
-        environmentId: opts.environmentId,
-        groupId: opts.groupId,
-        isAdmin: opts.isAdmin,
-        viewLogAction: opts.viewLogAction,
-        actorId: opts.actorId,
-        created: moment().valueOf(),
-        scope: "",
-    };
+  const newDesc: ViewerDescriptor = {
+    id: uniqueId(),
+    projectId: opts.projectId,
+    environmentId: opts.environmentId,
+    groupId: opts.groupId,
+    isAdmin: opts.isAdmin,
+    viewLogAction: opts.viewLogAction,
+    actorId: opts.actorId,
+    created: moment().valueOf(),
+    scope: "",
+  };
 
-    if (opts.targetId) {
-        newDesc.scope = `target_id=${opts.targetId}`;
-    }
+  if (opts.targetId) {
+    newDesc.scope = `target_id=${opts.targetId}`;
+  }
 
-    const q = `
+  const q = `
         INSERT INTO viewer_descriptors (
             id,
             project_id,
@@ -55,19 +55,19 @@ export default async function createViewerDescriptor(opts: Options): Promise<Vie
             $8,
             $9
         )`;
-    const values = [
-        newDesc.id,
-        newDesc.projectId,
-        newDesc.environmentId,
-        newDesc.groupId,
-        newDesc.isAdmin,
-        newDesc.viewLogAction,
-        newDesc.actorId,
-        moment(newDesc.created).format(),
-        newDesc.scope,
-    ];
+  const values = [
+    newDesc.id,
+    newDesc.projectId,
+    newDesc.environmentId,
+    newDesc.groupId,
+    newDesc.isAdmin,
+    newDesc.viewLogAction,
+    newDesc.actorId,
+    moment(newDesc.created).format(),
+    newDesc.scope,
+  ];
 
-    await pgPool.query(q, values);
+  await pgPool.query(q, values);
 
-    return newDesc;
+  return newDesc;
 }

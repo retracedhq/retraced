@@ -1,8 +1,8 @@
-import * as uuid from "uuid";
 import moment from "moment";
 
 import { Template } from "./index";
 import getPgPool from "../../persistence/pg";
+import uniqueId from "../uniqueId";
 
 const pgPool = getPgPool();
 
@@ -17,7 +17,7 @@ interface Opts {
 
 export default async function createTemplate(opts: Opts): Promise<Template> {
   const template = {
-    id: opts.id || uuid.v4().replace(/-/g, ""),
+    id: opts.id || uniqueId(),
     created: moment(),
     updated: null,
     project_id: opts.project_id,

@@ -1,5 +1,5 @@
-import * as uuid from "uuid";
+import { randomUUID } from "crypto";
 
 export default function uuidNoDashes(): string {
-    return uuid.v4().replace(/-/g, "");
+  return randomUUID().replace(/-/g, "");
 }
