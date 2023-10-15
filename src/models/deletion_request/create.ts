@@ -1,9 +1,9 @@
 import moment from "moment";
 import pg from "pg";
-import { randomUUID } from "crypto";
 
 import getPgPool from "../../persistence/pg";
 import { DeletionRequest, DeletionRequestValues, rowFromDeletionRequest } from "./";
+import uniqueId from "../uniqueId";
 
 const pgPool = getPgPool();
 
@@ -14,7 +14,7 @@ export default async function create(
   const query = queryIn || pgPool.query.bind(pgPool);
 
   const newDeletionRequest: DeletionRequest = {
-    id: randomUUID().replace(/-/g, ""),
+    id: uniqueId(),
     created: moment(),
     ...drv,
   };

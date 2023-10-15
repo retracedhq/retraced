@@ -1,8 +1,8 @@
 import moment from "moment";
-import { randomUUID } from "crypto";
 
 import ViewerDescriptor from "./def";
 import getPgPool from "../../persistence/pg";
+import uniqueId from "../uniqueId";
 
 const pgPool = getPgPool();
 
@@ -18,7 +18,7 @@ export interface Options {
 
 export default async function createViewerDescriptor(opts: Options): Promise<ViewerDescriptor> {
   const newDesc: ViewerDescriptor = {
-    id: randomUUID().replace(/-/g, ""),
+    id: uniqueId(),
     projectId: opts.projectId,
     environmentId: opts.environmentId,
     groupId: opts.groupId,

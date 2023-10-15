@@ -1,10 +1,10 @@
 import moment from "moment";
 import { PoolClient } from "pg";
-import { randomUUID } from "crypto";
+import uniqueId from "../../../models/uniqueId";
 
 export default async function (opts, pg: PoolClient) {
   const action = {
-    id: randomUUID().replace(/-/g, ""),
+    id: uniqueId(),
     project_id: opts.projectId,
     environment_id: opts.environmentId,
     created: moment().valueOf(),

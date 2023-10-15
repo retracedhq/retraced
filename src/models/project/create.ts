@@ -1,6 +1,5 @@
 import Analytics from "analytics-node";
 import moment from "moment";
-import { randomUUID } from "crypto";
 
 import getPgPool from "../../persistence/pg";
 import createApiToken from "../api_token/create";
@@ -9,6 +8,7 @@ import addUserToProject from "./addUser";
 import { Environment } from "../environment";
 import { ApiToken } from "../api_token";
 import config from "../../config";
+import uniqueId from "../uniqueId";
 
 const pgPool = getPgPool();
 
@@ -29,7 +29,7 @@ export default function createProject(opts) {
       }
 
       const project = {
-        id: opts.id || randomUUID().replace(/-/g, ""),
+        id: opts.id || uniqueId(),
         name: opts.name,
         created: moment().unix(),
         environments: opts.env ? opts.env : getDefaultEnvironments(),

@@ -13,7 +13,6 @@ import {
   Request,
 } from "tsoa";
 import express from "express";
-import { randomUUID } from "crypto";
 
 import { TemplateSearchResults, TemplateResponse, TemplateValues } from "../models/template";
 import createTemplate from "../handlers/admin/createTemplate";
@@ -40,6 +39,7 @@ import { audit } from "../headless";
 import { AdminToken } from "../models/admin_token/types";
 import { AdminTokenStore } from "../models/admin_token/store";
 import { checkAdminAccessUnwrapped } from "../security/helpers";
+import uniqueId from "../models/uniqueId";
 
 @Route("admin/v1")
 export class AdminAPI extends Controller {
@@ -65,7 +65,7 @@ export class AdminAPI extends Controller {
     @Body() body: InviteValues,
     @Request() req: express.Request
   ): Promise<InviteResponse> {
-    const id = randomUUID().replace(/-/g, "");
+    const id = uniqueId();
 
     await audit(req, "invite.create", "c", {
       target: {
@@ -147,7 +147,7 @@ export class AdminAPI extends Controller {
     @Request() req: express.Request
   ): Promise<TemplateResponse> {
     // Generate ID here to audit before creating
-    const id = randomUUID().replace(/-/g, "");
+    const id = uniqueId();
 
     await audit(req, "template.create", "c", {
       target: {
@@ -237,7 +237,7 @@ export class AdminAPI extends Controller {
     @Body() body: EnvironmentValues,
     @Request() req: express.Request
   ): Promise<EnvironmentResponse> {
-    const id = randomUUID().replace(/-/g, "");
+    const id = uniqueId();
 
     await audit(req, "environment.create", "c", {
       target: {
@@ -369,7 +369,7 @@ export class AdminAPI extends Controller {
     @Request() req: express.Request
   ): Promise<ApiTokenResponse> {
     // generate here so audit event can complete first
-    const tokenId = randomUUID().replace(/-/g, "");
+    const tokenId = uniqueId();
     await audit(req, "api_token.create", "c", {
       target: {
         id: tokenId,

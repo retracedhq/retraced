@@ -1,8 +1,8 @@
 import _ from "lodash";
 import moment from "moment";
 import pg from "pg";
-import { randomUUID } from "crypto";
 
+import uniqueId from "../../models/uniqueId";
 import { AliasDesc, AliasRotator, putAliases, getESWithoutRetry } from "../../persistence/elasticsearch";
 import getPg from "../persistence/pg";
 import { logger } from "../logger";
@@ -56,7 +56,7 @@ export class ElasticsearchIndexRotator {
   private static instance: ElasticsearchIndexRotator;
 
   private static defaultIndexNamer: IndexNamer = (newDate) => {
-    const rand = randomUUID().replace(/-/g, "");
+    const rand = uniqueId();
     return `retraced.processor.rotate.${newDate.format("YYYYMMDD")}.${rand}`;
   };
 

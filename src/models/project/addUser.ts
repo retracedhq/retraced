@@ -1,7 +1,6 @@
-import { randomUUID } from "crypto";
-
 import getPgPool, { Querier } from "../../persistence/pg";
 import populateEnvUser from "../environmentuser/populate_from_project";
+import uniqueId from "../uniqueId";
 
 const pgPool = getPgPool();
 
@@ -16,7 +15,7 @@ export default async function addUserToProject(opts: Options, pg: Querier = pgPo
     ) values (
       $1, $2, $3
     )`;
-  const v = [randomUUID().replace(/-/g, ""), opts.projectId, opts.userId];
+  const v = [uniqueId(), opts.projectId, opts.userId];
   await pg.query(q, v);
 
   await populateEnvUser(

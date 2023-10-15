@@ -1,9 +1,9 @@
 import moment from "moment";
-import { randomUUID } from "crypto";
 
 import getViewerDescriptor from "../models/viewer_descriptor/get";
 import nsq from "../persistence/nsq";
 import { createViewerDescriptorVoucher } from "../security/vouchers";
+import uniqueId from "../models/uniqueId";
 
 export default async function handler(req) {
   // Note that, because these "viewer descriptor" values are being read from redis,
@@ -20,7 +20,7 @@ export default async function handler(req) {
   const voucher = createViewerDescriptorVoucher(desc);
 
   const job = JSON.stringify({
-    taskId: randomUUID().replace(/-/g, ""),
+    taskId: uniqueId(),
     projectId: desc.projectId,
     environmentId: desc.environmentId,
     event: "viewer_session",

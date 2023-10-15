@@ -1,6 +1,6 @@
 import { SavedExport } from "./";
 import getPgPool from "../../persistence/pg";
-import { randomUUID } from "crypto";
+import uniqueId from "../uniqueId";
 
 const pgPool = getPgPool();
 
@@ -14,7 +14,7 @@ export interface Options {
 
 export default async function createSavedExport(opts: Options): Promise<SavedExport> {
   const newSavedExport: SavedExport = {
-    id: randomUUID().replace(/-/g, ""),
+    id: uniqueId(),
     name: opts.name,
     body: opts.body,
     project_id: opts.projectId,
