@@ -64,7 +64,7 @@
     "@types/sinon": "10.0.17",
     "@types/swagger-jsdoc": "6.0.1",
     "@types/yargs": "17.0.28",
-    "@typescript-eslint/eslint-plugin": "6.7.5",
+    "@typescript-eslint/eslint-plugin": "6.8.0",
     "@typescript-eslint/parser": "6.7.5",
     "chai": "4.3.10",
     "chai-http": "4.4.0",
