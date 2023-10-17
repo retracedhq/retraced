@@ -223,7 +223,9 @@ services:
     restart: "always"
 
   vector:
-    image: timberio/vector:0.X-alpine
+    build:
+      context: ./vector-sidecar
+      dockerfile: ./Dockerfile
     environment:
       - EXPORT_WEBHOOK_USERNAME=${EXPORT_WEBHOOK_USERNAME}
       - EXPORT_WEBHOOK_PASSWORD=${EXPORT_WEBHOOK_PASSWORD}
