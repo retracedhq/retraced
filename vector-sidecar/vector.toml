@@ -1,0 +1,32 @@
+data_dir = "/var/lib/vector/"
+
+[api]
+    address = "0.0.0.0:8686"
+    enabled = true
+    playground = true
+
+# The data source that Vector will collect logs from
+[sources.webhook]
+type = "http_server" # The protocol to use
+address = "0.0.0.0:9000" # The address to bind to
+healthcheck = true # Enable built-in health checks
+body_size_limit = "1mb" # Maximum size of request body
+auth.password = "${EXPORT_WEBHOOK_PASSWORD}"
+auth.username = "${EXPORT_WEBHOOK_USERNAME}"
+
+# The transformation(s) to apply to each event
+[transforms.add_datadog_info]
+type = "remap"
+inputs = [ "webhook" ]
+source = """
+# Set the values of the output object
+.ddsource = "${EXPORT_DDSOURCE}"
+.ddtags = "${EXPORT_DDTAGS}"
+.hostname = "${EXPORT_DATADOG_HOSTNAME}"
+.service = "${EXPORT_SERVICE}"
+"""
+
+[sinks.my_sink_id]
+type = "console"
+inputs = ["add_datadog_info"]
+encoding.codec = "json"
