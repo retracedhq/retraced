@@ -107,9 +107,7 @@
     "run:skaffold": "skaffold run -f skaffold-dev.yaml --status-check=false --force=true",
     "dev:delete:skaffold": "skaffold delete -f skaffold-dev.yaml",
     "demo:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo.yaml --status-check=false --force=true",
-    "demo:delete:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold delete -f skaffold-demo.yaml",
     "demo-services:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo-services.yaml --status-check=false --force=true",
-    "demo-services:delete:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold delete -f skaffold-demo-services.yaml",
     "release": "git checkout release && git merge origin/main && release-it"
   },
   "author": "",
