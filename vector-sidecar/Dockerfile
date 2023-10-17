@@ -15,5 +15,6 @@ RUN yarn build
 ENV PORT 3002
 # Expose the port used by the Node.js application
 EXPOSE 3002
+EXPOSE 8686
 CMD vector -w --config-dir /etc/vector/config & node ./dist/index.js
 # CMD vector --config /etc/vector/config/*.toml & node index.js

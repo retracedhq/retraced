@@ -236,6 +236,10 @@ services:
       - EXPORT_DATADOG_API_KEY=${EXPORT_DATADOG_API_KEY}
       - EXPORT_DATADOG_REGION=${EXPORT_DATADOG_REGION}
       - EXPORT_DATADOG_SITE=${EXPORT_DATADOG_SITE}
+      - PORT=3002
+    ports:
+      - "8686:8686"
+      - "3002:3002"
     volumes:
       - ./vector.toml:/etc/vector/vector.toml
       - ./vector/data:/var/lib/vector/
