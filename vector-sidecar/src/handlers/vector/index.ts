@@ -23,7 +23,7 @@ export const getAllComponents = async (req, res) => {
     console.log('Vector components');
     if (req.query?.type) {
       const type = req.query.type;
-      const components = await graphql.getAllComponentsByType(type);
+      const components = await graphql.getAllComponentsByType(type.toUpperCase());
       res.status(200).json(components);
     } else {
       const components = await graphql.getAllComponents();
