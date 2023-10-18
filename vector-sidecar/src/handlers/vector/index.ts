@@ -39,9 +39,9 @@ export const saveVectorConfig = async (req, res) => {
   const body = req.body;
   let { config: sink, tenant, name } = body;
   console.log(`Config for ${tenant} with name ${name}`);
-  const path = `${config.configPath}/${getSafeFileName(tenant, name)}.toml`;
+  const path = `${config.configPath}/${getSafeFileName(tenant, name)}.json`;
   console.log(`Saving to ${path}`);
-  fs.writeFileSync(path, sink);
+  fs.writeFileSync(path, JSON.stringify(sink));
   res.status(201).json({
     success: true,
   });

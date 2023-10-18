@@ -4,7 +4,7 @@ FROM node:18.18.0-alpine3.18
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 COPY --from=builder /etc/vector/vector.yaml /etc/vector/vector.yaml
 COPY --from=builder /var/lib/vector /var/lib/vector
-COPY vector.toml /etc/vector/config/vector.toml
+COPY vector.json /etc/vector/config/vector.json
 
 WORKDIR /app
 COPY package.json package-lock.json ./
