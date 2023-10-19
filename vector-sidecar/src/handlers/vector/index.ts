@@ -2,7 +2,8 @@ import graphql from '../../lib/graphql';
 import * as request from 'request';
 import fs from 'fs';
 import config from '../../config';
-import { getSafeFileName } from '../../lib/helper';
+import { getSafeFileName, sleep } from '../../lib/helper';
+import { ConfigManager } from '../../lib/configManager';
 // import { reloadConfig } from '../../lib/signal';
 
 export const getHealth = (req, res) => {
@@ -36,13 +37,75 @@ export const getAllComponents = async (req, res) => {
 };
 
 export const saveVectorConfig = async (req, res) => {
-  const body = req.body;
-  let { config: sink, tenant, name } = body;
-  console.log(`Config for ${tenant} with name ${name}`);
-  const path = `${config.configPath}/${getSafeFileName(tenant, name)}.json`;
-  console.log(`Saving to ${path}`);
-  fs.writeFileSync(path, JSON.stringify(sink));
-  res.status(201).json({
-    success: true,
-  });
+  try {
+    const body = req.body;
+    let { config: sink, tenant, name } = body;
+    console.log(`Config for ${tenant} with name ${name}`);
+    const path = `${config.configPath}/${getSafeFileName(tenant, name)}.json`;
+    const port = ConfigManager.getInstance().findAvailableSourcePort();
+    if (!port) {
+      throw new Error('No available port');
+    } else {
+      const sourceName = `source_webhook_${tenant}_${name}`;
+      const sinkName = `sink_${tenant}_${name}`;
+      const source = {
+        [sourceName]: {
+          type: 'http_server',
+          address: `0.0.0.0:${port}`,
+          healthcheck: true,
+        },
+      };
+      const finalConfig = {
+        sources: source,
+        sinks: {
+          [sinkName]: {
+            ...sink,
+            inputs: [sourceName],
+          },
+        },
+      };
+      console.log(`Saving to ${path}`);
+      fs.writeFileSync(path, JSON.stringify(finalConfig));
+      ConfigManager.getInstance().addConfig({
+        configPath: path,
+        sourceHttpPort: port,
+        sourceName,
+      });
+      let retries = 0,
+        verified = false;
+      do {
+        await sleep(1000);
+        console.log('Waiting for vector to reload');
+        const components = await graphql.getAllComponents();
+        const source = components.find((c) => c.componentId === sourceName);
+        const sink = components.find((c) => c.componentId === sinkName);
+        if (source && sink) {
+          console.log('Vector reloaded');
+          verified = true;
+          break;
+        }
+        retries++;
+      } while (retries < 3);
+      res.status(201).json({
+        success: true,
+        verified,
+      });
+    }
+  } catch (ex) {
+    console.log(ex);
+    res.status(500).json(ex);
+  }
+};
+
+export const getAvailablePort = async (req, res) => {
+  try {
+    const port = ConfigManager.getInstance().findAvailableSourcePort();
+    if (!port) {
+      throw new Error('No available port');
+    }
+    res.status(200).json({ port });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
 };

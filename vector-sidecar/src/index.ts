@@ -1,6 +1,9 @@
 import express from 'express';
 import setupRoutes from './routes';
 import config from './config';
+import { ConfigManager } from './lib/configManager';
+
+ConfigManager.init();
 
 const app = express();
 app.use(express.json());
