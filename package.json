@@ -63,7 +63,7 @@
     "@types/pg": "8.10.5",
     "@types/sinon": "10.0.19",
     "@types/swagger-jsdoc": "6.0.2",
-    "@types/yargs": "17.0.28",
+    "@types/yargs": "17.0.29",
     "@typescript-eslint/eslint-plugin": "6.8.0",
     "@typescript-eslint/parser": "6.8.0",
     "chai": "4.3.10",
