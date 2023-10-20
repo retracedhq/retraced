@@ -7,7 +7,6 @@ resources:
   - ./nsqd-deployment.yaml
   - ./nsqd-service.yaml
   - ./processor-deployment.yaml
-  - ./admin-portal-deployment.yaml
   - ./geoipupdate.yaml
 
 namespace: default

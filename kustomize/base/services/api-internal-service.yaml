@@ -7,7 +7,6 @@ metadata:
     app: auditlog-internal
     tier: api
 spec:
-  type: LoadBalancer
   ports:
     - name: http
       port: 3000
