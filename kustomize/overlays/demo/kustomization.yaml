@@ -5,10 +5,8 @@ bases:
 resources:
   - ./secrets.yaml
   - ./bootstrap-secrets.yaml
-  - ./admin-portal-secrets.yaml
 
 patches:
-  - ./admin-portal-deployment.yaml
   - ./api-deployment.yaml
   - ./cron-deployment.yaml
   - ./dbutil-deployment.yaml
@@ -17,7 +15,5 @@ patches:
   - ./processor-deployment.yaml
 
 images:
-  - name: boxyhq/jackson
-    newTag: 1.12.0
   - name: retracedhq/retraced
-    newTag: 1.8.0
+    newTag: 1.8.1
