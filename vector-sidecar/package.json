@@ -13,8 +13,10 @@
   "dependencies": {
     "express": "^4.18.2",
     "graphql": "^16.8.1",
+    "graphql-ws": "^5.14.1",
     "request": "^2.88.2",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "ws": "^8.14.2"
   },
   "devDependencies": {
     "@types/node": "^20.8.4",

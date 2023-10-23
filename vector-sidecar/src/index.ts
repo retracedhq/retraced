@@ -1,9 +1,11 @@
 import express from 'express';
 import setupRoutes from './routes';
 import config from './config';
-import { ConfigManager } from './lib/configManager';
+import { ConfigManager } from './services/configManager';
+import watchers from './watchers';
 
 ConfigManager.init();
+watchers.init();
 
 const app = express();
 app.use(express.json());
