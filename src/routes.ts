@@ -10,6 +10,7 @@ import cancelEmailReport from "./handlers/admin/cancelEmailReport";
 import createEnvironment from "./handlers/admin/createEnvironment";
 import createInvite from "./handlers/admin/createInvite";
 import createProject from "./handlers/admin/createProject";
+import createSink from "./handlers/admin/createSink";
 import deleteTeamMember from "./handlers/admin/deleteTeamMember";
 import listTeamMembers from "./handlers/admin/listTeamMembers";
 import deleteInvite from "./handlers/admin/deleteInvite";
@@ -85,6 +86,11 @@ export default {
     path: "/admin/v1/project",
     method: "post",
     handler: createProject,
+  },
+  adminCreateSink : {
+    path: "/admin/v1/project/:projectId/environment/:environmentId/group/:groupId/sink",
+    method: "post",
+    handler: createSink,
   },
   adminDeleteTeamMember: {
     path: "/admin/v1/project/:projectId/team/member/:userId",

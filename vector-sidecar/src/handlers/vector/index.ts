@@ -115,6 +115,8 @@ export const saveVectorConfig = async (req, res) => {
       res.status(201).json({
         success: true,
         verified,
+        sourceName,
+        sinkName,
       });
     }
   } catch (ex) {
