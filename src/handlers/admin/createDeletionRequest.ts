@@ -1,5 +1,4 @@
 import moment from "moment";
-import * as uuid from "uuid";
 
 import nsq from "../../persistence/nsq";
 import getPgPool from "../../persistence/pg";
@@ -14,6 +13,7 @@ import listTeamMembers from "../../models/team/listTeamMembers";
 import { logger } from "../../logger";
 import util from "util";
 import config from "../../config";
+import uniqueId from "../../models/uniqueId";
 
 const pgPool = getPgPool();
 
@@ -34,7 +34,7 @@ export default async function handle(
   authorization: string,
   projectId: string,
   environmentId: string,
-  requestBody: CreateDelReqRequestBody,
+  requestBody: CreateDelReqRequestBody
 ) {
   const claims = await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
   const thisUserId = claims.userId;
@@ -101,11 +101,14 @@ export default async function handle(
   let newDeletionRequest;
 
   try {
-    newDeletionRequest = await createDeletionRequest({
-      resourceKind: requestBody.resourceKind,
-      resourceId: requestBody.resourceId,
-      backoffInterval: moment.duration(defaultBackoffInterval, "seconds"),
-    }, tx.query.bind(tx));
+    newDeletionRequest = await createDeletionRequest(
+      {
+        resourceKind: requestBody.resourceKind,
+        resourceId: requestBody.resourceId,
+        backoffInterval: moment.duration(defaultBackoffInterval, "seconds"),
+      },
+      tx.query.bind(tx)
+    );
 
     for (const userId of confirmationUserIds) {
       const user = await getUser(userId);
@@ -114,24 +117,30 @@ export default async function handle(
         continue;
       }
 
-      const code = uuid.v4().replace(/-/g, "");
+      const code = uniqueId();
 
-      await createDeletionConfirmation({
-        deletionRequestId: newDeletionRequest.id,
-        retracedUserId: userId,
-        visibleCode: code,
-      }, tx.query.bind(tx));
-
-      nsq.produce("emails", JSON.stringify({
-        to: user.email,
-        subject: "Your approval is required for a critical operation.",
-        template: "retraced/deletion-request",
-        context: {
-          approve_url: `${config.RETRACED_APP_BASE}/project/${projectId}/${environmentId}/settings/environments?deleteRequest=${code}`,
-          resource_kind: newDeletionRequest.resourceKind,
-          resource_name: resourceName,
+      await createDeletionConfirmation(
+        {
+          deletionRequestId: newDeletionRequest.id,
+          retracedUserId: userId,
+          visibleCode: code,
         },
-      }));
+        tx.query.bind(tx)
+      );
+
+      nsq.produce(
+        "emails",
+        JSON.stringify({
+          to: user.email,
+          subject: "Your approval is required for a critical operation.",
+          template: "retraced/deletion-request",
+          context: {
+            approve_url: `${config.RETRACED_APP_BASE}/project/${projectId}/${environmentId}/settings/environments?deleteRequest=${code}`,
+            resource_kind: newDeletionRequest.resourceKind,
+            resource_name: resourceName,
+          },
+        })
+      );
 
       outstandingConfirmations.push(user.email);
     }

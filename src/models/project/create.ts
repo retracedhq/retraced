@@ -1,4 +1,3 @@
-import * as uuid from "uuid";
 import Analytics from "analytics-node";
 import moment from "moment";
 
@@ -9,6 +8,7 @@ import addUserToProject from "./addUser";
 import { Environment } from "../environment";
 import { ApiToken } from "../api_token";
 import config from "../../config";
+import uniqueId from "../uniqueId";
 
 const pgPool = getPgPool();
 
@@ -23,8 +23,13 @@ export default function createProject(opts) {
         return;
       }
 
+      if (!pg) {
+        reject(new Error("Couldn't connect to postgres"));
+        return;
+      }
+
       const project = {
-        id: opts.id || uuid.v4().replace(/-/g, ""),
+        id: opts.id || uniqueId(),
         name: opts.name,
         created: moment().unix(),
         environments: opts.env ? opts.env : getDefaultEnvironments(),

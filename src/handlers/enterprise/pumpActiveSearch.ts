@@ -1,4 +1,3 @@
-import * as uuid from "uuid";
 import _ from "lodash";
 
 import { checkEitapiAccess } from "../../security/helpers";
@@ -9,6 +8,7 @@ import updateActiveSearch from "../../models/active_search/update";
 import QueryDescriptor from "../../models/query_desc/def";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 import { EnterpriseToken } from "../../models/eitapi_token/index";
+import uniqueId from "../../models/uniqueId";
 
 export default async function handler(req) {
   const eitapiToken: EnterpriseToken = await checkEitapiAccess(req);
@@ -93,7 +93,7 @@ export default async function handler(req) {
   const results = await searchEvents(searchOpts);
   let nextToken;
   if (results.events && results.events.length > 0) {
-    nextToken = uuid.v4().replace(/-/g, "");
+    nextToken = uniqueId();
     const lastEvent = results.events[results.events.length - 1];
     let nextStartTime = lastEvent.created;
     if (!nextStartTime) {

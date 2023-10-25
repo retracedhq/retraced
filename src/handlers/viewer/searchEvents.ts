@@ -1,6 +1,5 @@
 import _ from "lodash";
 import querystring from "querystring";
-import * as uuid from "uuid";
 import moment from "moment";
 
 import { checkViewerAccess } from "../../security/helpers";
@@ -8,6 +7,7 @@ import searchEvents, { Options } from "../../models/event/search";
 import nsq from "../../persistence/nsq";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { defaultEventCreater, CreateEventRequest } from "../createEvent";
+import uniqueId from "../../models/uniqueId";
 
 /*
 What we're expecting from clients:
@@ -93,7 +93,7 @@ export default async function (req) {
   };
   if (!_.isEqual(defaultQuery, reqOpts)) {
     const job = JSON.stringify({
-      taskId: uuid.v4().replace(/-/g, ""),
+      taskId: uniqueId(),
       projectId: req.params.projectId,
       environmentId: claims.environmentId,
       event: "viewer_search",

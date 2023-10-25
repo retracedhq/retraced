@@ -4,13 +4,13 @@ metadata:
   name: retraced-migrate-pg
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
+  ttlSecondsAfterFinished: 0
   template:
     spec:
       restartPolicy: "OnFailure"
       containers:
         - name: db
           image: retracedhq/retraced-local
-          imagePullPolicy: IfNotPresent
           command:
             - node
             - --inspect=0.0.0.0

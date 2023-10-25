@@ -16,6 +16,7 @@ metadata:
   name: retraced-geoipupdate
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
+  ttlSecondsAfterFinished: 0
   template:
     spec:
       restartPolicy: "OnFailure"

@@ -8,6 +8,9 @@ resources:
   - ./secrets.yaml
   - ./bootstrap-secrets.yaml
   - ./admin-portal-secrets.yaml
+  - ./api-service.yaml
+  - ./admin-portal-deployment.yaml
+  - ./admin-portal-service.yaml
 
 patches:
   - target:

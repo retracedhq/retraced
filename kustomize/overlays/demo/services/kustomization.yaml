@@ -1,4 +1,4 @@
 ---
 bases:
-  - ./admin-portal-service.yaml
+  - ../../../base/services
   - ./api-service.yaml

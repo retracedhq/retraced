@@ -1,5 +1,4 @@
 resources:
-  - ./api-service.yaml
-  - ./admin-portal-service.yaml
+  - ./api-internal-service.yaml
 
 namespace: default

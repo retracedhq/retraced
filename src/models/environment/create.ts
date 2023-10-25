@@ -1,8 +1,8 @@
-import * as uuid from "uuid";
 import { getESWithRetry } from "../../persistence/elasticsearch";
 import getPgPool from "../../persistence/pg";
 import { Environment } from "./index";
 import config from "../../config";
+import uniqueId from "../uniqueId";
 
 const pgPool = getPgPool();
 
@@ -17,7 +17,7 @@ interface Opts {
 
 export default async function createEnvironment(opts: Opts): Promise<Environment> {
   const environment = {
-    id: opts.id || uuid.v4().replace(/-/g, ""),
+    id: opts.id || uniqueId(),
     name: opts.name,
     projectId: opts.projectId,
   };
@@ -26,7 +26,7 @@ export default async function createEnvironment(opts: Opts): Promise<Environment
     // Create the ES index
     const searchAlias = `retraced.${environment.projectId}.${environment.id}`;
     const writeAlias = `retraced.${environment.projectId}.${environment.id}.current`;
-    const newIndex = `retraced.api.${uuid.v4().replace(/-/g, "")}`;
+    const newIndex = `retraced.api.${uniqueId()}`;
     const aliases = {};
     aliases[searchAlias] = {};
     aliases[writeAlias] = {};

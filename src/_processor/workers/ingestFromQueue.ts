@@ -1,6 +1,6 @@
-import * as uuid from "uuid";
 import getPgPool from "../persistence/pg";
 import nsq from "../persistence/nsq";
+import uniqueId from "../../models/uniqueId";
 
 const pgPool = getPgPool();
 
@@ -14,7 +14,7 @@ export interface Task {
 
 export default async function ingestFromQueue(job: any) {
   const task: Task = JSON.parse(job.body);
-  const taskId = uuid.v4().replace(/-/g, "");
+  const taskId = uniqueId();
   const q = `
         INSERT INTO ingest_task (
             id,

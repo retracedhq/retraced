@@ -11,6 +11,11 @@ export default function listTeamMembers(opts) {
         return;
       }
 
+      if (!pg) {
+        reject(new Error("Couldn't connect to postgres"));
+        return;
+      }
+
       const q = `
       select
         retraceduser.id, retraceduser.created, retraceduser.email, retraceduser.last_login,
