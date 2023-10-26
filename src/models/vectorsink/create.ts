@@ -1,5 +1,6 @@
 import getPgPool from "../../persistence/pg";
 import uniqueId from "../uniqueId";
+import nsq from "../../persistence/nsq";
 
 const pgPool = getPgPool();
 const ERR_DUPLICATE_SINK_NAME = new Error("NAME_ALREADY_EXISTS");
@@ -49,6 +50,8 @@ export default async function createSink(opts: CreateSinkOptions): Promise<Sink>
     0,
   ];
   await pgPool.query(q, v);
+
+  nsq.produce("sink_created", JSON.stringify({ id }));
 
   return {
     id,

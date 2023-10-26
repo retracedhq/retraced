@@ -3,6 +3,8 @@ import setupRoutes from './routes';
 import config from './config';
 import { ConfigManager } from './services/configManager';
 import watchers from './watchers';
+import nsq from './services/nsq';
+import { handleSinkCreated } from './services/vector';
 
 ConfigManager.init();
 watchers.init();
@@ -21,3 +23,17 @@ process.on('SIGINT', () => {
   console.log('Closing');
   process.exit();
 });
+
+nsq.consume(
+  'sink_created',
+  'vector_sidecar',
+  async (msg) => {
+    const sink = JSON.parse(msg.body);
+    await handleSinkCreated(sink);
+  },
+  {
+    maxAttempts: 1,
+    maxInFlight: 5,
+    messageTimeoutMS: 10000,
+  }
+);
