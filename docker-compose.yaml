@@ -224,8 +224,8 @@ services:
 
   vector:
     build:
-      context: ./vector-sidecar
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: ./deploy/vector-sidecar/Dockerfile
     environment:
       - PORT=3002
       - NSQD_HTTP_PORT=4151

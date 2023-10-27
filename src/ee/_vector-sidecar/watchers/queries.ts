@@ -1,4 +1,4 @@
-import config from '../config';
+import config from "../config";
 
 const componentErrorsTotals = `subscription {
     componentErrorsTotals(interval: ${config.graphQLSubscriptionInterval}) {
@@ -164,5 +164,5 @@ export default {
   allocatedBytes,
   componentAdded,
   errorsTotal,
-  //   metrics,
+  metrics,
 };

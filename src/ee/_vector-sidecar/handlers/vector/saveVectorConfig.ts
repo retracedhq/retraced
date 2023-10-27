@@ -1,8 +1,8 @@
-import graphql from '../../services/graphql';
-import fs from 'fs';
-import config from '../../config';
-import { getSafeFileName, sleep } from '../../services/helper';
-import { ConfigManager } from '../../services/configManager';
+import graphql from "../../services/graphql";
+import fs from "fs";
+import config from "../../config";
+import { getSafeFileName, sleep } from "../../services/helper";
+import { ConfigManager } from "../../services/configManager";
 
 export const saveVectorConfig = async (req, res) => {
   try {
@@ -20,11 +20,11 @@ export const saveVectorConfig = async (req, res) => {
       port = configManager.findAvailableSourcePort();
     }
     if (!port) {
-      throw new Error('No available port');
+      throw new Error("No available port");
     } else {
       const source = {
         [sourceName]: {
-          type: 'http_server',
+          type: "http_server",
           address: `0.0.0.0:${port}`,
           healthcheck: true,
         },
@@ -50,11 +50,11 @@ export const saveVectorConfig = async (req, res) => {
       do {
         try {
           await sleep(1000);
-          console.log('Waiting for vector to reload');
+          console.log("Waiting for vector to reload");
           const sinkExists = await graphql.getComponentByName(sinkName);
           const sourceExists = await graphql.getComponentByName(sourceName);
           if (sinkExists && sourceExists) {
-            console.log('Vector reloaded');
+            console.log("Vector reloaded");
             verified = true;
             break;
           }

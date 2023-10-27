@@ -1,12 +1,12 @@
-import * as request from 'request';
-import config from '../config';
-import { Component, componentKind } from '../types';
-import { WebSocket } from 'ws';
-import { createClient } from 'graphql-ws';
+import axios from "axios";
+import config from "../config";
+import { Component, componentKind } from "../types";
+import { WebSocket } from "ws";
+import { createClient } from "graphql-ws";
 
 const getAllComponents = (): Promise<Component[]> => {
   return new Promise((resolve, reject) => {
-    const body = JSON.stringify({
+    const body = {
       operationName: null,
       variables: {},
       query: `{
@@ -19,22 +19,22 @@ const getAllComponents = (): Promise<Component[]> => {
         }
       }
     }`,
-    });
-    request.post(`http://localhost:${config.vectorAPIPort}/graphql`, { body }, (err, response, body) => {
-      if (err) {
+    };
+    axios
+      .post(`http://localhost:${config.vectorAPIPort}/graphql`, body)
+      .then((response) => {
+        resolve((response.data?.data?.components?.edges || []).map((edge) => edge.node));
+      })
+      .catch((err) => {
         console.log(err);
         reject(err);
-      } else {
-        body = JSON.parse(body);
-        resolve((body?.data?.components?.edges || []).map((edge) => edge.node));
-      }
-    });
+      });
   });
 };
 
 const getAllComponentsByType = (type: componentKind): Promise<Component[]> => {
   return new Promise((resolve, reject) => {
-    const body = JSON.stringify({
+    const body = {
       operationName: null,
       variables: {},
       query: `{
@@ -47,22 +47,27 @@ const getAllComponentsByType = (type: componentKind): Promise<Component[]> => {
         }
       }
     }`,
-    });
-    request.post(`http://localhost:${config.vectorAPIPort}/graphql`, { body }, (err, response, body) => {
-      if (err) {
+    };
+    const url = `http://localhost:${config.vectorAPIPort}/graphql`;
+
+    axios
+      .post(url, body)
+      .then((response) => {
+        const data = response.data;
+        const components = data?.data?.components?.edges || [];
+        const result = components.map((edge) => edge.node);
+        resolve(result);
+      })
+      .catch((err) => {
         console.log(err);
         reject(err);
-      } else {
-        body = JSON.parse(body);
-        resolve((body?.data?.components?.edges || []).map((edge) => edge.node));
-      }
-    });
+      });
   });
 };
 
 const getComponentByName = (name: string): Promise<Component> => {
   return new Promise((resolve, reject) => {
-    const body = JSON.stringify({
+    const body = {
       operationName: null,
       variables: {},
       query: `{
@@ -72,17 +77,20 @@ const getComponentByName = (name: string): Promise<Component> => {
           # Other fields and metrics
         }
       }`,
-    });
-    request.post(`http://localhost:${config.vectorAPIPort}/graphql`, { body }, (err, response, body) => {
-      if (err) {
+    };
+    const url = `http://localhost:${config.vectorAPIPort}/graphql`;
+
+    axios
+      .post(url, body)
+      .then((response) => {
+        const data = response.data;
+        console.log(data);
+        resolve(data?.data?.componentByComponentKey);
+      })
+      .catch((err) => {
         console.log(err);
         reject(err);
-      } else {
-        body = JSON.parse(body);
-        console.log(body);
-        resolve(body?.data?.componentByComponentKey);
-      }
-    });
+      });
   });
 };
 
