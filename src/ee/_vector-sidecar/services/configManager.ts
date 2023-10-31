@@ -1,11 +1,12 @@
-import fs from 'fs';
-import { VectorConfig } from '../types';
-import config from '../config';
+import fs from "fs";
+import { VectorConfig } from "../types";
+import config from "../config";
 
 export type Config = {
   configPath: string;
   sourceName: string;
   sourceHttpPort: number;
+  id?: string;
 };
 
 type ConfigMap = {
@@ -34,21 +35,21 @@ export class ConfigManager {
     this.portBanList.add(config.vectorAPIPort);
     this.portBanList.add(config.port);
     try {
-      const content = fs.readFileSync('/etc/vector/config/vector.json', 'utf8');
+      const content = fs.readFileSync("/etc/vector/config/vector.json", "utf8");
       const json = JSON.parse(content) as VectorConfig;
       const initSourceName = Object.keys(json.sources)[0];
       this.initConfig = {
-        configPath: '/etc/vector/config/vector.json',
-        sourceHttpPort: json.sources[initSourceName]?.address?.split(':')[1] || 9000,
+        configPath: "/etc/vector/config/vector.json",
+        sourceHttpPort: json.sources[initSourceName]?.address?.split(":")[1] || 9000,
         sourceName: initSourceName,
       };
       this.portBanList.add(this.initConfig.sourceHttpPort);
     } catch (ex) {
-      console.log('Could not read vector config');
+      console.log("Could not read vector config");
     }
   }
 
-  addConfig(config: { configPath: string; sourceName: string; sourceHttpPort: number }) {
+  addConfig(config: { configPath: string; sourceName: string; sourceHttpPort: number; id?: string }) {
     this.configs[config.sourceName] = config;
     console.log(
       `Added config for ${config.sourceName} with port ${config.sourceHttpPort} and path ${config.configPath}`

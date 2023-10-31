@@ -3,13 +3,14 @@ import fs from "fs";
 import config from "../../config";
 import { getSafeFileName, sleep } from "../../services/helper";
 import { ConfigManager } from "../../services/configManager";
+import { getSinkName, getSourceName } from "../../services/vector";
 
 export const saveVectorConfig = async (req, res) => {
   try {
     const body = req.body;
     let { config: sink, tenant, name } = body;
-    const sourceName = `source_webhook_${tenant}_${name}`;
-    const sinkName = `sink_${tenant}_${name}`;
+    const sourceName = getSourceName(tenant, name);
+    const sinkName = getSinkName(tenant, name);
     console.log(`Config for ${tenant} with name ${name}`);
     const path = `${config.configPath}/${getSafeFileName(tenant, name)}.json`;
     let port;
