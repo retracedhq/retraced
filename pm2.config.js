@@ -9,6 +9,7 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss", // Log date format
       error_file: "logs/error.log", // Path to error log file
       out_file: "logs/out.log", // Path to standard output log file
+      stop_exit_codes: [0], // Stop on exit code 0
     },
     {
       name: "sidecar", // Name of the application (you can choose any name)
@@ -16,6 +17,7 @@ module.exports = {
       args: [
         "/src/build/src/ee/_vector-sidecar/index.js", // Path to your Node.js application script
       ],
+      stop_exit_codes: [0], // Stop on exit code 0
       instances: 1, // Number of instances to run (1 for a single instance)
       exec_mode: "fork", // Use "fork" as the execution mode
       log_date_format: "YYYY-MM-DD HH:mm:ss", // Log date format
