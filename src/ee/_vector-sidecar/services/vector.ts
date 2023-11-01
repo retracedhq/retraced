@@ -3,7 +3,7 @@ import fs from "fs";
 import config from "../config";
 import { ConfigManager } from "./configManager";
 import { getSafeFileName, sleep } from "./helper";
-import getPgPool from "./pg";
+import getPgPool from "../../../_db/persistence/pg";
 import graphql from "./graphql";
 
 export const getSourceName = (tenant, name) => {

@@ -3,7 +3,7 @@ import setupRoutes from "./routes";
 import config from "./config";
 import { ConfigManager } from "./services/configManager";
 import watchers from "./watchers";
-import nsq from "./services/nsq";
+import nsq from "../../_processor/persistence/nsq";
 import { handleSinkCreated } from "./services/vector";
 
 ConfigManager.init();
