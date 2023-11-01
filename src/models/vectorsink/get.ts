@@ -11,5 +11,5 @@ export const getAll = async () => {
 export const getById = async (id: string) => {
   const q = `SELECT * FROM vectorsink WHERE id = $1`;
   const result = await pgPool.query(q, [id]);
-  return result.rows[0];
+  return result.rows.length ? result.rows[0] : undefined;
 };

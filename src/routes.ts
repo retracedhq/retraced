@@ -11,6 +11,8 @@ import createEnvironment from "./handlers/admin/createEnvironment";
 import createInvite from "./handlers/admin/createInvite";
 import createProject from "./handlers/admin/createProject";
 import createSink from "./handlers/admin/createSink";
+import updateSink from "./handlers/admin/updateSink";
+import deleteSink from "./handlers/admin/deleteSink";
 import deleteTeamMember from "./handlers/admin/deleteTeamMember";
 import listTeamMembers from "./handlers/admin/listTeamMembers";
 import deleteInvite from "./handlers/admin/deleteInvite";
@@ -87,10 +89,20 @@ export default {
     method: "post",
     handler: createProject,
   },
-  adminCreateSink : {
+  adminCreateSink: {
     path: "/admin/v1/project/:projectId/environment/:environmentId/group/:groupId/sink",
     method: "post",
     handler: createSink,
+  },
+  adminDeleteSink: {
+    path: "/admin/v1/project/:projectId/environment/:environmentId/group/:groupId/sink/:sinkId",
+    method: "delete",
+    handler: deleteSink,
+  },
+  adminUpdateSink: {
+    path: "/admin/v1/project/:projectId/environment/:environmentId/group/:groupId/sink/:sinkId",
+    method: "put",
+    handler: updateSink,
   },
   adminDeleteTeamMember: {
     path: "/admin/v1/project/:projectId/team/member/:userId",

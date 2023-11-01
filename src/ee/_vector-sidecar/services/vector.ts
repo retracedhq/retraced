@@ -91,6 +91,19 @@ export const handleSinkCreated = async (sink) => {
   }
 };
 
+export const handleSinkDeleted = async (sink) => {
+  const instance = ConfigManager.getInstance();
+  const config = Object.values(instance.configs).find((c) => c.id === sink.id);
+  if (config) {
+    const { sourceName, configPath } = config;
+    fs.existsSync(configPath) && fs.unlinkSync(configPath);
+    delete instance.configs[sourceName];
+    console.log(`Config deleted`);
+  } else {
+    console.log(`Config not found`);
+  }
+};
+
 export const setSinkAsActive = async (sinkId) => {
   const pg = getPgPool();
   await pg.query(`UPDATE vectorsink SET active=true where id=$1`, [sinkId]);

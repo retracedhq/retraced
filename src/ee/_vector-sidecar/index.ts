@@ -4,7 +4,7 @@ import config from "./config";
 import { ConfigManager } from "./services/configManager";
 import watchers from "./watchers";
 import nsq from "../../_processor/persistence/nsq";
-import { handleSinkCreated } from "./services/vector";
+import { handleSinkCreated, handleSinkDeleted } from "./services/vector";
 
 ConfigManager.init();
 watchers.init();
@@ -29,6 +29,35 @@ nsq.consume(
   "vector_sidecar",
   async (msg) => {
     const sink = JSON.parse(msg.body);
+    await handleSinkCreated(sink);
+  },
+  {
+    maxAttempts: 1,
+    maxInFlight: 5,
+    messageTimeoutMS: 10000,
+  }
+);
+
+nsq.consume(
+  "sink_deleted",
+  "vector_sidecar",
+  async (msg) => {
+    const sink = JSON.parse(msg.body);
+    await handleSinkDeleted(sink);
+  },
+  {
+    maxAttempts: 1,
+    maxInFlight: 5,
+    messageTimeoutMS: 10000,
+  }
+);
+
+nsq.consume(
+  "sink_updated",
+  "vector_sidecar",
+  async (msg) => {
+    const sink = JSON.parse(msg.body);
+    await handleSinkDeleted(sink);
     await handleSinkCreated(sink);
   },
   {
