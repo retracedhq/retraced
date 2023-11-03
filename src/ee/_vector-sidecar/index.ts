@@ -4,7 +4,7 @@ import config from "./config";
 import { ConfigManager } from "./services/configManager";
 import watchers from "./watchers";
 import nsq from "../../_processor/persistence/nsq";
-import { handleSinkCreated, handleSinkDeleted } from "./services/vector";
+import { handleSinkCreated, handleSinkDeleted, handleSinkUpdated } from "./services/vector";
 
 ConfigManager.init();
 watchers.init();
@@ -57,8 +57,7 @@ nsq.consume(
   "vector_sidecar",
   async (msg) => {
     const sink = JSON.parse(msg.body);
-    await handleSinkDeleted(sink);
-    await handleSinkCreated(sink);
+    await handleSinkUpdated(sink);
   },
   {
     maxAttempts: 1,

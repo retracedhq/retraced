@@ -58,8 +58,8 @@ export const getComponentsByName = async (req, res) => {
 export const saveVectorConfig = async (req, res) => {
   try {
     const body = req.body;
-    let { config: sink, tenant, name } = body;
-    const { sourceName, sinkName } = await processConfig(tenant, name, sink);
+    let { config: sink, tenant, name, id } = body;
+    const { sourceName, sinkName } = await processConfig(tenant, name, sink, id);
     let verified = await verifyVectorConfig(sourceName, sinkName);
     await setSinkAsActive(sink.id);
     res.status(201).json({

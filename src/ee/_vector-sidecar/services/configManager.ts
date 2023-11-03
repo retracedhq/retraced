@@ -49,11 +49,15 @@ export class ConfigManager {
     }
   }
 
-  addConfig(config: { configPath: string; sourceName: string; sourceHttpPort: number; id?: string }) {
-    this.configs[config.sourceName] = config;
+  addConfig(config: { configPath: string; sourceName: string; sourceHttpPort: number; id: string }) {
+    this.configs[config.id] = config;
     console.log(
       `Added config for ${config.sourceName} with port ${config.sourceHttpPort} and path ${config.configPath}`
     );
+  }
+
+  getConfigBySinkId(sinkId: string) {
+    return this.configs[sinkId];
   }
 
   findAvailableSourcePort() {

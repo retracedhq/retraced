@@ -15,6 +15,8 @@ module.exports = {
       name: "sidecar", // Name of the application (you can choose any name)
       script: "node", // Use the "node" command
       args: [
+        "--inspect=0.0.0.0",
+        "--enable-source-maps",
         "/src/build/src/ee/_vector-sidecar/index.js", // Path to your Node.js application script
       ],
       stop_exit_codes: [0], // Stop on exit code 0

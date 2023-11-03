@@ -238,6 +238,7 @@ services:
       - POSTGRES_HOST=postgres
     ports:
       - "8686:8686"
+      - "9393:9229"
       - "3002:3002"
     volumes:
       - ./vector.toml:/etc/vector/vector.toml

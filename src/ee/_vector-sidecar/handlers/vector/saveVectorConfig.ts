@@ -1,70 +1,36 @@
-import graphql from "../../services/graphql";
 import fs from "fs";
 import config from "../../config";
-import { getSafeFileName, sleep } from "../../services/helper";
 import { ConfigManager } from "../../services/configManager";
-import { getSinkName, getSourceName } from "../../services/vector";
+import { getSinkName, getSourceName, getVectorConfig, verifyVectorConfig } from "../../services/vector";
 
 export const saveVectorConfig = async (req, res) => {
   try {
     const body = req.body;
-    let { config: sink, tenant, name } = body;
+    let { config: sink, tenant, name, id } = body;
     const sourceName = getSourceName(tenant, name);
     const sinkName = getSinkName(tenant, name);
     console.log(`Config for ${tenant} with name ${name}`);
-    const path = `${config.configPath}/${getSafeFileName(tenant, name)}.json`;
+    const path = `${config.configPath}/${id}.json`;
     let port;
     const configManager = ConfigManager.getInstance();
-    if (configManager.configs[sourceName]) {
-      port = configManager.configs[sourceName].sourceHttpPort;
+    if (configManager.configs[id]) {
+      port = configManager.configs[id].sourceHttpPort;
     } else {
       port = configManager.findAvailableSourcePort();
     }
     if (!port) {
       throw new Error("No available port");
     } else {
-      const source = {
-        [sourceName]: {
-          type: "http_server",
-          address: `0.0.0.0:${port}`,
-          healthcheck: true,
-        },
-      };
-      const finalConfig = {
-        sources: source,
-        sinks: {
-          [sinkName]: {
-            ...sink,
-            inputs: [sourceName],
-          },
-        },
-      };
+      const finalConfig = getVectorConfig(sourceName, port, sinkName, sink);
       console.log(`Saving to ${path}`);
       fs.writeFileSync(path, JSON.stringify(finalConfig));
       ConfigManager.getInstance().addConfig({
+        id,
         configPath: path,
         sourceHttpPort: port,
         sourceName,
       });
-      let retries = 0,
-        verified = false;
-      do {
-        try {
-          await sleep(1000);
-          console.log("Waiting for vector to reload");
-          const sinkExists = await graphql.getComponentByName(sinkName);
-          const sourceExists = await graphql.getComponentByName(sourceName);
-          if (sinkExists && sourceExists) {
-            console.log("Vector reloaded");
-            verified = true;
-            break;
-          }
-          retries++;
-        } catch (ex) {
-          retries++;
-          console.log(ex);
-        }
-      } while (retries < 3);
+      const verified = await verifyVectorConfig(sourceName, sinkName);
       res.status(201).json({
         success: true,
         verified,
