@@ -12,9 +12,9 @@ deploy:
 dev:
   retraced-api:
     command: bash
-    workdir: /go/src/github.com/retracedhq/retraced
+    workdir: /src/github.com/retracedhq/retraced
     sync:
-      - ./:/go/src/github.com/retracedhq/retraced
+      - ./:/src/github.com/retracedhq/retraced
     resources:
       limits:
         cpu: "2"
