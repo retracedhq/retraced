@@ -6,7 +6,7 @@ export interface Options {
   actorId: string;
 }
 
-export default async function(opts: Options): Promise<any> {
+export default async function (opts: Options): Promise<any> {
   const pg = await pgPool.connect();
   try {
     const fields = `
@@ -20,14 +20,13 @@ export default async function(opts: Options): Promise<any> {
 
     const result = await pg.query(q, v);
 
-    if (result.rowCount > 0) {
+    if (result.rowCount) {
       return Object.assign({}, result.rows[0], {
         retraced_object_type: "actor",
       });
     }
 
     return null;
-
   } finally {
     pg.release();
   }

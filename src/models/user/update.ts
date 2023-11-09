@@ -16,9 +16,7 @@ export default async function (opts: Opts): Promise<any> {
   const tzResult = await pgPool.query(tzQuery, [opts.timezone]);
 
   if (!tzResult.rows[0]) {
-    throw new Error(
-      `update user ${opts.user_id}: invalid timezone "${opts.timezone}"`
-    );
+    throw new Error(`update user ${opts.user_id}: invalid timezone "${opts.timezone}"`);
   }
 
   const q = `
@@ -33,7 +31,7 @@ export default async function (opts: Opts): Promise<any> {
 
   const result = await pgPool.query(q, v);
 
-  if (result.rowCount > 0) {
+  if (result.rowCount) {
     return result.rows[0];
   }
 

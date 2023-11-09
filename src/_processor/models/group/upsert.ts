@@ -18,13 +18,7 @@ export default async function (opts, pg: PoolClient) {
   to_timestamp($1::double precision / 1000), $2, $3, $4, $5, to_timestamp($1::double precision / 1000), 1
   ) on conflict (environment_id, group_id) ${onConflict}`;
 
-  const v = [
-    now,
-    opts.projectId,
-    opts.environmentId,
-    opts.group.id,
-    opts.group.name,
-  ];
+  const v = [now, opts.projectId, opts.environmentId, opts.group.id, opts.group.name];
 
   await pg.query(q, v);
 
@@ -34,7 +28,7 @@ export default async function (opts, pg: PoolClient) {
   const qq = `select ${fields} from group_detail where environment_id = $1 and group_id = $2`;
   const vv = [opts.environmentId, opts.group.id];
   const result = await pg.query(qq, vv);
-  if (result.rowCount > 0) {
+  if (result.rowCount) {
     return result.rows[0];
   }
 

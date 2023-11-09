@@ -12,7 +12,7 @@ export interface Opts {
   eitapiTokenId: string;
 }
 
-export default async function getEitapiToken(opts: Opts): Promise<EnterpriseToken|null> {
+export default async function getEitapiToken(opts: Opts): Promise<EnterpriseToken | null> {
   const pg = await pgPool.connect();
   try {
     const q = `
@@ -26,11 +26,10 @@ export default async function getEitapiToken(opts: Opts): Promise<EnterpriseToke
     const result = await pg.query(q, [opts.eitapiTokenId]);
     if (result.rowCount === 1) {
       return result.rows[0];
-    } else if (result.rowCount > 1) {
+    } else if (result.rowCount && result.rowCount > 1) {
       throw new Error(`Expected row count of 1, got ${result.rowCount}`);
     }
     return null;
-
   } finally {
     pg.release();
   }

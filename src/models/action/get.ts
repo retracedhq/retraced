@@ -19,12 +19,11 @@ export default async function getAction(opts: Options): Promise<any> {
 
     const result = await pg.query(q, v);
 
-    if (result.rowCount > 0) {
+    if (result.rowCount) {
       return result.rows[0];
     }
 
     return null;
-
   } finally {
     pg.release();
   }

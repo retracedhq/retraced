@@ -7,7 +7,7 @@ export interface Options {
   environmentId: string;
 }
 
-export default async function(opts: Options) {
+export default async function (opts: Options) {
   const pg = await pgPool.connect();
   try {
     const fields = `id, environment_id, event_count, foreign_id, name, project_id, url, type,
@@ -18,25 +18,23 @@ export default async function(opts: Options) {
     const q = `select ${fields} from target where
       project_id = $1 and
       environment_id = $2`;
-    const v = [
-      opts.projectId,
-      opts.environmentId,
-    ];
+    const v = [opts.projectId, opts.environmentId];
 
     const result = await pg.query(q, v);
 
-    if (result.rowCount > 0) {
+    if (result.rowCount) {
       const targets: any = [];
       for (const row of result.rows) {
-        targets.push(Object.assign({}, row, {
-          retraced_object_type: "target",
-        }));
+        targets.push(
+          Object.assign({}, row, {
+            retraced_object_type: "target",
+          })
+        );
       }
       return targets;
     }
 
     return [];
-
   } finally {
     pg.release();
   }

@@ -34,7 +34,7 @@ const common = {
           done();
           if (qerr) {
             reject(qerr);
-          } else if (result.rowCount > 0) {
+          } else if (result.rowCount) {
             const actor = result.rows[0];
             if (useCache) {
               actorCache[id] = actor;
@@ -73,7 +73,7 @@ const common = {
           done();
           if (qerr) {
             reject(qerr);
-          } else if (result.rowCount > 0) {
+          } else if (result.rowCount) {
             const object = result.rows[0];
             if (useCache) {
               targetCache[id] = object;
@@ -112,7 +112,7 @@ const common = {
           done();
           if (qerr) {
             reject(qerr);
-          } else if (result.rowCount > 0) {
+          } else if (result.rowCount) {
             const group = result.rows[0];
             if (useCache) {
               groupCache[id] = group;

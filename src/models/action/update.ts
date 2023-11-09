@@ -1,4 +1,3 @@
-
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -8,7 +7,7 @@ export interface Options {
   displayTemplate: string;
 }
 
-export default async function(opts: Options): Promise<any> {
+export default async function (opts: Options): Promise<any> {
   const pg = await pgPool.connect();
   try {
     const values = `id, environment_id, event_count, action, project_id, display_template,
@@ -18,14 +17,11 @@ export default async function(opts: Options): Promise<any> {
 
     const q = `update action set display_template = $1 where id = $2 returning ${values}`;
 
-    const v = [
-      opts.displayTemplate,
-      opts.actionId,
-    ];
+    const v = [opts.displayTemplate, opts.actionId];
 
     const result = await pg.query(q, v);
 
-    if (result.rowCount > 0) {
+    if (result.rowCount) {
       return result.rows[0];
     }
 
