@@ -2,7 +2,7 @@ import fs from "fs";
 
 import config from "../config";
 import { ConfigManager } from "./configManager";
-import { sleep } from "./helper";
+import { getVectorConfig, sleep } from "./helper";
 import getPgPool from "../../../_db/persistence/pg";
 import graphql from "./graphql";
 
@@ -26,7 +26,7 @@ export const processConfig = async (
   const sourceName = getSourceName(tenant, name);
   const sinkName = getSinkName(tenant, name);
   console.log(`Config for ${tenant} with name ${name}`);
-  const path = `${config.configPath}/${id}.json`;
+  const path = `${config.CONFIG_PATH}/${id}.json`;
   let port;
   const configManager = ConfigManager.getInstance();
   if (configManager.configs[id]) {
@@ -44,9 +44,28 @@ export const processConfig = async (
       configPath: path,
       sourceHttpPort: port,
       sourceName,
+      sinkName,
       id,
     });
     return { sourceName, sinkName };
+  }
+};
+
+export const addConfigFromSinkRow = async (sinkRow, verify = true) => {
+  const { project_id, name, environment_id, group_id, config, id } = sinkRow;
+  const tenant = `${project_id}_${environment_id}_${group_id}`;
+  const configManager = ConfigManager.getInstance();
+  if (configManager.configs[sinkRow.id]) {
+    console.log(`Source already exists`);
+    return;
+  } else {
+    console.log(`Source does not exist, adding config`);
+    const { sourceName, sinkName } = await processConfig(tenant, name, config, id);
+    if (verify) {
+      let verified = await verifyVectorConfig(sourceName, sinkName);
+      console.log(`Verified: ${verified}`);
+    }
+    await setSinkAsActive(sinkRow.id);
   }
 };
 
@@ -59,20 +78,7 @@ export const handleSinkCreated = async (sink) => {
   } else {
     console.log(`Sink found`);
     let sinkRow = res.rows[0];
-    const { project_id, name, environment_id, group_id, config, id } = sinkRow;
-    const tenant = `${project_id}_${environment_id}_${group_id}`;
-    const sourceName = getSourceName(tenant, name);
-    const configManager = ConfigManager.getInstance();
-    if (configManager.configs[sink.id]) {
-      console.log(`Source already exists`);
-      return;
-    } else {
-      console.log(`Source does not exist, adding config`);
-      const { sourceName, sinkName } = await processConfig(tenant, name, config, id);
-      let verified = await verifyVectorConfig(sourceName, sinkName);
-      console.log(`Verified: ${verified}`);
-      await setSinkAsActive(sink.id);
-    }
+    await addConfigFromSinkRow(sinkRow);
   }
 };
 
@@ -108,7 +114,7 @@ export const handleSinkUpdated = async (sink) => {
       // update existing config
       console.log(`Source already exists`);
       const newConfig = getVectorConfig(sourceName, currentConfig.sourceHttpPort, sinkName, _config);
-      const path = `${config.configPath}/${sink.id}.json`;
+      const path = `${config.CONFIG_PATH}/${sink.id}.json`;
       if (path !== currentConfig.configPath) {
         fs.unlinkSync(currentConfig.configPath);
       }
@@ -122,6 +128,7 @@ export const handleSinkUpdated = async (sink) => {
         configPath: path,
         sourceHttpPort: currentConfig.sourceHttpPort,
         sourceName,
+        sinkName,
         id,
       });
       await setSinkAsActive(sink.id);
@@ -133,7 +140,7 @@ export const handleSinkDeleted = async (sink) => {
   const instance = ConfigManager.getInstance();
   const config = Object.values(instance.configs).find((c) => c.id === sink.id);
   if (config) {
-    const { sourceName, configPath } = config;
+    const { configPath } = config;
     fs.existsSync(configPath) && fs.unlinkSync(configPath);
     delete instance.configs[sink.id];
     console.log(`Config deleted`);
@@ -172,22 +179,3 @@ export const verifyVectorConfig = async (sourceName, sinkName) => {
     return false;
   }
 };
-export function getVectorConfig(sourceName: string, port: any, sinkName: string, sink: any) {
-  const source = {
-    [sourceName]: {
-      type: "http_server",
-      address: `0.0.0.0:${port}`,
-      healthcheck: true,
-    },
-  };
-  const finalConfig = {
-    sources: source,
-    sinks: {
-      [sinkName]: {
-        ...sink,
-        inputs: [sourceName],
-      },
-    },
-  };
-  return finalConfig;
-}

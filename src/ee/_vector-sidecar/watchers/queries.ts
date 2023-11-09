@@ -1,7 +1,7 @@
 import config from "../config";
 
 const componentErrorsTotals = `subscription {
-    componentErrorsTotals(interval: ${config.graphQLSubscriptionInterval}) {
+    componentErrorsTotals(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
         componentId
         metric {
             errorsTotal
@@ -11,7 +11,7 @@ const componentErrorsTotals = `subscription {
 }`;
 
 const componentReceivedEventsThroughput = `subscription {
-    componentReceivedEventsThroughputs(interval: ${config.graphQLSubscriptionInterval}) {
+    componentReceivedEventsThroughputs(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
         componentId
         throughput
         __typename
@@ -19,7 +19,7 @@ const componentReceivedEventsThroughput = `subscription {
 }`;
 
 const componentReceivedEventsTotals = `subscription {
-    componentReceivedEventsTotals(interval: ${config.graphQLSubscriptionInterval}) {
+    componentReceivedEventsTotals(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
         componentId
         metric {
             timestamp
@@ -30,7 +30,7 @@ const componentReceivedEventsTotals = `subscription {
 }`;
 
 const componentSentEventsThroughputs = `subscription {
-    componentSentEventsThroughputs(interval: ${config.graphQLSubscriptionInterval}) {
+    componentSentEventsThroughputs(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
 		componentId
 		throughput
         outputs {
@@ -42,7 +42,7 @@ const componentSentEventsThroughputs = `subscription {
 }`;
 
 const componentSentEventsTotals = `subscription {
-    componentSentEventsTotals(interval: ${config.graphQLSubscriptionInterval}) {
+    componentSentEventsTotals(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
 		componentId
         outputs {
         outputId
@@ -60,7 +60,7 @@ const componentSentEventsTotals = `subscription {
 }`;
 
 const componentReceivedBytesTotals = `subscription {
-    componentReceivedBytesTotals(interval: ${config.graphQLSubscriptionInterval}) {
+    componentReceivedBytesTotals(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
 		componentId
         metric {
             timestamp
@@ -71,7 +71,7 @@ const componentReceivedBytesTotals = `subscription {
 }`;
 
 const componentReceivedBytesThroughputs = `subscription {
-    componentReceivedBytesThroughputs(interval: ${config.graphQLSubscriptionInterval}) {
+    componentReceivedBytesThroughputs(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
 		componentId
         throughput
         __typename
@@ -79,7 +79,7 @@ const componentReceivedBytesThroughputs = `subscription {
 }`;
 
 const componentSentBytesTotals = `subscription {
-    componentSentBytesTotals(interval: ${config.graphQLSubscriptionInterval}) {
+    componentSentBytesTotals(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
 		componentId
         metric {
             timestamp
@@ -90,7 +90,7 @@ const componentSentBytesTotals = `subscription {
 }`;
 
 const componentSentBytesThroughputs = `subscription {
-    componentSentBytesThroughputs(interval: ${config.graphQLSubscriptionInterval}) {
+    componentSentBytesThroughputs(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
         componentId
         throughput
         __typename
@@ -98,7 +98,7 @@ const componentSentBytesThroughputs = `subscription {
 }`;
 
 const errorsTotal = `subscription {
-    errorsTotal(interval: ${config.graphQLSubscriptionInterval}) {
+    errorsTotal(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
         timestamp
         errorsTotal
         __typename
@@ -106,7 +106,7 @@ const errorsTotal = `subscription {
 }`;
 
 const allocatedBytes = `subscription {
-    allocatedBytes(interval: ${config.graphQLSubscriptionInterval}) {
+    allocatedBytes(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
         timestamp
         allocatedBytes
         __typename
@@ -114,7 +114,7 @@ const allocatedBytes = `subscription {
 }`;
 
 const componentAllocatedBytes = `subscription {
-    componentAllocatedBytes(interval: ${config.graphQLSubscriptionInterval}) {
+    componentAllocatedBytes(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {
         componentId
         metric {
             timestamp
@@ -150,19 +150,19 @@ const componentRemoved = `subscription {
 }`;
 
 export default {
-  componentReceivedEventsThroughput,
-  componentReceivedBytesThroughputs,
-  componentSentEventsThroughputs,
+  //   componentReceivedEventsThroughput,
+  //   componentSentEventsThroughputs,
   componentReceivedEventsTotals,
-  componentSentBytesThroughputs,
-  componentReceivedBytesTotals,
   componentSentEventsTotals,
-  componentSentBytesTotals,
-  componentAllocatedBytes,
-  componentErrorsTotals,
-  componentRemoved,
-  allocatedBytes,
-  componentAdded,
   errorsTotal,
-  metrics,
+  //   componentReceivedBytesThroughputs,
+  //   componentSentBytesTotals,
+  //   componentAllocatedBytes,
+  componentErrorsTotals,
+  //   componentSentBytesThroughputs,
+  //   componentReceivedBytesTotals,
+  //   componentRemoved,
+  //   allocatedBytes,
+  //   componentAdded,
+  //   metrics,
 };

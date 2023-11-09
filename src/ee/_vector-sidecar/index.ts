@@ -3,8 +3,7 @@ import setupRoutes from "./routes";
 import config from "./config";
 import { ConfigManager } from "./services/configManager";
 import watchers from "./watchers";
-import nsq from "../../_processor/persistence/nsq";
-import { handleSinkCreated, handleSinkDeleted, handleSinkUpdated } from "./services/vector";
+import { addConsumers } from "./watchers/consumers";
 
 ConfigManager.init();
 watchers.init();
@@ -14,8 +13,8 @@ app.use(express.json());
 
 setupRoutes(app);
 
-app.listen(config.port, () => {
-  console.log(`Vector Management API listening at http://localhost:${config.port}`);
+app.listen(config.PORT, () => {
+  console.log(`Vector Management API listening at http://localhost:${config.PORT}`);
 });
 
 // detect CTRL-C and gracefully exit
@@ -24,44 +23,10 @@ process.on("SIGINT", () => {
   process.exit();
 });
 
-nsq.consume(
-  "sink_created",
-  "vector_sidecar",
-  async (msg) => {
-    const sink = JSON.parse(msg.body);
-    await handleSinkCreated(sink);
-  },
-  {
-    maxAttempts: 1,
-    maxInFlight: 5,
-    messageTimeoutMS: 10000,
-  }
-);
+// catch all uncaught exceptions
+process.on("uncaughtException", (err) => {
+  console.log("Uncaught exception");
+  console.error(err);
+});
 
-nsq.consume(
-  "sink_deleted",
-  "vector_sidecar",
-  async (msg) => {
-    const sink = JSON.parse(msg.body);
-    await handleSinkDeleted(sink);
-  },
-  {
-    maxAttempts: 1,
-    maxInFlight: 5,
-    messageTimeoutMS: 10000,
-  }
-);
-
-nsq.consume(
-  "sink_updated",
-  "vector_sidecar",
-  async (msg) => {
-    const sink = JSON.parse(msg.body);
-    await handleSinkUpdated(sink);
-  },
-  {
-    maxAttempts: 1,
-    maxInFlight: 5,
-    messageTimeoutMS: 10000,
-  }
-);
+addConsumers();

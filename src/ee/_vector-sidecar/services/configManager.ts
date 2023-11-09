@@ -1,10 +1,12 @@
 import fs from "fs";
 import { VectorConfig } from "../types";
 import config from "../config";
+import { getVectorConfig } from "./helper";
 
 export type Config = {
   configPath: string;
   sourceName: string;
+  sinkName: string;
   sourceHttpPort: number;
   id?: string;
 };
@@ -13,12 +15,27 @@ type ConfigMap = {
   [key: string]: Config;
 };
 
+type ComponenetReceivedEventsStats = {
+  [key: string]: number;
+};
+
+type ComponenetSentEventsStats = {
+  [key: string]: number;
+};
+
+type SinkRetryDiff = {
+  [key: string]: number;
+};
+
 // a singleton class that manages the configuration for the vector instance
 export class ConfigManager {
   portBanList = new Set<number>();
   private static instance: ConfigManager;
   initConfig: { configPath: string; sourceName: string; sourceHttpPort: number };
   configs: ConfigMap = {};
+  receivedEvents: ComponenetReceivedEventsStats = {};
+  sentEvents: ComponenetSentEventsStats = {};
+  sinkRetryDiff: SinkRetryDiff = {};
 
   static getInstance() {
     if (!ConfigManager.instance) {
@@ -31,10 +48,25 @@ export class ConfigManager {
     ConfigManager.getInstance();
   }
 
+  updateReceivedEventsStats(componentId: string, receivedEventsTotal: number) {
+    this.receivedEvents[componentId] = receivedEventsTotal;
+  }
+
+  updateSentEventsStats(componentId: string, sentEventsTotal: number) {
+    this.sentEvents[componentId] = sentEventsTotal;
+  }
+
+  updateSinkRetryDiff(componentId: string, diff: number) {
+    this.sinkRetryDiff[componentId] = diff;
+  }
+
   private constructor() {
-    this.portBanList.add(config.vectorAPIPort);
-    this.portBanList.add(config.port);
+    this.portBanList.add(config.VECTOR_API_PORT);
+    this.portBanList.add(config.PORT);
     try {
+      if (config.MODE === "sidecar") {
+        this.loadExistingConfigs();
+      }
       const content = fs.readFileSync("/etc/vector/config/vector.json", "utf8");
       const json = JSON.parse(content) as VectorConfig;
       const initSourceName = Object.keys(json.sources)[0];
@@ -49,7 +81,52 @@ export class ConfigManager {
     }
   }
 
-  addConfig(config: { configPath: string; sourceName: string; sourceHttpPort: number; id: string }) {
+  private loadExistingConfigs() {
+    try {
+      // read all json file from /etc/vector/config
+      // and add them to the configs map
+      const files = fs.readdirSync("/etc/vector/config");
+      for (const file in files) {
+        if (!files[file].endsWith(".json") || files[file] === "vector.json") {
+          continue;
+        }
+        const path = `/etc/vector/config/${files[file]}`;
+        const content = fs.readFileSync(path, "utf8");
+        const json = JSON.parse(content) as VectorConfig;
+        const sourceName = Object.keys(json.sources)[0];
+        let sourceHttpPort: number | undefined =
+          Number(json.sources[sourceName]?.address?.split(":")[1]) || 9000;
+        const sinkName = Object.keys(json.sinks)[0];
+        if (this.isPortOccupied(sourceHttpPort)) {
+          sourceHttpPort = this.findAvailableSourcePort();
+          if (!sourceHttpPort) {
+            console.log("No available port");
+            continue;
+          }
+          const newConfig = getVectorConfig(sourceName, sourceHttpPort, sinkName, json.sinks[sinkName]);
+          fs.writeFileSync(path, JSON.stringify(newConfig));
+        }
+        const id = files[file].split(".")[0];
+        this.addConfig({
+          configPath: path,
+          sourceHttpPort,
+          sourceName,
+          sinkName,
+          id,
+        });
+      }
+    } catch (ex) {
+      console.log(ex);
+    }
+  }
+
+  addConfig(config: {
+    configPath: string;
+    sourceName: string;
+    sinkName: string;
+    sourceHttpPort: number;
+    id: string;
+  }) {
     this.configs[config.id] = config;
     console.log(
       `Added config for ${config.sourceName} with port ${config.sourceHttpPort} and path ${config.configPath}`
@@ -72,5 +149,10 @@ export class ConfigManager {
         return i;
       }
     }
+  }
+  isPortOccupied(port: number) {
+    const values = Object.values(this.configs);
+    const usedPorts = Array.from(values).map((c) => c.sourceHttpPort);
+    return this.portBanList.has(port) || usedPorts.includes(port);
   }
 }

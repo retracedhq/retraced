@@ -108,6 +108,8 @@ services:
       - POSTGRES_USER=retraced
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=retraced
+    # volumes:
+    #   - postgres-data:/var/lib/postgresql/data
     networks:
       - retraced
     restart: "always"
@@ -236,14 +238,24 @@ services:
       - POSTGRES_PORT=5432
       - POSTGRES_DATABASE=retraced
       - POSTGRES_HOST=postgres
+      - PG_SEARCH=${PG_SEARCH}
+      - ELASTICSEARCH_NODES=http://elasticsearch:9200
     ports:
       - "8686:8686"
       - "9393:9229"
       - "3002:3002"
+      - "9999:9999"
     volumes:
-      - ./vector.toml:/etc/vector/vector.toml
       - ./vector/data:/var/lib/vector/
+    depends_on:
+      elasticsearch:
+        condition: service_started
+      postgres:
+        condition: service_started
+      nsqd:
+        condition: service_started
     networks:
       - retraced
 volumes:
   mmdb:
+  postgres-data:

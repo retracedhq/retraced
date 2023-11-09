@@ -21,7 +21,7 @@ const getAllComponents = (): Promise<Component[]> => {
     }`,
     };
     axios
-      .post(`http://localhost:${config.vectorAPIPort}/graphql`, body)
+      .post(`http://localhost:${config.VECTOR_API_PORT}/graphql`, body)
       .then((response) => {
         resolve((response.data?.data?.components?.edges || []).map((edge) => edge.node));
       })
@@ -48,7 +48,7 @@ const getAllComponentsByType = (type: componentKind): Promise<Component[]> => {
       }
     }`,
     };
-    const url = `http://localhost:${config.vectorAPIPort}/graphql`;
+    const url = `http://localhost:${config.VECTOR_API_PORT}/graphql`;
 
     axios
       .post(url, body)
@@ -78,7 +78,7 @@ const getComponentByName = (name: string): Promise<Component> => {
         }
       }`,
     };
-    const url = `http://localhost:${config.vectorAPIPort}/graphql`;
+    const url = `http://localhost:${config.VECTOR_API_PORT}/graphql`;
 
     axios
       .post(url, body)
@@ -95,7 +95,7 @@ const getComponentByName = (name: string): Promise<Component> => {
 };
 
 const client = createClient({
-  url: `ws://localhost:${config.vectorAPIPort}/graphql`,
+  url: `ws://localhost:${config.VECTOR_API_PORT}/graphql`,
   webSocketImpl: WebSocket,
 });
 

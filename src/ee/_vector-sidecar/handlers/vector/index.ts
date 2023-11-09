@@ -7,7 +7,7 @@ import { processConfig, setSinkAsActive, verifyVectorConfig } from "../../servic
 
 export const getHealth = (req, res) => {
   console.log("Vector health check");
-  const url = `http://localhost:${config.vectorAPIPort}/health`;
+  const url = `http://localhost:${config.VECTOR_API_PORT}/health`;
 
   axios
     .get(url)

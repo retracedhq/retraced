@@ -2,7 +2,8 @@ module.exports = {
   apps: [
     {
       name: "vector", // Name of the application (you can choose any name)
-      script: "vector -w --config-dir /etc/vector/config",
+      script:
+        "MODE=bootstrap node --inspect=0.0.0.0:9999 --enable-source-maps /src/build/src/ee/_vector-sidecar/bootstrap.js && vector -w --config-dir /etc/vector/config",
       exec_interpreter: "none", // Don't use an interpreter
       instances: 1, // Number of instances to run (1 for a single instance)
       exec_mode: "fork", // Use "fork" as the execution mode

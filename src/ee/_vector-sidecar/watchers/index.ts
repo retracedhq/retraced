@@ -1,5 +1,7 @@
-import graphql from '../services/graphql';
-import queries from './queries';
+import { ConfigManager } from "../services/configManager";
+import graphql from "../services/graphql";
+import { sleep } from "../services/helper";
+import queries from "./queries";
 const subscriptions = {};
 
 type ComponentErrorsTotals = {
@@ -103,32 +105,39 @@ type MetricType = {
 
 const handleEvent = (event: any, name: string) => {
   let data;
+  const instance = ConfigManager.getInstance();
   switch (name) {
-    case 'componentErrorsTotals':
+    case "componentErrorsTotals":
       data = event.data.componentErrorsTotals as ComponentErrorsTotals[];
       if (data.length > 0) {
         console.log(
-          data.map((d: ComponentErrorsTotals) => `${d.componentId}: ${d?.metric?.errorsTotal}`).join('\n')
+          data.map((d: ComponentErrorsTotals) => `${d.componentId}: ${d?.metric?.errorsTotal}`).join("\n")
         );
       }
       break;
-    case 'componentReceivedEventsThroughput':
+    case "componentReceivedEventsThroughput":
       data = event.data.componentReceivedEventsThroughputs as ComponentReceivedEventsThroughput[];
       if (data.length > 0) {
         console.table(data);
       }
       break;
-    case 'componentReceivedEventsTotals':
+    case "componentReceivedEventsTotals":
       data = event.data.componentReceivedEventsTotals as ComponentReceivedEventsTotal[];
       if (data.length > 0) {
-        console.log(
-          data
-            .map((d: ComponentReceivedEventsTotal) => `${d.componentId}: ${d?.metric?.receivedEventsTotal}`)
-            .join('\n')
-        );
+        console.log(name);
+        for (const d of data) {
+          if (d?.metric?.receivedEventsTotal) {
+            if (!isNaN(d?.metric?.receivedEventsTotal)) {
+              if (d?.metric?.receivedEventsTotal > 0) {
+                console.log(`${d.componentId}: ${d?.metric?.receivedEventsTotal}`);
+                instance.updateReceivedEventsStats(d.componentId, d?.metric?.receivedEventsTotal || 0);
+              }
+            }
+          }
+        }
       }
       break;
-    case 'componentSentEventsThroughputs':
+    case "componentSentEventsThroughputs":
       data = event.data.componentSentEventsThroughputs as ComponentSentEventsThroughput[];
       if (data.length > 0) {
         console.log(
@@ -142,19 +151,19 @@ const handleEvent = (event: any, name: string) => {
         );
       }
       break;
-    case 'componentReceivedBytesThroughputs':
+    case "componentReceivedBytesThroughputs":
       data = event.data.componentReceivedBytesThroughputs as ComponentReceivedBytesThroughput[];
       if (data.length > 0) {
         console.table(data);
       }
       break;
-    case 'componentSentBytesThroughputs':
+    case "componentSentBytesThroughputs":
       data = event.data.componentSentBytesThroughputs as ComponentSentBytesThroughput[];
       if (data.length > 0) {
         console.table(data);
       }
       break;
-    case 'componentReceivedBytesTotals':
+    case "componentReceivedBytesTotals":
       data = event.data.componentReceivedBytesTotals as ComponentReceivedBytesTotal[];
       if (data.length > 0) {
         console.table(
@@ -167,57 +176,63 @@ const handleEvent = (event: any, name: string) => {
         );
       }
       break;
-    case 'componentSentEventsTotals':
+    case "componentSentEventsTotals":
       data = event.data.componentSentEventsTotals as ComponentSentEventsTotal[];
       if (data.length > 0) {
-        console.log(
-          data
-            .map((d: ComponentSentEventsTotal) => `${d.componentId}: ${d?.metric?.sentEventsTotal}`)
-            .join('\n')
-        );
+        console.log(name);
+        for (const d of data) {
+          if (d?.metric?.sentEventsTotal) {
+            if (!isNaN(d?.metric?.sentEventsTotal)) {
+              if (d?.metric?.sentEventsTotal > 0) {
+                console.log(`${d.componentId}: ${d?.metric?.sentEventsTotal}`);
+                instance.updateSentEventsStats(d.componentId, d?.metric?.sentEventsTotal);
+              }
+            }
+          }
+        }
       }
       break;
-    case 'componentSentBytesTotals':
+    case "componentSentBytesTotals":
       data = event.data.componentSentBytesTotals as ComponentSentBytesTotal[];
       if (data.length > 0) {
         console.log(
           data
             .map((d: ComponentSentBytesTotal) => `${d.componentId}: ${d?.metric?.sentBytesTotal}`)
-            .join('\n')
+            .join("\n")
         );
       }
       break;
-    case 'componentAllocatedBytes':
+    case "componentAllocatedBytes":
       data = event.data.componentAllocatedBytes as ComponentAllocatedBytes[];
       if (data.length > 0) {
         console.log(
           data
             .map((d: ComponentAllocatedBytes) => `${d.componentId}: ${d?.metric?.allocatedBytes}`)
-            .join('\n')
+            .join("\n")
         );
       }
       break;
-    case 'componentRemoved':
+    case "componentRemoved":
       console.log(data);
       data = event.data.componentRemoved as Component;
       if (data) {
         console.log(`componentId: ${data.componentId}, componentType: ${data.componentType}`);
       }
       break;
-    case 'allocatedBytes':
+    case "allocatedBytes":
       data = event.data.allocatedBytes as AllocatedBytes;
       if (data) {
         console.log(`timestamp: ${data.timestamp}, allocatedBytes: ${data.allocatedBytes}`);
       }
       break;
-    case 'componentAdded':
+    case "componentAdded":
       console.log(data);
       data = event.data.componentRemoved as Component;
       if (data) {
         console.log(`componentId: ${data.componentId}, componentType: ${data.componentType}`);
       }
       break;
-    case 'metrics':
+    case "metrics":
       data = event.data.metrics as MetricType;
       if (data) {
         console.log(`timestamp: ${data.timestamp}`);
@@ -240,7 +255,16 @@ const init = async () => {
     subscriptions[queryName] = graphql.graphQLWSClient.iterate({
       query: queries[queryName],
     });
-    attachListensers(subscriptions[queryName], queryName);
+    do {
+      try {
+        await attachListensers(subscriptions[queryName], queryName);
+        break;
+      } catch (ex) {
+        console.log("[attachListensers]", ex);
+        console.log(`[attachListensers] Retrying...`);
+        sleep(1000);
+      }
+    } while (true);
   }
 };
 
