@@ -33,7 +33,7 @@ export default function listTeamMembers(opts) {
         done();
         if (qerr) {
           reject(qerr);
-        } else if (result.rowCount > 0) {
+        } else if (result.rowCount) {
           resolve(result.rows);
         } else {
           resolve([]);

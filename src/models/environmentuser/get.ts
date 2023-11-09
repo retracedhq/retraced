@@ -15,9 +15,7 @@ interface Record {
   email_token: string;
 }
 
-export default async function getEnvironmentUser(
-  opts: Opts
-): Promise<null | Record> {
+export default async function getEnvironmentUser(opts: Opts): Promise<null | Record> {
   const q = `
     select
       environment_id, user_id, daily_report, anomaly_report, email_token
@@ -31,7 +29,7 @@ export default async function getEnvironmentUser(
   const result = await pgPool.query(q, v);
   if (result.rowCount === 1) {
     return result.rows[0];
-  } else if (result.rowCount > 1) {
+  } else if (result.rowCount && result.rowCount > 1) {
     throw new Error(`Expected row count of 1, got ${result.rowCount}`);
   }
   return null;

@@ -9,7 +9,7 @@ const pgPool = getPgPool();
  *
  * param {string} [group_ids] The unique group id(s) to fetch
  */
-export default async function(opts) {
+export default async function (opts) {
   if (opts.group_ids.length === 0) {
     return [];
   }
@@ -26,11 +26,10 @@ export default async function(opts) {
     const q = `select ${fields} from group_detail where group_id in (${tokenList})`;
     const v = opts.group_ids;
     const result = await pg.query(q, v);
-    if (result.rowCount > 0) {
+    if (result.rowCount) {
       return result.rows;
     }
     return [];
-
   } finally {
     pg.release();
   }

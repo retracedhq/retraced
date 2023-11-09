@@ -31,5 +31,5 @@ export default async function listProjects(opts: Options) {
 
   const result = await pgPool.query(q, v);
 
-  return result.rowCount > 0 ? result.rows : [];
+  return result.rowCount ? result.rows : [];
 }

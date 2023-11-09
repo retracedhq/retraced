@@ -7,7 +7,7 @@ export interface Options {
   environmentId: string;
 }
 
-export default async function(opts: Options): Promise<any> {
+export default async function (opts: Options): Promise<any> {
   const pg = await pgPool.connect();
   try {
     const values = `id, environment_id, event_count, action, project_id, display_template,
@@ -18,18 +18,14 @@ export default async function(opts: Options): Promise<any> {
     const q = `select ${values} from action where
       project_id = $1 and
       environment_id = $2 order by action`;
-    const v = [
-      opts.projectId,
-      opts.environmentId,
-    ];
+    const v = [opts.projectId, opts.environmentId];
 
     const result = await pg.query(q, v);
-    if (result.rowCount > 0) {
+    if (result.rowCount) {
       return result.rows;
     }
 
     return [];
-
   } finally {
     pg.release();
   }

@@ -15,7 +15,7 @@ export default async function listInvites(opts: Options): Promise<Invite[]> {
   const q = `select ${fields} from invite where project_id = $1 order by created asc`;
   const v = [opts.projectId];
   const result = await pgPool.query(q, v);
-  if (result.rowCount > 0) {
+  if (result.rowCount) {
     return result.rows.map((row) => ({
       id: row.id,
       email: row.email,

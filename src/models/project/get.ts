@@ -24,7 +24,7 @@ export default function getProject(projectId): Promise<any> {
         done();
         if (qerr) {
           reject(qerr);
-        } else if (result.rowCount > 0) {
+        } else if (result.rowCount) {
           resolve(result.rows[0]);
         } else {
           resolve({});
