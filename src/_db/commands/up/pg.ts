@@ -37,12 +37,9 @@ export const handler = async (argv) => {
   try {
     const postgrator = (await import("postgrator")).default;
     logger.child({ up: "pg", schemaPath: argv.schemaPath }).info("beginning handler");
-    let cs;
-    if (argv.postgresSsl) {
-      cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}?sslmode=require`;
-    } else {
-      cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`;
-    }
+    const cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${
+      argv.postgresPort
+    }/${argv.postgresDatabase}${argv.postgresSsl ? "?sslmode=require" : ""}`;
     const client = new pg.Client(cs);
     // Establish a database connection
     await client.connect();
