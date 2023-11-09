@@ -13,12 +13,9 @@
     }
   },
   "sinks": {
-    "console_sink": {
+    "blackhole_sink": {
       "inputs": ["webhook_source"],
-      "type": "console",
-      "encoding": {
-        "codec": "json"
-      }
+      "type": "blackhole"
     }
   }
 }

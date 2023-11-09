@@ -7,6 +7,7 @@ import search from "../../../handlers/graphql/search";
 import axios from "axios";
 
 const pg = getPgPool();
+let pullHandlerRunning = false;
 
 export function addConsumers() {
   nsq.consume(
@@ -71,10 +72,16 @@ export function addConsumers() {
     "vector_sidecar",
     async (msg) => {
       try {
+        if (pullHandlerRunning) {
+          msg.finish();
+          return;
+        }
+        pullHandlerRunning = true;
         const keys = Object.keys(ConfigManager.getInstance().configs);
         const instance = ConfigManager.getInstance();
         if (keys.length === 0) {
           msg.finish();
+          pullHandlerRunning = false;
           return;
         }
         const q = `SELECT * FROM vectorsink WHERE id IN ('${keys.join("','")}')`;
@@ -82,6 +89,7 @@ export function addConsumers() {
         const sinks = await pg.query(q);
         if (sinks.rowCount === 0) {
           msg.finish();
+          pullHandlerRunning = false;
           return;
         } else {
           for (const sink of sinks.rows) {
@@ -182,8 +190,10 @@ export function addConsumers() {
             );
           }
           msg.finish();
+          pullHandlerRunning = false;
         }
       } catch (ex) {
+        pullHandlerRunning = false;
         console.log(ex);
         msg.requeue(15000, true);
       }
