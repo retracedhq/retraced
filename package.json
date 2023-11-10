@@ -59,7 +59,7 @@
     "@types/lodash": "4.14.201",
     "@types/mocha": "10.0.3",
     "@types/node": "20.9.0",
-    "@types/nodemailer": "6.4.13",
+    "@types/nodemailer": "6.4.14",
     "@types/pg": "8.10.9",
     "@types/sinon": "17.0.1",
     "@types/swagger-jsdoc": "6.0.2",
