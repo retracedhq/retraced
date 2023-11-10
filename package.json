@@ -61,7 +61,7 @@
     "@types/node": "20.9.0",
     "@types/nodemailer": "6.4.13",
     "@types/pg": "8.10.9",
-    "@types/sinon": "10.0.20",
+    "@types/sinon": "17.0.1",
     "@types/swagger-jsdoc": "6.0.2",
     "@types/yargs": "17.0.31",
     "@typescript-eslint/eslint-plugin": "6.10.0",
