@@ -51,7 +51,7 @@ export default function createProject(opts) {
 
         // Report this project as a user to segment
         if (config.SEGMENT_WRITE_KEY) {
-          const analytics = new Analytics(config.SEGMENT_WRITE_KEY);
+          const analytics = new Analytics({ writeKey: config.SEGMENT_WRITE_KEY });
           analytics.identify({
             userId: project.id,
             traits: {
