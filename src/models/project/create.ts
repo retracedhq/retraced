@@ -1,4 +1,4 @@
-import Analytics from "analytics-node";
+import { Analytics } from "@segment/analytics-node";
 import moment from "moment";
 
 import getPgPool from "../../persistence/pg";
@@ -56,7 +56,7 @@ export default function createProject(opts) {
             userId: project.id,
             traits: {
               name: project.name,
-              createdAt: project.created,
+              createdAt: new Date(),
             },
           });
         }
