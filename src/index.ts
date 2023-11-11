@@ -2,7 +2,6 @@ import url from "url";
 import express from "express";
 import cors from "cors";
 import _ from "lodash";
-import Sigsci from "sigsci-module-nodejs";
 import Bugsnag from "@bugsnag/js";
 import swaggerUI from "swagger-ui-express";
 import config from "./config";
@@ -32,16 +31,6 @@ if (config.API_BASE_URL_PATH) {
   basePath = url.parse(config.API_BASE_URL_PATH || "").pathname || "";
 }
 logger.info(`listening on basePath ${basePath}`);
-
-// Sigsci middleware has to be installed before routes and other middleware
-if (!config.SIGSCI_RPC_ADDRESS) {
-  logger.error("SIGSCI_RPC_ADDRESS not set, Signal Sciences module will not be installed");
-} else {
-  const sigsci = new Sigsci({
-    path: config.SIGSCI_RPC_ADDRESS,
-  });
-  app.use(sigsci.express());
-}
 
 app.set("etag", false); // we're doing our own etag thing I guess
 // The nearest ip address in the X-Forwarded-For header not in a private
@@ -102,18 +91,15 @@ function buildRoutes() {
 export function registerHealthchecks() {
   // Needed for Kubernetes health checks
   app.get("/", (req, res) => {
-    // trying a slight delay to keep sigsci from freaking out
-    setTimeout(() => res.send(""), 200);
+    res.send("");
   });
   app.get(`${basePath}/`, (req, res) => {
-    // trying a slight delay to keep sigsci from freaking out
-    setTimeout(() => res.send(""), 200);
+    res.send("");
   });
 
   // Needed for Kubernetes health checks
   app.get("/healthz", (req, res) => {
-    // trying a slight delay to keep sigsci from freaking out
-    setTimeout(() => res.send(""), 200);
+    res.send("");
   });
 
   // Needed for Kubernetes health checks
