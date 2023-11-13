@@ -6,7 +6,6 @@ import { defaultEventCreater, CreateEventRequest } from "../createEvent";
 import handler from "../graphql/handler";
 
 export default async function(req) {
-  console.log("graphql viewer, req: ", req);
   const claims = await checkViewerAccess(req);
   const thisViewEvent: CreateEventRequest = {
     action: claims.viewLogAction,
