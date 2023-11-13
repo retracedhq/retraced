@@ -6,7 +6,6 @@ import { parse, validate } from "graphql";
 import { specifiedRules } from "graphql/validation";
 
 specifiedRules.push(NoDuplicateFields);
-console.log("initializing specifiedRules: ", specifiedRules);
 
 @suite class GraphqlTest {
     @test public async "Graphql#validateValidFullSearch()"() {
@@ -69,6 +68,7 @@ console.log("initializing specifiedRules: ", specifiedRules);
         var documentAST = parse(query);
         const errors = validate(schema, documentAST);
         expect(errors).to.not.be.empty;
+        expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
     }
 
     @test public async "Graphql#validateAliasOverload()"() {
@@ -79,6 +79,7 @@ console.log("initializing specifiedRules: ", specifiedRules);
         var documentAST = parse(query);
         const errors = validate(schema, documentAST);
         expect(errors).to.not.be.empty;
+        expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
     }
 }
 
