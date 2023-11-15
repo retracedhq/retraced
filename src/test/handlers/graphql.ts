@@ -6,8 +6,8 @@ import schema from "../../handlers/graphql/schema";
 // (specifiedRules as Array<any>).push(NoDuplicateFields);
 
 @suite
-class GraphqlTest {
-  @test public async "Graphql#validateValidFullSearch()"() {
+export class GraphqlTest {
+  @test public "Graphql#validateValidFullSearch()"() {
     const query = `
       query Search($query: String!, $last: Int, $before: String) {
         search(query: $query, last: $last, before: $before) {
@@ -54,26 +54,26 @@ class GraphqlTest {
         }
       }`;
     const errors = validateQuery(query, schema);
-    expect(errors).to.be.empty;
+    return expect(errors).to.be.empty;
   }
 
-  @test public async "Graphql#validateDupFields()"() {
+  @test public "Graphql#validateDupFields()"() {
     const query = `
         query Search($query: String!, $last: Int, $before: String) {
           search(query: $query, last: $last, before: $before) { totalCount totalCount }
         }`;
     const errors = validateQuery(query, schema);
     expect(errors).to.not.be.empty;
-    expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
+    return expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
   }
 
-  @test public async "Graphql#validateAliasOverload()"() {
+  @test public "Graphql#validateAliasOverload()"() {
     const query = `
         query Search($query: String!, $last: Int, $before: String) {
           search(query: $query, last: $last, before: $before) { a1:totalCount a2:totalCount }
         }`;
     const errors = validateQuery(query, schema);
     expect(errors).to.not.be.empty;
-    expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
+    return expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
   }
 }

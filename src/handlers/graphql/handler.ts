@@ -46,7 +46,7 @@ export default async function (req, context: Scope) {
  * See https://medium.com/@ibm_ptc_security/denial-of-service-attacks-with-graphql-77189a6ba85b
  */
 export function NoDuplicateFields(context) {
-  const fields = new Set<String>();
+  const fields = new Set<string>();
   return {
     Field: (node) => {
       const type = context.getParentType();
@@ -61,9 +61,13 @@ export function NoDuplicateFields(context) {
   };
 }
 
+/**
+ *
+ * Reference: https://stackoverflow.com/questions/58859146/graphql-requesting-fields-that-dont-exist-without-error
+ */
 export function validateQuery(query: string, gqlSchame: any): GraphQLError[] {
   const validationRules = [...specifiedRules, NoDuplicateFields];
-  var documentAST = parse(query);
+  const documentAST = parse(query);
   const errors = validate(gqlSchame, documentAST, validationRules);
   return [...errors];
 }
