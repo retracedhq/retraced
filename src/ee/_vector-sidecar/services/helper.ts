@@ -1,3 +1,5 @@
+import config from "../config";
+
 export const getSafeFileName = (tenant: string, name: string): string => {
   var s = `${tenant}_${name}`;
   var filename = s.replace(/[^a-z0-9]/gi, "_").toLowerCase();
@@ -6,6 +8,10 @@ export const getSafeFileName = (tenant: string, name: string): string => {
 
 export const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+export const getVectorConfigPath = (id: string): string => {
+  return `${config.CONFIG_PATH}/${id}.json`;
 };
 
 export function getVectorConfig(sourceName: string, port: any, sinkName: string, sink: any) {
@@ -34,5 +40,21 @@ export function getVectorConfig(sourceName: string, port: any, sinkName: string,
       },
     },
   };
+  if (sink.type === "splunk_hec_logs") {
+    const transformName = `transform_${sourceName}_to_${sinkName}`;
+    const transform = {
+      [transformName]: {
+        type: "remap",
+        inputs: [sourceName],
+        source: `.event = parse_json!(parse_json!(.message).message)
+        .time = .event.created
+        .host = "localhost"
+        .source = "vector"
+        del(.message)`,
+      },
+    };
+    finalConfig["transforms"] = transform;
+    finalConfig.sinks[sinkName].inputs = [transformName];
+  }
   return finalConfig;
 }

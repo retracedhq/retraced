@@ -7,6 +7,7 @@ import search from "../../../handlers/graphql/search";
 import axios from "axios";
 
 const pg = getPgPool();
+const batchSize = 10000;
 let pullHandlerRunning = false;
 
 export function addConsumers() {
@@ -85,7 +86,6 @@ export function addConsumers() {
           return;
         }
         const q = `SELECT * FROM vectorsink WHERE id IN ('${keys.join("','")}')`;
-        console.log(q);
         const sinks = await pg.query(q);
         if (sinks.rowCount === 0) {
           msg.finish();
@@ -154,40 +154,47 @@ export function addConsumers() {
                 startCursor = cursor.rows[0].cursor;
               }
             }
-            // get events from pg or es depending on PG_SEARCH
-            const events = await search(
-              undefined,
-              { query: "", first: 1000, after: startCursor },
-              {
-                projectId: sink.project_id,
-                environmentId: sink.environment_id,
-                groupId: sink.group_id,
+            let events;
+            do {
+              // get events from pg or es depending on PG_SEARCH
+              events = await search(
+                undefined,
+                { query: "", first: batchSize, after: startCursor },
+                {
+                  projectId: sink.project_id,
+                  environmentId: sink.environment_id,
+                  groupId: sink.group_id,
+                }
+              );
+              console.log(
+                `Found ${events.edges.length}/${events.totalCount} events for ${sink.project_id}/${sink.environment_id}/${sink.group_id}`
+              );
+              if (events.edges.length === 0) {
+                continue;
               }
-            );
-            console.log(
-              `Found ${events.edges.length}/${events.totalCount} events for ${sink.project_id}/${sink.environment_id}/${sink.group_id}`
-            );
-            if (events.edges.length === 0) {
-              continue;
-            }
-            // send for processing to vector
-            // TODO: send one by one and wait for response to check 429s
-            events.edges.forEach((event) => {
-              axios.post(`http://localhost:${ConfigManager.getInstance().configs[sink.id].sourceHttpPort}`, {
-                message: JSON.stringify(event),
+              // send for processing to vector
+              // TODO: send one by one and wait for response to check 429s
+              events.edges.forEach((event) => {
+                axios.post(
+                  `http://localhost:${ConfigManager.getInstance().configs[sink.id].sourceHttpPort}`,
+                  {
+                    message: JSON.stringify(event?.node),
+                  }
+                );
               });
-            });
-            // update cursor in pg
-            await pg.query(
-              "UPDATE group_cursor SET cursor = $1, previous_cursor = $2 WHERE project_id = $3 AND environment_id = $4 AND group_id = $5",
-              [
-                events.edges[events.edges.length - 1].cursor,
-                startCursor,
-                sink.project_id,
-                sink.environment_id,
-                sink.group_id,
-              ]
-            );
+              // update cursor in pg
+              await pg.query(
+                "UPDATE group_cursor SET cursor = $1, previous_cursor = $2 WHERE project_id = $3 AND environment_id = $4 AND group_id = $5",
+                [
+                  events.edges[events.edges.length - 1].cursor,
+                  startCursor,
+                  sink.project_id,
+                  sink.environment_id,
+                  sink.group_id,
+                ]
+              );
+              startCursor = events.edges[events.edges.length - 1].cursor;
+            } while (events.edges.length === batchSize);
           }
           msg.finish();
           pullHandlerRunning = false;

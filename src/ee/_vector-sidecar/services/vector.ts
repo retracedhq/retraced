@@ -2,7 +2,7 @@ import fs from "fs";
 
 import config from "../config";
 import { ConfigManager } from "./configManager";
-import { getVectorConfig, sleep } from "./helper";
+import { getVectorConfig, getVectorConfigPath, sleep } from "./helper";
 import getPgPool from "../../../_db/persistence/pg";
 import graphql from "./graphql";
 
@@ -26,7 +26,7 @@ export const processConfig = async (
   const sourceName = getSourceName(tenant, name);
   const sinkName = getSinkName(tenant, name);
   console.log(`Config for ${tenant} with name ${name}`);
-  const path = `${config.CONFIG_PATH}/${id}.json`;
+  const path = getVectorConfigPath(id);
   let port;
   const configManager = ConfigManager.getInstance();
   if (configManager.configs[id]) {
@@ -114,7 +114,7 @@ export const handleSinkUpdated = async (sink) => {
       // update existing config
       console.log(`Source already exists`);
       const newConfig = getVectorConfig(sourceName, currentConfig.sourceHttpPort, sinkName, _config);
-      const path = `${config.CONFIG_PATH}/${sink.id}.json`;
+      const path = getVectorConfigPath(sink.id);
       if (path !== currentConfig.configPath) {
         fs.unlinkSync(currentConfig.configPath);
       }
@@ -139,10 +139,14 @@ export const handleSinkUpdated = async (sink) => {
 export const handleSinkDeleted = async (sink) => {
   const instance = ConfigManager.getInstance();
   const config = Object.values(instance.configs).find((c) => c.id === sink.id);
+  let configPath = getVectorConfigPath(sink.id);
   if (config) {
     const { configPath } = config;
     fs.existsSync(configPath) && fs.unlinkSync(configPath);
     delete instance.configs[sink.id];
+    console.log(`Config deleted`);
+  } else if (fs.existsSync(configPath)) {
+    fs.unlinkSync(configPath);
     console.log(`Config deleted`);
   } else {
     console.log(`Config not found`);

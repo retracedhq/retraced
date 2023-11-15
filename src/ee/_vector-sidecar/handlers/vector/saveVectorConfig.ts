@@ -1,8 +1,7 @@
 import fs from "fs";
-import config from "../../config";
 import { ConfigManager } from "../../services/configManager";
 import { getSinkName, getSourceName, verifyVectorConfig } from "../../services/vector";
-import { getVectorConfig } from "../../services/helper";
+import { getVectorConfig, getVectorConfigPath } from "../../services/helper";
 
 export const saveVectorConfig = async (req, res) => {
   try {
@@ -11,7 +10,7 @@ export const saveVectorConfig = async (req, res) => {
     const sourceName = getSourceName(tenant, name);
     const sinkName = getSinkName(tenant, name);
     console.log(`Config for ${tenant} with name ${name}`);
-    const path = `${config.CONFIG_PATH}/${id}.json`;
+    const path = getVectorConfigPath(id);
     let port;
     const configManager = ConfigManager.getInstance();
     if (configManager.configs[id]) {
