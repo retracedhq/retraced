@@ -1,9 +1,26 @@
 {
   "name": "retraced",
+  "author": "Replicated Inc., BoxyHQ Inc.",
   "version": "1.8.5",
   "description": "A fully open source audit log service and embeddable UI easily deployed to your own Kubernetes cluster",
-  "main": "./build/index.js",
+  "main": "src/_lib/lib/index.js",
+  "typings": "src/_lib/lib/index",
+  "files": [
+    "src/_lib/lib"
+  ],
   "license": "Apache-2.0",
+  "repository": "https://github.com/retracedhq/retraced.git",
+  "bugs": {
+    "email": "retraced@boxyhq.com",
+    "url": "https://github.com/retracedhq/retraced-js/issues"
+  },
+  "keywords": [
+    "audit",
+    "log",
+    "retraced",
+    "replicated",
+    "boxyhq"
+  ],
   "dependencies": {
     "@boxyhq/metrics": "0.2.5",
     "@bugsnag/js": "7.21.0",
@@ -107,9 +124,12 @@
     "dev:delete:skaffold": "skaffold delete -f skaffold-dev.yaml",
     "demo:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo.yaml --status-check=false --force=true",
     "demo-services:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo-services.yaml --status-check=false --force=true",
-    "release": "git checkout release && git merge origin/main && release-it && git checkout main && git merge origin/release && git push origin main"
+    "release": "git checkout release && git merge origin/main && release-it && git checkout main && git merge origin/release && git push origin main",
+    "prepublish": "npm run lib-build",
+    "lib-build": "eslint -c .eslintrc.js ./src/_lib && cd src/_lib && rm -rf ./lib && tsc -p .",
+    "lib-test": "cd src/_lib && rm -rf ./lib && tsc -p . && mocha ./lib/test.js",
+    "lib-local-test": "cd src/_lib && rm -rf ./lib && tsc -p . && node ./lib/local-test.js"
   },
-  "author": "",
   "nyc": {
     "extension": [
       ".ts",
