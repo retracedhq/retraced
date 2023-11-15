@@ -14,10 +14,11 @@ import {
 import { GraphQLRequest, GraphQLResp } from "../handlers/graphql/";
 import { Scope } from "../security/scope";
 import { checkEitapiAccessUnwrapped } from "../security/helpers";
-import { graphql } from "graphql";
+import { GraphQLError, graphql } from "graphql";
 import schema from "../handlers/graphql/schema";
 import { EnterpriseToken } from "../models/eitapi_token";
 import { CreateEventRequest, defaultEventCreater } from "../handlers/createEvent";
+import { validateQuery } from "../handlers/graphql/handler";
 /*
 import enterpriseCreateSavedSearch from "../handlers/enterprise/createSavedSearch";
 import enterpriseDeleteActiveSearch from "../handlers/enterprise/deleteActiveSearch";
@@ -71,7 +72,7 @@ export class EnterpriseAPI extends Controller {
     @Header("Authorization") auth: string,
     @Body() graphQLRequest: GraphQLRequest,
     @Request() req: Req
-  ): Promise<GraphQLResp> {
+  ): Promise<GraphQLResp | ReadonlyArray<GraphQLError>> {
     const token: EnterpriseToken = await checkEitapiAccessUnwrapped(auth);
 
     const context: Scope = {
@@ -79,7 +80,11 @@ export class EnterpriseAPI extends Controller {
       environmentId: token.environment_id,
       groupId: token.group_id,
     };
-
+    const errors = validateQuery(graphQLRequest.query, schema);
+    if (errors.length > 0) {
+      this.setStatus(400);
+      return errors;
+    }
     const result: GraphQLResp = (await graphql({
       schema,
       source: graphQLRequest.query,
