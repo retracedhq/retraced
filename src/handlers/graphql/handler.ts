@@ -47,11 +47,26 @@ export default async function (req, context: Scope) {
  */
 export function NoDuplicateFields(context) {
   const fields = new Set<string>();
+  let fieldParent = "";
   return {
     Field: (node) => {
       const type = context.getParentType();
       const fieldDef = context.getFieldDef();
-      const field = type + ":" + fieldDef.name;
+      const field =
+        `${
+          fieldParent && type.name === "Field" && (fieldDef.name === "key" || fieldDef.name === "value")
+            ? fieldParent + ":"
+            : ""
+        }` +
+        type +
+        ":" +
+        fieldDef.name;
+      if (fieldDef.name === "fields") {
+        fieldParent = type.name;
+      }
+      if (fieldDef.name === "metadata") {
+        fieldParent = type.name + ":" + "Metadata";
+      }
       if (fields[field]) {
         context.reportError(new Error(`Duplicate field ${field}.`));
         return;
