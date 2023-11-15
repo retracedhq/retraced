@@ -63,8 +63,9 @@ export class GraphqlTest {
           search(query: $query, last: $last, before: $before) { totalCount totalCount }
         }`;
     const errors = validateQuery(query, schema);
-    expect(errors).to.not.be.empty;
-    return expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
+    let r = expect(errors).to.not.be.empty;
+    r = expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
+    return r;
   }
 
   @test public "Graphql#validateAliasOverload()"() {
@@ -73,7 +74,8 @@ export class GraphqlTest {
           search(query: $query, last: $last, before: $before) { a1:totalCount a2:totalCount }
         }`;
     const errors = validateQuery(query, schema);
-    expect(errors).to.not.be.empty;
-    return expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
+    let r = expect(errors).to.not.be.empty;
+    r = expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
+    return r;
   }
 }
