@@ -6,7 +6,7 @@ import { getVectorConfig, getVectorConfigPath } from "../../services/helper";
 export const saveVectorConfig = async (req, res) => {
   try {
     const body = req.body;
-    let { config: sink, tenant, name, id } = body;
+    const { config: sink, tenant, name, id } = body;
     const sourceName = getSourceName(tenant, name);
     const sinkName = getSinkName(tenant, name);
     console.log(`Config for ${tenant} with name ${name}`);

@@ -62,7 +62,7 @@ export const addConfigFromSinkRow = async (sinkRow, verify = true) => {
     console.log(`Source does not exist, adding config`);
     const { sourceName, sinkName } = await processConfig(tenant, name, config, id);
     if (verify) {
-      let verified = await verifyVectorConfig(sourceName, sinkName);
+      const verified = await verifyVectorConfig(sourceName, sinkName);
       console.log(`Verified: ${verified}`);
     }
     await setSinkAsActive(sinkRow.id);
@@ -107,7 +107,7 @@ export const handleSinkUpdated = async (sink) => {
       // create new config
       console.log(`Source does not exist, adding config`);
       const { sourceName, sinkName } = await processConfig(tenant, name, _config, id);
-      let verified = await verifyVectorConfig(sourceName, sinkName);
+      const verified = await verifyVectorConfig(sourceName, sinkName);
       console.log(`Verified: ${verified}`);
       await setSinkAsActive(sink.id);
     } else {
@@ -119,7 +119,7 @@ export const handleSinkUpdated = async (sink) => {
         fs.unlinkSync(currentConfig.configPath);
       }
       fs.writeFileSync(path, JSON.stringify(newConfig));
-      let verified = await verifyVectorConfig(sourceName, sinkName);
+      const verified = await verifyVectorConfig(sourceName, sinkName);
       console.log(`Verified: ${verified}`);
       if (currentConfig.sourceName !== sourceName) {
         delete configManager.configs[id];
