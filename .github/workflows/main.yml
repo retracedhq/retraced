@@ -94,6 +94,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run lib:test
           npm run cover:all
 
   test-pg-search:

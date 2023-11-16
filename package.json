@@ -125,9 +125,9 @@
     "demo:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo.yaml --status-check=false --force=true",
     "demo-services:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo-services.yaml --status-check=false --force=true",
     "release": "git checkout release && git merge origin/main && release-it && git checkout main && git merge origin/release && git push origin main",
-    "lib-build": "eslint -c .eslintrc.js ./src/_lib && cd src/_lib && rm -rf ./lib && tsc -p .",
-    "lib-test": "cd src/_lib && rm -rf ./lib && tsc -p . && mocha ./lib/test.js",
-    "lib-local-test": "cd src/_lib && rm -rf ./lib && tsc -p . && node ./lib/local-test.js"
+    "lib:build": "eslint -c .eslintrc.js ./src/_lib && cd src/_lib && rm -rf ./lib && tsc -p .",
+    "lib:test": "cd src/_lib && rm -rf ./lib && tsc -p . && mocha ./lib/test.js",
+    "lib:local-test": "cd src/_lib && rm -rf ./lib && tsc -p . && node ./lib/local-test.js"
   },
   "nyc": {
     "extension": [
