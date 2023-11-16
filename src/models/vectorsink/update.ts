@@ -3,7 +3,17 @@ import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
-export default async function update(id, data) {
+export default async function update(
+  id: string,
+  data: {
+    projectId?: string;
+    environmentId?: string;
+    groupId?: string;
+    name?: string;
+    config?: string;
+    active?: boolean;
+  }
+) {
   let q = `SELECT * FROM vectorsink WHERE id = $1`;
   let v = [id];
   const existing = await pgPool.query(q, v);
