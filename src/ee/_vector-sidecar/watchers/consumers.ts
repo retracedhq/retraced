@@ -33,10 +33,10 @@ export function addConsumers() {
   nsq.consume(
     "sink_deleted",
     "vector_sidecar",
-    async (msg) => {
+    (msg) => {
       try {
         const sink = JSON.parse(msg.body);
-        await handleSinkDeleted(sink);
+        handleSinkDeleted(sink);
         msg.finish();
       } catch (ex) {
         console.log(ex);
@@ -121,13 +121,13 @@ export function addConsumers() {
                 instance.receivedEvents[sourceName] &&
                 instance.receivedEvents[sinkName]
               ) {
-                if (instance.receivedEvents[sourceName] == instance.sentEvents[sourceName]) {
-                  if (instance.sentEvents[sourceName] == instance.receivedEvents[sinkName]) {
+                if (instance.receivedEvents[sourceName] === instance.sentEvents[sourceName]) {
+                  if (instance.sentEvents[sourceName] === instance.receivedEvents[sinkName]) {
                     const diff =
                       instance.receivedEvents[sinkName] -
                       (instance.sentEvents[sinkName] + instance.sinkRetryDiff[sinkName] || 0);
                     if (
-                      instance.receivedEvents[sinkName] ==
+                      instance.receivedEvents[sinkName] ===
                       (instance.sentEvents[sinkName] + instance.sinkRetryDiff[sinkName] || 0)
                     ) {
                       // no events missed

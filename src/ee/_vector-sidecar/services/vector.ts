@@ -14,15 +14,15 @@ export const getSinkName = (tenant, name) => {
   return `sink_${tenant}_${name}`;
 };
 
-export const processConfig = async (
+export const processConfig = (
   tenant: string,
   name: string,
   sink: any,
   id: string
-): Promise<{
+): {
   sourceName: string;
   sinkName: string;
-}> => {
+} => {
   const sourceName = getSourceName(tenant, name);
   const sinkName = getSinkName(tenant, name);
   console.log(`Config for ${tenant} with name ${name}`);
@@ -52,7 +52,7 @@ export const processConfig = async (
 };
 
 export const addConfigFromSinkRow = async (sinkRow, verify = true) => {
-  const { project_id, name, environment_id, group_id, config, id } = sinkRow;
+  const { project_id, name, environment_id, group_id, config: sinkConfig, id } = sinkRow;
   const tenant = `${project_id}_${environment_id}_${group_id}`;
   const configManager = ConfigManager.getInstance();
   if (configManager.configs[sinkRow.id]) {
@@ -60,7 +60,7 @@ export const addConfigFromSinkRow = async (sinkRow, verify = true) => {
     return;
   } else {
     console.log(`Source does not exist, adding config`);
-    const { sourceName, sinkName } = await processConfig(tenant, name, config, id);
+    const { sourceName, sinkName } = processConfig(tenant, name, sinkConfig, id);
     if (verify) {
       const verified = await verifyVectorConfig(sourceName, sinkName);
       console.log(`Verified: ${verified}`);
@@ -77,7 +77,7 @@ export const handleSinkCreated = async (sink) => {
     console.log(`Sink not found`);
   } else {
     console.log(`Sink found`);
-    let sinkRow = res.rows[0];
+    const sinkRow = res.rows[0];
     await addConfigFromSinkRow(sinkRow);
   }
 };
@@ -96,23 +96,23 @@ export const handleSinkUpdated = async (sink) => {
     console.log(`Sink not found`);
   } else {
     console.log(`Sink found`);
-    let sinkRow = res.rows[0];
+    const sinkRow = res.rows[0];
     const { project_id, name, environment_id, group_id, config: _config, id } = sinkRow;
     const tenant = `${project_id}_${environment_id}_${group_id}`;
-    const sourceName = getSourceName(tenant, name);
-    const sinkName = getSinkName(tenant, name);
     const configManager = ConfigManager.getInstance();
     const currentConfig = configManager.getConfigBySinkId(sink.id);
     if (!currentConfig) {
       // create new config
       console.log(`Source does not exist, adding config`);
-      const { sourceName, sinkName } = await processConfig(tenant, name, _config, id);
+      const { sourceName, sinkName } = processConfig(tenant, name, _config, id);
       const verified = await verifyVectorConfig(sourceName, sinkName);
       console.log(`Verified: ${verified}`);
       await setSinkAsActive(sink.id);
     } else {
       // update existing config
       console.log(`Source already exists`);
+      const sourceName = getSourceName(tenant, name);
+      const sinkName = getSinkName(tenant, name);
       const newConfig = getVectorConfig(sourceName, currentConfig.sourceHttpPort, sinkName, _config);
       const path = getVectorConfigPath(sink.id);
       if (path !== currentConfig.configPath) {
@@ -136,13 +136,14 @@ export const handleSinkUpdated = async (sink) => {
   }
 };
 
-export const handleSinkDeleted = async (sink) => {
+export const handleSinkDeleted = (sink) => {
   const instance = ConfigManager.getInstance();
-  const config = Object.values(instance.configs).find((c) => c.id === sink.id);
-  let configPath = getVectorConfigPath(sink.id);
-  if (config) {
-    const { configPath } = config;
-    fs.existsSync(configPath) && fs.unlinkSync(configPath);
+  const sinkConfig = Object.values(instance.configs).find((c) => c.id === sink.id);
+  const configPath = sinkConfig?.configPath || getVectorConfigPath(sink.id);
+  if (sinkConfig) {
+    if (fs.existsSync(configPath)) {
+      fs.unlinkSync(configPath);
+    }
     delete instance.configs[sink.id];
     console.log(`Config deleted`);
   } else if (fs.existsSync(configPath)) {

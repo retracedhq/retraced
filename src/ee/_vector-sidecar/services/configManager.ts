@@ -120,16 +120,16 @@ export class ConfigManager {
     }
   }
 
-  addConfig(config: {
+  addConfig(sinkConfig: {
     configPath: string;
     sourceName: string;
     sinkName: string;
     sourceHttpPort: number;
     id: string;
   }) {
-    this.configs[config.id] = config;
+    this.configs[sinkConfig.id] = sinkConfig;
     console.log(
-      `Added config for ${config.sourceName} with port ${config.sourceHttpPort} and path ${config.configPath}`
+      `Added config for ${sinkConfig.sourceName} with port ${sinkConfig.sourceHttpPort} and path ${sinkConfig.configPath}`
     );
   }
 
@@ -138,8 +138,8 @@ export class ConfigManager {
   }
 
   findAvailableSourcePort() {
-    const start = 1,
-      end = 65535;
+    const start = 1;
+    const end = 65535;
     const values = Object.values(this.configs);
     const usedPorts = Array.from(values).map((c) => c.sourceHttpPort);
     // find a port that is not in the ban list and not in the usedPorts

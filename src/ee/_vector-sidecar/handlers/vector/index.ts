@@ -59,7 +59,7 @@ export const saveVectorConfig = async (req, res) => {
   try {
     const body = req.body;
     const { config: sink, tenant, name, id } = body;
-    const { sourceName, sinkName } = await processConfig(tenant, name, sink, id);
+    const { sourceName, sinkName } = processConfig(tenant, name, sink, id);
     const verified = await verifyVectorConfig(sourceName, sinkName);
     await setSinkAsActive(sink.id);
     res.status(201).json({

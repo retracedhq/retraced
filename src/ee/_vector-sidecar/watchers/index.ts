@@ -34,7 +34,7 @@ type ComponentSentEventsThroughput = {
 };
 
 type OutputThroughput = {
-  outputId?: String;
+  outputId?: string;
   throughput?: number;
 };
 
@@ -70,7 +70,7 @@ type SentEventsTotal = {
 };
 
 type Output = {
-  outputId?: String;
+  outputId?: string;
   sentEventsTotal: SentEventsTotal;
 };
 
@@ -90,7 +90,7 @@ type AllocatedBytes = {
 };
 
 type ComponentAllocatedBytes = {
-  componentId?: String;
+  componentId?: string;
   metric?: AllocatedBytes;
 };
 
@@ -252,19 +252,21 @@ const attachListensers = async (sub: any, name: string) => {
 
 const init = async () => {
   for (const queryName in queries) {
-    subscriptions[queryName] = graphql.graphQLWSClient.iterate({
-      query: queries[queryName],
-    });
-    do {
-      try {
-        await attachListensers(subscriptions[queryName], queryName);
-        break;
-      } catch (ex) {
-        console.log("[attachListensers]", ex);
-        console.log(`[attachListensers] Retrying...`);
-        sleep(1000);
-      }
-    } while (true);
+    if (!subscriptions[queryName]) {
+      subscriptions[queryName] = graphql.graphQLWSClient.iterate({
+        query: queries[queryName],
+      });
+      do {
+        try {
+          await attachListensers(subscriptions[queryName], queryName);
+          break;
+        } catch (ex) {
+          console.log("[attachListensers]", ex);
+          console.log(`[attachListensers] Retrying...`);
+          sleep(1000);
+        }
+      } while (true);
+    }
   }
 };
 

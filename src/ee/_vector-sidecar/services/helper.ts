@@ -1,8 +1,8 @@
 import config from "../config";
 
 export const getSafeFileName = (tenant: string, name: string): string => {
-  var s = `${tenant}_${name}`;
-  var filename = s.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+  const s = `${tenant}_${name}`;
+  const filename = s.replace(/[^a-z0-9]/gi, "_").toLowerCase();
   return filename;
 };
 
