@@ -6,7 +6,7 @@ export interface Options {
   actorIds: string[];
 }
 
-export default async function(opts: Options): Promise<any> {
+export default async function (opts: Options): Promise<any> {
   if (!opts.actorIds || opts.actorIds.length === 0) {
     return [];
   }
@@ -25,18 +25,19 @@ export default async function(opts: Options): Promise<any> {
 
     const result = await pg.query(q, v);
 
-    if (result.rowCount > 0) {
+    if (result.rowCount) {
       const actors: any = [];
       for (const row of result.rows) {
-        actors.push(Object.assign({}, row, {
-          retraced_object_type: "actor",
-        }));
+        actors.push(
+          Object.assign({}, row, {
+            retraced_object_type: "actor",
+          })
+        );
       }
       return actors;
     }
 
     return [];
-
   } finally {
     pg.release();
   }

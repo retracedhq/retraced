@@ -36,7 +36,7 @@ export default async function getLocationByIP(ipAddress, pg: PoolClient) {
     } else {
       const q = "select * from geoip where network >> $1";
       const result = await pg.query(q, [ipAddress]);
-      if (result.rowCount > 0) {
+      if (result.rowCount) {
         return result.rows[0];
       }
     }

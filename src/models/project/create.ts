@@ -1,4 +1,4 @@
-import Analytics from "analytics-node";
+import { Analytics } from "@segment/analytics-node";
 import moment from "moment";
 
 import getPgPool from "../../persistence/pg";
@@ -51,12 +51,12 @@ export default function createProject(opts) {
 
         // Report this project as a user to segment
         if (config.SEGMENT_WRITE_KEY) {
-          const analytics = new Analytics(config.SEGMENT_WRITE_KEY);
+          const analytics = new Analytics({ writeKey: config.SEGMENT_WRITE_KEY });
           analytics.identify({
             userId: project.id,
             traits: {
               name: project.name,
-              createdAt: project.created,
+              createdAt: new Date(),
             },
           });
         }

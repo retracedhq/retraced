@@ -15,6 +15,7 @@ export default function getPgPool(): pg.Pool {
       host: config.POSTGRES_HOST,
       port: Number(config.POSTGRES_PORT),
       max: Number(config.POSTGRES_POOL_SIZE) || 20,
+      ssl: config.POSTGRES_SSL ? true : false,
       idleTimeoutMillis: Number(config.PUBLISHER_CREATE_EVENT_TIMEOUT) || 2000, // how long a client is allowed to remain idle before being closed
     });
 

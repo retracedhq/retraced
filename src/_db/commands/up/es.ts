@@ -79,7 +79,7 @@ export const handler = () => {
           return pg.query("select * from es_migration_meta where id = $1", [timestamp]);
         })
         .then((result) => {
-          if (result.rowCount > 0) {
+          if (result.rowCount) {
             console.log(picocolors.dim(`${timestamp} ${name}`));
             return Promise.resolve(false);
           }

@@ -1,4 +1,3 @@
-
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
@@ -19,7 +18,7 @@ export interface Result {
   templates?: any[];
 }
 
-export default async function(opts: Options): Promise<Result> {
+export default async function (opts: Options): Promise<Result> {
   // This looks a lot like an ES query because i think we
   // should consider storing this in ES....  but it's out
   // of the scope of adding a groups page. but i just wanted to
@@ -39,21 +38,16 @@ export default async function(opts: Options): Promise<Result> {
     const orderBy = opts.sortColumn === "name" ? "name" : "created";
 
     const q = `select ${fields} from display_template where environment_id = $1 order by ${orderBy} ${direction} limit $2 offset $3`;
-    const v = [
-      opts.environmentId,
-      opts.length,
-      opts.offset,
-    ];
+    const v = [opts.environmentId, opts.length, opts.offset];
     const pgResult = await pg.query(q, v);
 
     const result: Result = {
-      totalHits: pgResult.rowCount,
-      count: pgResult.rowCount,
+      totalHits: pgResult.rowCount || 0,
+      count: pgResult.rowCount || 0,
       templates: pgResult.rows,
     };
 
     return result;
-
   } finally {
     pg.release();
   }

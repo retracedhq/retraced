@@ -23,7 +23,7 @@ export default async function getInvite(opts: Options): Promise<null | Invite> {
   }
 
   const result = await pgPool.query(q, v);
-  if (result.rowCount > 0) {
+  if (result.rowCount) {
     return parseInvite(result.rows[0] as any);
   }
 

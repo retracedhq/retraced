@@ -6,7 +6,7 @@ export interface Options {
   targetIds: string[];
 }
 
-export default async function(opts: Options): Promise<any> {
+export default async function (opts: Options): Promise<any> {
   const pg = await pgPool.connect();
   try {
     const fields = `id, environment_id, event_count, foreign_id, name, project_id, url, type,
@@ -20,18 +20,19 @@ export default async function(opts: Options): Promise<any> {
 
     const result = await pg.query(q, v);
 
-    if (result.rowCount > 0) {
+    if (result.rowCount) {
       const targets: any = [];
       for (const row of result.rows) {
-        targets.push(Object.assign({}, row, {
-          retraced_object_type: "target",
-        }));
+        targets.push(
+          Object.assign({}, row, {
+            retraced_object_type: "target",
+          })
+        );
       }
       return targets;
     }
 
     return [];
-
   } finally {
     pg.release();
   }

@@ -13,15 +13,12 @@ export const getApiTokenQuery = `
     token = $1
 `;
 
-export default async function getApiToken(
-  token: string,
-  querier?: Querier,
-): Promise<ApiToken | null> {
+export default async function getApiToken(token: string, querier?: Querier): Promise<ApiToken | null> {
   querier = querier || pgPool;
 
   const v = [token];
   const result = await querier.query(getApiTokenQuery, v);
-  if (result.rowCount > 0) {
+  if (result.rowCount) {
     return apiTokenFromRow(result.rows[0]);
   }
 

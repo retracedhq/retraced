@@ -57,7 +57,7 @@ export default async function (opts, pg: PoolClient) {
   const qq = `select ${fields} from actor where environment_id = $1 and foreign_id = $2`;
   const vv = [opts.environmentId, opts.actor.id];
   const result = await pg.query(qq, vv);
-  if (result.rowCount > 0) {
+  if (result.rowCount) {
     return result.rows[0];
   }
 
