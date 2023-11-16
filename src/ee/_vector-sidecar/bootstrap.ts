@@ -10,8 +10,7 @@ const pg = getPgPool();
       sinks = await pg.query(`SELECT * FROM vectorsink`);
       break;
     } catch (ex) {
-      console.log("[Bootstrap]", ex ? (ex.message ? ex.message : ex) : ex);
-      console.log("[Bootstrap]", `Retrying...`);
+      console.log("[Bootstrap]", ex ? (ex.message ? ex.message : ex) : ex, `Retrying...`);
       continue;
     }
   } while (true);
@@ -19,8 +18,7 @@ const pg = getPgPool();
     try {
       await addConfigFromSinkRow(sink, false);
     } catch (ex) {
-      console.log("[Bootstrap]", ex ? (ex.message ? ex.message : ex) : ex);
-      console.log("[Bootstrap]", `Continuing...`);
+      console.log("[Bootstrap]", ex ? (ex.message ? ex.message : ex) : ex, `Continuing...`);
       continue;
     }
   }
