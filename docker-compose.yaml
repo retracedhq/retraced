@@ -29,6 +29,7 @@ x-common-variables: &common-variables
   GEOIPUPDATE_USE_MMDB: ${GEOIPUPDATE_USE_MMDB}
   GEOIPUPDATE_ACCOUNT_ID: ${GEOIPUPDATE_ACCOUNT_ID}
   PG_SEARCH: ${PG_SEARCH}
+  VECTOR_SIDECAR_PORT: 3002
 
 services:
   retraced-api:
@@ -228,18 +229,7 @@ services:
     build:
       context: .
       dockerfile: ./deploy/vector-sidecar/Dockerfile
-    environment:
-      - PORT=3002
-      - NSQD_HTTP_PORT=4151
-      - NSQD_HOST=nsqd
-      - POSTGRES_USER=retraced
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_POOL_SIZE=10
-      - POSTGRES_PORT=5432
-      - POSTGRES_DATABASE=retraced
-      - POSTGRES_HOST=postgres
-      - PG_SEARCH=${PG_SEARCH}
-      - ELASTICSEARCH_NODES=http://elasticsearch:9200
+    environment: *common-variables
     ports:
       - "8686:8686"
       - "9393:9229"

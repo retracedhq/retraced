@@ -1,6 +1,6 @@
 import graphql from "../../services/graphql";
 import axios from "axios";
-import config from "../../config";
+import config from "../../../../config";
 import { ConfigManager } from "../../services/configManager";
 import { processConfig, setSinkAsActive, verifyVectorConfig } from "../../services/vector";
 // import { reloadConfig } from '../../lib/signal';

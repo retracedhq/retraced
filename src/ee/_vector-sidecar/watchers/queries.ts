@@ -1,4 +1,4 @@
-import config from "../config";
+import config from "../../../config";
 
 const componentErrorsTotals = `subscription {
     componentErrorsTotals(interval: ${config.GRAPHQL_SUBSCRIPTION_INTERVAL}) {

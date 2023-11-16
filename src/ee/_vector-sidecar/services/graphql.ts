@@ -1,5 +1,5 @@
 import axios from "axios";
-import config from "../config";
+import config from "../../../config";
 import { Component, componentKind } from "../types";
 import { WebSocket } from "ws";
 import { createClient } from "graphql-ws";

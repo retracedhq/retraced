@@ -1,4 +1,4 @@
-import config from "../config";
+import config from "../../../config";
 
 export const getSafeFileName = (tenant: string, name: string): string => {
   const s = `${tenant}_${name}`;
@@ -11,7 +11,7 @@ export const sleep = (ms: number) => {
 };
 
 export const getVectorConfigPath = (id: string): string => {
-  return `${config.CONFIG_PATH}/${id}.json`;
+  return `${config.VECTOR_DEFAULT_CONFIG_PATH}/${id}.json`;
 };
 
 export function getVectorConfig(sourceName: string, port: any, sinkName: string, sink: any) {

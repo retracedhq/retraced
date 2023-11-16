@@ -1,6 +1,6 @@
 import fs from "fs";
 import { VectorConfig } from "../types";
-import config from "../config";
+import config from "../../../config";
 import { getVectorConfig } from "./helper";
 
 export type Config = {
@@ -62,9 +62,9 @@ export class ConfigManager {
 
   private constructor() {
     this.portBanList.add(config.VECTOR_API_PORT);
-    this.portBanList.add(config.PORT);
+    this.portBanList.add(config.VECTOR_SIDECAR_PORT);
     try {
-      if (config.MODE === "sidecar") {
+      if (config.SIDECAR_MODE === "sidecar") {
         this.loadExistingConfigs();
       }
       const content = fs.readFileSync("/etc/vector/config/vector.json", "utf8");

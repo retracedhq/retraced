@@ -1,6 +1,5 @@
 import fs from "fs";
 
-import config from "../config";
 import { ConfigManager } from "./configManager";
 import { getVectorConfig, getVectorConfigPath, sleep } from "./helper";
 import getPgPool from "../../../_db/persistence/pg";
