@@ -4,7 +4,7 @@ import _ from "lodash";
 import Chance from "chance";
 import util from "util";
 import jwt from "jsonwebtoken";
-import { Event, Client, CRUD } from "@retracedhq/retraced";
+import { Event, Client, CRUD } from "../../_lib/index";
 import ProgressBar from "progress";
 import http from "http";
 

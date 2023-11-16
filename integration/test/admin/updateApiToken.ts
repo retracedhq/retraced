@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import "chai-http";
-import { Client } from "@retracedhq/retraced";
+import { Client } from "../../../src/_lib/index";
 import * as Env from "../env";
 import Chance from "chance";
 import { retracedUp } from "../pkg/retracedUp";

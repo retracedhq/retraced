@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Client } from "@retracedhq/retraced";
+import { Client } from "../../../src/_lib/index";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";

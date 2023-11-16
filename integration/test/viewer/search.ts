@@ -1,6 +1,6 @@
 import * as querystring from "querystring";
 import { expect } from "chai";
-import { Client, CRUD } from "@retracedhq/retraced";
+import { Client, CRUD } from "../../../src/_lib/index";
 import tv4 from "tv4";
 import "mocha";
 import "chai-http";

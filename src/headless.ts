@@ -2,7 +2,7 @@ import express from "express";
 import { EventFields } from "./models/event";
 import { adminIdentity } from "./security/helpers";
 import _ from "lodash";
-import { Client, Event, CRUD } from "@retracedhq/retraced";
+import { Client, Event, CRUD } from "./_lib/index";
 import getProject from "./models/project/get";
 import hydrateProject from "./models/project/hydrate";
 import createProject from "./models/project/create";

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Event, Client } from "@retracedhq/retraced";
+import { Client, CRUD } from "../../../src/_lib/index";
 import "mocha";
 import "chai-http";
 import { search } from "../pkg/specs";

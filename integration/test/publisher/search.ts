@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { EventsConnection, Client, CRUD } from "@retracedhq/retraced";
+import { EventsConnection, Client, CRUD } from "../../../src/_lib/index";
 import tv4 from "tv4";
 import "mocha";
 import "chai-http";

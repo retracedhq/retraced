@@ -1,9 +1,9 @@
 import searchQueryParser from "search-query-parser";
 import moment from "moment";
 import _ from "lodash";
-import { EventInternal } from "@retracedhq/retraced";
+import { EventInternal } from "../../_lib/index";
 
-export { EventFields } from "@retracedhq/retraced";
+export { EventFields } from "../../_lib/index";
 
 export interface RetracedEvent extends EventInternal {
   id?: string;

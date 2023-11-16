@@ -1,4 +1,4 @@
-import { RawEventNode } from "@retracedhq/retraced";
+import { RawEventNode } from "../../_lib/index";
 
 export interface EventEdge {
   node?: RawEventNode;
