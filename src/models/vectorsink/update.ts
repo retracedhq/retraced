@@ -18,7 +18,13 @@ export default async function update(
   let v = [id];
   const existing = await pgPool.query(q, v);
   if (existing.rows.length === 0) {
-    return false;
+    throw new Error("Sink not found");
+  } else if (existing.rows[0].project_id !== data.projectId) {
+    throw new Error("Sink does not belong to the project");
+  } else if (existing.rows[0].environment_id !== data.environmentId) {
+    throw new Error("Sink does not belong to the environment");
+  } else if (existing.rows[0].group_id !== data.groupId) {
+    throw new Error("Sink does not belong to the group");
   } else {
     const sink = existing.rows[0];
     const opts = {

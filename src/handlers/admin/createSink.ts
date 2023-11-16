@@ -55,7 +55,7 @@ export default async function (req) {
 
     return {
       status: 201,
-      body: JSON.stringify({ sink }),
+      body: JSON.stringify(sink),
     };
   }
 }
