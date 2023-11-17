@@ -5,8 +5,8 @@ import Authenticator from "../security/Authenticator";
 import getApiToken from "../models/api_token/get";
 import { Scope } from "../security/scope";
 import schema from "./graphql/schema";
-import handler from "./graphql/handler";
-import { GraphQLRequest, GraphQLResp } from "./graphql/index";
+import handler, { validateQuery } from "./graphql/handler";
+import { GraphQLError, GraphQLRequest, GraphQLResp } from "./graphql/index";
 
 export default async function (req) {
   const apiTokenId = apiTokenFromAuthHeader(req.get("Authorization"));
@@ -26,16 +26,19 @@ export async function graphQL(
   projectId: string,
   graphQLReq: GraphQLRequest
 ): Promise<GraphQLResp> {
-  const apiToken = await Authenticator.default().getApiTokenOr401(
-    authorization,
-    projectId
-  );
+  const apiToken = await Authenticator.default().getApiTokenOr401(authorization, projectId);
 
   const context: Scope = {
     projectId: apiToken.projectId,
     environmentId: apiToken.environmentId,
   };
-
+  const errors = validateQuery(graphQLReq.query, schema);
+  if (errors.length > 0) {
+    this.setStatus(400);
+    return {
+      errors: errors as GraphQLError[],
+    };
+  }
   return (await graphql({
     schema,
     source: graphQLReq.query,
