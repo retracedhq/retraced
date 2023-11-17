@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Client, CRUD } from "../../../src/_lib/index";
+import { Client, Event } from "../../../src/_lib/index";
 import "mocha";
 import "chai-http";
 import { search } from "../pkg/specs";
