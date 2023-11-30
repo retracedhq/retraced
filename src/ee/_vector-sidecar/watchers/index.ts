@@ -1,7 +1,9 @@
+import axios from "axios";
 import { ConfigManager } from "../services/configManager";
 import graphql from "../services/graphql";
 import { sleep } from "../services/helper";
 import queries from "./queries";
+import config from "../../../config";
 const subscriptions = {};
 
 type ComponentErrorsTotals = {
@@ -250,7 +252,29 @@ const attachListensers = async (sub: any, name: string) => {
   }
 };
 
+export const getHealth = (port) => {
+  return new Promise((resolve) => {
+    const url = `http://localhost:${port}/health`;
+
+    axios
+      .get(url)
+      .then(() => {
+        resolve(true);
+      })
+      .catch(() => {
+        resolve(false);
+      });
+  });
+};
+
 const init = async () => {
+  do {
+    const health = await getHealth(config.VECTOR_API_PORT);
+    if (health) {
+      break;
+    }
+    await sleep(1000);
+  } while (true);
   for (const queryName in queries) {
     if (!subscriptions[queryName]) {
       subscriptions[queryName] = graphql.graphQLWSClient.iterate({
@@ -259,6 +283,7 @@ const init = async () => {
       do {
         try {
           await attachListensers(subscriptions[queryName], queryName);
+          console.log(`[attachListensers] ${queryName} attached`);
           break;
         } catch (ex) {
           console.log("[attachListensers]", ex);

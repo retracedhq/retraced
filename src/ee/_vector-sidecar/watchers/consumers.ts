@@ -3,12 +3,14 @@ import { handleSinkCreated, handleSinkDeleted, handleSinkUpdated } from "../serv
 import getPgPool from "../../../persistence/pg";
 import { ConfigManager } from "../services/configManager";
 import uniqueId from "../../../models/uniqueId";
-import search from "../../../handlers/graphql/search";
+import { searchByReceived, encodeCursor, decodeCursor } from "../../../handlers/graphql/search";
 import axios from "axios";
+import { call, ExponentialStrategy } from "backoff";
 
 const pg = getPgPool();
-const batchSize = 10000;
-let pullHandlerRunning = false;
+const batchSize = 1000;
+const eventsPerBatch = 100;
+const sendEventsRunningStatus: { [sinkId: string]: boolean } = {};
 
 export function addConsumers() {
   nsq.consume(
@@ -73,39 +75,34 @@ export function addConsumers() {
     "vector_sidecar",
     async (msg) => {
       try {
-        if (pullHandlerRunning) {
-          msg.finish();
-          return;
-        }
-        pullHandlerRunning = true;
+        const windowEnd = +new Date() - 5 * 60 * 1000;
         const keys = Object.keys(ConfigManager.getInstance().configs);
         const instance = ConfigManager.getInstance();
         if (keys.length === 0) {
           msg.finish();
-          pullHandlerRunning = false;
           return;
         }
-        const q = `SELECT * FROM vectorsink WHERE id IN ('${keys.join("','")}')`;
-        const sinks = await pg.query(q);
+        const sinks = await getSinksByIds(keys);
         if (sinks.rowCount === 0) {
           msg.finish();
-          pullHandlerRunning = false;
           return;
         } else {
           for (const sink of sinks.rows) {
+            // Check if sendEventsToVectorSource is already running for the current sink.id
+            if (sendEventsRunningStatus[sink.id]) {
+              console.log(`sendEventsToVectorSource is already running for sink ${sink.id}, skipping...`);
+              continue;
+            }
+
+            // Set the running status of sendEventsToVectorSource to true for the current sink.id
+            sendEventsRunningStatus[sink.id] = true;
+
             // get cursor from pg for each group
             let startCursor;
-            const cursor = await pg.query(
-              "SELECT * FROM group_cursor WHERE project_id = $1 AND environment_id = $2 AND group_id = $3",
-              [sink.project_id, sink.environment_id, sink.group_id]
-            );
+            const cursor = await getCursorForSink(sink);
             if (cursor.rowCount === 0) {
               // cursor does not exists, start from beginning
-              const id = uniqueId();
-              await pg.query(
-                "INSERT INTO group_cursor (id, project_id, environment_id, group_id, previous_cursor, cursor) VALUES ($1, $2, $3, $4, $5, $6)",
-                [id, sink.project_id, sink.environment_id, sink.group_id, "", ""]
-              );
+              await insertSinkCursor(sink);
               startCursor = "";
             } else {
               // check if previous events missed
@@ -154,53 +151,54 @@ export function addConsumers() {
                 startCursor = cursor.rows[0].cursor;
               }
             }
-            let events;
+            let events,
+              from = 0,
+              cursorToSave;
             do {
-              // get events from pg or es depending on PG_SEARCH
-              events = await search(
-                undefined,
-                { query: "", first: batchSize, after: startCursor },
-                {
-                  projectId: sink.project_id,
-                  environmentId: sink.environment_id,
-                  groupId: sink.group_id,
-                }
-              );
-              console.log(
-                `Found ${events.edges.length}/${events.totalCount} events for ${sink.project_id}/${sink.environment_id}/${sink.group_id}`
-              );
-              if (events.edges.length === 0) {
-                continue;
-              }
-              // send for processing to vector
-              // TODO: send one by one and wait for response to check 429s
-              events.edges.forEach((event) => {
-                axios.post(
-                  `http://localhost:${ConfigManager.getInstance().configs[sink.id].sourceHttpPort}`,
+              try {
+                // get events from pg or es depending on PG_SEARCH
+                events = await searchByReceived(
+                  { size: batchSize, after: startCursor, before: windowEnd, from },
                   {
-                    message: JSON.stringify(event?.node),
+                    projectId: sink.project_id,
+                    environmentId: sink.environment_id,
+                    groupId: sink.group_id,
                   }
                 );
-              });
-              // update cursor in pg
-              await pg.query(
-                "UPDATE group_cursor SET cursor = $1, previous_cursor = $2 WHERE project_id = $3 AND environment_id = $4 AND group_id = $5",
-                [
-                  events.edges[events.edges.length - 1].cursor,
-                  startCursor,
-                  sink.project_id,
-                  sink.environment_id,
-                  sink.group_id,
-                ]
-              );
-              startCursor = events.edges[events.edges.length - 1].cursor;
-            } while (events.edges.length === batchSize);
+                console.log(
+                  `Found ${events.edges.length}/${events.totalCount} events for ${sink.project_id}/${sink.environment_id}/${sink.group_id}`
+                );
+                if (events.edges.length === 0) {
+                  break;
+                }
+                // send for processing to vector
+                await sendEventsToVectorSource(events, sink, eventsPerBatch);
+
+                cursorToSave = events.edges[events.edges.length - 1].cursor;
+
+                from += events.edges.length;
+                if (from + batchSize >= 10000) {
+                  console.log(
+                    `Reached max limit of 10000 events for ${sink.project_id}/${sink.environment_id}/${sink.group_id}`
+                  );
+
+                  const [timestamp, id] = decodeCursor(cursorToSave);
+                  const newCursor = encodeCursor(timestamp - 1, id);
+                  startCursor = newCursor;
+                  from = 0;
+                }
+              } catch (ex) {
+                console.log(ex);
+                startCursor = cursorToSave;
+              }
+            } while (events?.edges?.length && events?.edges?.length > 0);
+            await updateCursorsForSink(cursorToSave, startCursor, sink);
+            // After sendEventsToVectorSource is completed, set the running status to false
+            sendEventsRunningStatus[sink.id] = false;
           }
           msg.finish();
-          pullHandlerRunning = false;
         }
       } catch (ex) {
-        pullHandlerRunning = false;
         console.log(ex);
         msg.requeue(15000, true);
       }
@@ -208,7 +206,74 @@ export function addConsumers() {
     {
       maxAttempts: 1,
       maxInFlight: 5,
-      messageTimeoutMS: 10000,
+      messageTimeoutMS: 100000,
     }
   );
+}
+
+async function insertSinkCursor(sink: any) {
+  const id = uniqueId();
+  await pg.query(
+    "INSERT INTO group_cursor (id, project_id, environment_id, group_id, previous_cursor, cursor) VALUES ($1, $2, $3, $4, $5, $6)",
+    [id, sink.project_id, sink.environment_id, sink.group_id, "", ""]
+  );
+}
+
+async function getSinksByIds(keys: string[]) {
+  const q = `SELECT * FROM vectorsink WHERE id IN ('${keys.join("','")}')`;
+  const sinks = await pg.query(q);
+  return sinks;
+}
+
+async function getCursorForSink(sink: any) {
+  return await pg.query(
+    "SELECT * FROM group_cursor WHERE project_id = $1 AND environment_id = $2 AND group_id = $3",
+    [sink.project_id, sink.environment_id, sink.group_id]
+  );
+}
+
+async function updateCursorsForSink(cursor: any, previousCursor: any, sink: any) {
+  if (cursor) {
+    // update cursor in pg
+    await pg.query(
+      "UPDATE group_cursor SET cursor = $1, previous_cursor = $2 WHERE project_id = $3 AND environment_id = $4 AND group_id = $5",
+      [cursor, previousCursor, sink.project_id, sink.environment_id, sink.group_id]
+    );
+  }
+}
+
+async function sendEventsToVectorSource(events: any, sink: any, batchSize: number = 100) {
+  const eventEdges = events.edges;
+  const numBatches = Math.ceil(eventEdges.length / batchSize);
+
+  const backoffStrategy = new ExponentialStrategy({
+    initialDelay: 100, // initial delay in milliseconds
+    maxDelay: 60 * 1000, // maximum delay in milliseconds
+  });
+
+  for (let i = 0; i < numBatches; i++) {
+    const batch = eventEdges.slice(i * batchSize, (i + 1) * batchSize);
+    const promises = batch.map(async (edge: any) => {
+      const functionCall = call(() => {
+        return axios.post(`http://localhost:${ConfigManager.getInstance().configs[sink.id].sourceHttpPort}`, {
+          message: JSON.stringify(edge?.node),
+        });
+      });
+
+      functionCall.retryIf((err) => {
+        // Retry if the status is not 200
+        return err.response && err.response.status !== 200;
+      });
+
+      functionCall.setStrategy(backoffStrategy);
+
+      try {
+        await functionCall.start();
+      } catch (error) {
+        console.log(`Error sending event to vector: ${error.response.status} - ${error.response.statusText}`);
+      }
+    });
+
+    await Promise.all(promises);
+  }
 }

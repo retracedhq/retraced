@@ -1,4 +1,7 @@
 {
+  "acknowledgements": {
+    "enabled": true
+  },
   "data_dir": "/var/lib/vector",
   "api": {
     "address": "0.0.0.0:8686",

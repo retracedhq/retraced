@@ -67,11 +67,11 @@ export class ConfigManager {
       if (config.SIDECAR_MODE === "sidecar") {
         this.loadExistingConfigs();
       }
-      const content = fs.readFileSync("/etc/vector/config/vector.json", "utf8");
+      const content = fs.readFileSync(`${config.VECTOR_DEFAULT_CONFIG_PATH}/vector.json`, "utf8");
       const json = JSON.parse(content) as VectorConfig;
       const initSourceName = Object.keys(json.sources)[0];
       this.initConfig = {
-        configPath: "/etc/vector/config/vector.json",
+        configPath: `${config.VECTOR_DEFAULT_CONFIG_PATH}/vector.json`,
         sourceHttpPort: json.sources[initSourceName]?.address?.split(":")[1] || 9000,
         sourceName: initSourceName,
       };
@@ -85,12 +85,12 @@ export class ConfigManager {
     try {
       // read all json file from /etc/vector/config
       // and add them to the configs map
-      const files = fs.readdirSync("/etc/vector/config");
+      const files = fs.readdirSync(config.VECTOR_DEFAULT_CONFIG_PATH);
       for (const file in files) {
         if (!files[file].endsWith(".json") || files[file] === "vector.json") {
           continue;
         }
-        const path = `/etc/vector/config/${files[file]}`;
+        const path = `${config.VECTOR_DEFAULT_CONFIG_PATH}/${files[file]}`;
         const content = fs.readFileSync(path, "utf8");
         const json = JSON.parse(content) as VectorConfig;
         const sourceName = Object.keys(json.sources)[0];

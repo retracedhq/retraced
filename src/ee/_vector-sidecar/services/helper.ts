@@ -28,10 +28,14 @@ export function getVectorConfig(sourceName: string, port: any, sinkName: string,
       [sinkName]: {
         ...sink,
         buffer: {
-          type: "disk",
-          max_size: 268435488,
-          when_full: "block",
+          type: "memory",
+          max_events: 10000,
         },
+        // buffer: {
+        //   type: "disk",
+        //   max_size: 268435488,
+        //   when_full: "block",
+        // },
         batch: {
           max_bytes: 100000,
           max_events: 10,
@@ -48,8 +52,9 @@ export function getVectorConfig(sourceName: string, port: any, sinkName: string,
         inputs: [sourceName],
         source: `.event = parse_json!(parse_json!(.message).message)
         .time = .event.created
-        .host = "localhost"
-        .source = "vector"
+        .host = "boxyhq"
+        .source = "boxyhq"
+        del(.source_type)
         del(.message)`,
       },
     };

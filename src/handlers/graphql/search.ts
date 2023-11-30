@@ -1,7 +1,7 @@
 import _ from "lodash";
 
-import queryEvents, { Options } from "../../models/event/query";
-import filterEvents from "../../models/event/filter";
+import queryEvents, { Options, SearchOptions, queryEventsByReceived } from "../../models/event/query";
+import filterEvents, { Result, filterEventsByReceived } from "../../models/event/filter";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { Scope } from "../../security/scope";
 import getGroups from "../../models/group/gets";
@@ -9,6 +9,7 @@ import config from "../../config";
 
 const PG_SEARCH = !!config.PG_SEARCH;
 const searcher = PG_SEARCH ? filterEvents : queryEvents;
+const searcherReceived = PG_SEARCH ? filterEventsByReceived : queryEventsByReceived;
 
 export interface Args {
   query: string;
@@ -16,6 +17,13 @@ export interface Args {
   after?: string;
   last?: number;
   before?: string;
+}
+
+export interface SearchArgs {
+  size?: number;
+  after: string;
+  before: number;
+  from?: number;
 }
 
 export default async function search(q: any, args: Args, context: Scope) {
@@ -46,6 +54,28 @@ export default async function search(q: any, args: Args, context: Scope) {
   }
 
   const results = await searcher(opts);
+  return await processEvents(context, results, opts);
+}
+
+export const searchByReceived = async (args: SearchArgs, context: Scope) => {
+  const opts: SearchOptions = {
+    from: args.from,
+    query: "",
+    scope: context,
+    sort: "asc",
+    size: args.size,
+    before: args.before,
+  };
+
+  if (args.after) {
+    opts.afterCursor = decodeCursor(args.after);
+  }
+
+  const results = await searcherReceived(opts);
+  return await processEvents(context, results, opts, true);
+};
+
+async function processEvents(context: Scope, results: Result, opts: Options, useReceived = false) {
   const events = await addDisplayTitles({
     projectId: context.projectId,
     environmentId: context.environmentId,
@@ -104,7 +134,7 @@ export default async function search(q: any, args: Args, context: Scope) {
 
     return {
       node: event,
-      cursor: encodeCursor(event.canonical_time, event.id),
+      cursor: encodeCursor(useReceived ? event.received : event.canonical_time, event.id),
     };
   });
 
@@ -121,11 +151,11 @@ export default async function search(q: any, args: Args, context: Scope) {
   };
 }
 
-function encodeCursor(timestamp: number, id: string): string {
+export function encodeCursor(timestamp: number, id: string): string {
   return Buffer.from(`${timestamp},${id}`).toString("base64");
 }
 
-function decodeCursor(cursor: string): [number, string] {
+export function decodeCursor(cursor: string): [number, string] {
   const parts = Buffer.from(cursor, "base64").toString("utf8").split(",");
   const ts = parseInt(parts[0], 10);
   const id = parts[1];
