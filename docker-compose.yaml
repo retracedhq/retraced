@@ -29,6 +29,7 @@ x-common-variables: &common-variables
   GEOIPUPDATE_USE_MMDB: ${GEOIPUPDATE_USE_MMDB}
   GEOIPUPDATE_ACCOUNT_ID: ${GEOIPUPDATE_ACCOUNT_ID}
   PG_SEARCH: ${PG_SEARCH}
+  VECTOR_SIDECAR_PORT: 3002
 
 services:
   retraced-api:
@@ -108,6 +109,8 @@ services:
       - POSTGRES_USER=retraced
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=retraced
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - retraced
     restart: "always"
@@ -221,5 +224,28 @@ services:
     depends_on:
       - "retraced-api"
     restart: "always"
+
+  vector:
+    build:
+      context: .
+      dockerfile: ./deploy/vector-sidecar/Dockerfile
+    environment: *common-variables
+    ports:
+      - "8686:8686"
+      - "9393:9229"
+      - "3002:3002"
+      - "9999:9999"
+    volumes:
+      - ./vector/data:/var/lib/vector/
+    depends_on:
+      elasticsearch:
+        condition: service_started
+      postgres:
+        condition: service_started
+      nsqd:
+        condition: service_started
+    networks:
+      - retraced
 volumes:
   mmdb:
+  postgres-data:

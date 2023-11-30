@@ -1,0 +1,21 @@
+{
+  "data_dir": "/var/lib/vector",
+  "api": {
+    "address": "0.0.0.0:8686",
+    "enabled": true,
+    "playground": true
+  },
+  "sources": {
+    "webhook_source": {
+      "type": "http_server",
+      "address": "0.0.0.0:9000",
+      "healthcheck": true
+    }
+  },
+  "sinks": {
+    "blackhole_sink": {
+      "inputs": ["webhook_source"],
+      "type": "blackhole"
+    }
+  }
+}
