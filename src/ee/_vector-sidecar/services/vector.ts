@@ -4,6 +4,7 @@ import { ConfigManager } from "./configManager";
 import { getVectorConfig, getVectorConfigPath, sleep } from "./helper";
 import getPgPool from "../../../_db/persistence/pg";
 import graphql from "./graphql";
+import { logger } from "../../../logger";
 
 export const getSourceName = (tenant, name) => {
   return `source_webhook_${tenant}_${name}`;
@@ -24,7 +25,7 @@ export const processConfig = (
 } => {
   const sourceName = getSourceName(tenant, name);
   const sinkName = getSinkName(tenant, name);
-  console.log(`Config for ${tenant} with name ${name}`);
+  logger.info(`Config for ${tenant} with name ${name}`);
   const path = getVectorConfigPath(id);
   let port;
   const configManager = ConfigManager.getInstance();
@@ -37,7 +38,7 @@ export const processConfig = (
     throw new Error("No available port");
   } else {
     const finalConfig = getVectorConfig(sourceName, port, sinkName, sink);
-    console.log(`Saving to ${path}`);
+    logger.info(`Saving to ${path}`);
     fs.writeFileSync(path, JSON.stringify(finalConfig));
     ConfigManager.getInstance().addConfig({
       configPath: path,
@@ -55,14 +56,14 @@ export const addConfigFromSinkRow = async (sinkRow, verify = true) => {
   const tenant = `${project_id}_${environment_id}_${group_id}`;
   const configManager = ConfigManager.getInstance();
   if (configManager.configs[sinkRow.id]) {
-    console.log(`Source already exists`);
+    logger.info(`Source already exists`);
     return;
   } else {
-    console.log(`Source does not exist, adding config`);
+    logger.info(`Source does not exist, adding config`);
     const { sourceName, sinkName } = processConfig(tenant, name, sinkConfig, id);
     if (verify) {
       const verified = await verifyVectorConfig(sourceName, sinkName);
-      console.log(`Verified: ${verified}`);
+      logger.info(`Verified: ${verified}`);
     }
     await setSinkAsActive(sinkRow.id);
   }
@@ -70,12 +71,12 @@ export const addConfigFromSinkRow = async (sinkRow, verify = true) => {
 
 export const handleSinkCreated = async (sink) => {
   const pg = getPgPool();
-  console.log(`Sink created: `, sink);
+  logger.info(`Sink created: `, sink);
   const res = await pg.query(`SELECT * FROM vectorsink where id=$1`, [sink.id]);
   if (res.rows.length === 0) {
-    console.log(`Sink not found`);
+    logger.info(`Sink not found`);
   } else {
-    console.log(`Sink found`);
+    logger.info(`Sink found`);
     const sinkRow = res.rows[0];
     await addConfigFromSinkRow(sinkRow);
   }
@@ -89,12 +90,12 @@ export const handleSinkUpdated = async (sink) => {
    * 4. If we don't have it, we will create the config
    */
   const pg = getPgPool();
-  console.log(`Sink updated: `, sink);
+  logger.info(`Sink updated: `, sink);
   const res = await pg.query(`SELECT * FROM vectorsink where id=$1`, [sink.id]);
   if (res.rows.length === 0) {
-    console.log(`Sink not found`);
+    logger.info(`Sink not found`);
   } else {
-    console.log(`Sink found`);
+    logger.info(`Sink found`);
     const sinkRow = res.rows[0];
     const { project_id, name, environment_id, group_id, config: _config, id } = sinkRow;
     const tenant = `${project_id}_${environment_id}_${group_id}`;
@@ -102,14 +103,14 @@ export const handleSinkUpdated = async (sink) => {
     const currentConfig = configManager.getConfigBySinkId(sink.id);
     if (!currentConfig) {
       // create new config
-      console.log(`Source does not exist, adding config`);
+      logger.info(`Source does not exist, adding config`);
       const { sourceName, sinkName } = processConfig(tenant, name, _config, id);
       const verified = await verifyVectorConfig(sourceName, sinkName);
-      console.log(`Verified: ${verified}`);
+      logger.info(`Verified: ${verified}`);
       await setSinkAsActive(sink.id);
     } else {
       // update existing config
-      console.log(`Source already exists`);
+      logger.info(`Source already exists`);
       const sourceName = getSourceName(tenant, name);
       const sinkName = getSinkName(tenant, name);
       const newConfig = getVectorConfig(sourceName, currentConfig.sourceHttpPort, sinkName, _config);
@@ -119,7 +120,7 @@ export const handleSinkUpdated = async (sink) => {
       }
       fs.writeFileSync(path, JSON.stringify(newConfig));
       const verified = await verifyVectorConfig(sourceName, sinkName);
-      console.log(`Verified: ${verified}`);
+      logger.info(`Verified: ${verified}`);
       if (currentConfig.sourceName !== sourceName) {
         delete configManager.configs[id];
       }
@@ -144,12 +145,12 @@ export const handleSinkDeleted = (sink) => {
       fs.unlinkSync(configPath);
     }
     delete instance.configs[sink.id];
-    console.log(`Config deleted`);
+    logger.info(`Config deleted`);
   } else if (fs.existsSync(configPath)) {
     fs.unlinkSync(configPath);
-    console.log(`Config deleted`);
+    logger.info(`Config deleted`);
   } else {
-    console.log(`Config not found`);
+    logger.info(`Config not found`);
   }
 };
 
@@ -164,22 +165,22 @@ export const verifyVectorConfig = async (sourceName, sinkName) => {
     do {
       try {
         await sleep(1000);
-        console.log("Waiting for vector to reload");
+        logger.info("Waiting for vector to reload");
         const sinkExists = await graphql.getComponentByName(sinkName);
         const sourceExists = await graphql.getComponentByName(sourceName);
         if (sinkExists && sourceExists) {
-          console.log("Vector reloaded");
+          logger.info("Vector reloaded");
           return true;
         }
         retries++;
       } catch (ex) {
         retries++;
-        console.log(ex);
+        logger.error(ex);
       }
     } while (retries < 3);
     return false;
   } catch (ex) {
-    console.log(ex);
+    logger.error(ex);
     return false;
   }
 };

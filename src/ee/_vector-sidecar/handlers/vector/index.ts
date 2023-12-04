@@ -3,28 +3,27 @@ import axios from "axios";
 import config from "../../../../config";
 import { ConfigManager } from "../../services/configManager";
 import { processConfig, setSinkAsActive, verifyVectorConfig } from "../../services/vector";
+import { logger } from "../../../../logger";
 // import { reloadConfig } from '../../lib/signal';
 
 export const getHealth = (req, res) => {
-  console.log("Vector health check");
-  const url = `http://localhost:${config.VECTOR_API_PORT}/health`;
+  logger.info("Vector health check");
+  const url = `${config.VECTOR_HOST_PROTOCOL}://${config.VECTOR_HOST}:${config.VECTOR_API_PORT}/health`;
 
   axios
     .get(url)
     .then((response) => {
       const data = response.data;
-      console.log(data);
       res.status(200).json({ success: data.ok });
     })
     .catch((err) => {
-      console.log(err);
+      logger.error(err);
       res.status(500).json(err);
     });
 };
 
 export const getAllComponents = async (req, res) => {
   try {
-    console.log("Vector components");
     if (req.query?.type) {
       const type = req.query.type;
       const components = await graphql.getAllComponentsByType(type.toUpperCase());
@@ -34,14 +33,13 @@ export const getAllComponents = async (req, res) => {
       res.status(200).json(components);
     }
   } catch (err) {
-    console.log(err);
+    logger.error(err);
     res.status(500).json(err);
   }
 };
 
 export const getComponentsByName = async (req, res) => {
   try {
-    console.log("Vector component by name");
     if (req.params?.name) {
       const name = req.params.name;
       const components = await graphql.getComponentByName(name);
@@ -50,7 +48,7 @@ export const getComponentsByName = async (req, res) => {
       throw new Error("Missing name");
     }
   } catch (err) {
-    console.log(err);
+    logger.error(err);
     res.status(500).json(err);
   }
 };
@@ -69,7 +67,7 @@ export const saveVectorConfig = async (req, res) => {
       sinkName,
     });
   } catch (ex) {
-    console.log(ex);
+    logger.error(ex);
     res.status(500).json(ex);
   }
 };
@@ -82,7 +80,7 @@ export const getAvailablePort = (req, res) => {
     }
     res.status(200).json({ port });
   } catch (err) {
-    console.log(err);
+    logger.error(err);
     res.status(500).json(err);
   }
 };

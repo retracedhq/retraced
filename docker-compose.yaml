@@ -109,8 +109,6 @@ services:
       - POSTGRES_USER=retraced
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=retraced
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
     networks:
       - retraced
     restart: "always"

@@ -6,6 +6,8 @@ import uniqueId from "../../../models/uniqueId";
 import { searchByReceived, encodeCursor, decodeCursor } from "../../../handlers/graphql/search";
 import axios from "axios";
 import { call, ExponentialStrategy } from "backoff";
+import { logger } from "../../../logger";
+import config from "../../../config";
 
 const pg = getPgPool();
 const batchSize = 1000;
@@ -22,7 +24,7 @@ export function addConsumers() {
         await handleSinkCreated(sink);
         msg.finish();
       } catch (ex) {
-        console.log(ex);
+        logger.error(ex);
       }
     },
     {
@@ -41,7 +43,7 @@ export function addConsumers() {
         handleSinkDeleted(sink);
         msg.finish();
       } catch (ex) {
-        console.log(ex);
+        logger.error(ex);
       }
     },
     {
@@ -60,7 +62,7 @@ export function addConsumers() {
         await handleSinkUpdated(sink);
         msg.finish();
       } catch (ex) {
-        console.log(ex);
+        logger.error(ex);
       }
     },
     {
@@ -90,13 +92,20 @@ export function addConsumers() {
           for (const sink of sinks.rows) {
             // Check if sendEventsToVectorSource is already running for the current sink.id
             if (sendEventsRunningStatus[sink.id]) {
-              console.log(`sendEventsToVectorSource is already running for sink ${sink.id}, skipping...`);
+              logger.info(`sendEventsToVectorSource is already running for sink ${sink.id}, skipping...`);
               continue;
             }
 
             // Set the running status of sendEventsToVectorSource to true for the current sink.id
             sendEventsRunningStatus[sink.id] = true;
 
+            // Get the latest received from ingest_task
+            const latestReceived = await getLatestEventTimestampForSink(sink);
+            logger.info(
+              `Latest received for ${sink.project_id}/${sink.environment_id}/${
+                sink.group_id
+              } is ${+latestReceived}`
+            );
             // get cursor from pg for each group
             let startCursor;
             const cursor = await getCursorForSink(sink);
@@ -108,7 +117,7 @@ export function addConsumers() {
               // check if previous events missed
               const config = instance.getConfigBySinkId(sink.id);
               if (!config) {
-                console.warn(`Config not found for sink ${sink.id} in ConfigManager, skipping!`);
+                logger.info(`Config not found for sink ${sink.id} in ConfigManager, skipping!`);
                 continue;
               }
               const { sourceName, sinkName } = config;
@@ -131,7 +140,7 @@ export function addConsumers() {
                       startCursor = cursor.rows[0].cursor;
                     } else {
                       // events missed
-                      console.log(
+                      logger.info(
                         `[${diff}]Events missed for ${sinkName} [${instance.receivedEvents[sinkName]} => ${
                           instance.sentEvents[sinkName] + (instance.sinkRetryDiff[sinkName] || 0)
                         }] in last tick. waiting...`
@@ -156,16 +165,23 @@ export function addConsumers() {
               cursorToSave;
             do {
               try {
+                const [timestamp] = startCursor ? decodeCursor(startCursor) : [0];
+                const beforeTs = latestReceived ? Math.min(+latestReceived, windowEnd) : windowEnd;
+                // if cursor is greater than beforeTs, then skip
+                if (startCursor && timestamp > beforeTs) {
+                  logger.info(`startCursor(${timestamp}) is greater than beforeTs(${beforeTs}), skipping...`);
+                  break;
+                }
                 // get events from pg or es depending on PG_SEARCH
                 events = await searchByReceived(
-                  { size: batchSize, after: startCursor, before: windowEnd, from },
+                  { size: batchSize, after: startCursor, before: beforeTs, from },
                   {
                     projectId: sink.project_id,
                     environmentId: sink.environment_id,
                     groupId: sink.group_id,
                   }
                 );
-                console.log(
+                logger.info(
                   `Found ${events.edges.length}/${events.totalCount} events for ${sink.project_id}/${sink.environment_id}/${sink.group_id}`
                 );
                 if (events.edges.length === 0) {
@@ -178,7 +194,7 @@ export function addConsumers() {
 
                 from += events.edges.length;
                 if (from + batchSize >= 10000) {
-                  console.log(
+                  logger.info(
                     `Reached max limit of 10000 events for ${sink.project_id}/${sink.environment_id}/${sink.group_id}`
                   );
 
@@ -188,7 +204,7 @@ export function addConsumers() {
                   from = 0;
                 }
               } catch (ex) {
-                console.log(ex);
+                logger.error(ex);
                 startCursor = cursorToSave;
               }
             } while (events?.edges?.length && events?.edges?.length > 0);
@@ -199,7 +215,7 @@ export function addConsumers() {
           msg.finish();
         }
       } catch (ex) {
-        console.log(ex);
+        logger.error(ex);
         msg.requeue(15000, true);
       }
     },
@@ -209,6 +225,26 @@ export function addConsumers() {
       messageTimeoutMS: 100000,
     }
   );
+}
+
+async function getLatestEventTimestampForSink(sink: any) {
+  try {
+    const res = await pg.query(
+      `
+            SELECT MAX(received) as max
+            FROM ingest_task
+            WHERE normalized_event IS NOT NULL
+              AND project_id = $1
+              AND environment_id = $2
+              AND (normalized_event::jsonb->'group'->>'id') = $3;`,
+      [sink.project_id, sink.environment_id, sink.group_id]
+    );
+    if (res.rows.length > 0) {
+      return res.rows[0].max;
+    }
+  } catch (ex) {
+    logger.error(ex);
+  }
 }
 
 async function insertSinkCursor(sink: any) {
@@ -255,9 +291,14 @@ async function sendEventsToVectorSource(events: any, sink: any, batchSize: numbe
     const batch = eventEdges.slice(i * batchSize, (i + 1) * batchSize);
     const promises = batch.map(async (edge: any) => {
       const functionCall = call(() => {
-        return axios.post(`http://localhost:${ConfigManager.getInstance().configs[sink.id].sourceHttpPort}`, {
-          message: JSON.stringify(edge?.node),
-        });
+        return axios.post(
+          `${config.VECTOR_HOST_PROTOCOL}://${config.VECTOR_HOST}:${
+            ConfigManager.getInstance().configs[sink.id].sourceHttpPort
+          }`,
+          {
+            message: JSON.stringify(edge?.node),
+          }
+        );
       });
 
       functionCall.retryIf((err) => {
@@ -270,7 +311,9 @@ async function sendEventsToVectorSource(events: any, sink: any, batchSize: numbe
       try {
         await functionCall.start();
       } catch (error) {
-        console.log(`Error sending event to vector: ${error.response.status} - ${error.response.statusText}`);
+        logger.error(
+          `Error sending event to vector: ${error.response.status} - ${error.response.statusText}`
+        );
       }
     });
 

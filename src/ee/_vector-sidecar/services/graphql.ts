@@ -3,6 +3,7 @@ import config from "../../../config";
 import { Component, componentKind } from "../types";
 import { WebSocket } from "ws";
 import { createClient } from "graphql-ws";
+import { logger } from "../../../logger";
 
 const getAllComponents = (): Promise<Component[]> => {
   return new Promise((resolve, reject) => {
@@ -21,12 +22,12 @@ const getAllComponents = (): Promise<Component[]> => {
     }`,
     };
     axios
-      .post(`http://localhost:${config.VECTOR_API_PORT}/graphql`, body)
+      .post(`${config.VECTOR_HOST_PROTOCOL}://${config.VECTOR_HOST}:${config.VECTOR_API_PORT}/graphql`, body)
       .then((response) => {
         resolve((response.data?.data?.components?.edges || []).map((edge) => edge.node));
       })
       .catch((err) => {
-        console.log(err);
+        logger.error(err);
         reject(err);
       });
   });
@@ -48,7 +49,7 @@ const getAllComponentsByType = (type: componentKind): Promise<Component[]> => {
       }
     }`,
     };
-    const url = `http://localhost:${config.VECTOR_API_PORT}/graphql`;
+    const url = `${config.VECTOR_HOST_PROTOCOL}://${config.VECTOR_HOST}:${config.VECTOR_API_PORT}/graphql`;
 
     axios
       .post(url, body)
@@ -59,7 +60,7 @@ const getAllComponentsByType = (type: componentKind): Promise<Component[]> => {
         resolve(result);
       })
       .catch((err) => {
-        console.log(err);
+        logger.error(err);
         reject(err);
       });
   });
@@ -78,24 +79,23 @@ const getComponentByName = (name: string): Promise<Component> => {
         }
       }`,
     };
-    const url = `http://localhost:${config.VECTOR_API_PORT}/graphql`;
+    const url = `${config.VECTOR_HOST_PROTOCOL}://${config.VECTOR_HOST}:${config.VECTOR_API_PORT}/graphql`;
 
     axios
       .post(url, body)
       .then((response) => {
         const data = response.data;
-        console.log(data);
         resolve(data?.data?.componentByComponentKey);
       })
       .catch((err) => {
-        console.log(err);
+        logger.error(err);
         reject(err);
       });
   });
 };
 
 const client = createClient({
-  url: `ws://localhost:${config.VECTOR_API_PORT}/graphql`,
+  url: `ws://${config.VECTOR_HOST}:${config.VECTOR_API_PORT}/graphql`,
   webSocketImpl: WebSocket,
 });
 

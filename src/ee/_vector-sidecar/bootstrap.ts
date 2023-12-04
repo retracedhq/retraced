@@ -1,5 +1,6 @@
 import getPgPool from "../../persistence/pg";
 import { addConfigFromSinkRow } from "./services/vector";
+import { logger } from "../../logger";
 
 const pg = getPgPool();
 
@@ -10,7 +11,7 @@ const pg = getPgPool();
       sinks = await pg.query(`SELECT * FROM vectorsink`);
       break;
     } catch (ex) {
-      console.log("[Bootstrap]", ex ? (ex.message ? ex.message : ex) : ex, `Retrying...`);
+      logger.info(`[Bootstrap] ${ex ? (ex.message ? ex.message : ex) : ex} Retrying...`);
       continue;
     }
   } while (true);
@@ -18,7 +19,7 @@ const pg = getPgPool();
     try {
       await addConfigFromSinkRow(sink, false);
     } catch (ex) {
-      console.log("[Bootstrap]", ex ? (ex.message ? ex.message : ex) : ex, `Continuing...`);
+      logger.info(`[Bootstrap] ${ex ? (ex.message ? ex.message : ex) : ex} Continuing...`);
       continue;
     }
   }

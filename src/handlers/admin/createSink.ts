@@ -1,6 +1,8 @@
 import { checkAdminAccess } from "../../security/helpers";
 import createSink from "../../models/vectorsink/create";
 import getGroup from "../../models/group/gets";
+import upsertGroup from "../../_processor/models/group/upsert";
+import getPgPool from "../../persistence/pg";
 
 export default async function (req) {
   await checkAdminAccess(req);
@@ -10,10 +12,19 @@ export default async function (req) {
   });
 
   if (groupRes.length === 0) {
-    return {
-      status: 404,
-      body: JSON.stringify({ error: "Group not found" }),
-    };
+    const pg = await getPgPool().connect();
+    await upsertGroup(
+      {
+        projectId: req.params.projectId,
+        environmentId: req.params.environmentId,
+        group: {
+          id: req.params.groupId,
+          name: req.params.groupId,
+        },
+        updateOnConflict: false,
+      },
+      pg
+    );
   } else if (groupRes[0].project_id !== req.params.projectId) {
     return {
       status: 404,
@@ -43,19 +54,18 @@ export default async function (req) {
       status: 400,
       body: JSON.stringify({ error: "Config cannot be empty" }),
     };
-  } else {
-    const sink = await createSink({
-      name: req.body.name,
-      environmentId: req.params.environmentId,
-      groupId: req.params.groupId,
-      projectId: req.params.projectId,
-      config: req.body.config,
-      active: false,
-    });
-
-    return {
-      status: 201,
-      body: JSON.stringify(sink),
-    };
   }
+  const sink = await createSink({
+    name: req.body.name,
+    environmentId: req.params.environmentId,
+    groupId: req.params.groupId,
+    projectId: req.params.projectId,
+    config: req.body.config,
+    active: false,
+  });
+
+  return {
+    status: 201,
+    body: JSON.stringify(sink),
+  };
 }

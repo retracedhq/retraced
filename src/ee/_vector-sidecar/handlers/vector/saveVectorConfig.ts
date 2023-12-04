@@ -2,6 +2,7 @@ import fs from "fs";
 import { ConfigManager } from "../../services/configManager";
 import { getSinkName, getSourceName, verifyVectorConfig } from "../../services/vector";
 import { getVectorConfig, getVectorConfigPath } from "../../services/helper";
+import { logger } from "../../../../logger";
 
 export const saveVectorConfig = async (req, res) => {
   try {
@@ -9,7 +10,7 @@ export const saveVectorConfig = async (req, res) => {
     const { config: sink, tenant, name, id } = body;
     const sourceName = getSourceName(tenant, name);
     const sinkName = getSinkName(tenant, name);
-    console.log(`Config for ${tenant} with name ${name}`);
+    logger.info(`Config for ${tenant} with name ${name}`);
     const path = getVectorConfigPath(id);
     let port;
     const configManager = ConfigManager.getInstance();
@@ -22,7 +23,7 @@ export const saveVectorConfig = async (req, res) => {
       throw new Error("No available port");
     } else {
       const finalConfig = getVectorConfig(sourceName, port, sinkName, sink);
-      console.log(`Saving to ${path}`);
+      logger.info(`Saving to ${path}`);
       fs.writeFileSync(path, JSON.stringify(finalConfig));
       ConfigManager.getInstance().addConfig({
         id,
@@ -40,7 +41,7 @@ export const saveVectorConfig = async (req, res) => {
       });
     }
   } catch (ex) {
-    console.log(ex);
+    logger.error(ex);
     res.status(500).json(ex);
   }
 };

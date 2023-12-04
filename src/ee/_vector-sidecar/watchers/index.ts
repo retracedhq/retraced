@@ -4,6 +4,7 @@ import graphql from "../services/graphql";
 import { sleep } from "../services/helper";
 import queries from "./queries";
 import config from "../../../config";
+import { logger } from "../../../logger";
 const subscriptions = {};
 
 type ComponentErrorsTotals = {
@@ -112,7 +113,7 @@ const handleEvent = (event: any, name: string) => {
     case "componentErrorsTotals":
       data = event.data.componentErrorsTotals as ComponentErrorsTotals[];
       if (data.length > 0) {
-        console.log(
+        logger.info(
           data.map((d: ComponentErrorsTotals) => `${d.componentId}: ${d?.metric?.errorsTotal}`).join("\n")
         );
       }
@@ -120,18 +121,18 @@ const handleEvent = (event: any, name: string) => {
     case "componentReceivedEventsThroughput":
       data = event.data.componentReceivedEventsThroughputs as ComponentReceivedEventsThroughput[];
       if (data.length > 0) {
-        console.table(data);
+        logger.info({ data });
       }
       break;
     case "componentReceivedEventsTotals":
       data = event.data.componentReceivedEventsTotals as ComponentReceivedEventsTotal[];
       if (data.length > 0) {
-        console.log(name);
+        logger.info(name);
         for (const d of data) {
           if (d?.metric?.receivedEventsTotal) {
             if (!isNaN(d?.metric?.receivedEventsTotal)) {
               if (d?.metric?.receivedEventsTotal > 0) {
-                console.log(`${d.componentId}: ${d?.metric?.receivedEventsTotal}`);
+                logger.info(`${d.componentId}: ${d?.metric?.receivedEventsTotal}`);
                 instance.updateReceivedEventsStats(d.componentId, d?.metric?.receivedEventsTotal || 0);
               }
             }
@@ -142,7 +143,7 @@ const handleEvent = (event: any, name: string) => {
     case "componentSentEventsThroughputs":
       data = event.data.componentSentEventsThroughputs as ComponentSentEventsThroughput[];
       if (data.length > 0) {
-        console.log(
+        logger.info(
           data.map((d: ComponentSentEventsThroughput) => {
             return {
               componentId: d.componentId,
@@ -156,37 +157,37 @@ const handleEvent = (event: any, name: string) => {
     case "componentReceivedBytesThroughputs":
       data = event.data.componentReceivedBytesThroughputs as ComponentReceivedBytesThroughput[];
       if (data.length > 0) {
-        console.table(data);
+        logger.info({ data });
       }
       break;
     case "componentSentBytesThroughputs":
       data = event.data.componentSentBytesThroughputs as ComponentSentBytesThroughput[];
       if (data.length > 0) {
-        console.table(data);
+        logger.info({ data });
       }
       break;
     case "componentReceivedBytesTotals":
       data = event.data.componentReceivedBytesTotals as ComponentReceivedBytesTotal[];
       if (data.length > 0) {
-        console.table(
-          data.map((d) => {
+        logger.info({
+          data: data.map((d) => {
             return {
               componentId: d.componentId,
               receivedBytesTotal: d?.metric?.receivedBytesTotal || 0,
             };
-          })
-        );
+          }),
+        });
       }
       break;
     case "componentSentEventsTotals":
       data = event.data.componentSentEventsTotals as ComponentSentEventsTotal[];
       if (data.length > 0) {
-        console.log(name);
+        logger.info(name);
         for (const d of data) {
           if (d?.metric?.sentEventsTotal) {
             if (!isNaN(d?.metric?.sentEventsTotal)) {
               if (d?.metric?.sentEventsTotal > 0) {
-                console.log(`${d.componentId}: ${d?.metric?.sentEventsTotal}`);
+                logger.info(`${d.componentId}: ${d?.metric?.sentEventsTotal}`);
                 instance.updateSentEventsStats(d.componentId, d?.metric?.sentEventsTotal);
               }
             }
@@ -197,7 +198,7 @@ const handleEvent = (event: any, name: string) => {
     case "componentSentBytesTotals":
       data = event.data.componentSentBytesTotals as ComponentSentBytesTotal[];
       if (data.length > 0) {
-        console.log(
+        logger.info(
           data
             .map((d: ComponentSentBytesTotal) => `${d.componentId}: ${d?.metric?.sentBytesTotal}`)
             .join("\n")
@@ -207,7 +208,7 @@ const handleEvent = (event: any, name: string) => {
     case "componentAllocatedBytes":
       data = event.data.componentAllocatedBytes as ComponentAllocatedBytes[];
       if (data.length > 0) {
-        console.log(
+        logger.info(
           data
             .map((d: ComponentAllocatedBytes) => `${d.componentId}: ${d?.metric?.allocatedBytes}`)
             .join("\n")
@@ -215,34 +216,34 @@ const handleEvent = (event: any, name: string) => {
       }
       break;
     case "componentRemoved":
-      console.log(data);
+      logger.info(data);
       data = event.data.componentRemoved as Component;
       if (data) {
-        console.log(`componentId: ${data.componentId}, componentType: ${data.componentType}`);
+        logger.info(`componentId: ${data.componentId}, componentType: ${data.componentType}`);
       }
       break;
     case "allocatedBytes":
       data = event.data.allocatedBytes as AllocatedBytes;
       if (data) {
-        console.log(`timestamp: ${data.timestamp}, allocatedBytes: ${data.allocatedBytes}`);
+        logger.info(`timestamp: ${data.timestamp}, allocatedBytes: ${data.allocatedBytes}`);
       }
       break;
     case "componentAdded":
-      console.log(data);
+      logger.info(data);
       data = event.data.componentRemoved as Component;
       if (data) {
-        console.log(`componentId: ${data.componentId}, componentType: ${data.componentType}`);
+        logger.info(`componentId: ${data.componentId}, componentType: ${data.componentType}`);
       }
       break;
     case "metrics":
       data = event.data.metrics as MetricType;
       if (data) {
-        console.log(`timestamp: ${data.timestamp}`);
+        logger.info(`timestamp: ${data.timestamp}`);
       }
       break;
     default:
-      console.log(event);
-      console.table(event.data[name]);
+      logger.info(event);
+      logger.info({ data: event.data[name] });
   }
 };
 
@@ -254,7 +255,7 @@ const attachListensers = async (sub: any, name: string) => {
 
 export const getHealth = (port) => {
   return new Promise((resolve) => {
-    const url = `http://localhost:${port}/health`;
+    const url = `${config.VECTOR_HOST_PROTOCOL}://${config.VECTOR_HOST}:${port}/health`;
 
     axios
       .get(url)
@@ -283,11 +284,11 @@ const init = async () => {
       do {
         try {
           await attachListensers(subscriptions[queryName], queryName);
-          console.log(`[attachListensers] ${queryName} attached`);
+          logger.info(`[attachListensers] ${queryName} attached`);
           break;
         } catch (ex) {
-          console.log("[attachListensers]", ex);
-          console.log(`[attachListensers] Retrying...`);
+          logger.info("[attachListensers]", ex);
+          logger.info(`[attachListensers] Retrying...`);
           sleep(1000);
         }
       } while (true);

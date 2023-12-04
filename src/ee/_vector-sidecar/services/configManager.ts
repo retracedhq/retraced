@@ -2,6 +2,7 @@ import fs from "fs";
 import { VectorConfig } from "../types";
 import config from "../../../config";
 import { getVectorConfig } from "./helper";
+import { logger } from "../../../logger";
 
 export type Config = {
   configPath: string;
@@ -77,7 +78,8 @@ export class ConfigManager {
       };
       this.portBanList.add(this.initConfig.sourceHttpPort);
     } catch (ex) {
-      console.log("Could not read vector config");
+      logger.error(ex);
+      logger.info("Could not read vector config");
     }
   }
 
@@ -100,7 +102,7 @@ export class ConfigManager {
         if (this.isPortOccupied(sourceHttpPort)) {
           sourceHttpPort = this.findAvailableSourcePort();
           if (!sourceHttpPort) {
-            console.log("No available port");
+            logger.error("No available port");
             continue;
           }
           const newConfig = getVectorConfig(sourceName, sourceHttpPort, sinkName, json.sinks[sinkName]);
@@ -116,7 +118,7 @@ export class ConfigManager {
         });
       }
     } catch (ex) {
-      console.log(ex);
+      logger.error(ex);
     }
   }
 
@@ -128,7 +130,7 @@ export class ConfigManager {
     id: string;
   }) {
     this.configs[sinkConfig.id] = sinkConfig;
-    console.log(
+    logger.info(
       `Added config for ${sinkConfig.sourceName} with port ${sinkConfig.sourceHttpPort} and path ${sinkConfig.configPath}`
     );
   }
