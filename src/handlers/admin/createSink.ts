@@ -19,7 +19,7 @@ export default async function (req) {
         environmentId: req.params.environmentId,
         group: {
           id: req.params.groupId,
-          name: req.params.groupId,
+          name: req.query.groupName || req.params.groupId,
         },
         updateOnConflict: false,
       },
