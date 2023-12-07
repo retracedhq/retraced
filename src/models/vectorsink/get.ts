@@ -12,6 +12,12 @@ export const getByProjectEnvironmentGroupId = async (
   return result.rows;
 };
 
+export const getByGroupId = async (groupId: string) => {
+  const q = `SELECT * FROM vectorsink WHERE group_id = $1`;
+  const result = await pgPool.query(q, [groupId]);
+  return result.rows;
+};
+
 export const getById = async (id: string) => {
   const q = `SELECT * FROM vectorsink WHERE id = $1`;
   const result = await pgPool.query(q, [id]);

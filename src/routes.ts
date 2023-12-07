@@ -12,6 +12,7 @@ import createInvite from "./handlers/admin/createInvite";
 import createProject from "./handlers/admin/createProject";
 import createSink from "./handlers/admin/createSink";
 import getSinkList from "./handlers/admin/getSinkList";
+import getSinkListByGroup from "./handlers/admin/getSinkListByGroup";
 import getSinkById from "./handlers/admin/getSinkById";
 import updateSink from "./handlers/admin/updateSink";
 import deleteSink from "./handlers/admin/deleteSink";
@@ -95,6 +96,11 @@ export default {
     path: "/admin/v1/project/:projectId/environment/:environmentId/group/:groupId/sink",
     method: "get",
     handler: getSinkList,
+  },
+  adminGetSinksByGroup: {
+    path: "/admin/v1/project/:projectId/group/:groupId/sink",
+    method: "get",
+    handler: getSinkListByGroup,
   },
   adminCreateSink: {
     path: "/admin/v1/project/:projectId/environment/:environmentId/group/:groupId/sink",
