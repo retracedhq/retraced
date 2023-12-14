@@ -33,12 +33,13 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
   build_docker:
-    <<: *defaults
+    docker:
+      - image: cimg/base:2023.12
     working_directory: ~/repo
     steps:
       - checkout
       - setup_remote_docker:
-          version: 19.03.13
+          version: 20.10.14
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
@@ -56,11 +57,12 @@ jobs:
             - ./retraced.tar
 
   build_postgres:
-    <<: *defaults
+    docker:
+      - image: cimg/base:2023.12
     steps:
       - checkout
       - setup_remote_docker:
-          version: 19.03.13
+          version: 20.10.14
       - run: docker build --pull -t registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-postgres .
       - run:
           name: Run local image vulnerability scan
@@ -74,11 +76,12 @@ jobs:
             - ./retraced-postgres.tar
 
   build_nsq:
-    <<: *defaults
+    docker:
+      - image: cimg/base:2023.12
     steps:
       - checkout
       - setup_remote_docker:
-          version: 19.03.13
+          version: 20.10.14
       - run: docker build --pull -t registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-nsq .
       - run:
           name: Run local image vulnerability scan

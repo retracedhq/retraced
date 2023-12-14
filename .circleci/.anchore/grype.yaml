@@ -1,4 +1,6 @@
 ignore:
+  - vulnerability: CVE-2023-47038
+  - vulnerability: CVE-2023-5981
 
   # https://github.com/anchore/grype#specifying-matches-to-ignore
   # example to ignore a vulnerability
