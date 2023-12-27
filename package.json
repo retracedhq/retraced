@@ -10,7 +10,7 @@
     "@bugsnag/plugin-express": "7.19.0",
     "@maxmind/geoip2-node": "5.0.0",
     "@opensearch-project/opensearch": "2.4.0",
-    "@retracedhq/retraced": "0.7.2",
+    "@retracedhq/retraced": "0.7.4",
     "@segment/analytics-node": "1.1.4",
     "axios": "1.6.3",
     "bcryptjs": "2.4.3",
