@@ -53,6 +53,7 @@ export const onSuccess = (res: express.Response, reqId: string, statusCodeGetter
     const respObj = res.status(statusToSend).type(contentType).set("X-Retraced-RequestId", reqId);
     if (result.filename) {
       respObj.attachment(result.filename);
+      respObj.set("Access-Control-Expose-Headers", "Content-Disposition"); // needed for CORS to work
     }
     if (result.headers) {
       _.forOwn(result.headers, (value, key) => {
