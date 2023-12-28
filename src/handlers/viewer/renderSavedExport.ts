@@ -1,15 +1,16 @@
 import { validateViewerDescriptorVoucher } from "../../security/vouchers";
+import { checkViewerAccess } from "../../security/helpers";
 import renderSavedExport from "../../models/saved_export/render";
+import ViewerDescriptor from "../../models/viewer_descriptor/def";
 
 export default async function(req) {
-  // Note that this call needs the JWT passed in as a query string param.
-  // This is because we will be calling this from window.open() in a browser,
-  // and there's no way to set headers in that circumstance.
-  //
-  // TODO
-  // Leaking the JWT is bad though, ideally this should use a single-use
-  // nonce instead
-  const claims = await validateViewerDescriptorVoucher(req.query.jwt);
+  // Older viewers will pass JWT in request query. Newer viewers will pass JWT in the authorization header.
+  let claims: ViewerDescriptor;
+  if (req.query.jwt) {
+    claims = await validateViewerDescriptorVoucher(req.query.jwt);
+  } else {
+    claims = await checkViewerAccess(req);
+  }
 
   const format = req.query.format || "csv";
   let contentType;
