@@ -1,9 +1,9 @@
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -51,8 +51,8 @@ describe("Admin delete environment", function () {
               resourceId: env.id,
             })
             .end((err, resp) => {
-              expect(err).to.be.null;
-              expect(resp.status).to.equal(201);
+              assert.strictEqual(err, null);
+              assert.strictEqual(resp.status, 201);
               done();
             });
         });
@@ -68,8 +68,8 @@ describe("Admin delete environment", function () {
               template: "{{}}",
             })
             .end((err, res) => {
-              expect(err).to.be.null;
-              expect(res.status).to.equal(201);
+              assert.strictEqual(err, null);
+              assert.strictEqual(res.status, 201);
 
               templateID = res.body.id;
               done();
@@ -83,15 +83,15 @@ describe("Admin delete environment", function () {
               .delete(`/admin/v1/project/${project.id}/environment/${env.id}`)
               .set("Authorization", jwt)
               .end((err, res) => {
-                expect(err).to.be.null;
+                assert.strictEqual(err, null);
                 resp = res;
                 done();
               });
           });
 
           specify("The environment is deleted with status 204.", function () {
-            expect(resp.status).to.equal(204);
-            expect(resp.body).to.deep.equal({});
+            assert.strictEqual(resp.status, 204);
+            assert.deepEqual(resp.body, {});
           });
 
           if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -117,13 +117,12 @@ describe("Admin delete environment", function () {
               };
               const connection = await headless.query(query, mask, 1);
               const audited = connection.currentResults[0];
-              const token = resp.body;
 
-              expect(audited.action).to.equal("environment.delete");
-              expect(audited.crud).to.equal("d");
-              expect(audited.group!.id).to.equal(project.id);
-              expect(audited.actor!.id).to.equal(adminId);
-              expect(audited.target!.id).to.equal(env.id);
+              assert.strictEqual(audited.action, "environment.delete");
+              assert.strictEqual(audited.crud, "d");
+              assert.strictEqual(audited.group!.id, project.id);
+              assert.strictEqual(audited.actor!.id, adminId);
+              assert.strictEqual(audited.target!.id, env.id);
             });
           }
         });

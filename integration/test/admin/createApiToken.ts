@@ -4,6 +4,7 @@ import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -49,7 +50,7 @@ describe("Admin create API token", function () {
               disabled: false,
             })
             .end((err, res) => {
-              expect(err).to.be.null;
+              assert.strictEqual(err, null);
               resp = res;
               done();
             });
@@ -59,17 +60,17 @@ describe("Admin create API token", function () {
           const token = resp.body;
           const tenMinutes = 1000 * 60 * 10;
 
-          expect(resp).to.have.property("status", 201);
-          expect(token.token).to.be.ok;
-          expect(token.created).to.be.ok;
+          assert.strictEqual(resp.status, 201);
+          assert(token.token);
+          assert(token.created);
           expect(new Date(token.created).getTime()).to.be.within(
             Date.now() - tenMinutes,
             Date.now() + tenMinutes
           );
-          expect(token.name).to.equal(name);
-          expect(token.disabled).to.equal(false);
-          expect(token.project_id).to.equal(project.id);
-          expect(token.environment_id).to.equal(env.id);
+          assert.strictEqual(token.name, name);
+          assert.strictEqual(token.disabled, false);
+          assert.strictEqual(token.project_id, project.id);
+          assert.strictEqual(token.environment_id, env.id);
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -97,14 +98,13 @@ describe("Admin create API token", function () {
             };
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
-            const token = resp.body;
 
-            expect(audited.action).to.equal("api_token.create");
-            expect(audited.crud).to.equal("c");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.be.ok;
-            expect(audited.target!.fields).to.deep.equal({
+            assert.strictEqual(audited.action, "api_token.create");
+            assert.strictEqual(audited.crud, "c");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
+            assert(audited.target!.id);
+            assert.deepStrictEqual(audited.target!.fields, {
               name,
               disabled: "false",
             });

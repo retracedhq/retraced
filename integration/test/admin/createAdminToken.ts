@@ -1,7 +1,7 @@
-import { expect } from "chai";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -48,8 +48,8 @@ describe("Admin create admin token", function () {
         specify("Then the response should have a token and id", () => {
           id = resp.body.id;
           token = resp.body.token;
-          expect(id).not.to.be.empty;
-          expect(token).not.to.be.empty;
+          assert(id);
+          assert(token);
         });
 
         context(
@@ -80,7 +80,7 @@ describe("Admin create admin token", function () {
             });
 
             specify("Then the response should have a 2xx status", () => {
-              expect(templateResponse).to.have.property("status", 201);
+              assert.strictEqual(templateResponse.status, 201);
             });
           }
         );

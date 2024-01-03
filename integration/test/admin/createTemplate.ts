@@ -4,6 +4,7 @@ import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -50,7 +51,7 @@ describe("Admin create template", function () {
             .set("Authorization", jwt)
             .send(reqBody)
             .end((err, res) => {
-              expect(err).to.be.null;
+              assert.strictEqual(err, null);
               resp = res;
               done();
             });
@@ -61,14 +62,13 @@ describe("Admin create template", function () {
           const now = Date.now();
           const template = resp.body;
 
-          expect(resp).to.have.property("status", 201);
-
-          expect(template.id).to.be.ok;
-          expect(template).to.have.property("name", reqBody.name);
-          expect(template).to.have.property("rule", reqBody.rule);
-          expect(template).to.have.property("template", reqBody.template);
-          expect(template).to.have.property("project_id", project.id);
-          expect(template).to.have.property("environment_id", env.id);
+          assert.strictEqual(resp.status, 201);
+          assert(template.id);
+          assert.strictEqual(template.name, reqBody.name);
+          assert.strictEqual(template.rule, reqBody.rule);
+          assert.strictEqual(template.template, reqBody.template);
+          assert.strictEqual(template.project_id, project.id);
+          assert.strictEqual(template.environment_id, env.id);
           expect(new Date(template.created).getTime()).to.be.within(now - tenMinutes, now + tenMinutes);
         });
 
@@ -97,14 +97,13 @@ describe("Admin create template", function () {
             };
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
-            const token = resp.body;
 
-            expect(audited.action).to.equal("template.create");
-            expect(audited.crud).to.equal("c");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.be.ok;
-            expect(audited.target!.fields).to.deep.equal(reqBody);
+            assert.strictEqual(audited.action, "template.create");
+            assert.strictEqual(audited.crud, "c");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
+            assert(audited.target!.id);
+            assert.deepStrictEqual(audited.target!.fields, reqBody);
           });
         }
       });

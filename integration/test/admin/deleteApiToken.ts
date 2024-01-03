@@ -1,9 +1,9 @@
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -45,15 +45,15 @@ describe("Admin delete API token", function () {
             .delete(`/admin/v1/project/${project.id}/token/${token.token}`)
             .set("Authorization", jwt)
             .end((err, res) => {
-              expect(err).to.be.null;
+              assert.strictEqual(err, null);
               resp = res;
               done();
             });
         });
 
         specify("The response succeeds with status 204.", function () {
-          expect(resp).to.have.property("status", 204);
-          expect(resp.body).to.deep.equal({});
+          assert.strictEqual(resp.status, 204);
+          assert.deepStrictEqual(resp.body, {});
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -81,11 +81,11 @@ describe("Admin delete API token", function () {
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
 
-            expect(audited.action).to.equal("api_token.delete");
-            expect(audited.crud).to.equal("d");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.be.ok;
+            assert.strictEqual(audited.action, "api_token.delete");
+            assert.strictEqual(audited.crud, "d");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
+            assert(audited.target!.id);
           });
         }
       });
