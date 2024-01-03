@@ -115,12 +115,12 @@ export function addConsumers() {
               startCursor = "";
             } else {
               // check if previous events missed
-              const config = instance.getConfigBySinkId(sink.id);
-              if (!config) {
+              const sinkConfig = instance.getConfigBySinkId(sink.id);
+              if (!sinkConfig) {
                 logger.info(`Config not found for sink ${sink.id} in ConfigManager, skipping!`);
                 continue;
               }
-              const { sourceName, sinkName } = config;
+              const { sourceName, sinkName } = sinkConfig;
               if (
                 instance.sentEvents[sourceName] &&
                 instance.sentEvents[sinkName] &&
@@ -160,16 +160,18 @@ export function addConsumers() {
                 startCursor = cursor.rows[0].cursor;
               }
             }
-            let events,
-              from = 0,
-              cursorToSave;
+            let events;
+            let from = 0;
+            let cursorToSave;
             do {
               try {
-                const [timestamp] = startCursor ? decodeCursor(startCursor) : [0];
+                const decoded = startCursor ? decodeCursor(startCursor) : [0];
                 const beforeTs = latestReceived ? Math.min(+latestReceived, windowEnd) : windowEnd;
                 // if cursor is greater than beforeTs, then skip
-                if (startCursor && timestamp > beforeTs) {
-                  logger.info(`startCursor(${timestamp}) is greater than beforeTs(${beforeTs}), skipping...`);
+                if (startCursor && decoded[0] > beforeTs) {
+                  logger.info(
+                    `startCursor(${decoded[0]}) is greater than beforeTs(${beforeTs}), skipping...`
+                  );
                   break;
                 }
                 // get events from pg or es depending on PG_SEARCH
@@ -278,9 +280,9 @@ async function updateCursorsForSink(cursor: any, previousCursor: any, sink: any)
   }
 }
 
-async function sendEventsToVectorSource(events: any, sink: any, batchSize: number = 100) {
+async function sendEventsToVectorSource(events: any, sink: any, eventBatchSize = 100) {
   const eventEdges = events.edges;
-  const numBatches = Math.ceil(eventEdges.length / batchSize);
+  const numBatches = Math.ceil(eventEdges.length / eventBatchSize);
 
   const backoffStrategy = new ExponentialStrategy({
     initialDelay: 100, // initial delay in milliseconds
@@ -288,7 +290,7 @@ async function sendEventsToVectorSource(events: any, sink: any, batchSize: numbe
   });
 
   for (let i = 0; i < numBatches; i++) {
-    const batch = eventEdges.slice(i * batchSize, (i + 1) * batchSize);
+    const batch = eventEdges.slice(i * eventBatchSize, (i + 1) * eventBatchSize);
     const promises = batch.map(async (edge: any) => {
       const functionCall = call(() => {
         return axios.post(
