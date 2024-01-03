@@ -13,7 +13,10 @@ patches:
   - ./migratees-job.yaml
   - ./migratepg-job.yaml
   - ./processor-deployment.yaml
+  - ./vector-deployment.yaml
 
 images:
   - name: retracedhq/retraced
     newTag: 1.8.4
+  - name: retracedhq/vector
+    newTag: 0.0.1
