@@ -1,9 +1,9 @@
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -46,7 +46,7 @@ describe("Admin delete invite", function () {
           .set("Authorization", jwt)
           .send({ email })
           .end((err, res) => {
-            expect(err).to.be.null;
+            assert.strictEqual(err, null);
             inviteID = res.body.id;
             done();
           });
@@ -61,15 +61,15 @@ describe("Admin delete invite", function () {
             .delete(`/admin/v1/project/${project.id}/invite/${inviteID}`)
             .set("Authorization", jwt)
             .end((err, res) => {
-              expect(err).to.be.null;
+              assert.strictEqual(err, null);
               resp = res;
               done();
             });
         });
 
         specify("It should be deleted with status 204.", function () {
-          expect(resp.status).to.equal(204);
-          expect(resp.body).to.deep.equal({});
+          assert.strictEqual(resp.status, 204);
+          assert.deepStrictEqual(resp.body, {});
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -95,13 +95,12 @@ describe("Admin delete invite", function () {
             };
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
-            const token = resp.body;
 
-            expect(audited.action).to.equal("invite.delete");
-            expect(audited.crud).to.equal("d");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.equal(inviteID);
+            assert.strictEqual(audited.action, "invite.delete");
+            assert.strictEqual(audited.crud, "d");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
+            assert.strictEqual(audited.target!.id, inviteID);
           });
         }
       });

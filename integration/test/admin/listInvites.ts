@@ -1,9 +1,9 @@
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -47,7 +47,7 @@ describe("Admin list invites", function () {
             .set("Authorization", jwt)
             .send({ email })
             .end((err, res) => {
-              expect(err).to.be.null;
+              assert.strictEqual(err, null);
               inviteIDs.push(res.body.id);
               done();
             });
@@ -63,19 +63,19 @@ describe("Admin list invites", function () {
             .get(`/admin/v1/project/${project.id}/invite`)
             .set("Authorization", jwt)
             .end((err, res) => {
-              expect(err).to.be.null;
+              assert.strictEqual(err, null);
               resp = res;
               done();
             });
         });
 
         specify("Both invites should be returned with status 200.", function () {
-          expect(resp.status).to.equal(200);
+          assert.strictEqual(resp.status, 200);
 
-          expect(resp.body[0]).to.have.property("id", inviteIDs[0]);
-          expect(resp.body[0]).to.have.property("email", emails[0]);
-          expect(resp.body[1]).to.have.property("id", inviteIDs[1]);
-          expect(resp.body[1]).to.have.property("email", emails[1]);
+          assert.strictEqual(resp.body[0].id, inviteIDs[0]);
+          assert.strictEqual(resp.body[0].email, emails[0]);
+          assert.strictEqual(resp.body[1].id, inviteIDs[1]);
+          assert.strictEqual(resp.body[1].email, emails[1]);
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -98,12 +98,11 @@ describe("Admin list invites", function () {
             };
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
-            const token = resp.body;
 
-            expect(audited.action).to.equal("invite.list");
-            expect(audited.crud).to.equal("r");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
+            assert.strictEqual(audited.action, "invite.list");
+            assert.strictEqual(audited.crud, "r");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
           });
         }
       });

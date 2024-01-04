@@ -5,6 +5,7 @@ import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -47,16 +48,16 @@ describe("Admin search templates", function () {
               .get(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
               .set("Authorization", jwt)
               .end((err, res) => {
-                expect(err).to.be.null;
+                assert.strictEqual(err, null);
                 resp = res;
                 done();
               });
           });
 
           specify("The API should return an empty set of results with status 200", function () {
-            expect(resp).to.have.property("status", 200);
+            assert.strictEqual(resp.status, 200);
 
-            expect(resp.body).to.deep.equal({
+            assert.deepStrictEqual(resp.body, {
               total_hits: 0,
               templates: [],
             });
