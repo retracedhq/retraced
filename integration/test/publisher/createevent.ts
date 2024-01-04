@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
@@ -9,6 +8,7 @@ import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
 import * as util from "util";
 import picocolors from "picocolors";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -20,7 +20,7 @@ currentTime.setMilliseconds(0); // api only returns seconds precision
 
 describe("Create Events", function () {
   describe("Given the Retraced API is up and running", function () {
-    let responseBody = {};
+    let responseBody: any = {};
     let resultBody;
     beforeEach(retracedUp(Env));
 
@@ -68,7 +68,7 @@ describe("Create Events", function () {
         if (!valid) {
           console.log(tv4.error);
         }
-        expect(valid).to.be.true;
+        assert.strictEqual(valid, true);
         resultBody = await retraced.reportEvent(event);
       });
 
@@ -88,62 +88,41 @@ describe("Create Events", function () {
                 } else if (Env.Debug) {
                   console.log(util.inspect(res.body, false, 100, true));
                 }
-                expect(err).to.be.null;
-                expect(res).to.have.property("status", 200);
+                assert.strictEqual(err, null);
+                assert.strictEqual(res.status, 200);
 
                 done();
               });
           });
         });
         specify("Then the response should contain the correct information about the event", function () {
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.action",
+          assert.strictEqual(
+            responseBody.data.search.edges[0].node.action,
             "integration" + randomNumber.toString()
           );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.created",
-            isoDate(currentTime)
-          );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.description",
+          assert.strictEqual(responseBody.data.search.edges[0].node.created, isoDate(currentTime));
+          assert.strictEqual(
+            responseBody.data.search.edges[0].node.description,
             "Automated integration testing..."
           );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.actor.fields[0].key",
-            "department"
-          );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.actor.fields[0].value",
-            "QA"
-          );
-          expect(responseBody).to.have.nested.property("data.search.edges[0].node.group.id", "rtrcdqa1234");
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.target.name",
-            "Retraced API"
-          );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.target.fields[0].key",
-            "record_count"
-          );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.target.fields[0].value",
-            "100"
-          );
-          expect(responseBody).to.have.nested.property("data.search.edges[0].node.is_failure", false);
-          expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "c");
-          expect(responseBody).to.have.nested.property("data.search.edges[0].node.source_ip", "192.168.0.1");
-          expect(responseBody).to.have.nested.property("data.search.edges[0].node.fields[0].key", "quality");
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.fields[0].value",
-            "excellent"
-          );
+          assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].key, "department");
+          assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].value, "QA");
+          assert.strictEqual(responseBody.data.search.edges[0].node.group.id, "rtrcdqa1234");
+          assert.strictEqual(responseBody.data.search.edges[0].node.target.name, "Retraced API");
+          assert.strictEqual(responseBody.data.search.edges[0].node.target.fields[0].key, "record_count");
+          assert.strictEqual(responseBody.data.search.edges[0].node.target.fields[0].value, "100");
+          assert.strictEqual(responseBody.data.search.edges[0].node.is_failure, false);
+          assert.strictEqual(responseBody.data.search.edges[0].node.crud, "c");
+          assert.strictEqual(responseBody.data.search.edges[0].node.source_ip, "192.168.0.1");
+          assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].key, "quality");
+          assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].value, "excellent");
         });
       });
     });
   });
 
   describe("Given the Retraced API is up and running", function () {
-    let responseBody = {};
+    let responseBody: any = {};
     let resultBody;
     beforeEach(retracedUp(Env));
 
@@ -166,7 +145,7 @@ describe("Create Events", function () {
           if (!valid) {
             console.log(tv4.error);
           }
-          expect(valid).to.be.true;
+          assert.strictEqual(valid, true);
           resultBody = await retraced.reportEvent(event);
         });
 
@@ -183,25 +162,25 @@ describe("Create Events", function () {
                 .send(thisQuery)
                 .end(function (err, res) {
                   responseBody = JSON.parse(res.text);
-                  expect(err).to.be.null;
-                  expect(res).to.have.property("status", 200);
+                  assert.strictEqual(err, null);
+                  assert.strictEqual(res.status, 200);
                   done();
                 });
             });
           });
           specify("Then the response should contain the correct information about the event", function () {
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[0].node.action",
+            assert.strictEqual(
+              responseBody.data.search.edges[0].node.action,
               "integrationminimum" + randomNumber.toString()
             );
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.is_anonymous", true);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "c");
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.created", null);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.description", null);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.group.id", null);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.target.name", null);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.is_failure", null);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.source_ip", null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.is_anonymous, true);
+            assert.strictEqual(responseBody.data.search.edges[0].node.crud, "c");
+            assert.strictEqual(responseBody.data.search.edges[0].node.created, null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.description, null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.group.id, null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.target.name, null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.is_failure, null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.source_ip, null);
           });
         });
       }
@@ -231,7 +210,7 @@ describe("Create Events", function () {
         if (!valid) {
           console.log(tv4.error);
         }
-        expect(valid).to.be.true;
+        assert.strictEqual(valid, true);
         try {
           resultBody = await retraced.reportEvent(event);
         } catch (e) {
@@ -242,8 +221,8 @@ describe("Create Events", function () {
       specify(
         "Then the Retraced API should reject the call with a 401 Unauthorized and not return anything",
         function () {
-          expect(responseBody).to.be.empty;
-          expect(httpResponse).to.contain("401 Unauthorized");
+          assert.strictEqual(responseBody, {});
+          assert.strictEqual(httpResponse.includes("401 Unauthorized"), true);
         }
       );
     });
@@ -277,8 +256,8 @@ describe("Create Events", function () {
       });
 
       specify("The API should return a 400 response code.", async function () {
-        expect(resultBody).to.be.undefined;
-        expect(httpResponse).to.contain("400");
+        assert.strictEqual(resultBody, undefined);
+        assert.strictEqual(httpResponse.includes("400"), true);
       });
     });
   });

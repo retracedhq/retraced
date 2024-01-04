@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { Client, CRUD } from "@retracedhq/retraced";
 import "mocha";
 import "chai-http";
@@ -8,6 +7,7 @@ import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
 import * as util from "util";
 import picocolors from "picocolors";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -116,81 +116,54 @@ describe("Bulk Create Events", function () {
                   } else if (Env.Debug) {
                     console.log(util.inspect(res.body, false, 100, true));
                   }
-                  expect(err).to.be.null;
-                  expect(res).to.have.property("status", 200);
+                  assert.strictEqual(err, null);
+                  assert.strictEqual(res.status, 200);
 
                   done();
                 });
             });
           });
           specify("Then the response should contain all four events", function () {
-            expect(responseBody.data.search.edges.length).to.equal(4);
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[0].node.action",
+            assert.strictEqual(responseBody.data.search.edges.length, 4);
+            assert.strictEqual(
+              responseBody.data.search.edges[0].node.action,
               "integrationbulk" + randomNumber.toString()
             );
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[0].node.actor.id",
-              "LATEST@retraced.io"
-            );
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[0].node.created",
-              isoDate(latest)
-            );
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.group.id", "rtrcdqa1234");
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "c");
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[0].node.source_ip",
-              "192.168.0.1"
-            );
+            assert.strictEqual(responseBody.data.search.edges[0].node.actor.id, "LATEST@redtraced.io");
+            assert.strictEqual(responseBody.data.search.edges[0].node.created, isoDate(latest));
+            assert.strictEqual(responseBody.data.search.edges[0].node.group.id, "rtrcdqa1234");
+            assert.strictEqual(responseBody.data.search.edges[0].node.crud, "c");
+            assert.strictEqual(responseBody.data.search.edges[0].node.source_ip, "192.168.0.1");
 
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[1].node.action",
+            assert.strictEqual(
+              responseBody.data.search.edges[1].node.action,
               "integrationbulk" + randomNumber.toString()
             );
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[1].node.actor.id",
-              "LATER@retraced.io"
-            );
-            expect(responseBody).to.have.nested.property("data.search.edges[1].node.created", isoDate(later));
-            expect(responseBody).to.have.nested.property("data.search.edges[1].node.group.id", "rtrcdqa1234");
-            expect(responseBody).to.have.nested.property("data.search.edges[1].node.crud", "c");
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[1].node.source_ip",
-              "192.168.0.1"
-            );
+            assert.strictEqual(responseBody.data.search.edges[1].node.actor.id, "LATER@retraced.io");
+            assert.strictEqual(responseBody.data.search.edges[1].node.created, isoDate(later));
+            assert.strictEqual(responseBody.data.search.edges[1].node.group.id, "rtrcdqa1234");
+            assert.strictEqual(responseBody.data.search.edges[1].node.crud, "c");
+            assert.strictEqual(responseBody.data.search.edges[1].node.source_ip, "192.168.0.1");
 
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[2].node.action",
+            assert.strictEqual(
+              responseBody.data.search.edges[2].node.action,
               "integrationbulk" + randomNumber.toString()
             );
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[2].node.actor.id",
-              "NEXT@retraced.io"
-            );
-            expect(responseBody).to.have.nested.property("data.search.edges[2].node.created", isoDate(next));
-            expect(responseBody).to.have.nested.property("data.search.edges[2].node.group.id", "rtrcdqa1234");
-            expect(responseBody).to.have.nested.property("data.search.edges[2].node.crud", "c");
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[2].node.source_ip",
-              "192.168.0.1"
-            );
+            assert.strictEqual(responseBody.data.search.edges[2].node.actor.id, "NEXT@retraced.io");
+            assert.strictEqual(responseBody.data.search.edges[2].node.created, isoDate(next));
+            assert.strictEqual(responseBody.data.search.edges[2].node.group.id, "rtrcdqa1234");
+            assert.strictEqual(responseBody.data.search.edges[2].node.crud, "c");
+            assert.strictEqual(responseBody.data.search.edges[2].node.source_ip, "192.168.0.1");
 
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[3].node.action",
+            assert.strictEqual(
+              responseBody.data.search.edges[3].node.action,
               "integrationbulk" + randomNumber.toString()
             );
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[3].node.actor.id",
-              "NOW@retraced.io"
-            );
-            expect(responseBody).to.have.nested.property("data.search.edges[3].node.created", isoDate(now));
-            expect(responseBody).to.have.nested.property("data.search.edges[3].node.group.id", "rtrcdqa1234");
-            expect(responseBody).to.have.nested.property("data.search.edges[3].node.crud", "c");
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[3].node.source_ip",
-              "192.168.0.1"
-            );
+            assert.strictEqual(responseBody.data.search.edges[3].node.actor.id, "NOW@retraced.io");
+            assert.strictEqual(responseBody.data.search.edges[3].node.created, isoDate(now));
+            assert.strictEqual(responseBody.data.search.edges[3].node.group.id, "rtrcdqa1234");
+            assert.strictEqual(responseBody.data.search.edges[3].node.crud, "c");
+            assert.strictEqual(responseBody.data.search.edges[3].node.source_ip, "192.168.0.1");
           });
         });
       }

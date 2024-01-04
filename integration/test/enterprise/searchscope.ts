@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
@@ -7,6 +6,7 @@ import { CreateEventSchema, search } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
 import { sleep } from "../pkg/util";
 import * as Env from "../env";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -70,7 +70,7 @@ describe("Enterprise Search Group Scoping", function () {
           if (!valid) {
             console.log(tv4.error);
           }
-          expect(valid).to.be.true;
+          assert.strictEqual(valid, true);
           resultBody = await retraced.reportEvent(event);
         });
 
@@ -87,9 +87,9 @@ describe("Enterprise Search Group Scoping", function () {
               .send({ display_name: "QA" + randomNumber.toString() })
               .end(function (err, res) {
                 responseBody = JSON.parse(res.text);
-                expect(err).to.be.null;
-                expect(res).to.have.property("status", 201);
-                expect(responseBody.token).to.exist;
+                assert.strictEqual(err, null);
+                assert.strictEqual(res.status, 201);
+                assert(responseBody.token);
                 otherToken = responseBody.token;
                 done();
               });
@@ -108,14 +108,14 @@ describe("Enterprise Search Group Scoping", function () {
                     .send(search("integration.test.api." + randomNumber.toString()))
                     .end(function (err, res) {
                       responseBody = JSON.parse(res.text);
-                      expect(err).to.be.null;
-                      expect(res).to.have.property("status", 200);
+                      assert.strictEqual(err, null);
+                      assert.strictEqual(res.status, 200);
                       done();
                     });
                 });
               });
               specify("Then the response should not include the event from Retraced Group", function () {
-                expect(responseBody.data.search.edges).to.be.empty;
+                assert.strictEqual(responseBody.data.search.edges, {});
               });
             }
           );
