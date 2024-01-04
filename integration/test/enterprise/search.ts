@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
@@ -7,6 +6,7 @@ import { CreateEventSchema, search } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
 import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -67,7 +67,7 @@ describe("Enterprise Search", function () {
         if (!valid) {
           console.log(tv4.error);
         }
-        expect(valid).to.be.true;
+        assert.strictEqual(valid, true);
         resultBody = await retraced.reportEvent(event);
       });
 
@@ -89,9 +89,9 @@ describe("Enterprise Search", function () {
               })
               .end(function (err, res) {
                 responseBody = JSON.parse(res.text);
-                expect(err).to.be.null;
-                expect(res).to.have.property("status", 201);
-                expect(responseBody.token).to.exist;
+                assert.strictEqual(err, null);
+                assert.strictEqual(res.status, 201);
+                assert(responseBody.token);
                 token = responseBody.token;
                 done();
               });
@@ -111,8 +111,8 @@ describe("Enterprise Search", function () {
                     .send(search("integration" + randomNumber.toString()))
                     .end(function (err, res) {
                       responseBody = JSON.parse(res.text);
-                      expect(res).to.have.property("status", 200);
-                      expect(err).to.be.null;
+                      assert.strictEqual(res.status, 200);
+                      assert.strictEqual(err, null);
                       done();
                     });
                 });
@@ -120,56 +120,32 @@ describe("Enterprise Search", function () {
               specify(
                 "Then the response should contain the correct information about the event",
                 function () {
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.action",
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.action,
                     "integration" + randomNumber.toString()
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.created",
-                    isoDate(currentTime)
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.description",
+                  assert.strictEqual(responseBody.data.search.edges[0].node.created, isoDate(currentTime));
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.description,
                     "Automated integration testing..."
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.actor.fields[0].key",
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.actor.fields[0].key,
                     "department"
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.actor.fields[0].value",
-                    "QA"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.group.id",
-                    "rtrcdqa1234"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.target.name",
-                    "Retraced API"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.target.fields[0].key",
+                  assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].value, "QA");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.group.id, "rtrcdqa1234");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.target.name, "Retraced API");
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.target.fields[0].key,
                     "record_count"
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.target.fields[0].value",
-                    "100"
-                  );
-                  expect(responseBody).to.have.nested.property("data.search.edges[0].node.is_failure", false);
-                  expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "c");
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.source_ip",
-                    "192.168.0.1"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.fields[0].key",
-                    "quality"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.fields[0].value",
-                    "excellent"
-                  );
+                  assert.strictEqual(responseBody.data.search.edges[0].node.target.fields[0].value, "100");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.is_failure, false);
+                  assert.strictEqual(responseBody.data.search.edges[0].node.crud, "c");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.source_ip, "192.168.0.1");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].key, "quality");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].value, "excellent");
                 }
               );
             }
@@ -187,8 +163,8 @@ describe("Enterprise Search", function () {
                   .send(search("viewlogs.custom"))
                   .end(function (err, res) {
                     responseBody = JSON.parse(res.text);
-                    expect(err).to.be.null;
-                    expect(res).to.have.property("status", 200);
+                    assert.strictEqual(err, null);
+                    assert.strictEqual(res.status, 200);
                     done();
                   });
               });
@@ -196,21 +172,15 @@ describe("Enterprise Search", function () {
             specify(
               "Then the most recent event should be a viewlogs.custom event with the enterprise token specified as the actor",
               function () {
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.action",
-                  "viewlogs.custom"
-                );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.group.id",
-                  "rtrcdqa1234"
-                );
-                expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "r");
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.actor.id",
+                assert.strictEqual(responseBody.data.search.edges[0].node.action, "viewlogs.custom");
+                assert.strictEqual(responseBody.data.search.edges[0].node.group.id, "rtrcdqa1234");
+                assert.strictEqual(responseBody.data.search.edges[0].node.crud, "r");
+                assert.strictEqual(
+                  responseBody.data.search.edges[0].node.actor.id,
                   "enterprise:" + token.substring(0, 7)
                 );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.actor.name",
+                assert.strictEqual(
+                  responseBody.data.search.edges[0].node.actor.name,
                   "QA" + randomNumber.toString()
                 );
               }

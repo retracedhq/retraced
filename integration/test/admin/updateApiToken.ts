@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import "chai-http";
 import { Client } from "@retracedhq/retraced";
 import * as Env from "../env";
@@ -6,6 +5,7 @@ import Chance from "chance";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import { sleep } from "../pkg/util";
+import assert from "assert";
 
 const chance = new Chance();
 
@@ -51,7 +51,7 @@ describe("Admin Update API tokens", function () {
               name: newName,
             })
             .end((err, res) => {
-              expect(err).to.be.null;
+              assert.strictEqual(err, null);
               done();
             });
         });
@@ -65,8 +65,8 @@ describe("Admin Update API tokens", function () {
             .set("Authorization", jwt)
             .end((err, res) => {
               const updatedTkn = res.body.project.tokens.find((tkn) => tkn.token === token.token);
-              expect(updatedTkn.name).not.to.equal(token.name);
-              expect(updatedTkn.name).to.equal(newName);
+              assert.notStrictEqual(updatedTkn.name, token.name);
+              assert.strictEqual(updatedTkn.name, newName);
               done();
             });
         });
@@ -96,11 +96,11 @@ describe("Admin Update API tokens", function () {
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
 
-            expect(audited.action).to.equal("api_token.update");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.equal(token.token);
-            expect(audited.fields).to.deep.equal({
+            assert.strictEqual(audited.action, "api_token.update");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
+            assert.strictEqual(audited.target!.id, token.token);
+            assert.deepStrictEqual(audited.fields, {
               name: newName,
             });
           });
@@ -117,7 +117,7 @@ describe("Admin Update API tokens", function () {
               disabled: true,
             })
             .end((err, res) => {
-              expect(err).to.be.null;
+              assert.strictEqual(err, null);
               done();
             });
         });
@@ -129,7 +129,7 @@ describe("Admin Update API tokens", function () {
             .set("Authorization", jwt)
             .end((err, res) => {
               const updatedTkn = res.body.project.tokens.find((tkn) => tkn.token === token.token);
-              expect(updatedTkn.disabled).to.equal(true);
+              assert.strictEqual(updatedTkn.disabled, true);
               done();
             });
         });
@@ -159,11 +159,11 @@ describe("Admin Update API tokens", function () {
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
 
-            expect(audited.action).to.equal("api_token.update");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.equal(token.token);
-            expect(audited.fields).to.deep.equal({
+            assert.strictEqual(audited.action, "api_token.update");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
+            assert.strictEqual(audited.target!.id, token.token);
+            assert.deepStrictEqual(audited.fields, {
               disabled: "true",
             });
           });

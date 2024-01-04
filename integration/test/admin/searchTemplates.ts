@@ -1,5 +1,4 @@
 import * as querystring from "querystring";
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
@@ -88,12 +87,11 @@ describe("Admin search templates", function () {
               };
               const connection = await headless.query(query, mask, 1);
               const audited = connection.currentResults[0];
-              const token = resp.body;
 
-              expect(audited.action).to.equal("template.search");
-              expect(audited.crud).to.equal("r");
-              expect(audited.group!.id).to.equal(project.id);
-              expect(audited.actor!.id).to.equal(adminId);
+              assert.strictEqual(audited.action, "template.search");
+              assert.strictEqual(audited.crud, "r");
+              assert.strictEqual(audited.group!.id, project.id);
+              assert.strictEqual(audited.actor!.id, adminId);
             });
           }
         });
@@ -112,7 +110,7 @@ describe("Admin search templates", function () {
                 template: "{{}}",
               })
               .end((err, res) => {
-                expect(err).to.be.null;
+                assert.strictEqual(err, null);
                 done();
               });
           });
@@ -132,17 +130,17 @@ describe("Admin search templates", function () {
               .get(`/admin/v1/project/${project.id}/templates?${qs}`)
               .set("Authorization", jwt)
               .end((err, res) => {
-                expect(err).to.be.null;
+                assert.strictEqual(err, null);
                 resp = res;
                 done();
               });
           });
 
           specify("The first template in alphabetical order should be returned.", function () {
-            expect(resp.status).to.equal(200);
+            assert.strictEqual(resp.status, 200);
 
-            expect(resp.body).to.have.property("total_hits", 1);
-            expect(resp.body.templates[0]).to.have.property("name", "A");
+            assert.strictEqual(resp.body.total_hits, 1);
+            assert.strictEqual(resp.body.templates[0].name, "A");
           });
         });
 
@@ -159,17 +157,17 @@ describe("Admin search templates", function () {
               .get(`/admin/v1/project/${project.id}/templates?${qs}`)
               .set("Authorization", jwt)
               .end((err, res) => {
-                expect(err).to.be.null;
+                assert.strictEqual(err, null);
                 resp = res;
                 done();
               });
           });
 
           specify("The first template in alphabetical order should be returned.", function () {
-            expect(resp.status).to.equal(200);
+            assert.strictEqual(resp.status, 200);
 
-            expect(resp.body).to.have.property("total_hits", 1);
-            expect(resp.body.templates[0]).to.have.property("name", "Z");
+            assert.strictEqual(resp.body.total_hits, 1);
+            assert.strictEqual(resp.body.templates[0].name, "Z");
           });
         });
       });
