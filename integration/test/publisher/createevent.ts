@@ -221,7 +221,7 @@ describe("Create Events", function () {
       specify(
         "Then the Retraced API should reject the call with a 401 Unauthorized and not return anything",
         function () {
-          assert.strictEqual(responseBody, {});
+          assert.deepStrictEqual(responseBody, {});
           assert.strictEqual(httpResponse.includes("401 Unauthorized"), true);
         }
       );

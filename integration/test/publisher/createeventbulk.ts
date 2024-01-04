@@ -129,7 +129,7 @@ describe("Bulk Create Events", function () {
               responseBody.data.search.edges[0].node.action,
               "integrationbulk" + randomNumber.toString()
             );
-            assert.strictEqual(responseBody.data.search.edges[0].node.actor.id, "LATEST@redtraced.io");
+            assert.strictEqual(responseBody.data.search.edges[0].node.actor.id, "LATEST@retraced.io");
             assert.strictEqual(responseBody.data.search.edges[0].node.created, isoDate(latest));
             assert.strictEqual(responseBody.data.search.edges[0].node.group.id, "rtrcdqa1234");
             assert.strictEqual(responseBody.data.search.edges[0].node.crud, "c");

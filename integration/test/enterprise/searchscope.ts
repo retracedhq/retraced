@@ -115,7 +115,7 @@ describe("Enterprise Search Group Scoping", function () {
                 });
               });
               specify("Then the response should not include the event from Retraced Group", function () {
-                assert.strictEqual(responseBody.data.search.edges, {});
+                assert.strictEqual(responseBody.data.search.edges, []);
               });
             }
           );
