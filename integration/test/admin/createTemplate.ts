@@ -5,10 +5,7 @@ import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
 import assert from "assert";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import axios from "axios";
 
 describe("Admin create template", function () {
   if (!Env.AdminRootToken) {
@@ -44,23 +41,23 @@ describe("Admin create template", function () {
         };
         let resp;
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .post(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
-            .set("Authorization", jwt)
-            .send(reqBody)
-            .end((err, res) => {
-              assert.strictEqual(err, null);
-              resp = res;
-              done();
-            });
+        before(async function () {
+          resp = await axios.post(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/templates?environment_id=${env.id}`,
+            reqBody,
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp);
         });
 
         specify("The template resource is returned with status 201.", function () {
           const tenMinutes = 1000 * 60 * 10;
           const now = Date.now();
-          const template = resp.body;
+          const template = resp.data;
 
           assert.strictEqual(resp.status, 201);
           assert(template.id);

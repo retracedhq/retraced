@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
@@ -6,10 +5,6 @@ import * as Env from "../env";
 import { sleep } from "../pkg/util";
 import assert from "assert";
 import axios from "axios";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
 
 describe("Admin create API token", function () {
   if (!Env.AdminRootToken) {

@@ -4,10 +4,7 @@ import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
 import assert from "assert";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import axios from "axios";
 
 describe("Admin delete API token", function () {
   if (!Env.AdminRootToken) {
@@ -39,21 +36,18 @@ describe("Admin delete API token", function () {
       context("When an API token is deleted", function () {
         let resp;
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .delete(`/admin/v1/project/${project.id}/token/${token.token}`)
-            .set("Authorization", jwt)
-            .end((err, res) => {
-              assert.strictEqual(err, null);
-              resp = res;
-              done();
-            });
+        before(async function () {
+          resp = await axios.delete(`${Env.Endpoint}/admin/v1/project/${project.id}/token/${token.token}`, {
+            headers: {
+              Authorization: jwt,
+            },
+          });
+          assert(resp);
         });
 
         specify("The response succeeds with status 204.", function () {
           assert.strictEqual(resp.status, 204);
-          assert.deepStrictEqual(resp.body, {});
+          assert.deepStrictEqual(resp.data, "");
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {

@@ -4,10 +4,7 @@ import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
 import assert from "assert";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import axios from "axios";
 
 describe("Admin create environment", function () {
   if (!Env.AdminRootToken) {
@@ -39,24 +36,24 @@ describe("Admin create environment", function () {
         const envName = "QA";
         let resp;
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .post(`/admin/v1/project/${project.id}/environment`)
-            .set("Authorization", jwt)
-            .send({ name: envName })
-            .end((err, res) => {
-              assert.strictEqual(err, null);
-              resp = res;
-              done();
-            });
+        before(async function () {
+          resp = await axios.post(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/environment`,
+            { name: envName },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp);
         });
 
         specify("The environment is returned with status 201.", function () {
           assert.strictEqual(resp.status, 201);
-          assert(resp.body.id);
-          assert.strictEqual(resp.body.name, envName);
-          assert.strictEqual(resp.body.project_id, project.id);
+          assert(resp.data.id);
+          assert.strictEqual(resp.data.name, envName);
+          assert.strictEqual(resp.data.project_id, project.id);
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -88,8 +85,8 @@ describe("Admin create environment", function () {
             assert.strictEqual(audited.crud, "c");
             assert.strictEqual(audited.group!.id, project.id);
             assert.strictEqual(audited.actor!.id, adminId);
-            assert.strictEqual(audited.target!.id, resp.body.id);
-            assert.strictEqual(audited.target!.name, resp.body.name);
+            assert.strictEqual(audited.target!.id, resp.data.id);
+            assert.strictEqual(audited.target!.name, resp.data.name);
           });
         }
       });

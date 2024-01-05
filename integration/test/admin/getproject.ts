@@ -1,12 +1,8 @@
-import "chai-http";
 import * as Env from "../env";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import assert from "assert";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import axios from "axios";
 
 describe("Admin Get Project", function () {
   if (!Env.AdminRootToken) {
@@ -31,35 +27,34 @@ describe("Admin Get Project", function () {
       });
 
       // with a pending environment deletion
-      before(function (done) {
-        chai
-          .request(Env.Endpoint)
-          .post(`/admin/v1/project/${project.id}/environment/${env.id}/deletion_request`)
-          .set("Authorization", jwt)
-          .send({
+      before(async function () {
+        const resp1 = await axios.post(
+          `${Env.Endpoint}/admin/v1/project/${project.id}/environment/${env.id}/deletion_request`,
+          {
             resourceId: env.id,
             resourceKind: "environment",
-          })
-          .end((err, res) => {
-            assert.strictEqual(err, null);
-            delReqId = res.body.id;
-            done();
-          });
+          },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        );
+        assert(resp1);
+        delReqId = resp1.data.id;
       });
 
       context("When a call is made to get the project by id", function () {
         let responseBody;
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .get(`/admin/v1/project/${project.id}`)
-            .set("Authorization", jwt)
-            .end((err, res) => {
-              assert.strictEqual(err, null);
-              responseBody = res.body;
-              done();
-            });
+        before(async function () {
+          const resp2 = await axios.get(`${Env.Endpoint}/admin/v1/project/${project.id}`, {
+            headers: {
+              Authorization: jwt,
+            },
+          });
+          assert(resp2);
+          responseBody = resp2.data;
         });
 
         specify("The response should include the environment with deletion statuses.", function () {
