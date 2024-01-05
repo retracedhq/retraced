@@ -151,6 +151,7 @@ describe("Viewer API", function () {
                     _.each(ids, function (id) {
                       assert(res.text.match(new RegExp(id)));
                     });
+                    done();
                   });
               });
             });
