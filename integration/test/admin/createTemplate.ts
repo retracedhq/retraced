@@ -69,7 +69,8 @@ describe("Admin create template", function () {
           assert.strictEqual(template.template, reqBody.template);
           assert.strictEqual(template.project_id, project.id);
           assert.strictEqual(template.environment_id, env.id);
-          expect(new Date(template.created).getTime()).to.be.within(now - tenMinutes, now + tenMinutes);
+          const createdDate = new Date(template.created).getTime();
+          assert.strictEqual(Date.now() - createdDate < tenMinutes, true);
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {

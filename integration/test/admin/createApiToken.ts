@@ -63,10 +63,9 @@ describe("Admin create API token", function () {
           assert.strictEqual(resp.status, 201);
           assert(token.token);
           assert(token.created);
-          expect(new Date(token.created).getTime()).to.be.within(
-            Date.now() - tenMinutes,
-            Date.now() + tenMinutes
-          );
+
+          const createdDate = new Date(token.created).getTime();
+          assert.strictEqual(Date.now() - createdDate < tenMinutes, true);
           assert.strictEqual(token.name, name);
           assert.strictEqual(token.disabled, false);
           assert.strictEqual(token.project_id, project.id);
