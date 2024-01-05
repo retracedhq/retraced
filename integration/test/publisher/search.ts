@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { EventsConnection, Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
@@ -8,6 +7,7 @@ import { retracedUp } from "../pkg/retracedUp";
 import { sleep } from "../pkg/util";
 import * as Env from "../env";
 import * as _ from "lodash";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -70,7 +70,7 @@ describe("Publisher Search", function () {
             if (!valid) {
               console.log(tv4.error);
             }
-            expect(valid).to.be.true;
+            assert.strictEqual(valid, true);
             return retraced.reportEvent(event);
           })
         )
@@ -100,7 +100,7 @@ describe("Publisher Search", function () {
           specify(
             "Then the connection should contain the first 3 results and metadata about the full results.",
             function () {
-              expect(connection.currentResults).to.deep.equal([
+              assert.deepEqual(connection.currentResults, [
                 {
                   action: "integration.test.api",
                   actor: { id: uniqueActorId },
@@ -114,11 +114,11 @@ describe("Publisher Search", function () {
                   actor: { id: uniqueActorId },
                 },
               ]);
-              expect(connection.totalCount).to.equal(10);
-              expect(connection.hasPreviousPage()).to.equal(false);
-              expect(connection.totalPages()).to.equal(4);
-              expect(connection.currentPageNumber).to.equal(1);
-              expect(connection.hasNextPage()).to.equal(true);
+              assert.strictEqual(connection.totalCount, 10);
+              assert.strictEqual(connection.hasPreviousPage(), false);
+              assert.strictEqual(connection.totalPages(), 4);
+              assert.strictEqual(connection.currentPageNumber, 1);
+              assert.strictEqual(connection.hasNextPage(), true);
             }
           );
 
@@ -133,12 +133,12 @@ describe("Publisher Search", function () {
             specify(
               "Then the connection should contain the last result and metadata about the full results.",
               function () {
-                expect(connection.currentPageNumber).to.equal(4);
-                expect(connection.totalCount).to.equal(10);
-                expect(connection.hasNextPage()).to.equal(false);
-                expect(connection.hasPreviousPage()).to.equal(true);
-                expect(connection.totalPages()).to.equal(4);
-                expect(connection.currentResults).to.deep.equal([
+                assert.strictEqual(connection.currentPageNumber, 4);
+                assert.strictEqual(connection.totalCount, 10);
+                assert.strictEqual(connection.hasNextPage(), false);
+                assert.strictEqual(connection.hasPreviousPage(), true);
+                assert.strictEqual(connection.totalPages(), 4);
+                assert.deepEqual(connection.currentResults, [
                   {
                     action: "integration.test.api",
                     actor: { id: uniqueActorId },

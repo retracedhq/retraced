@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
@@ -6,6 +5,7 @@ import "chai-http";
 import { CreateEventSchema, search } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
 import * as Env from "../env";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -66,7 +66,7 @@ describe("Deleting Enterprise Tokens", function () {
         if (!valid) {
           console.log(tv4.error);
         }
-        expect(valid).to.be.true;
+        assert.strictEqual(valid, true);
         resultBody = await retraced.reportEvent(event);
       });
 
@@ -83,9 +83,9 @@ describe("Deleting Enterprise Tokens", function () {
             .send({ display_name: "QA" + randomNumber.toString() })
             .end(function (err, res) {
               responseBody = JSON.parse(res.text);
-              expect(err).to.be.null;
-              expect(res).to.have.property("status", 201);
-              expect(responseBody.token).to.exist;
+              assert.strictEqual(err, null);
+              assert.strictEqual(res.status, 201);
+              assert(responseBody.token);
               token = responseBody.token;
               done();
             });
@@ -99,9 +99,9 @@ describe("Deleting Enterprise Tokens", function () {
               .set("Authorization", `token=${Env.ApiKey}`)
               .send({ display_name: "QA" + randomNumber.toString() })
               .end(function (err, res) {
-                expect(err).to.be.null;
-                expect(res).to.have.property("status", 204);
-                expect(responseBody.token).to.exist;
+                assert.strictEqual(err, null);
+                assert.strictEqual(res.status, 204);
+                assert(responseBody.token);
                 token = responseBody.token;
                 done();
               });
@@ -121,7 +121,7 @@ describe("Deleting Enterprise Tokens", function () {
             });
 
             specify("Then the response should be a 401", function () {
-              expect(response).to.have.property("status", 401);
+              assert.strictEqual(response.status, 401);
             });
           });
         });

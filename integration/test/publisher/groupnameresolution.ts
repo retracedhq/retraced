@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { Event, Client } from "@retracedhq/retraced";
 import "mocha";
 import "chai-http";
@@ -8,6 +7,7 @@ import { sleep } from "../pkg/util";
 import * as Env from "../env";
 import * as util from "util";
 import picocolors from "picocolors";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -81,9 +81,8 @@ describe("Group Name Resolution", function () {
                     } else if (Env.Debug) {
                       console.log(util.inspect(res.body, false, 100, true));
                     }
-                    expect(err).to.be.null;
-                    expect(res).to.have.property("status", 200);
-
+                    assert.strictEqual(err, null);
+                    assert.strictEqual(res.status, 200);
                     done();
                   });
               });
@@ -91,16 +90,13 @@ describe("Group Name Resolution", function () {
             specify(
               "Then the response should contain a non-null group.id, and the second event's group.name should be populated",
               function () {
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.action",
+                assert.strictEqual(
+                  responseBody.data.search.edges[0].node.action,
                   "integration" + FIRST_EVENT
                 );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.group.id",
-                  "rtrcdqa1234" + GROUP_ID
-                );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.group.name",
+                assert.strictEqual(responseBody.data.search.edges[0].node.group.id, "rtrcdqa1234" + GROUP_ID);
+                assert.strictEqual(
+                  responseBody.data.search.edges[0].node.group.name,
                   "group number " + GROUP_ID
                 );
               }
@@ -123,9 +119,8 @@ describe("Group Name Resolution", function () {
                     } else if (Env.Debug) {
                       console.log(util.inspect(res.body, false, 100, true));
                     }
-                    expect(err).to.be.null;
-                    expect(res).to.have.property("status", 200);
-
+                    assert.strictEqual(err, null);
+                    assert.strictEqual(res.status, 200);
                     done();
                   });
               });
@@ -133,16 +128,13 @@ describe("Group Name Resolution", function () {
             specify(
               "Then the response should contain a non-null group.id, and the second event's group.name should be populated",
               function () {
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.action",
+                assert.strictEqual(
+                  responseBody.data.search.edges[0].node.action,
                   "integration" + SECOND_EVENT
                 );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.group.id",
-                  "rtrcdqa1234" + GROUP_ID
-                );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.group.name",
+                assert.strictEqual(responseBody.data.search.edges[0].node.group.id, "rtrcdqa1234" + GROUP_ID);
+                assert.strictEqual(
+                  responseBody.data.search.edges[0].node.group.name,
                   "group number " + GROUP_ID
                 );
               }

@@ -1,5 +1,4 @@
 import * as querystring from "querystring";
-import { expect } from "chai";
 import { Client, CRUD } from "@retracedhq/retraced";
 import "mocha";
 import "chai-http";
@@ -8,6 +7,7 @@ import * as Env from "../env";
 import * as jwt from "jsonwebtoken";
 import { sleep } from "../pkg/util";
 import * as _ from "lodash";
+import assert from "assert";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -39,7 +39,7 @@ describe("Viewer API", function () {
           .get(`/publisher/v1/project/${Env.ProjectID}/viewertoken?${qs}`)
           .set("Authorization", `Token token=${Env.ApiKey}`)
           .end((err, res) => {
-            expect(err).to.be.null;
+            assert.strictEqual(err, null);
             token = res.body.token;
             done();
           });
@@ -54,8 +54,8 @@ describe("Viewer API", function () {
             .send({ token })
             .end(function (err, res: any) {
               viewerSession = JSON.parse(res.text).token;
-              expect(err).to.be.null;
-              expect(res).to.have.property("status", 200);
+              assert.strictEqual(err, null);
+              assert.strictEqual(res.status, 200);
               done();
             });
         });
@@ -83,14 +83,14 @@ describe("Viewer API", function () {
               })
               .end((err, res) => {
                 responseBody = JSON.parse(res.text);
-                expect(err).to.be.null;
-                expect(res).to.have.property("status", 201);
+                assert.strictEqual(err, null);
+                assert.strictEqual(res.status, 201);
                 done();
               });
           });
 
           specify("Then the response should contain the new saved export.", function () {
-            expect(responseBody.id).to.be.ok;
+            assert(responseBody.id);
           });
 
           // This test only runs in dev where we know the JWT signing secret. Dev should
@@ -145,13 +145,12 @@ describe("Viewer API", function () {
                   .request(Env.Endpoint)
                   .get(`/viewer/v1/project/${Env.ProjectID}/export/${responseBody.id}/rendered?jwt=${tkn}`)
                   .end((err, res) => {
-                    expect(err).to.be.null;
-                    expect(res).to.have.property("status", 200);
-                    expect(res.text.split("\n")).to.have.length(eventCount + 2);
+                    assert.strictEqual(err, null);
+                    assert.strictEqual(res.status, 200);
+                    assert.strictEqual(res.text.split("\n").length, eventCount + 2);
                     _.each(ids, function (id) {
-                      expect(res.text).to.match(new RegExp(id));
+                      assert(res.text.match(new RegExp(id)));
                     });
-                    done();
                   });
               });
             });
