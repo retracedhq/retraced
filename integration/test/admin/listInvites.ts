@@ -4,10 +4,7 @@ import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
 import assert from "assert";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import axios from "axios";
 
 describe("Admin list invites", function () {
   if (!Env.AdminRootToken) {
@@ -40,42 +37,40 @@ describe("Admin list invites", function () {
       });
 
       emails.forEach((email) => {
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .post(`/admin/v1/project/${project.id}/invite`)
-            .set("Authorization", jwt)
-            .send({ email })
-            .end((err, res) => {
-              assert.strictEqual(err, null);
-              inviteIDs.push(res.body.id);
-              done();
-            });
+        before(async function () {
+          const resp1 = await axios.post(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/invite`,
+            { email },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp1);
+          inviteIDs.push(resp1.data.id);
         });
       });
 
       context("When a call is made to list invites", function () {
         let resp;
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .get(`/admin/v1/project/${project.id}/invite`)
-            .set("Authorization", jwt)
-            .end((err, res) => {
-              assert.strictEqual(err, null);
-              resp = res;
-              done();
-            });
+        before(async function () {
+          resp = await axios.get(`${Env.Endpoint}/admin/v1/project/${project.id}/invite`, {
+            headers: {
+              Authorization: jwt,
+            },
+          });
+          assert(resp);
         });
 
         specify("Both invites should be returned with status 200.", function () {
           assert.strictEqual(resp.status, 200);
 
-          assert.strictEqual(resp.body[0].id, inviteIDs[0]);
-          assert.strictEqual(resp.body[0].email, emails[0]);
-          assert.strictEqual(resp.body[1].id, inviteIDs[1]);
-          assert.strictEqual(resp.body[1].email, emails[1]);
+          assert.strictEqual(resp.data[0].id, inviteIDs[0]);
+          assert.strictEqual(resp.data[0].email, emails[0]);
+          assert.strictEqual(resp.data[1].id, inviteIDs[1]);
+          assert.strictEqual(resp.data[1].email, emails[1]);
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {

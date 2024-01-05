@@ -4,10 +4,7 @@ import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
 import assert from "assert";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import axios from "axios";
 
 describe("Admin delete template", function () {
   if (!Env.AdminRootToken) {
@@ -39,42 +36,41 @@ describe("Admin delete template", function () {
         adminId = admin.userId;
       });
 
-      before(function (done) {
-        chai
-          .request(Env.Endpoint)
-          .post(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
-          .set("Authorization", jwt)
-          .send({
+      before(async function () {
+        const resp1 = await axios.post(
+          `${Env.Endpoint}/admin/v1/project/${project.id}/templates?environment_id=${env.id}`,
+          {
             name: "Delete Template Test",
             rule: "always",
             template: "{{}}",
-          })
-          .end((err, res) => {
-            assert.strictEqual(err, null);
-            assert.strictEqual(res.status, 201);
-
-            templateID = res.body.id;
-            done();
-          });
+          },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        );
+        assert(resp1);
+        assert.strictEqual(resp1.status, 201);
+        templateID = resp1.data.id;
       });
 
       context("When the admin deletes the template", function () {
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .delete(`/admin/v1/project/${project.id}/templates/${templateID}/?environment_id=${env.id}`)
-            .set("Authorization", jwt)
-            .end((err, res) => {
-              assert.strictEqual(err, null);
-              assert.strictEqual(res.status, 204);
-              resp = res;
-              done();
-            });
+        before(async function () {
+          resp = await axios.delete(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/templates/${templateID}/?environment_id=${env.id}`,
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp);
         });
 
         specify("It should be deleted with status 204.", function () {
           assert.strictEqual(resp.status, 204);
-          assert.deepStrictEqual(resp.body, {});
+          assert.deepStrictEqual(resp.data, "");
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
