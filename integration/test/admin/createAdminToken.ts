@@ -31,13 +31,14 @@ describe("Admin create admin token", function () {
               Authorization: jwt,
             },
           });
+          assert(resp);
         });
 
         let id;
         let token;
         specify("Then the response should have a token and id", () => {
-          id = resp.body.id;
-          token = resp.body.token;
+          id = resp.data.id;
+          token = resp.data.token;
           assert(id);
           assert(token);
         });
@@ -53,7 +54,7 @@ describe("Admin create admin token", function () {
             };
 
             beforeEach(async () => {
-              templateResponse = axios.post(
+              templateResponse = await axios.post(
                 `${Env.Endpoint}/admin/v1/project/${project.id}/templates?environment_id=${env.id}`,
                 reqBody,
                 {
@@ -62,6 +63,7 @@ describe("Admin create admin token", function () {
                   },
                 }
               );
+              assert(templateResponse);
             });
 
             specify("Then the response should have a 2xx status", () => {

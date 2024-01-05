@@ -5,6 +5,7 @@ import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
 import assert from "assert";
+import axios from "axios";
 
 const chai = require("chai"),
   chaiHttp = require("chai-http");
@@ -40,24 +41,24 @@ describe("Admin create API token", function () {
       context("When a new API token is created", function () {
         let resp;
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .post(`/admin/v1/project/${project.id}/token?environment_id=${env.id}`)
-            .set("Authorization", jwt)
-            .send({
+        before(async function () {
+          resp = await axios.post(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/token?environment_id=${env.id}`,
+            {
               name,
               disabled: false,
-            })
-            .end((err, res) => {
-              assert.strictEqual(err, null);
-              resp = res;
-              done();
-            });
+            },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp);
         });
 
         specify("The token resource is returned with status 201.", function () {
-          const token = resp.body;
+          const token = resp.data;
           const tenMinutes = 1000 * 60 * 10;
 
           assert.strictEqual(resp.status, 201);
