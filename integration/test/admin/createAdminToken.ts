@@ -2,10 +2,7 @@ import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import assert from "assert";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import axios from "axios";
 
 describe("Admin create admin token", function () {
   if (!Env.AdminRootToken) {
@@ -29,17 +26,10 @@ describe("Admin create admin token", function () {
       context("When an admin token is created", function () {
         let resp;
         beforeEach(async () => {
-          resp = await new Promise<any>((resolve, reject) => {
-            chai
-              .request(Env.Endpoint)
-              .post(`/admin/v1/token`)
-              .set("Authorization", jwt)
-              .end((err, res) => {
-                if (err) {
-                  reject(err);
-                }
-                resolve(res);
-              });
+          resp = await axios.post(`${Env.Endpoint}/admin/v1/token`, null, {
+            headers: {
+              Authorization: jwt,
+            },
           });
         });
 
@@ -63,20 +53,15 @@ describe("Admin create admin token", function () {
             };
 
             beforeEach(async () => {
-              templateResponse = await new Promise<any>((resolve, reject) => {
-                chai
-                  .request(Env.Endpoint)
-                  .post(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
-                  .set("Authorization", `id=${id} token=${token}`)
-                  .send(reqBody)
-                  .end((err, res) => {
-                    if (err) {
-                      reject(err);
-                      return;
-                    }
-                    resolve(res);
-                  });
-              });
+              templateResponse = axios.post(
+                `${Env.Endpoint}/admin/v1/project/${project.id}/templates?environment_id=${env.id}`,
+                reqBody,
+                {
+                  headers: {
+                    Authorization: `id=${id} token=${token}`,
+                  },
+                }
+              );
             });
 
             specify("Then the response should have a 2xx status", () => {
