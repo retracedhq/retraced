@@ -2,9 +2,9 @@ import { suite, test } from "@testdeck/mocha";
 import renderSavedExport from "../../../handlers/viewer/renderSavedExport";
 import getPgPool from "../../../persistence/pg";
 import { defaultEventCreater } from "../../../handlers/createEvent";
-import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import createSession from "../../../handlers/createViewerSession";
+import assert from "assert";
 
 @suite
 class RenderSavedExport {
@@ -40,7 +40,7 @@ class RenderSavedExport {
         },
       });
       console.log("RES", res);
-      return expect(res !== undefined);
+      return assert.strictEqual(res !== undefined, true);
     } catch (ex) {
       console.log("Exception", ex);
     } finally {
@@ -80,7 +80,7 @@ class RenderSavedExport {
         },
       });
       console.log("RES", res);
-      return expect(res !== undefined);
+      return assert.strictEqual(res !== undefined, true);
     } catch (ex) {
       console.log("Exception", ex);
     } finally {
@@ -118,7 +118,7 @@ class RenderSavedExport {
         },
       });
       console.log("RES", res);
-      return expect(res !== undefined);
+      return assert.strictEqual(res !== undefined, true);
     } catch (ex) {
       console.log("Exception", ex);
     } finally {
@@ -161,7 +161,7 @@ class RenderSavedExport {
   //             },
   //         });
   //         console.log(res);
-  //         expect(res.status).to.equal(200);
+  //         assert.strictEqual(res.status, 200);
   //     } catch (ex) {
   //         console.log(ex);
   //     } finally {
@@ -204,7 +204,7 @@ class RenderSavedExport {
   //             },
   //         });
   //         console.log(res);
-  //         expect(res.status).to.equal(200);
+  //         assert.strictEqual(res.status, 200);
   //     } catch (ex) {
   //         console.log(ex);
   //     } finally {
@@ -246,8 +246,7 @@ class RenderSavedExport {
   //                 }
   //             },
   //         });
-  //         console.log(res);
-  //         expect(res.status).to.equal(200);
+  //         assert.strictEqual(res.status, 200);
   //     } catch (ex) {
   //         console.log(ex);
   //     } finally {
@@ -286,8 +285,7 @@ class RenderSavedExport {
   //                 }
   //             },
   //         });
-  //         console.log(res);
-  //         expect(res.status).to.equal(200);
+  //         assert.strictEqual(res.status, 200);
   //     } catch (ex) {
   //         console.log(ex);
   //     } finally {

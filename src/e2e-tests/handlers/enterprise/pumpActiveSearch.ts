@@ -1,10 +1,10 @@
 import { suite, test } from "@testdeck/mocha";
 import pumpActiveSearch from "../../../handlers/enterprise/pumpActiveSearch";
 import { defaultEventCreater } from "../../../handlers/createEvent";
-import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
 import safeQuery from "../../../test/seederHelper";
+import assert from "assert";
 
 @suite
 class PumpActiveSearch {
@@ -24,9 +24,9 @@ class PumpActiveSearch {
         },
         body: {},
       });
-      let op = expect(res).to.not.be.undefined;
-      op = expect(res.body).to.not.be.undefined;
-      expect(res.status).to.equal(200);
+      let op = assert.strictEqual(res !== undefined, true);
+      op = assert.strictEqual(res.body !== undefined, true);
+      assert.strictEqual(res.status, 200);
       return op;
     } catch (ex) {
       console.log(ex);
@@ -50,9 +50,9 @@ class PumpActiveSearch {
         },
         body: {},
       });
-      let op = expect(res).to.not.be.undefined;
-      op = expect(res.body).to.not.be.undefined;
-      expect(res.status).to.equal(200);
+      let op = assert.strictEqual(res !== undefined, true);
+      op = assert.strictEqual(res.body !== undefined, true);
+      assert.strictEqual(res.status, 200);
       return op;
     } catch (ex) {
       console.log(ex);
@@ -77,8 +77,8 @@ class PumpActiveSearch {
       });
       throw new Error(`Expected error "Missing required 'id' parameter" to be thrown`);
     } catch (ex) {
-      expect(ex.status).to.equal(400);
-      expect(ex.err.message).to.equal("Missing required 'id' parameter");
+      assert.strictEqual(ex.status, 400);
+      assert.strictEqual(ex.err.message, "Missing required 'id' parameter");
     }
   }
   @test
@@ -104,8 +104,8 @@ class PumpActiveSearch {
       console.log(res);
       throw new Error(`Expected error "Active search not found (id=${activeSearchId})" to be thrown`);
     } catch (ex) {
-      expect(ex.status).to.equal(404);
-      expect(ex.err.message).to.equal(`Active search not found (id=${activeSearchId})`);
+      assert.strictEqual(ex.status, 404);
+      assert.strictEqual(ex.err.message, `Active search not found (id=${activeSearchId})`);
     }
   }
   @test
@@ -129,11 +129,9 @@ class PumpActiveSearch {
         },
         body: {},
       });
-      console.log(res);
       throw new Error(`Expected error "Unknown query descriptor version: ${version}" to be thrown`);
     } catch (ex) {
-      console.log(ex);
-      expect(ex.message).to.equal(`Unknown query descriptor version: ${version}`);
+      assert.strictEqual(ex.message, `Unknown query descriptor version: ${version}`);
     }
   }
   @test
@@ -163,9 +161,9 @@ class PumpActiveSearch {
         `Expected error "Active search (id=${activeSearchId}) refers to a non-existent saved search (id=${savedSearchId})" to be thrown`
       );
     } catch (ex) {
-      console.log(ex);
-      expect(ex.status).to.equal(404);
-      expect(ex.err.message).to.equal(
+      assert.strictEqual(ex.status, 404);
+      assert.strictEqual(
+        ex.err.message,
         `Active search (id=${activeSearchId}) refers to a non-existent saved search (id=${savedSearchId})`
       );
     }

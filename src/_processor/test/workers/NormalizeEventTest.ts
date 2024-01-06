@@ -4,8 +4,8 @@ import sinon from "sinon";
 import normalizeEvent from "../../workers/normalizeEvent";
 import { Pool } from "pg";
 import { NSQClient } from "../../persistence/nsq";
-import { expect } from "chai";
 import { restoreOriginalEvent } from "../../common";
+import assert from "assert";
 
 const LOCALHOST_IP = "127.0.0.1";
 const RECEIVED = new Date().getTime();
@@ -257,15 +257,17 @@ class NormalizeEventTest {
         taskId: "100",
       }),
     });
-    expect(
+    assert.strictEqual(
       this.queryStub.getCall(0).calledWithMatch(ingestionTaskQuery, ["100"]),
+      true,
       "Failed to query ingest_task table correctly"
-    ).to.be.true;
-    expect(
+    );
+    assert.strictEqual(
       this.queryStub.getCall(10).calledWithMatch(normalizeQuery, [normalizedEvent, compressedEvent, "100"]),
+      true,
       "updation of ingest_task with normalizedEvent, compressedEvent failed"
-    ).to.be.true;
-    expect(this.releaseStub.calledOnce, "pg poolclient not released after use").to.be.true;
+    );
+    assert.strictEqual(this.releaseStub.calledOnce, true, "pg poolclient not released after use");
   }
 
   @test
@@ -278,7 +280,7 @@ class NormalizeEventTest {
   )
   public restoreOriginalEvent({ compressedEvent, normalizedEvent }) {
     const originalEvent = restoreOriginalEvent(compressedEvent, normalizedEvent);
-    expect(originalEvent).to.deep.equal(ORIGINAL_EVENT);
+    assert.deepEqual(originalEvent, ORIGINAL_EVENT);
   }
 }
 

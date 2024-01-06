@@ -1,7 +1,7 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 
 import { apiTokenFromAuthHeader, checkAdminAccessUnwrapped } from "../../security/helpers";
+import assert from "assert";
 
 @suite
 class SecurityHelpersTest {
@@ -9,21 +9,21 @@ class SecurityHelpersTest {
     try {
       apiTokenFromAuthHeader(undefined);
     } catch (err) {
-      expect(err.status).to.deep.equal(401);
-      expect(err.err.message).to.deep.equal("Missing Authorization header");
+      assert.strictEqual(err.status, 401);
+      assert.strictEqual(err.err.message, "Missing Authorization header");
     }
   }
   @test public "helpers.apiTokenFromAuthHeader(token=abcdef)"() {
     const token = apiTokenFromAuthHeader("token=abcdef");
-    expect(token).to.equal("abcdef");
+    assert.strictEqual(token, "abcdef");
   }
   @test public async "helpers.checkAdminAccessUnwrapped(undefined)"() {
     try {
       await checkAdminAccessUnwrapped(undefined as any);
       throw new Error("Error not thrown");
     } catch (err) {
-      expect(err.status).to.deep.equal(401);
-      expect(err.err.message).to.deep.equal("Missing Authorization header");
+      assert.strictEqual(err.status, 401);
+      assert.strictEqual(err.err.message, "Missing Authorization header");
     }
   }
 }

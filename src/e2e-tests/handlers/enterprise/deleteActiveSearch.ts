@@ -2,9 +2,9 @@ import { suite, test } from "@testdeck/mocha";
 import deleteActiveSearch from "../../../handlers/enterprise/deleteActiveSearch";
 import safeQuery from "../../../test/seederHelper";
 import { defaultEventCreater } from "../../../handlers/createEvent";
-import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
+import assert from "assert";
 
 @suite
 class DeleteActiveSearch {
@@ -20,8 +20,8 @@ class DeleteActiveSearch {
         },
         body: {},
       });
-      expect(res.status).to.equal(204);
-      return expect(res).to.not.be.undefined;
+      assert.strictEqual(res.status, 204);
+      return assert.strictEqual(res !== undefined, true);
     } catch (ex) {
       console.log(ex);
     }
@@ -41,8 +41,8 @@ class DeleteActiveSearch {
       });
       throw new Error(`Expected error "Missing required 'id' parameter" to be thrown`);
     } catch (ex) {
-      expect(ex.status).to.equal(400);
-      expect(ex.err.message).to.equal("Missing required 'id' parameter");
+      assert.strictEqual(ex.status, 400);
+      assert.strictEqual(ex.err.message, "Missing required 'id' parameter");
     }
   }
 }

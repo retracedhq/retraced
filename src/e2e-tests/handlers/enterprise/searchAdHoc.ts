@@ -2,9 +2,9 @@ import { suite, test } from "@testdeck/mocha";
 import searchAdHoc from "../../../handlers/enterprise/searchAdHoc";
 import safeQuery from "../../../test/seederHelper";
 import { defaultEventCreater } from "../../../handlers/createEvent";
-import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
+import assert from "assert";
 
 @suite
 class SearchAdHoc {
@@ -32,9 +32,9 @@ class SearchAdHoc {
         },
         body: {},
       });
-      let op = expect(res).to.not.be.undefined;
-      op = expect(res.body).to.not.be.undefined;
-      expect(res.status).to.equal(200);
+      let op = assert.strictEqual(res !== undefined, true);
+      op = assert.strictEqual(res !== undefined, true);
+      assert.strictEqual(res.status, 200);
       return op;
     } catch (ex) {
       console.log(ex);
@@ -64,9 +64,9 @@ class SearchAdHoc {
         },
         body: {},
       });
-      let op = expect(res).to.not.be.undefined;
-      op = expect(res.body).to.not.be.undefined;
-      expect(res.status).to.equal(200);
+      let op = assert.strictEqual(res !== undefined, true);
+      op = assert.strictEqual(res !== undefined, true);
+      assert.strictEqual(res.status, 200);
       return op;
     } catch (ex) {
       console.log(ex);

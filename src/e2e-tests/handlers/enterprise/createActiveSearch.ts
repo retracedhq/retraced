@@ -1,9 +1,9 @@
 import { suite, test } from "@testdeck/mocha";
 import createActiveSearch from "../../../handlers/enterprise/createActiveSearch";
 import getPgPool from "../../../persistence/pg";
-import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
+import assert from "assert";
 
 @suite
 class CreateActiveSearch {
@@ -20,8 +20,8 @@ class CreateActiveSearch {
           saved_search_id: "test",
         },
       });
-      let op = expect(res).to.not.be.undefined;
-      op = expect(res.body !== undefined);
+      let op = assert.strictEqual(res !== undefined, true);
+      op = assert.strictEqual(res.body !== undefined, true);
       return op;
     } catch (ex) {
       console.log(ex);
@@ -43,8 +43,8 @@ class CreateActiveSearch {
       });
       throw new Error(`Expected error "Missing required 'saved_search_id' field" to be thrown`);
     } catch (ex) {
-      expect(ex.status).to.equal(400);
-      expect(ex.err.message).to.equal("Missing required 'saved_search_id' field");
+      assert.strictEqual(ex.status, 400);
+      assert.strictEqual(ex.err.message, "Missing required 'saved_search_id' field");
     } finally {
       await cleanup(pool);
     }
@@ -66,8 +66,8 @@ class CreateActiveSearch {
       });
       throw new Error(`Expected error "Saved search not found (id=${savedSearchId})' to be thrown`);
     } catch (ex) {
-      expect(ex.status).to.equal(404);
-      expect(ex.err.message).to.equal(`Saved search not found (id=${savedSearchId})`);
+      assert.strictEqual(ex.status, 404);
+      assert.strictEqual(ex.err.message, `Saved search not found (id=${savedSearchId})`);
     } finally {
       await cleanup(pool);
     }

@@ -2,9 +2,9 @@ import { suite, test } from "@testdeck/mocha";
 import handler from "../../../handlers/graphql/handler";
 import safeQuery from "../../../test/seederHelper";
 import { defaultEventCreater } from "../../../handlers/createEvent";
-import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
+import assert from "assert";
 
 @suite
 class GraphQLHandler {
@@ -31,10 +31,10 @@ class GraphQLHandler {
           targetId: "test",
         }
       );
-      console.log(res);
-      expect(res.status).to.equal(200);
+      // console.log(res);
+      assert.strictEqual(res.status, 200);
     } catch (ex) {
-      // console.log(ex);
+      console.log(ex);
     }
   }
   @test public async "GraphQL handler#handler() with query"() {
@@ -62,7 +62,7 @@ class GraphQLHandler {
         }
       );
       console.log(res);
-      expect(res.status).to.equal(200);
+      assert.strictEqual(res.status, 200);
     } catch (ex) {
       // console.log(ex);
     }
@@ -90,7 +90,7 @@ class GraphQLHandler {
           targetId: "test",
         }
       );
-      expect(res.status).to.equal(400);
+      assert.strictEqual(res.status, 400);
     } catch (ex) {
       console.log(ex);
     }

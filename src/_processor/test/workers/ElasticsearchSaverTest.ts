@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 import sinon from "sinon";
 
@@ -10,6 +9,7 @@ import { ElasticsearchSaver } from "../../workers/saveEventToElasticsearch";
 import { Client } from "@opensearch-project/opensearch";
 import * as instrument from "../../../metrics/opentelemetry/instrumentation";
 import { ApiResponse, TransportRequestPromise } from "@opensearch-project/opensearch/lib/Transport.js";
+import assert from "assert";
 
 @suite
 class ElasticsearchSaverTest {
@@ -137,14 +137,16 @@ class ElasticsearchSaverTest {
 
     const saver = new ElasticsearchSaver(es.object, clock.object);
     await saver.saveEventToElasticsearch({ body: Buffer.from(jobBody) });
-    expect(
+    assert.strictEqual(
       recordOtelHistogramStub.calledWithExactly("workers.saveEventToElasticSearch.latencyCreated", 400),
-      "It should have tracked the time to make an event searchable from the point of creation"
-    ).to.be.true;
-    expect(
-      recordOtelHistogramStub.calledWithExactly("workers.saveEventToElasticSearch.latencyReceived", 300),
+      true,
       "It should have tracked the time to make an event searchable from the point of reception"
-    ).to.be.true;
+    );
+    assert.strictEqual(
+      recordOtelHistogramStub.calledWithExactly("workers.saveEventToElasticSearch.latencyReceived", 300),
+      true,
+      "It should have tracked the time to make an event searchable from the point of reception"
+    );
     es.verifyAll();
     clock.verifyAll();
   }

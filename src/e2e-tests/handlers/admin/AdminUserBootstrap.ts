@@ -1,7 +1,7 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 
 import { AdminUserBootstrap } from "../../../handlers/admin/AdminUserBootstrap";
+import assert from "assert";
 
 // const adminUserBootstrap = TypeMoq.Mock.ofType(AdminUserBootstrap);
 
@@ -11,7 +11,7 @@ class AdminUserBootstrapTest {
   public "AdminUserBootstrap#AdminUserBootstrap() gets initialized"() {
     try {
       const adminUserBootstrap = new AdminUserBootstrap("test");
-      return expect(adminUserBootstrap).to.not.be.null;
+      return assert.strictEqual(adminUserBootstrap !== null, true);
     } catch (err) {
       console.log(err);
     }
@@ -29,8 +29,8 @@ class AdminUserBootstrapTest {
         inviteId: "",
       });
     } catch (err) {
-      expect(err.err.message).to.equal(expected.message);
-      expect(err.status).to.equal(404);
+      assert.strictEqual(err.err.message, expected.message);
+      assert.strictEqual(err.status, 404);
     }
   }
 
@@ -46,8 +46,8 @@ class AdminUserBootstrapTest {
         inviteId: "",
       });
     } catch (err) {
-      expect(err.err.message).to.equal(expected.message);
-      expect(err.status).to.equal(404);
+      assert.strictEqual(err.err.message, expected.message);
+      assert.strictEqual(err.status, 404);
     }
   }
 
@@ -63,8 +63,8 @@ class AdminUserBootstrapTest {
         inviteId: "",
       });
     } catch (err) {
-      expect(err.err.message).to.equal(expected.message);
-      expect(err.status).to.equal(400);
+      assert.strictEqual(err.err.message, expected.message);
+      assert.strictEqual(err.status, 400);
     }
   }
 
@@ -85,7 +85,7 @@ class AdminUserBootstrapTest {
     try {
       const adminUserBootstrap = new AdminUserBootstrap("test");
       const handler = adminUserBootstrap.handler();
-      return expect(handler).to.not.be.undefined;
+      return assert.strictEqual(handler !== undefined, true);
     } catch (err) {
       console.log(err);
     }

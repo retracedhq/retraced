@@ -1,5 +1,4 @@
 import * as querystring from "querystring";
-import { expect } from "chai";
 import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
@@ -72,7 +71,7 @@ describe("Viewer API", function () {
         if (!valid) {
           console.log(tv4.error);
         }
-        expect(valid).to.be.true;
+        assert.strictEqual(valid, true);
         await retraced.reportEvent(event);
       });
 
@@ -128,8 +127,8 @@ describe("Viewer API", function () {
               responseBody = resp3.data;
             });
             specify("Then the response should contain the correct information about the event", function () {
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.action",
+              assert.strictEqual(
+                responseBody.data.search.edges[0].node.action,
                 "integration.test.api." + randomNumber.toString()
               );
             });
@@ -183,68 +182,38 @@ describe("Viewer API", function () {
               specify(
                 "Then the response should contain the correct information about the event",
                 function () {
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.action",
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.action,
                     "integration.test.api." + randomNumber.toString()
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.created",
-                    isoDate(currentTime)
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.description",
+                  assert.strictEqual(responseBody.data.search.edges[0].node.created, isoDate(currentTime));
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.description,
                     "Automated integration testing..."
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.actor.fields[0].key",
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.actor.fields[0].key,
                     "department"
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.actor.fields[0].value",
-                    "QA"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.group.id",
+                  assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].value, "QA");
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.group.id,
                     "rtrcdqa" + randomNumber.toString()
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.target.name",
-                    "Retraced API"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.target.fields[0].key",
+                  assert.strictEqual(responseBody.data.search.edges[0].node.target.name, "Retraced API");
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.target.fields[0].key,
                     "record_count"
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.target.fields[0].value",
-                    "100"
-                  );
-                  expect(responseBody).to.have.nested.property("data.search.edges[0].node.is_failure", false);
-                  expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "c");
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.source_ip",
-                    "192.168.0.1"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.fields[0].key",
-                    "field1"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.fields[0].value",
-                    field1
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.external_id",
-                    externalID
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.metadata[0].key",
-                    "metadata1"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.metadata[0].value",
-                    "metadata1"
-                  );
+                  assert.strictEqual(responseBody.data.search.edges[0].node.target.fields[0].value, "100");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.is_failure, false);
+                  assert.strictEqual(responseBody.data.search.edges[0].node.crud, "c");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.source_ip, "192.168.0.1");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].key, "field1");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].value, field1);
+                  assert.strictEqual(responseBody.data.search.edges[0].node.external_id, externalID);
+                  assert.strictEqual(responseBody.data.search.edges[0].node.metadata[0].key, "metadata1");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.metadata[0].value, "metadata1");
                 }
               );
             }
@@ -275,68 +244,38 @@ describe("Viewer API", function () {
               specify(
                 "Then the response should contain the correct information about the event",
                 function () {
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.action",
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.action,
                     "integration.test.api." + randomNumber.toString()
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.created",
-                    isoDate(currentTime)
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.description",
+                  assert.strictEqual(responseBody.data.search.edges[0].node.created, isoDate(currentTime));
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.description,
                     "Automated integration testing..."
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.actor.fields[0].key",
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.actor.fields[0].key,
                     "department"
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.actor.fields[0].value",
-                    "QA"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.group.id",
+                  assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].value, "QA");
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.group.id,
                     "rtrcdqa" + randomNumber.toString()
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.target.name",
-                    "Retraced API"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.target.fields[0].key",
+                  assert.strictEqual(responseBody.data.search.edges[0].node.target.name, "Retraced API");
+                  assert.strictEqual(
+                    responseBody.data.search.edges[0].node.target.fields[0].key,
                     "record_count"
                   );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.target.fields[0].value",
-                    "100"
-                  );
-                  expect(responseBody).to.have.nested.property("data.search.edges[0].node.is_failure", false);
-                  expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "c");
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.source_ip",
-                    "192.168.0.1"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.fields[0].key",
-                    "field1"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.fields[0].value",
-                    field1
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.external_id",
-                    externalID
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.metadata[0].key",
-                    "metadata1"
-                  );
-                  expect(responseBody).to.have.nested.property(
-                    "data.search.edges[0].node.metadata[0].value",
-                    "metadata1"
-                  );
+                  assert.strictEqual(responseBody.data.search.edges[0].node.target.fields[0].value, "100");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.is_failure, false);
+                  assert.strictEqual(responseBody.data.search.edges[0].node.crud, "c");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.source_ip, "192.168.0.1");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].key, "field1");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].value, field1);
+                  assert.strictEqual(responseBody.data.search.edges[0].node.external_id, externalID);
+                  assert.strictEqual(responseBody.data.search.edges[0].node.metadata[0].key, "metadata1");
+                  assert.strictEqual(responseBody.data.search.edges[0].node.metadata[0].value, "metadata1");
                 }
               );
             }
@@ -360,31 +299,16 @@ describe("Viewer API", function () {
             specify(
               "Then the most recent event should be an audit.log.view event with the actor specified",
               function () {
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.action",
-                  "audit.log.view"
-                );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.group.id",
+                assert.strictEqual(responseBody.data.search.edges[0].node.action, "audit.log.view");
+                assert.strictEqual(
+                  responseBody.data.search.edges[0].node.group.id,
                   "rtrcdqa" + randomNumber.toString()
                 );
-                expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "r");
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.actor.id",
-                  "qa@retraced.io"
-                );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.actor.name",
-                  "RetracedQA Employee"
-                );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.actor.fields[0].key",
-                  "department"
-                );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.actor.fields[0].value",
-                  "QA"
-                );
+                assert.strictEqual(responseBody.data.search.edges[0].node.crud, "r");
+                assert.strictEqual(responseBody.data.search.edges[0].node.actor.id, "qa@retraced.io");
+                assert.strictEqual(responseBody.data.search.edges[0].node.actor.name, "RetracedQA Employee");
+                assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].key, "department");
+                assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].value, "QA");
               }
             );
           });

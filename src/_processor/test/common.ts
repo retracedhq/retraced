@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import assert from "assert";
 import { offsetsWithLocalTimeDuringUTCHour } from "../common";
 
 describe("common.offsetsWithLocalTimeDuringUTCHour", () => {
@@ -22,7 +22,7 @@ describe("common.offsetsWithLocalTimeDuringUTCHour", () => {
       it(`=> ${JSON.stringify(answer)}`, () => {
         const output = offsetsWithLocalTimeDuringUTCHour(utcHour, localHour);
 
-        expect(output).to.deep.equal(answer);
+        assert.deepEqual(output, answer);
       });
     });
   });

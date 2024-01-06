@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { suite, test } from "@testdeck/mocha";
 import * as TypeMoq from "typemoq";
 
@@ -6,6 +5,7 @@ import pg from "pg";
 import Authenticator from "../../security/Authenticator";
 import { getApiTokenQuery } from "../../models/api_token/get";
 import { QueryResult } from "pg";
+import assert from "assert";
 
 @suite
 class AuthenticatorTest {
@@ -33,8 +33,8 @@ class AuthenticatorTest {
 
     const token = await authenticator.getApiTokenOr401("token=some-token", "a-project");
 
-    expect(token.projectId).to.equal("a-project");
-    expect(token.environmentId).to.equal("an-environment");
+    assert.strictEqual(token.projectId, "a-project");
+    assert.strictEqual(token.environmentId, "an-environment");
   }
   @test public async "Authenticator#getApiTokenOr401() with invalid token"() {
     const pool = TypeMoq.Mock.ofType(pg.Pool);
@@ -54,8 +54,8 @@ class AuthenticatorTest {
       await authenticator.getApiTokenOr401("token=bad-token", "a-project");
       throw new Error(`Expected error ${JSON.stringify(expected)} to be thrown`);
     } catch (err) {
-      expect(err.status).to.deep.equal(expected.status);
-      expect(err.err.message).to.deep.equal(expected.err.message);
+      assert.deepEqual(err.status, expected.status);
+      assert.deepEqual(err.err.message, expected.err.message);
     }
   }
 
@@ -86,8 +86,8 @@ class AuthenticatorTest {
       await authenticator.getApiTokenOr401("token=bad-token", "another-project");
       throw new Error(`Expected error ${JSON.stringify(expected)} to be thrown`);
     } catch (err) {
-      expect(err.status).to.deep.equal(expected.status);
-      expect(err.err.message).to.deep.equal(expected.err.message);
+      assert.deepEqual(err.status, expected.status);
+      assert.deepEqual(err.err.message, expected.err.message);
     }
   }
 }
