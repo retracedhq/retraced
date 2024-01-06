@@ -1,17 +1,11 @@
 import { Client, CRUD } from "@retracedhq/retraced";
 import "mocha";
-import "chai-http";
 import { search } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
 import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
-import * as util from "util";
-import picocolors from "picocolors";
 import assert from "assert";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import axios from "axios";
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
 const currentTime = new Date().valueOf();
@@ -101,27 +95,22 @@ describe("Bulk Create Events", function () {
         });
 
         context("When a call is made to the GraphQL endpoint for the event", function () {
-          beforeEach(function (done) {
+          beforeEach(async function () {
             this.timeout(Env.EsIndexWaitMs * 2);
-            sleep(Env.EsIndexWaitMs).then(() => {
-              chai
-                .request(Env.Endpoint)
-                .post("/publisher/v1/graphql")
-                .set("Authorization", "token=" + Env.ApiKey)
-                .send(search("integrationbulk" + randomNumber.toString()))
-                .end(function (err, res) {
-                  responseBody = JSON.parse(res.text);
-                  if (err && Env.Debug) {
-                    console.log(picocolors.red(util.inspect(err.response.body, false, 100, false)));
-                  } else if (Env.Debug) {
-                    console.log(util.inspect(res.body, false, 100, true));
-                  }
-                  assert.strictEqual(err, null);
-                  assert.strictEqual(res.status, 200);
+            await sleep(Env.EsIndexWaitMs);
 
-                  done();
-                });
-            });
+            const resp1 = await axios.post(
+              `${Env.Endpoint}/publisher/v1/graphql`,
+              search("integrationbulk" + randomNumber.toString()),
+              {
+                headers: {
+                  Authorization: "token=" + Env.ApiKey,
+                },
+              }
+            );
+            assert(resp1);
+            assert.strictEqual(resp1.status, 200);
+            responseBody = resp1.data;
           });
           specify("Then the response should contain all four events", function () {
             assert.strictEqual(responseBody.data.search.edges.length, 4);
