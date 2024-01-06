@@ -1,6 +1,6 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 import { ApiSpec, removeRoutesNotMatching, filterAndAssign } from "../swagger";
+import assert from "assert";
 
 @suite
 class SwaggerTest {
@@ -18,10 +18,8 @@ class SwaggerTest {
 
     removeRoutesNotMatching(swagger, /^\/publisher\/v1/);
 
-    let res = expect(swagger.paths["/admin/v1/project/{projectId}/apitoken"])
-      .not.to.exist;
-    res = expect(swagger.paths["/publisher/v1/project/{projectId}/event"]).to
-      .exist;
+    let res = assert.strictEqual(swagger.paths["/admin/v1/project/{projectId}/apitoken"], undefined);
+    res = assert(swagger.paths["/publisher/v1/project/{projectId}/event"]);
     return res;
   }
 
@@ -54,25 +52,17 @@ class SwaggerTest {
 
     filterAndAssign(swagger, specs);
 
-    let res = expect(specs[0].swagger.paths["/project/{projectId}/event"]).to
-      .exist;
-    res = expect(specs[0].swagger.paths["/project/{projectId}/apitoken"]).not.to
-      .exist;
-    res = expect(specs[0].swagger.basePath).to.equal("/publisher/v1");
-    res = expect(specs[0].swagger.info.description).to.equal(
-      specs[0].description
-    );
-    res = expect(specs[0].swagger.info.title).to.equal(specs[0].title);
+    let res = assert(specs[0].swagger.paths["/project/{projectId}/event"]);
+    res = assert.strictEqual(specs[0].swagger.paths["/project/{projectId}/apitoken"], undefined);
+    res = assert.strictEqual(specs[0].swagger.basePath, "/publisher/v1");
+    res = assert.strictEqual(specs[0].swagger.info.description, specs[0].description);
+    res = assert.strictEqual(specs[0].swagger.info.title, specs[0].title);
 
-    res = expect(specs[1].swagger.paths["/project/{projectId}/event"]).not.to
-      .exist;
-    res = expect(specs[1].swagger.paths["/project/{projectId}/apitoken"]).to
-      .exist;
-    res = expect(specs[1].swagger.basePath).to.equal("/admin/v1");
-    res = expect(specs[1].swagger.info.description).to.equal(
-      specs[1].description
-    );
-    res = expect(specs[1].swagger.info.title).to.equal(specs[1].title);
+    res = assert.strictEqual(specs[1].swagger.paths["/project/{projectId}/event"], undefined);
+    res = assert(specs[1].swagger.paths["/project/{projectId}/apitoken"]);
+    res = assert.strictEqual(specs[1].swagger.basePath, "/admin/v1");
+    res = assert.strictEqual(specs[1].swagger.info.description, specs[1].description);
+    res = assert.strictEqual(specs[1].swagger.info.title, specs[1].title);
     return res;
   }
 }

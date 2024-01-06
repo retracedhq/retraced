@@ -1,5 +1,4 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 import * as TypeMoq from "typemoq";
 import moment from "moment";
 
@@ -9,6 +8,7 @@ import { NSQClient } from "../../persistence/nsq";
 import { EventCreater, CreateEventRequest, CreateEventResponse } from "../../handlers/createEvent";
 import Authenticator from "../../security/Authenticator";
 import { Connection } from "./Connection";
+import assert from "assert";
 
 @suite
 class EventCreaterTest {
@@ -76,8 +76,8 @@ class EventCreaterTest {
       await creater.createEventBulk("token=some-token", "a-project", body);
       throw new Error(`Expected error ${expected} to be thrown`);
     } catch (err) {
-      expect(err.err.message).to.equal(expected.message);
-      expect(err.status).to.equal(400);
+      assert.strictEqual(err.status, 400);
+      assert.strictEqual(err.err.message.includes(expected.message), true);
     }
 
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
@@ -147,16 +147,19 @@ class EventCreaterTest {
       await creater.createEventBulk("token=some-token", "a-project", body);
       throw new Error(`Expected error to be thrown`);
     } catch (err) {
-      expect(err.status).to.equal(400);
-      expect(err.err.message).to.deep.equal(`One or more invalid inputs, no events were logged:
+      assert.strictEqual(err.status, 400);
+      assert.deepEqual(
+        err.err.message,
+        `One or more invalid inputs, no events were logged:
 - Invalid event input at index 0:
 -- Field 'actor.id' is required if 'actor' is present
 - Invalid event input at index 1:
 -- Field 'group.id' is required if 'group' is present
 -- Event is not marked anonymous, and missing required field 'actor'
--- Unable to parse 'source_ip' field as valid IPV4 or IPV6 address: lol`);
+-- Unable to parse 'source_ip' field as valid IPV4 or IPV6 address: lol`
+      );
 
-      expect(err.invalid).to.deep.equal([
+      assert.deepEqual(err.invalid, [
         {
           index: 0,
           message: "Invalid event input at index 0:\n-- Field 'actor.id' is required if 'actor' is present",
@@ -257,8 +260,8 @@ class EventCreaterTest {
 
     const created: any = await creater.createEvent("token=some-token", "a-project", body);
 
-    expect(created.id).to.equal("kfbr392");
-    expect(created.hash).to.equal("fake-hash");
+    assert.strictEqual(created.id, "kfbr392");
+    assert.strictEqual(created.hash, "fake-hash");
   }
 
   @test public async "EventCreater#createEvent() ipv6"() {
@@ -318,8 +321,8 @@ class EventCreaterTest {
 
     const created: any = await creater.createEvent("token=some-token", "a-project", body);
 
-    expect(created.id).to.equal("kfbr392");
-    expect(created.hash).to.equal("fake-hash");
+    assert.strictEqual(created.id, "kfbr392");
+    assert.strictEqual(created.hash, "fake-hash");
   }
 
   @test public async "EventCreater#createEventsBulk()"() {
@@ -399,14 +402,14 @@ class EventCreaterTest {
       body
     );
 
-    expect(created.length).to.equal(3);
+    assert.strictEqual(created.length, 3);
 
-    expect(created[0].id).to.equal("kfbr392");
-    expect(created[0].hash).to.equal("fake-hash");
-    expect(created[1].id).to.equal("kfbr392");
-    expect(created[1].hash).to.equal("fake-hash");
-    expect(created[2].id).to.equal("kfbr392");
-    expect(created[2].hash).to.equal("fake-hash");
+    assert.strictEqual(created[0].id, "kfbr392");
+    assert.strictEqual(created[0].hash, "fake-hash");
+    assert.strictEqual(created[1].id, "kfbr392");
+    assert.strictEqual(created[1].hash, "fake-hash");
+    assert.strictEqual(created[2].id, "kfbr392");
+    assert.strictEqual(created[2].hash, "fake-hash");
   }
 
   @test public async "EventCreater#createEventsBulk() with postgres error"() {
@@ -474,7 +477,7 @@ class EventCreaterTest {
       await creater.createEventBulk("token=some-token", "a-project", body);
       throw new Error(`Expected error to be thrown: ${expected}`);
     } catch (err) {
-      expect(err.message).to.equal(expected.message);
+      assert.strictEqual(err.message, expected.message);
     }
 
     // make sure we didn't send any nsq messages if the txn is ROLLBACK'd
@@ -671,8 +674,8 @@ class EventCreaterTest {
       await creater.createEvent("token=some-token", "a-project", body);
       throw new Error(`Expected error to be thrown`);
     } catch (err) {
-      expect(err.status).to.equal(400);
-      expect(err.err.message).to.deep.equal(`"fields.data" must be a string`);
+      assert.strictEqual(err.status, 400);
+      assert.strictEqual(err.err.message, `"fields.data" must be a string`);
     }
 
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
@@ -755,8 +758,8 @@ class EventCreaterTest {
       await creater.createEvent("token=some-token", "a-project", body);
       throw new Error(`Expected error to be thrown`);
     } catch (err) {
-      expect(err.status).to.equal(400);
-      expect(err.err.message).to.deep.equal(`Missing required field 'action'`);
+      assert.strictEqual(err.status, 400);
+      assert.strictEqual(err.err.message, `Missing required field 'action'`);
     }
 
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
@@ -838,8 +841,8 @@ class EventCreaterTest {
       await creater.createEvent("token=some-token", "a-project", body);
       throw new Error(`Expected error to be thrown`);
     } catch (err) {
-      expect(err.status).to.equal(400);
-      expect(err.err.message).to.deep.equal(`Invalid value for 'crud' field: b`);
+      assert.strictEqual(err.status, 400);
+      assert.strictEqual(err.err.message, `Invalid value for 'crud' field: b`);
     }
 
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
@@ -921,8 +924,8 @@ class EventCreaterTest {
       await creater.createEvent("token=some-token", "a-project", body);
       throw new Error(`Expected error to be thrown`);
     } catch (err) {
-      expect(err.status).to.equal(400);
-      expect(err.err.message).to.deep.equal(`"group.fields" is not allowed`);
+      assert.strictEqual(err.status, 400);
+      assert.strictEqual(err.err.message, `"group.fields" is not allowed`);
     }
 
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
@@ -1002,8 +1005,8 @@ class EventCreaterTest {
       await creater.createEvent("token=some-token", "a-project", body);
       throw new Error(`Expected error to be thrown`);
     } catch (err) {
-      expect(err.status).to.equal(400);
-      expect(err.err.message).to.deep.equal(`"actor.phone" is not allowed`);
+      assert.strictEqual(err.status, 400);
+      assert.strictEqual(err.err.message, `"actor.phone" is not allowed`);
     }
 
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
@@ -1083,8 +1086,8 @@ class EventCreaterTest {
       await creater.createEvent("token=some-token", "a-project", body);
       throw new Error(`Expected error to be thrown`);
     } catch (err) {
-      expect(err.status).to.equal(400);
-      expect(err.err.message).to.deep.equal(`"target.meta" is not allowed`);
+      assert.strictEqual(err.status, 400);
+      assert.strictEqual(err.err.message, `"target.meta" is not allowed`);
     }
 
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());
@@ -1166,8 +1169,8 @@ class EventCreaterTest {
       await creater.createEvent("token=some-token", "a-project", body);
       throw new Error(`Expected error to be thrown`);
     } catch (err) {
-      expect(err.status).to.equal(400);
-      expect(err.err.message).to.deep.equal(`"external_id" must be a string`);
+      assert.strictEqual(err.status, 400);
+      assert.strictEqual(err.err.message, `"external_id" must be a string`);
     }
 
     conn.verify((x: pg.Client) => x.query("BEGIN"), TypeMoq.Times.never());

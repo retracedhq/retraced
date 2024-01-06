@@ -51,7 +51,7 @@ describe("Publisher Search", function () {
         },
         description: "Automated integration testing...",
         is_failure: false,
-        component: "chai",
+        component: "mocha",
         version: "v1",
         fields: {
           quality: "excellent",
