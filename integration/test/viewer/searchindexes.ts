@@ -3,15 +3,12 @@ import { expect } from "chai";
 import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
-import "chai-http";
 import { CreateEventSchema, search } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
 import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import axios from "axios";
+import assert from "assert";
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
 const currentTime = new Date();
@@ -82,7 +79,7 @@ describe("Viewer API", function () {
       context("And a call is made to create a viewer description scoped to an action", function () {
         let token;
 
-        beforeEach((done) => {
+        beforeEach(async () => {
           const opts = {
             actor_id: actorID,
             group_id: groupID,
@@ -90,49 +87,45 @@ describe("Viewer API", function () {
           };
           const qs = querystring.stringify(opts);
 
-          chai
-            .request(Env.Endpoint)
-            .get(`/publisher/v1/project/${Env.ProjectID}/viewertoken?${qs}`)
-            .set("Authorization", `Token token=${Env.ApiKey}`)
-            .end((err, res) => {
-              expect(err).to.be.null;
-              token = res.body.token;
-              done();
-            });
+          const resp1 = await axios.get(
+            `${Env.Endpoint}/publisher/v1/project/${Env.ProjectID}/viewertoken?${qs}`,
+            {
+              headers: {
+                Authorization: `token=${Env.ApiKey}`,
+              },
+            }
+          );
+          assert(resp1);
+          token = resp1.data.token;
         });
 
         context("And the viewer descriptor is exchanged for a session", function () {
           let viewerSession;
-          beforeEach((done) => {
-            chai
-              .request(Env.Endpoint)
-              .post("/viewer/v1/viewersession")
-              .send({ token })
-              .end(function (err, res) {
-                viewerSession = JSON.parse(res.text).token;
-                expect(err).to.be.null;
-                expect(res).to.have.property("status", 200);
-                done();
-              });
+          beforeEach(async () => {
+            const resp2 = await axios.post(`${Env.Endpoint}/viewer/v1/viewersession`, { token });
+            assert(resp2);
+            assert.strictEqual(resp2.status, 200);
+            viewerSession = resp2.data.token;
           });
 
           context("When a call is made to the Viewer API GraphQL endpoint for the event", function () {
             let responseBody;
-            beforeEach(function (done) {
+            beforeEach(async function () {
               this.timeout(Env.EsIndexWaitMs * 2);
-              sleep(Env.EsIndexWaitMs).then(() => {
-                chai
-                  .request(Env.Endpoint)
-                  .post("/viewer/v1/graphql")
-                  .set("Authorization", viewerSession)
-                  .send(search("integration.test.api." + randomNumber.toString()))
-                  .end(function (err, res) {
-                    responseBody = JSON.parse(res.text);
-                    expect(err).to.be.null;
-                    expect(res).to.have.property("status", 200);
-                    done();
-                  });
-              });
+              await sleep(Env.EsIndexWaitMs);
+
+              const resp3 = await axios.post(
+                `${Env.Endpoint}/viewer/v1/graphql`,
+                search("integration.test.api." + randomNumber.toString()),
+                {
+                  headers: {
+                    Authorization: viewerSession,
+                  },
+                }
+              );
+              assert(resp3);
+              assert.strictEqual(resp3.status, 200);
+              responseBody = resp3.data;
             });
             specify("Then the response should contain the correct information about the event", function () {
               expect(responseBody).to.have.nested.property(
@@ -158,38 +151,33 @@ describe("Viewer API", function () {
 
         context("And the viewer descriptor is exchanged for a session", function () {
           let viewerSession;
-          beforeEach((done) => {
-            chai
-              .request(Env.Endpoint)
-              .post("/viewer/v1/viewersession")
-              .send({ token })
-              .end(function (err, res) {
-                viewerSession = JSON.parse(res.text).token;
-                expect(err).to.be.null;
-                expect(res).to.have.property("status", 200);
-                done();
-              });
+          beforeEach(async () => {
+            const resp4 = await axios.post(`${Env.Endpoint}/viewer/v1/viewersession`, { token });
+            assert(resp4);
+            assert.strictEqual(resp4.status, 200);
+            viewerSession = resp4.data.token;
           });
 
           context(
             "When a call is made to the Viewer API GraphQL endpoint for the event with external_id",
             function () {
               let responseBody;
-              beforeEach(function (done) {
+              beforeEach(async function () {
                 this.timeout(Env.EsIndexWaitMs * 2);
-                sleep(Env.EsIndexWaitMs).then(() => {
-                  chai
-                    .request(Env.Endpoint)
-                    .post("/viewer/v1/graphql")
-                    .set("Authorization", viewerSession)
-                    .send(search("external_id:" + externalID))
-                    .end(function (err, res) {
-                      responseBody = JSON.parse(res.text);
-                      expect(err).to.be.null;
-                      expect(res).to.have.property("status", 200);
-                      done();
-                    });
-                });
+                await sleep(Env.EsIndexWaitMs);
+
+                const resp5 = await axios.post(
+                  `${Env.Endpoint}/viewer/v1/graphql`,
+                  search("external_id:" + externalID),
+                  {
+                    headers: {
+                      Authorization: viewerSession,
+                    },
+                  }
+                );
+                assert(resp5);
+                assert.strictEqual(resp5.status, 200);
+                responseBody = resp5.data;
               });
 
               specify(
@@ -266,21 +254,22 @@ describe("Viewer API", function () {
             "When a call is made to the Viewer API GraphQL endpoint for the event with field: field1",
             function () {
               let responseBody;
-              beforeEach(function (done) {
+              beforeEach(async function () {
                 this.timeout(Env.EsIndexWaitMs * 2);
-                sleep(Env.EsIndexWaitMs).then(() => {
-                  chai
-                    .request(Env.Endpoint)
-                    .post("/viewer/v1/graphql")
-                    .set("Authorization", viewerSession)
-                    .send(search("fields.field1:" + field1))
-                    .end(function (err, res) {
-                      responseBody = JSON.parse(res.text);
-                      expect(err).to.be.null;
-                      expect(res).to.have.property("status", 200);
-                      done();
-                    });
-                });
+                await sleep(Env.EsIndexWaitMs);
+
+                const resp6 = await axios.post(
+                  `${Env.Endpoint}/viewer/v1/graphql`,
+                  search("fields.field1:" + field1),
+                  {
+                    headers: {
+                      Authorization: viewerSession,
+                    },
+                  }
+                );
+                assert(resp6);
+                assert.strictEqual(resp6.status, 200);
+                responseBody = resp6.data;
               });
 
               specify(
@@ -355,21 +344,18 @@ describe("Viewer API", function () {
 
           context("When a second call is made to the Viewer API GraphQL endpoint", function () {
             let responseBody;
-            beforeEach(function (done) {
+            beforeEach(async function () {
               this.timeout(Env.EsIndexWaitMs * 2);
-              sleep(Env.EsIndexWaitMs).then(() => {
-                chai
-                  .request(Env.Endpoint)
-                  .post("/viewer/v1/graphql")
-                  .set("Authorization", viewerSession)
-                  .send(search("audit.log.view"))
-                  .end(function (err, res) {
-                    responseBody = JSON.parse(res.text);
-                    expect(err).to.be.null;
-                    expect(res).to.have.property("status", 200);
-                    done();
-                  });
+              await sleep(Env.EsIndexWaitMs);
+
+              const resp7 = await axios.post(`${Env.Endpoint}/viewer/v1/graphql`, search("audit.log.view"), {
+                headers: {
+                  Authorization: viewerSession,
+                },
               });
+              assert(resp7);
+              assert.strictEqual(resp7.status, 200);
+              responseBody = resp7.data;
             });
             specify(
               "Then the most recent event should be an audit.log.view event with the actor specified",
