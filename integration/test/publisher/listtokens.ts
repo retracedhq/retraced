@@ -1,16 +1,12 @@
 import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
-import "chai-http";
 import { CreateEventSchema, search } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
 import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
 import assert from "assert";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import axios from "axios";
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
 const currentTime = new Date();
@@ -72,34 +68,36 @@ describe("Listing Enterprise Tokens", function () {
       });
 
       context("And at least one eitapi token exists", function () {
-        beforeEach((done) => {
-          chai
-            .request(Env.Endpoint)
-            .post(`/publisher/v1/project/${Env.ProjectID}/group/rtrcdqa1234/enterprisetoken`)
-            .set("Authorization", `token=${Env.ApiKey}`)
-            .send({ display_name: "QA" + randomNumber.toString() })
-            .end(function (err, res) {
-              responseBody = JSON.parse(res.text);
-              assert.strictEqual(err, null);
-              assert.strictEqual(res.status, 201);
-              assert(responseBody.token);
-              token = responseBody.token;
-              done();
-            });
+        beforeEach(async () => {
+          const resp1 = await axios.post(
+            `${Env.Endpoint}/publisher/v1/project/${Env.ProjectID}/group/rtrcdqa1234/enterprisetoken`,
+            { display_name: "QA" + randomNumber.toString() },
+            {
+              headers: {
+                Authorization: `token=${Env.ApiKey}`,
+              },
+            }
+          );
+          assert(resp1);
+          assert.strictEqual(resp1.status, 201);
+          responseBody = resp1.data;
+          assert(responseBody.token);
+          token = responseBody.token;
         });
         context("When a call is made to list eitapi API tokens", function () {
           let tokens;
-          beforeEach((done) => {
-            chai
-              .request(Env.Endpoint)
-              .get(`/publisher/v1/project/${Env.ProjectID}/group/rtrcdqa1234/enterprisetoken`)
-              .set("Authorization", `token=${Env.ApiKey}`)
-              .end(function (err, res) {
-                tokens = JSON.parse(res.text);
-                assert.strictEqual(err, null);
-                assert.strictEqual(res.status, 200);
-                done();
-              });
+          beforeEach(async () => {
+            const resp2 = await axios.get(
+              `${Env.Endpoint}/publisher/v1/project/${Env.ProjectID}/group/rtrcdqa1234/enterprisetoken`,
+              {
+                headers: {
+                  Authorization: `token=${Env.ApiKey}`,
+                },
+              }
+            );
+            assert(resp2);
+            assert.strictEqual(resp2.status, 200);
+            tokens = resp2.data;
           });
           specify("Then the response should contain at least one enterprise token ", function () {
             assert.strictEqual(tokens.length > 0, true);
@@ -110,21 +108,22 @@ describe("Listing Enterprise Tokens", function () {
             "When one of those tokens is used to call the Enterprise API GraphQL endpoint for the event",
             function () {
               let responseBody;
-              beforeEach(function (done) {
+              beforeEach(async function () {
                 this.timeout(Env.EsIndexWaitMs * 2);
-                sleep(Env.EsIndexWaitMs).then(() => {
-                  chai
-                    .request(Env.Endpoint)
-                    .post("/enterprise/v1/graphql")
-                    .set("Authorization", `token=${tokens[0].token}`)
-                    .send(search("integration" + randomNumber.toString()))
-                    .end(function (err, res) {
-                      responseBody = JSON.parse(res.text);
-                      assert.strictEqual(err, null);
-                      assert.strictEqual(res.status, 200);
-                      done();
-                    });
-                });
+                await sleep(Env.EsIndexWaitMs);
+
+                const resp3 = await axios.post(
+                  `${Env.Endpoint}/enterprise/v1/graphql`,
+                  search("integration" + randomNumber.toString()),
+                  {
+                    headers: {
+                      Authorization: `token=${tokens[0].token}`,
+                    },
+                  }
+                );
+                assert(resp3);
+                assert.strictEqual(resp3.status, 200);
+                responseBody = resp3.data;
               });
               specify(
                 "Then the response should contain the correct information about the event",

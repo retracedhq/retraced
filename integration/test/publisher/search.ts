@@ -1,17 +1,12 @@
 import { EventsConnection, Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
-import "chai-http";
 import { CreateEventSchema } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
 import { sleep } from "../pkg/util";
 import * as Env from "../env";
 import * as _ from "lodash";
 import assert from "assert";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
 

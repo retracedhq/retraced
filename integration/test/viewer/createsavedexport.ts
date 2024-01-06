@@ -1,17 +1,13 @@
 import * as querystring from "querystring";
 import { Client, CRUD } from "@retracedhq/retraced";
 import "mocha";
-import "chai-http";
 import { retracedUp } from "../pkg/retracedUp";
 import * as Env from "../env";
 import * as jwt from "jsonwebtoken";
 import { sleep } from "../pkg/util";
 import * as _ from "lodash";
 import assert from "assert";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import axios from "axios";
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
 
@@ -26,49 +22,49 @@ describe("Viewer API", function () {
     context("And a call is made to create a viewer description scoped to a group", function () {
       let token;
 
-      beforeEach((done) => {
+      beforeEach(async () => {
         const opts = {
           group_id: groupID,
-          // TODO why is actorID required?
           actor_id: actorID,
         };
         const qs = querystring.stringify(opts);
 
-        chai
-          .request(Env.Endpoint)
-          .get(`/publisher/v1/project/${Env.ProjectID}/viewertoken?${qs}`)
-          .set("Authorization", `Token token=${Env.ApiKey}`)
-          .end((err, res) => {
-            assert.strictEqual(err, null);
-            token = res.body.token;
-            done();
-          });
+        const resp1 = await axios.get(
+          `${Env.Endpoint}/publisher/v1/project/${Env.ProjectID}/viewertoken?${qs}`,
+          {
+            headers: {
+              Authorization: `Token token=${Env.ApiKey}`,
+            },
+          }
+        );
+        assert(resp1);
+        token = resp1.data.token;
       });
 
       context("And the viewer descriptor is exchanged for a session", function () {
         let viewerSession;
-        beforeEach((done) => {
-          chai
-            .request(Env.Endpoint)
-            .post("/viewer/v1/viewersession")
-            .send({ token })
-            .end(function (err, res: any) {
-              viewerSession = JSON.parse(res.text).token;
-              assert.strictEqual(err, null);
-              assert.strictEqual(res.status, 200);
-              done();
-            });
+        beforeEach(async () => {
+          const resp2 = await axios.post(
+            `${Env.Endpoint}/viewer/v1/viewersession`,
+            { token },
+            {
+              headers: {
+                Authorization: `Token token=${Env.ApiKey}`,
+              },
+            }
+          );
+          assert(resp2);
+          assert.strictEqual(resp2.status, 200);
+          viewerSession = resp2.data.token;
         });
 
         context("When a call is made to the Viewer API create saved export endpoint", function () {
           let responseBody;
 
-          beforeEach(function (done) {
-            chai
-              .request(Env.Endpoint)
-              .post(`/viewer/v1/project/${Env.ProjectID}/export`)
-              .set("Authorization", viewerSession)
-              .send({
+          beforeEach(async function () {
+            const resp3 = await axios.post(
+              `${Env.Endpoint}/viewer/v1/project/${Env.ProjectID}/export`,
+              {
                 name: "Test Name",
                 exportBody: JSON.stringify({
                   searchQuery: "",
@@ -80,13 +76,16 @@ describe("Viewer API", function () {
                   startTime: Date.now() - 60000,
                   endTime: Date.now() + 60000,
                 }),
-              })
-              .end((err, res) => {
-                responseBody = JSON.parse(res.text);
-                assert.strictEqual(err, null);
-                assert.strictEqual(res.status, 201);
-                done();
-              });
+              },
+              {
+                headers: {
+                  Authorization: viewerSession,
+                },
+              }
+            );
+            assert(resp3);
+            assert.strictEqual(resp3.status, 201);
+            responseBody = resp3.data;
           });
 
           specify("Then the response should contain the new saved export.", function () {
@@ -133,7 +132,7 @@ describe("Viewer API", function () {
                 await sleep(Env.EsIndexWaitMs * 2);
               });
 
-              specify("Then the response should contain matching events.", function (done) {
+              specify("Then the response should contain matching events.", async function () {
                 this.timeout(Env.EsIndexWaitMs * 3);
                 const desc = {
                   environmentId: Env.EnvironmentID,
@@ -141,18 +140,17 @@ describe("Viewer API", function () {
                   id: token,
                 };
                 const tkn = jwt.sign(desc, process.env.HMAC_SECRET_VIEWER);
-                chai
-                  .request(Env.Endpoint)
-                  .get(`/viewer/v1/project/${Env.ProjectID}/export/${responseBody.id}/rendered?jwt=${tkn}`)
-                  .end((err, res) => {
-                    assert.strictEqual(err, null);
-                    assert.strictEqual(res.status, 200);
-                    assert.strictEqual(res.text.split("\n").length, eventCount + 2);
-                    _.each(ids, function (id) {
-                      assert(res.text.match(new RegExp(id)));
-                    });
-                    done();
-                  });
+
+                const resp4 = await axios.get(
+                  `${Env.Endpoint}/viewer/v1/project/${Env.ProjectID}/export/${responseBody.id}/rendered?jwt=${tkn}`
+                );
+                assert(resp4);
+
+                assert.strictEqual(resp4.status, 200);
+                assert.strictEqual(resp4.data.split("\n").length, eventCount + 2);
+                _.each(ids, function (id) {
+                  assert(resp4.data.match(new RegExp(id)));
+                });
               });
             });
           }
