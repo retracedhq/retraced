@@ -1,8 +1,8 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 import cancelEmailReport from "../../../handlers/admin/cancelEmailReport";
 import getPgPool from "../../../persistence/pg";
 import { AdminTokenStore } from "../../../models/admin_token/store";
+import assert from "assert";
 
 @suite
 class CancelEmailReport {
@@ -21,12 +21,11 @@ class CancelEmailReport {
           token: "dummytoken",
         },
       });
-      expect(result.status).to.equal(301);
-      let res = expect(result.headers !== undefined);
-      res = expect(
-        result.headers ? result.headers.Location : undefined !== undefined
-      );
-      expect(result.headers ? result.headers.Location : undefined).to.equal(
+      assert.strictEqual(result.status, 301);
+      let res = assert.strictEqual(result.headers !== undefined, true);
+      res = assert.strictEqual(result.headers ? result.headers.Location : undefined !== undefined, true);
+      assert.strictEqual(
+        result.headers ? result.headers.Location : undefined,
         "https://www.retraced.io/unsubscribed/daily-reports/"
       );
       return res;
@@ -51,12 +50,11 @@ class CancelEmailReport {
           token: "dummytoken",
         },
       });
-      expect(result.status).to.equal(301);
-      let res = expect(result.headers !== undefined);
-      res = expect(
-        result.headers ? result.headers.Location : undefined !== undefined
-      );
-      expect(result.headers ? result.headers.Location : undefined).to.equal(
+      assert.strictEqual(result.status, 301);
+      let res = assert.strictEqual(result.headers !== undefined, true);
+      res = assert.strictEqual(result.headers ? result.headers.Location : undefined !== undefined, true);
+      assert.strictEqual(
+        result.headers ? result.headers.Location : undefined,
         "https://www.retraced.io/unsubscribed/anomaly-reports/"
       );
       return res;
@@ -82,7 +80,7 @@ class CancelEmailReport {
           token: "dummytoken",
         },
       });
-      expect(result.status).to.equal(404);
+      assert.strictEqual(result.status, 404);
     } catch (ex) {
       console.log(ex);
     } finally {
@@ -105,7 +103,7 @@ class CancelEmailReport {
           token: "dummytoken1",
         },
       });
-      expect(result.status).to.equal(401);
+      assert.strictEqual(result.status, 401);
     } catch (ex) {
       console.log(ex);
     } finally {
@@ -114,27 +112,23 @@ class CancelEmailReport {
   }
 }
 async function setup(pool) {
-  await pool.query("INSERT INTO project (id, name) VALUES ($1, $2)", [
+  await pool.query("INSERT INTO project (id, name) VALUES ($1, $2)", ["test", "test"]);
+  await pool.query("INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)", [
+    "test",
     "test",
     "test",
   ]);
-  await pool.query(
-    "INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)",
-    ["test", "test", "test"]
-  );
-  await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", [
-    "test",
-    "test@test.com",
-  ]);
+  await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test", "test@test.com"]);
   await pool.query(
     "INSERT INTO environmentuser (user_id, environment_id, email_token, daily_report) VALUES ($1, $2, $3, $4)",
     ["test", "test", "dummytoken", true]
   );
   const res = await AdminTokenStore.default().createAdminToken("test");
-  await pool.query(
-    "INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)",
-    ["test", "test", "test"]
-  );
+  await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", [
+    "test",
+    "test",
+    "test",
+  ]);
   await pool.query(
     "INSERT INTO deletion_request (id, created, backoff_interval, resource_kind, resource_id) VALUES ($1, $2, $3, $4, $5)",
     ["test", new Date(), 10000000, "test", "test"]

@@ -1,8 +1,8 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 import createAPIToken from "../../../handlers/admin/createApiToken";
 import getPgPool from "../../../persistence/pg";
 import { AdminTokenStore } from "../../../models/admin_token/store";
+import assert from "assert";
 
 @suite
 class CreateAPIToken {
@@ -11,19 +11,13 @@ class CreateAPIToken {
     try {
       await cleanup(pool);
       const res = await setup(pool);
-      const result = await createAPIToken(
-        `id=${res.id} token=${res.token}`,
-        "test",
-        "test",
-        "test",
-        {
-          disabled: false,
-          name: "test",
-        }
-      );
-      expect(result.token).to.equal("test");
-      expect(result.projectId).to.equal("test");
-      expect(result.environmentId).to.equal("test");
+      const result = await createAPIToken(`id=${res.id} token=${res.token}`, "test", "test", "test", {
+        disabled: false,
+        name: "test",
+      });
+      assert.strictEqual(result.token, "test");
+      assert.strictEqual(result.projectId, "test");
+      assert.strictEqual(result.environmentId, "test");
     } catch (ex) {
       console.log(ex);
     } finally {
@@ -32,19 +26,18 @@ class CreateAPIToken {
   }
 }
 async function setup(pool) {
-  await pool.query("INSERT INTO project (id, name) VALUES ($1, $2)", [
+  await pool.query("INSERT INTO project (id, name) VALUES ($1, $2)", ["test", "test"]);
+  await pool.query("INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)", [
+    "test",
     "test",
     "test",
   ]);
-  await pool.query(
-    "INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)",
-    ["test", "test", "test"]
-  );
   const res = await AdminTokenStore.default().createAdminToken("test");
-  await pool.query(
-    "INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)",
-    ["test", "test", "test"]
-  );
+  await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", [
+    "test",
+    "test",
+    "test",
+  ]);
   return res;
 }
 

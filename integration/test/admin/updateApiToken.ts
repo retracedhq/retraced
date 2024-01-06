@@ -1,17 +1,13 @@
-import { expect } from "chai";
-import "chai-http";
 import { Client } from "@retracedhq/retraced";
 import * as Env from "../env";
 import Chance from "chance";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import { sleep } from "../pkg/util";
+import assert from "assert";
+import axios from "axios";
 
 const chance = new Chance();
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
 
 describe("Admin Update API tokens", function () {
   if (!Env.AdminRootToken) {
@@ -42,33 +38,33 @@ describe("Admin Update API tokens", function () {
       context("When a token name is updated", function () {
         const newName = chance.string();
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .put(`/admin/v1/project/${project.id}/token/${token.token}`)
-            .set("Authorization", jwt)
-            .send({
+        before(async function () {
+          const resp1 = await axios.put(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/token/${token.token}`,
+            {
               name: newName,
-            })
-            .end((err, res) => {
-              expect(err).to.be.null;
-              done();
-            });
+            },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp1);
         });
 
         // There's no GET token endpoint, but it can be read as a
         // subresource on project
-        specify("GET project will return the new name.", function (done) {
-          chai
-            .request(Env.Endpoint)
-            .get(`/admin/v1/project/${project.id}`)
-            .set("Authorization", jwt)
-            .end((err, res) => {
-              const updatedTkn = res.body.project.tokens.find((tkn) => tkn.token === token.token);
-              expect(updatedTkn.name).not.to.equal(token.name);
-              expect(updatedTkn.name).to.equal(newName);
-              done();
-            });
+        specify("GET project will return the new name.", async function () {
+          const resp2 = await axios.get(`${Env.Endpoint}/admin/v1/project/${project.id}`, {
+            headers: {
+              Authorization: jwt,
+            },
+          });
+          assert(resp2);
+          const updatedTkn = resp2.data.project.tokens.find((tkn) => tkn.token === token.token);
+          assert.notStrictEqual(updatedTkn.name, token.name);
+          assert.strictEqual(updatedTkn.name, newName);
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -96,11 +92,11 @@ describe("Admin Update API tokens", function () {
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
 
-            expect(audited.action).to.equal("api_token.update");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.equal(token.token);
-            expect(audited.fields).to.deep.equal({
+            assert.strictEqual(audited.action, "api_token.update");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
+            assert.strictEqual(audited.target!.id, token.token);
+            assert.deepStrictEqual(audited.fields, {
               name: newName,
             });
           });
@@ -108,30 +104,30 @@ describe("Admin Update API tokens", function () {
       });
 
       context("When a token is disabled", function () {
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .put(`/admin/v1/project/${project.id}/token/${token.token}`)
-            .set("Authorization", jwt)
-            .send({
+        before(async function () {
+          const resp3 = await axios.put(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/token/${token.token}`,
+            {
               disabled: true,
-            })
-            .end((err, res) => {
-              expect(err).to.be.null;
-              done();
-            });
+            },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp3);
         });
 
-        specify("GET project will return the token's status as disabled.", function (done) {
-          chai
-            .request(Env.Endpoint)
-            .get(`/admin/v1/project/${project.id}`)
-            .set("Authorization", jwt)
-            .end((err, res) => {
-              const updatedTkn = res.body.project.tokens.find((tkn) => tkn.token === token.token);
-              expect(updatedTkn.disabled).to.equal(true);
-              done();
-            });
+        specify("GET project will return the token's status as disabled.", async function () {
+          const resp4 = await axios.get(`${Env.Endpoint}/admin/v1/project/${project.id}`, {
+            headers: {
+              Authorization: jwt,
+            },
+          });
+          assert(resp4);
+          const updatedTkn = resp4.data.project.tokens.find((tkn) => tkn.token === token.token);
+          assert.strictEqual(updatedTkn.disabled, true);
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -159,11 +155,11 @@ describe("Admin Update API tokens", function () {
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
 
-            expect(audited.action).to.equal("api_token.update");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.equal(token.token);
-            expect(audited.fields).to.deep.equal({
+            assert.strictEqual(audited.action, "api_token.update");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
+            assert.strictEqual(audited.target!.id, token.token);
+            assert.deepStrictEqual(audited.fields, {
               disabled: "true",
             });
           });

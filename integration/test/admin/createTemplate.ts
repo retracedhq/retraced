@@ -1,13 +1,10 @@
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import assert from "assert";
+import axios from "axios";
 
 describe("Admin create template", function () {
   if (!Env.AdminRootToken) {
@@ -43,33 +40,33 @@ describe("Admin create template", function () {
         };
         let resp;
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .post(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
-            .set("Authorization", jwt)
-            .send(reqBody)
-            .end((err, res) => {
-              expect(err).to.be.null;
-              resp = res;
-              done();
-            });
+        before(async function () {
+          resp = await axios.post(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/templates?environment_id=${env.id}`,
+            reqBody,
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp);
         });
 
         specify("The template resource is returned with status 201.", function () {
           const tenMinutes = 1000 * 60 * 10;
           const now = Date.now();
-          const template = resp.body;
+          const template = resp.data;
 
-          expect(resp).to.have.property("status", 201);
-
-          expect(template.id).to.be.ok;
-          expect(template).to.have.property("name", reqBody.name);
-          expect(template).to.have.property("rule", reqBody.rule);
-          expect(template).to.have.property("template", reqBody.template);
-          expect(template).to.have.property("project_id", project.id);
-          expect(template).to.have.property("environment_id", env.id);
-          expect(new Date(template.created).getTime()).to.be.within(now - tenMinutes, now + tenMinutes);
+          assert.strictEqual(resp.status, 201);
+          assert(template.id);
+          assert.strictEqual(template.name, reqBody.name);
+          assert.strictEqual(template.rule, reqBody.rule);
+          assert.strictEqual(template.template, reqBody.template);
+          assert.strictEqual(template.project_id, project.id);
+          assert.strictEqual(template.environment_id, env.id);
+          const createdDate = new Date(template.created).getTime();
+          assert.strictEqual(Date.now() - createdDate < tenMinutes, true);
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -97,14 +94,13 @@ describe("Admin create template", function () {
             };
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
-            const token = resp.body;
 
-            expect(audited.action).to.equal("template.create");
-            expect(audited.crud).to.equal("c");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.be.ok;
-            expect(audited.target!.fields).to.deep.equal(reqBody);
+            assert.strictEqual(audited.action, "template.create");
+            assert.strictEqual(audited.crud, "c");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
+            assert(audited.target!.id);
+            assert.deepStrictEqual(audited.target!.fields, reqBody);
           });
         }
       });

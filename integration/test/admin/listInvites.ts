@@ -1,13 +1,10 @@
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import assert from "assert";
+import axios from "axios";
 
 describe("Admin list invites", function () {
   if (!Env.AdminRootToken) {
@@ -40,42 +37,40 @@ describe("Admin list invites", function () {
       });
 
       emails.forEach((email) => {
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .post(`/admin/v1/project/${project.id}/invite`)
-            .set("Authorization", jwt)
-            .send({ email })
-            .end((err, res) => {
-              expect(err).to.be.null;
-              inviteIDs.push(res.body.id);
-              done();
-            });
+        before(async function () {
+          const resp1 = await axios.post(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/invite`,
+            { email },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp1);
+          inviteIDs.push(resp1.data.id);
         });
       });
 
       context("When a call is made to list invites", function () {
         let resp;
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .get(`/admin/v1/project/${project.id}/invite`)
-            .set("Authorization", jwt)
-            .end((err, res) => {
-              expect(err).to.be.null;
-              resp = res;
-              done();
-            });
+        before(async function () {
+          resp = await axios.get(`${Env.Endpoint}/admin/v1/project/${project.id}/invite`, {
+            headers: {
+              Authorization: jwt,
+            },
+          });
+          assert(resp);
         });
 
         specify("Both invites should be returned with status 200.", function () {
-          expect(resp.status).to.equal(200);
+          assert.strictEqual(resp.status, 200);
 
-          expect(resp.body[0]).to.have.property("id", inviteIDs[0]);
-          expect(resp.body[0]).to.have.property("email", emails[0]);
-          expect(resp.body[1]).to.have.property("id", inviteIDs[1]);
-          expect(resp.body[1]).to.have.property("email", emails[1]);
+          assert.strictEqual(resp.data[0].id, inviteIDs[0]);
+          assert.strictEqual(resp.data[0].email, emails[0]);
+          assert.strictEqual(resp.data[1].id, inviteIDs[1]);
+          assert.strictEqual(resp.data[1].email, emails[1]);
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -98,12 +93,11 @@ describe("Admin list invites", function () {
             };
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
-            const token = resp.body;
 
-            expect(audited.action).to.equal("invite.list");
-            expect(audited.crud).to.equal("r");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
+            assert.strictEqual(audited.action, "invite.list");
+            assert.strictEqual(audited.crud, "r");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
           });
         }
       });

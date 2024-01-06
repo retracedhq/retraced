@@ -2,9 +2,9 @@ import { suite, test } from "@testdeck/mocha";
 import search from "../../../handlers/graphql/search";
 import safeQuery from "../../../test/seederHelper";
 import { defaultEventCreater } from "../../../handlers/createEvent";
-import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import create from "../../../models/api_token/create";
+import assert from "assert";
 
 @suite
 class GraphQLCounts {
@@ -27,10 +27,9 @@ class GraphQLCounts {
           targetId: "test",
         }
       );
-      console.log(res);
-      let op = expect(res).to.not.be.undefined;
-      op = expect(res.totalCount).to.not.be.undefined;
-      op = expect(res.pageInfo).to.not.be.undefined;
+      let op = assert.strictEqual(res !== undefined, true);
+      op = assert.strictEqual(res.totalCount !== undefined, true);
+      op = assert.strictEqual(res.pageInfo !== undefined, true);
       return op;
     } catch (ex) {
       console.log(ex);
@@ -55,10 +54,9 @@ class GraphQLCounts {
           targetId: "test",
         }
       );
-      console.log(res);
-      let op = expect(res).to.not.be.undefined;
-      op = expect(res.totalCount).to.not.be.undefined;
-      op = expect(res.pageInfo).to.not.be.undefined;
+      let op = assert.strictEqual(res !== undefined, true);
+      op = assert.strictEqual(res.totalCount !== undefined, true);
+      op = assert.strictEqual(res.pageInfo !== undefined, true);
       return op;
     } catch (ex) {
       console.log(ex);
@@ -83,10 +81,9 @@ class GraphQLCounts {
           targetId: "test",
         }
       );
-      console.log(res);
-      let op = expect(res).to.not.be.undefined;
-      op = expect(res.totalCount).to.not.be.undefined;
-      op = expect(res.pageInfo).to.not.be.undefined;
+      let op = assert.strictEqual(res !== undefined, true);
+      op = assert.strictEqual(res.totalCount !== undefined, true);
+      op = assert.strictEqual(res.pageInfo !== undefined, true);
       return op;
     } catch (ex) {
       console.log(ex);
@@ -116,8 +113,8 @@ class GraphQLCounts {
       console.log(res);
       throw new Error("Expected 'Arguments 'before' and 'after' are exclusive' exception");
     } catch (ex) {
-      expect(ex.status).to.equal(400);
-      expect(ex.err.message).to.equal("Arguments 'before' and 'after' are exclusive");
+      assert.strictEqual(ex.status, 400);
+      assert.strictEqual(ex.err.message, "Arguments 'before' and 'after' are exclusive");
     }
   }
   @test
@@ -144,8 +141,8 @@ class GraphQLCounts {
       console.log(res);
       throw new Error("Expected 'Arguments 'first' and 'last' are exclusive' exception");
     } catch (ex) {
-      expect(ex.status).to.equal(400);
-      expect(ex.err.message).to.equal("Arguments 'first' and 'last' are exclusive");
+      assert.strictEqual(ex.status, 400);
+      assert.strictEqual(ex.err.message, "Arguments 'first' and 'last' are exclusive");
     }
   }
   @test public async "GraphQL search#search() throws invalid cursor"() {
@@ -171,8 +168,8 @@ class GraphQLCounts {
       console.log(res);
       throw new Error("Expected 'Invalid cursor' exception");
     } catch (ex) {
-      expect(ex.status).to.equal(400);
-      expect(ex.err.message).to.equal("Invalid cursor");
+      assert.strictEqual(ex.status, 400);
+      assert.strictEqual(ex.err.message, "Invalid cursor");
     }
   }
 }

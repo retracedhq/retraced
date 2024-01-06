@@ -1,13 +1,10 @@
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import assert from "assert";
+import axios from "axios";
 
 describe("Admin create environment", function () {
   if (!Env.AdminRootToken) {
@@ -39,24 +36,24 @@ describe("Admin create environment", function () {
         const envName = "QA";
         let resp;
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .post(`/admin/v1/project/${project.id}/environment`)
-            .set("Authorization", jwt)
-            .send({ name: envName })
-            .end((err, res) => {
-              expect(err).to.be.null;
-              resp = res;
-              done();
-            });
+        before(async function () {
+          resp = await axios.post(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/environment`,
+            { name: envName },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp);
         });
 
         specify("The environment is returned with status 201.", function () {
-          expect(resp.status).to.equal(201);
-          expect(resp.body.id).to.be.ok;
-          expect(resp.body).to.have.property("name", envName);
-          expect(resp.body).to.have.property("project_id", project.id);
+          assert.strictEqual(resp.status, 201);
+          assert(resp.data.id);
+          assert.strictEqual(resp.data.name, envName);
+          assert.strictEqual(resp.data.project_id, project.id);
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -83,14 +80,13 @@ describe("Admin create environment", function () {
             };
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
-            const token = resp.body;
 
-            expect(audited.action).to.equal("environment.create");
-            expect(audited.crud).to.equal("c");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.equal(resp.body.id);
-            expect(audited.target!.name).to.equal(resp.body.name);
+            assert.strictEqual(audited.action, "environment.create");
+            assert.strictEqual(audited.crud, "c");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
+            assert.strictEqual(audited.target!.id, resp.data.id);
+            assert.strictEqual(audited.target!.name, resp.data.name);
           });
         }
       });

@@ -1,13 +1,10 @@
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import assert from "assert";
+import axios from "axios";
 
 describe("Admin create invite", function () {
   if (!Env.AdminRootToken) {
@@ -39,25 +36,25 @@ describe("Admin create invite", function () {
         const email = "newperson@retraced.io";
         let resp;
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .post(`/admin/v1/project/${project.id}/invite`)
-            .set("Authorization", jwt)
-            .send({ email })
-            .end((err, res) => {
-              expect(err).to.be.null;
-              resp = res;
-              done();
-            });
+        before(async function () {
+          resp = await axios.post(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/invite`,
+            { email },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp);
         });
 
         specify("The invite is returned with status 201.", function () {
-          expect(resp.status).to.equal(201);
-          expect(resp.body.id).to.be.ok;
-          expect(resp.body).to.have.property("project_id", project.id);
-          expect(resp.body).to.have.property("email", email);
-          expect(resp.body).to.have.property("created");
+          assert.strictEqual(resp.status, 201);
+          assert(resp.data.id);
+          assert.strictEqual(resp.data.project_id, project.id);
+          assert.strictEqual(resp.data.email, email);
+          assert(resp.data.created);
         });
 
         if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -84,14 +81,13 @@ describe("Admin create invite", function () {
             };
             const connection = await headless.query(query, mask, 1);
             const audited = connection.currentResults[0];
-            const token = resp.body;
 
-            expect(audited.action).to.equal("invite.create");
-            expect(audited.crud).to.equal("c");
-            expect(audited.group!.id).to.equal(project.id);
-            expect(audited.actor!.id).to.equal(adminId);
-            expect(audited.target!.id).to.equal(resp.body.id);
-            expect(audited.target!.name).to.equal(email);
+            assert.strictEqual(audited.action, "invite.create");
+            assert.strictEqual(audited.crud, "c");
+            assert.strictEqual(audited.group!.id, project.id);
+            assert.strictEqual(audited.actor!.id, adminId);
+            assert.strictEqual(audited.target!.id, resp.data.id);
+            assert.strictEqual(audited.target!.name, email);
           });
         }
       });

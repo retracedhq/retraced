@@ -1,5 +1,4 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 
 import * as TypeMoq from "typemoq";
 
@@ -7,6 +6,7 @@ import moment from "moment";
 import pg from "pg";
 import { ElasticsearchIndexRotator } from "../../workers/ElasticsearchIndexRotator";
 import { QueryResult } from "pg";
+import assert from "assert";
 
 @suite
 class ElasticsearchIndexRotatorTest {
@@ -32,7 +32,7 @@ class ElasticsearchIndexRotatorTest {
     indices
       .setup((x) => x.create(TypeMoq.It.is(() => true)))
       .returns((args: any) => {
-        expect(args).to.deep.equal(expectedIndex);
+        assert.deepEqual(args, expectedIndex);
         return Promise.resolve(null);
       })
       .verifiable(TypeMoq.Times.once());

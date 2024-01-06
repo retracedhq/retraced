@@ -1,7 +1,7 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 import { validateQuery } from "../../handlers/graphql/handler";
 import schema from "../../handlers/graphql/schema";
+import assert from "assert";
 
 // (specifiedRules as Array<any>).push(NoDuplicateFields);
 
@@ -54,7 +54,7 @@ export class GraphqlTest {
         }
       }`;
     const errors = validateQuery(query, schema);
-    return expect(errors).to.be.empty;
+    return assert.deepEqual(errors, []);
   }
 
   @test public "Graphql#validateDupFields()"() {
@@ -63,8 +63,11 @@ export class GraphqlTest {
           search(query: $query, last: $last, before: $before) { totalCount totalCount }
         }`;
     const errors = validateQuery(query, schema);
-    let r = expect(errors).to.not.be.empty;
-    r = expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
+    let r = assert(errors);
+    r = assert.strictEqual(
+      String(errors[0]).includes("Error: Duplicate field EventsConnection:totalCount."),
+      true
+    );
     return r;
   }
 
@@ -74,8 +77,11 @@ export class GraphqlTest {
           search(query: $query, last: $last, before: $before) { a1:totalCount a2:totalCount }
         }`;
     const errors = validateQuery(query, schema);
-    let r = expect(errors).to.not.be.empty;
-    r = expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
+    let r = assert(errors);
+    r = assert.strictEqual(
+      String(errors[0]).includes("Error: Duplicate field EventsConnection:totalCount."),
+      true
+    );
     return r;
   }
 }

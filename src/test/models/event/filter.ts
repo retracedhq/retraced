@@ -1,9 +1,9 @@
 import util from "util";
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 
 import { parseQuery } from "../../../models/event";
 import { getFilters } from "../../../models/event/filter";
+import assert from "assert";
 
 const minScope = {
   projectId: "proj1",
@@ -228,7 +228,7 @@ class FilterEventsTest {
       const parsed = parseQuery(testObj.query);
 
       try {
-        expect(parsed).to.deep.equal(testObj.parsed);
+        assert.deepEqual(parsed, testObj.parsed);
       } catch (err) {
         throw new Error(`"${testObj.query}" parseQuery() =>
 ${util.inspect(parsed, { depth: 10 })}
@@ -239,7 +239,7 @@ ${util.inspect(testObj.parsed, { depth: 10 })}`);
       const filters = getFilters(parsed, testObj.scope);
 
       try {
-        expect(filters).to.deep.equal(testObj.filters);
+        assert.deepEqual(filters, testObj.filters);
       } catch (err) {
         throw new Error(`"${testObj.query}" getFilters() =>
 ${util.inspect(filters, { depth: 10 })}

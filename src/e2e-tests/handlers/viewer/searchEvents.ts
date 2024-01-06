@@ -2,9 +2,9 @@ import { suite, test } from "@testdeck/mocha";
 import searchEvents from "../../../handlers/viewer/searchEvents";
 import getPgPool from "../../../persistence/pg";
 import { defaultEventCreater } from "../../../handlers/createEvent";
-import { expect } from "chai";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import createSession from "../../../handlers/createViewerSession";
+import assert from "assert";
 
 @suite
 class SearchEvents {
@@ -44,8 +44,7 @@ class SearchEvents {
           },
         },
       });
-      console.log(res);
-      expect(res.status).to.equal(200);
+      assert.strictEqual(res.status, 200);
     } catch (ex) {
       console.log(ex);
     } finally {
@@ -88,8 +87,7 @@ class SearchEvents {
           },
         },
       });
-      console.log(res);
-      expect(res.status).to.equal(200);
+      assert.strictEqual(res.status, 200);
     } catch (ex) {
       console.log(ex);
     } finally {
@@ -134,8 +132,7 @@ class SearchEvents {
           },
         },
       });
-      console.log(res);
-      expect(res.status).to.equal(200);
+      assert.strictEqual(res.status, 200);
     } catch (ex) {
       console.log(ex);
     } finally {
@@ -178,8 +175,7 @@ class SearchEvents {
           },
         },
       });
-      console.log(res);
-      expect(res.status).to.equal(200);
+      assert.strictEqual(res.status, 200);
     } catch (ex) {
       console.log(ex);
     } finally {
@@ -219,8 +215,7 @@ class SearchEvents {
           },
         },
       });
-      console.log(res);
-      expect(res.status).to.equal(200);
+      assert.strictEqual(res.status, 200);
     } catch (ex) {
       console.log(ex);
     } finally {
