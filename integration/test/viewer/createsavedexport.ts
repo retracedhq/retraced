@@ -16,7 +16,6 @@ describe("Viewer API", function () {
     const groupID = "rtrcdqa" + randomNumber.toString();
     const actorID = "qa@retraced.io";
 
-    let resultBody;
     beforeEach(retracedUp(Env));
 
     context("And a call is made to create a viewer description scoped to a group", function () {

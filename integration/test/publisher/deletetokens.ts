@@ -64,6 +64,7 @@ describe("Deleting Enterprise Tokens", function () {
         }
         assert.strictEqual(valid, true);
         resultBody = await retraced.reportEvent(event);
+        assert(resultBody);
       });
 
       context("And at least one eitapi token exists", function () {

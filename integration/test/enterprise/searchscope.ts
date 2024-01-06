@@ -67,6 +67,7 @@ describe("Enterprise Search Group Scoping", function () {
           }
           assert.strictEqual(valid, true);
           resultBody = await retraced.reportEvent(event);
+          assert(resultBody);
         });
 
         context("When a call is made to create an eitapi token for a Replicated group", function () {

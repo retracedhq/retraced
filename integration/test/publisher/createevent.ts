@@ -64,6 +64,7 @@ describe("Create Events", function () {
         }
         assert.strictEqual(valid, true);
         resultBody = await retraced.reportEvent(event);
+        assert(resultBody);
       });
 
       context("When a call is made to the GraphQL endpoint for the event", function () {
@@ -136,6 +137,7 @@ describe("Create Events", function () {
           }
           assert.strictEqual(valid, true);
           resultBody = await retraced.reportEvent(event);
+          assert(resultBody);
         });
 
         context("When a call is made to the GraphQL endpoint for the event", function () {
@@ -199,6 +201,7 @@ describe("Create Events", function () {
         assert.strictEqual(valid, true);
         try {
           resultBody = await retraced.reportEvent(event);
+          assert(resultBody);
         } catch (e) {
           httpResponse = e.message;
         }

@@ -16,7 +16,6 @@ describe("Listing Enterprise Tokens", function () {
   describe("Given the Retraced API is up and running", function () {
     let resultBody;
     let responseBody;
-    let token;
     beforeEach(retracedUp(Env));
 
     context("And a call is made into the Retraced API with a standard audit event", function () {
@@ -65,6 +64,7 @@ describe("Listing Enterprise Tokens", function () {
         }
         assert.strictEqual(valid, true);
         resultBody = await retraced.reportEvent(event);
+        assert(resultBody);
       });
 
       context("And at least one eitapi token exists", function () {
@@ -82,7 +82,6 @@ describe("Listing Enterprise Tokens", function () {
           assert.strictEqual(resp1.status, 201);
           responseBody = resp1.data;
           assert(responseBody.token);
-          token = responseBody.token;
         });
         context("When a call is made to list eitapi API tokens", function () {
           let tokens;

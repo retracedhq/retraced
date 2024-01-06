@@ -65,6 +65,7 @@ describe("Enterprise Search", function () {
         }
         assert.strictEqual(valid, true);
         resultBody = await retraced.reportEvent(event);
+        assert(resultBody);
       });
 
       context(
