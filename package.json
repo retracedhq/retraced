@@ -46,7 +46,7 @@
     "search-query-parser": "1.6.0",
     "ssl-config": "1.0.0",
     "swagger-ui-express": "5.0.0",
-    "tsoa": "6.0.0",
+    "tsoa": "6.0.1",
     "unzipper": "0.10.14",
     "walk": "2.3.15",
     "yargs": "17.7.2"
