@@ -4,10 +4,9 @@ import getPgPool from "../../../persistence/pg";
 import { ConfigManager } from "../services/configManager";
 import uniqueId from "../../../models/uniqueId";
 import { searchByReceived, encodeCursor, decodeCursor } from "../../../handlers/graphql/search";
-import axios from "axios";
 import { call, ExponentialStrategy } from "backoff";
 import { logger } from "../../../logger";
-import config from "../../../config";
+import { Sink, getSinkInstance } from "../../sinks";
 
 const pg = getPgPool();
 const batchSize = 1000;
@@ -79,7 +78,7 @@ export function addConsumers() {
       try {
         const windowEnd = +new Date() - 5 * 60 * 1000;
         const keys = Object.keys(ConfigManager.getInstance().configs);
-        const instance = ConfigManager.getInstance();
+        const configManagerInstance = ConfigManager.getInstance();
         if (keys.length === 0) {
           msg.finish();
           return;
@@ -115,34 +114,46 @@ export function addConsumers() {
               startCursor = "";
             } else {
               // check if previous events missed
-              const sinkConfig = instance.getConfigBySinkId(sink.id);
+              const sinkConfig = configManagerInstance.getConfigBySinkId(sink.id);
               if (!sinkConfig) {
                 logger.info(`Config not found for sink ${sink.id} in ConfigManager, skipping!`);
                 continue;
               }
+
               const { sourceName, sinkName } = sinkConfig;
               if (
-                instance.sentEvents[sourceName] &&
-                instance.sentEvents[sinkName] &&
-                instance.receivedEvents[sourceName] &&
-                instance.receivedEvents[sinkName]
+                configManagerInstance.sentEvents[sourceName] &&
+                configManagerInstance.sentEvents[sinkName] &&
+                configManagerInstance.receivedEvents[sourceName] &&
+                configManagerInstance.receivedEvents[sinkName]
               ) {
-                if (instance.receivedEvents[sourceName] === instance.sentEvents[sourceName]) {
-                  if (instance.sentEvents[sourceName] === instance.receivedEvents[sinkName]) {
+                if (
+                  configManagerInstance.receivedEvents[sourceName] ===
+                  configManagerInstance.sentEvents[sourceName]
+                ) {
+                  if (
+                    configManagerInstance.sentEvents[sourceName] ===
+                    configManagerInstance.receivedEvents[sinkName]
+                  ) {
                     const diff =
-                      instance.receivedEvents[sinkName] -
-                      (instance.sentEvents[sinkName] + instance.sinkRetryDiff[sinkName] || 0);
+                      configManagerInstance.receivedEvents[sinkName] -
+                      (configManagerInstance.sentEvents[sinkName] +
+                        configManagerInstance.sinkRetryDiff[sinkName] || 0);
                     if (
-                      instance.receivedEvents[sinkName] ===
-                      (instance.sentEvents[sinkName] + instance.sinkRetryDiff[sinkName] || 0)
+                      configManagerInstance.receivedEvents[sinkName] ===
+                      (configManagerInstance.sentEvents[sinkName] +
+                        configManagerInstance.sinkRetryDiff[sinkName] || 0)
                     ) {
                       // no events missed
                       startCursor = cursor.rows[0].cursor;
                     } else {
                       // events missed
                       logger.info(
-                        `[${diff}]Events missed for ${sinkName} [${instance.receivedEvents[sinkName]} => ${
-                          instance.sentEvents[sinkName] + (instance.sinkRetryDiff[sinkName] || 0)
+                        `[${diff}]Events missed for ${sinkName} [${
+                          configManagerInstance.receivedEvents[sinkName]
+                        } => ${
+                          configManagerInstance.sentEvents[sinkName] +
+                          (configManagerInstance.sinkRetryDiff[sinkName] || 0)
                         }] in last tick. waiting...`
                       );
                       continue;
@@ -159,6 +170,13 @@ export function addConsumers() {
                 // no events sent/received yet
                 startCursor = cursor.rows[0].cursor;
               }
+            }
+            // create Sink instance
+            const sinkInstance = getSinkInstance(sink.config);
+            const healthCheck = await sinkInstance.healthCheck();
+            if (!healthCheck) {
+              logger.info(`Sink ${sink.id} is not healthy, skipping...`);
+              continue;
             }
             let events;
             let from = 0;
@@ -190,7 +208,7 @@ export function addConsumers() {
                   break;
                 }
                 // send for processing to vector
-                await sendEventsToVectorSource(events, sink, eventsPerBatch);
+                await sendEventsToVectorSource(events, sink, eventsPerBatch, sinkInstance);
 
                 cursorToSave = events.edges[events.edges.length - 1].cursor;
 
@@ -280,7 +298,7 @@ async function updateCursorsForSink(cursor: any, previousCursor: any, sink: any)
   }
 }
 
-async function sendEventsToVectorSource(events: any, sink: any, eventBatchSize = 100) {
+async function sendEventsToVectorSource(events: any, sink: any, eventBatchSize = 100, instance: Sink) {
   const eventEdges = events.edges;
   const numBatches = Math.ceil(eventEdges.length / eventBatchSize);
 
@@ -293,14 +311,15 @@ async function sendEventsToVectorSource(events: any, sink: any, eventBatchSize =
     const batch = eventEdges.slice(i * eventBatchSize, (i + 1) * eventBatchSize);
     const promises = batch.map(async (edge: any) => {
       const functionCall = call(() => {
-        return axios.post(
-          `${config.VECTOR_HOST_PROTOCOL}://${config.VECTOR_HOST}:${
-            ConfigManager.getInstance().configs[sink.id].sourceHttpPort
-          }`,
-          {
-            message: JSON.stringify(edge?.node),
-          }
-        );
+        return instance.sendEvent(edge?.node);
+        // return axios.post(
+        //   `${config.VECTOR_HOST_PROTOCOL}://${config.VECTOR_HOST}:${
+        //     ConfigManager.getInstance().configs[sink.id].sourceHttpPort
+        //   }`,
+        //   {
+        //     message: JSON.stringify(edge?.node),
+        //   }
+        // );
       });
 
       functionCall.retryIf((err) => {
