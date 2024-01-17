@@ -68,7 +68,7 @@ export class SplunkHecLogs implements Sink {
     });
   }
 
-  public sendEvents(events: any[]): Promise<void> {
-    throw new Error("Not implemented");
+  public async sendEvents(events: any[]): Promise<void> {
+    await Promise.all(events.map((event) => this.sendEvent(event)));
   }
 }
