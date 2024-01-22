@@ -1,4 +1,4 @@
-FROM node:18.18.0-alpine3.18
+FROM node:20.10.0-alpine3.19
 
 WORKDIR /src
 ADD package.json /src
