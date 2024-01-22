@@ -1,5 +1,4 @@
 export class WithExponentialBackoff {
-  constructor() {}
   /**
    * Calculates the next timeout value for exponential backoff.
    * @param waitFor The current timeout value.

@@ -72,28 +72,30 @@ export class SplunkHecLogs extends WithExponentialBackoff implements Sink {
     if (!event) {
       throw new Error("event is required");
     }
-    try {
-      const transformedEvent = this.transformEvent(event);
-      const channel = this.indexingAckEnabled ? randomUUID() : undefined;
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Splunk ${this.defaultToken}`,
-        "X-Splunk-Request-Channel": channel,
-      };
-      const response = await axios.post(`${this.endpoint}/services/collector/event`, transformedEvent, {
-        headers,
-      });
-      // Check acknowledgment from Splunk
-      let backoff = 100;
-      await sleep(backoff);
-      if (response.status === 200) {
-        return true;
-      } else {
-        return false;
+    let backoff = 100;
+    do {
+      try {
+        const transformedEvent = this.transformEvent(event);
+        const channel = this.indexingAckEnabled ? randomUUID() : undefined;
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Splunk ${this.defaultToken}`,
+          "X-Splunk-Request-Channel": channel,
+        };
+        const response = await axios.post(`${this.endpoint}/services/collector/event`, transformedEvent, {
+          headers,
+        });
+        if (response.status === 200) {
+          return true;
+        } else {
+          await sleep(backoff);
+          backoff = this.getNextExponentialBackoff(backoff);
+        }
+      } catch (ex) {
+        await sleep(backoff);
+        backoff = this.getNextExponentialBackoff(backoff);
       }
-    } catch (ex) {
-      return false;
-    }
+    } while (true);
   }
 
   /**
