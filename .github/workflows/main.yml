@@ -199,7 +199,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./
-          file: ./deploy/vector-sidecar/Dockerfile
+          file: ./deploy/sidecar/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.slug.outputs.VECTOR_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ steps.slug.outputs.VECTOR_IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ steps.slug.outputs.VECTOR_IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}

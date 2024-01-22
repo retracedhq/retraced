@@ -225,7 +225,7 @@ services:
       - "retraced-api"
     restart: "always"
 
-  vector:
+  sidecar:
     build:
       context: .
       dockerfile: ./deploy/sidecar/Dockerfile
@@ -233,8 +233,6 @@ services:
     ports:
       - "9393:9229"
       - "3002:3002"
-    volumes:
-      - ./vector/data:/var/lib/vector/
     depends_on:
       elasticsearch:
         condition: service_started
