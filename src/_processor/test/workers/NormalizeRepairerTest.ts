@@ -1,5 +1,4 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 
 import * as TypeMoq from "typemoq";
 
@@ -8,6 +7,7 @@ import pg from "pg";
 import { NSQClient } from "../../persistence/nsq";
 import NormalizeRepairer from "../../workers/NormalizeRepairer";
 import { QueryResult } from "pg";
+import assert from "assert";
 
 const isAny = TypeMoq.It.isAny;
 
@@ -22,8 +22,8 @@ class NormalizeRepairerTest {
     pool
       .setup((x) => x.query(NormalizeRepairer.selectFromIngestTask, isAny()))
       .returns((q, v) => {
-        expect(v[0]).to.equal(minAgeMs);
-        expect(v[1]).to.equal(maxEvents);
+        assert.strictEqual(v[0], minAgeMs);
+        assert.strictEqual(v[1], maxEvents);
         return Promise.resolve({
           command: "",
           rowCount: 10,
@@ -55,8 +55,8 @@ class NormalizeRepairerTest {
     pool
       .setup((x) => x.query(NormalizeRepairer.selectFromIngestTask, isAny()))
       .returns((q, v) => {
-        expect(v[0]).to.equal(minAgeMs);
-        expect(v[1]).to.equal(maxEvents);
+        assert.strictEqual(v[0], minAgeMs);
+        assert.strictEqual(v[1], maxEvents);
         return Promise.resolve({
           command: "",
           rowCount: 10,

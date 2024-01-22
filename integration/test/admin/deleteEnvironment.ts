@@ -1,13 +1,10 @@
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import assert from "assert";
+import axios from "axios";
 
 describe("Admin delete environment", function () {
   if (!Env.AdminRootToken) {
@@ -41,57 +38,58 @@ describe("Admin delete environment", function () {
           adminId = admin.userId;
         });
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .post(`/admin/v1/project/${project.id}/environment/${env.id}/deletion_request`)
-            .set("Authorization", jwt)
-            .send({
+        before(async function () {
+          resp = await axios.post(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/environment/${env.id}/deletion_request`,
+            {
               resourceKind: "environment",
               resourceId: env.id,
-            })
-            .end((err, resp) => {
-              expect(err).to.be.null;
-              expect(resp.status).to.equal(201);
-              done();
-            });
+            },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp);
+          assert.strictEqual(resp.status, 201);
         });
 
-        before(function (done) {
-          chai
-            .request(Env.Endpoint)
-            .post(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
-            .set("Authorization", jwt)
-            .send({
+        before(async function () {
+          const resp1 = await axios.post(
+            `${Env.Endpoint}/admin/v1/project/${project.id}/templates?environment_id=${env.id}`,
+            {
               name: "Delete Template Test",
               rule: "always",
               template: "{{}}",
-            })
-            .end((err, res) => {
-              expect(err).to.be.null;
-              expect(res.status).to.equal(201);
-
-              templateID = res.body.id;
-              done();
-            });
+            },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          );
+          assert(resp1);
+          assert.strictEqual(resp1.status, 201);
+          templateID = resp1.data.id;
         });
 
         context("When the admin sends a request to delete the environment", function () {
-          before(function (done) {
-            chai
-              .request(Env.Endpoint)
-              .delete(`/admin/v1/project/${project.id}/environment/${env.id}`)
-              .set("Authorization", jwt)
-              .end((err, res) => {
-                expect(err).to.be.null;
-                resp = res;
-                done();
-              });
+          before(async function () {
+            resp = await axios.delete(
+              `${Env.Endpoint}/admin/v1/project/${project.id}/environment/${env.id}`,
+              {
+                headers: {
+                  Authorization: jwt,
+                },
+              }
+            );
+            assert(resp);
           });
 
           specify("The environment is deleted with status 204.", function () {
-            expect(resp.status).to.equal(204);
-            expect(resp.body).to.deep.equal({});
+            assert.strictEqual(resp.status, 204);
+            assert.deepEqual(resp.data, "");
           });
 
           if (Env.HeadlessApiKey && Env.HeadlessProjectID) {
@@ -117,13 +115,12 @@ describe("Admin delete environment", function () {
               };
               const connection = await headless.query(query, mask, 1);
               const audited = connection.currentResults[0];
-              const token = resp.body;
 
-              expect(audited.action).to.equal("environment.delete");
-              expect(audited.crud).to.equal("d");
-              expect(audited.group!.id).to.equal(project.id);
-              expect(audited.actor!.id).to.equal(adminId);
-              expect(audited.target!.id).to.equal(env.id);
+              assert.strictEqual(audited.action, "environment.delete");
+              assert.strictEqual(audited.crud, "d");
+              assert.strictEqual(audited.group!.id, project.id);
+              assert.strictEqual(audited.actor!.id, adminId);
+              assert.strictEqual(audited.target!.id, env.id);
             });
           }
         });

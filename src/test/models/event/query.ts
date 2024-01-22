@@ -1,13 +1,13 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 
 import { parse, searchParams, Options } from "../../../models/event/query";
 import { RequestParams } from "@opensearch-project/opensearch";
+import assert from "assert";
 
 @suite
 class QueryEventsTest {
   @test public "parse(action:user.get)"() {
-    expect(parse("action:user.get")).to.deep.equal({
+    assert.deepEqual(parse("action:user.get"), {
       bool: {
         filter: [{ match: { action: { query: "user.get", operator: "and" } } }],
       },
@@ -15,7 +15,7 @@ class QueryEventsTest {
   }
 
   @test public "parse(action:user.* crud:c,d)"() {
-    expect(parse("action:user.* crud:c,d")).to.deep.equal({
+    assert.deepEqual(parse("action:user.* crud:c,d"), {
       bool: {
         filter: [
           { prefix: { action: "user." } },
@@ -30,7 +30,7 @@ class QueryEventsTest {
   }
 
   @test public "parse(crud:r)"() {
-    expect(parse("crud:r")).to.deep.equal({
+    assert.deepEqual(parse("crud:r"), {
       bool: {
         filter: [{ match: { crud: "r" } }],
       },
@@ -38,7 +38,7 @@ class QueryEventsTest {
   }
 
   @test public "parse(received:2017-01-01,2018-01-01)"() {
-    expect(parse("received:2017-01-01,2018-01-01")).to.deep.equal({
+    assert.deepEqual(parse("received:2017-01-01,2018-01-01"), {
       bool: {
         filter: [
           {
@@ -55,7 +55,7 @@ class QueryEventsTest {
   }
 
   @test public "parse(created:2017-01-01,2018-01-01)"() {
-    expect(parse("created:2017-01-01,2018-01-01")).to.deep.equal({
+    assert.deepEqual(parse("created:2017-01-01,2018-01-01"), {
       bool: {
         filter: [
           {
@@ -72,7 +72,7 @@ class QueryEventsTest {
   }
 
   @test public "parse(actor.id:b82c4cfa428342ac822c42c1f6b89200)"() {
-    expect(parse("actor.id:b82c4cfa428342ac822c42c1f6b89200")).to.deep.equal({
+    assert.deepEqual(parse("actor.id:b82c4cfa428342ac822c42c1f6b89200"), {
       bool: {
         filter: [
           {
@@ -89,7 +89,7 @@ class QueryEventsTest {
   }
 
   @test public 'parse(actor.name:"Mario Nguyen")'() {
-    expect(parse(`actor.name:"Mario Nguyen"`)).to.deep.equal({
+    assert.deepEqual(parse(`actor.name:"Mario Nguyen"`), {
       bool: {
         filter: [{ match: { "actor.name": "Mario Nguyen" } }],
       },
@@ -97,7 +97,7 @@ class QueryEventsTest {
   }
 
   @test public 'parse(description:"debit credit")'() {
-    expect(parse(`description:"debit credit"`)).to.deep.equal({
+    assert.deepEqual(parse(`description:"debit credit"`), {
       bool: {
         filter: [{ match: { description: "debit credit" } }],
       },
@@ -105,7 +105,7 @@ class QueryEventsTest {
   }
 
   @test public 'parse(location:"Los Angeles")'() {
-    expect(parse(`location:"Los Angeles"`)).to.deep.equal({
+    assert.deepEqual(parse(`location:"Los Angeles"`), {
       bool: {
         filter: [
           {
@@ -120,7 +120,7 @@ class QueryEventsTest {
   }
 
   @test public "parse(some free text)"() {
-    expect(parse("some free text")).to.deep.equal({
+    assert.deepEqual(parse("some free text"), {
       bool: {
         filter: [
           {
@@ -135,7 +135,7 @@ class QueryEventsTest {
   }
 
   @test public "parse(action:login plus some free text)"() {
-    expect(parse("action:login plus some free text")).to.deep.equal({
+    assert.deepEqual(parse("action:login plus some free text"), {
       bool: {
         filter: [
           { match: { action: { query: "login", operator: "and" } } },
@@ -224,7 +224,7 @@ class QueryEventsTest {
         sort: [{ canonical_time: "asc" }],
       },
     };
-    expect(output).to.deep.equal(answer);
+    assert.deepEqual(output, answer);
   }
 }
 

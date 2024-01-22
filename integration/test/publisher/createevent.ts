@@ -1,18 +1,12 @@
-import { expect } from "chai";
 import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
-import "chai-http";
 import { CreateEventSchema, GraphQLQuery, search } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
 import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
-import * as util from "util";
-import picocolors from "picocolors";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import assert from "assert";
+import axios from "axios";
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
 const currentTime = new Date();
@@ -20,7 +14,7 @@ currentTime.setMilliseconds(0); // api only returns seconds precision
 
 describe("Create Events", function () {
   describe("Given the Retraced API is up and running", function () {
-    let responseBody = {};
+    let responseBody: any = {};
     let resultBody;
     beforeEach(retracedUp(Env));
 
@@ -68,82 +62,57 @@ describe("Create Events", function () {
         if (!valid) {
           console.log(tv4.error);
         }
-        expect(valid).to.be.true;
+        assert.strictEqual(valid, true);
         resultBody = await retraced.reportEvent(event);
+        assert(resultBody);
       });
 
       context("When a call is made to the GraphQL endpoint for the event", function () {
-        beforeEach(function (done) {
+        beforeEach(async function () {
           this.timeout(Env.EsIndexWaitMs * 2);
-          sleep(Env.EsIndexWaitMs).then(() => {
-            chai
-              .request(Env.Endpoint)
-              .post("/publisher/v1/graphql")
-              .set("Authorization", "token=" + Env.ApiKey)
-              .send(search("integration" + randomNumber.toString()))
-              .end(function (err, res) {
-                responseBody = JSON.parse(res.text);
-                if (err && Env.Debug) {
-                  console.log(picocolors.red(util.inspect(err.response.body, false, 100, false)));
-                } else if (Env.Debug) {
-                  console.log(util.inspect(res.body, false, 100, true));
-                }
-                expect(err).to.be.null;
-                expect(res).to.have.property("status", 200);
+          await sleep(Env.EsIndexWaitMs);
 
-                done();
-              });
-          });
+          const resp1 = await axios.post(
+            `${Env.Endpoint}/publisher/v1/graphql`,
+            search("integration" + randomNumber.toString()),
+            {
+              headers: {
+                Authorization: "token=" + Env.ApiKey,
+              },
+            }
+          );
+          assert(resp1);
+          assert.strictEqual(resp1.status, 200);
+          responseBody = resp1.data;
         });
         specify("Then the response should contain the correct information about the event", function () {
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.action",
+          assert.strictEqual(
+            responseBody.data.search.edges[0].node.action,
             "integration" + randomNumber.toString()
           );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.created",
-            isoDate(currentTime)
-          );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.description",
+          assert.strictEqual(responseBody.data.search.edges[0].node.created, isoDate(currentTime));
+          assert.strictEqual(
+            responseBody.data.search.edges[0].node.description,
             "Automated integration testing..."
           );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.actor.fields[0].key",
-            "department"
-          );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.actor.fields[0].value",
-            "QA"
-          );
-          expect(responseBody).to.have.nested.property("data.search.edges[0].node.group.id", "rtrcdqa1234");
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.target.name",
-            "Retraced API"
-          );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.target.fields[0].key",
-            "record_count"
-          );
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.target.fields[0].value",
-            "100"
-          );
-          expect(responseBody).to.have.nested.property("data.search.edges[0].node.is_failure", false);
-          expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "c");
-          expect(responseBody).to.have.nested.property("data.search.edges[0].node.source_ip", "192.168.0.1");
-          expect(responseBody).to.have.nested.property("data.search.edges[0].node.fields[0].key", "quality");
-          expect(responseBody).to.have.nested.property(
-            "data.search.edges[0].node.fields[0].value",
-            "excellent"
-          );
+          assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].key, "department");
+          assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].value, "QA");
+          assert.strictEqual(responseBody.data.search.edges[0].node.group.id, "rtrcdqa1234");
+          assert.strictEqual(responseBody.data.search.edges[0].node.target.name, "Retraced API");
+          assert.strictEqual(responseBody.data.search.edges[0].node.target.fields[0].key, "record_count");
+          assert.strictEqual(responseBody.data.search.edges[0].node.target.fields[0].value, "100");
+          assert.strictEqual(responseBody.data.search.edges[0].node.is_failure, false);
+          assert.strictEqual(responseBody.data.search.edges[0].node.crud, "c");
+          assert.strictEqual(responseBody.data.search.edges[0].node.source_ip, "192.168.0.1");
+          assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].key, "quality");
+          assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].value, "excellent");
         });
       });
     });
   });
 
   describe("Given the Retraced API is up and running", function () {
-    let responseBody = {};
+    let responseBody: any = {};
     let resultBody;
     beforeEach(retracedUp(Env));
 
@@ -166,42 +135,40 @@ describe("Create Events", function () {
           if (!valid) {
             console.log(tv4.error);
           }
-          expect(valid).to.be.true;
+          assert.strictEqual(valid, true);
           resultBody = await retraced.reportEvent(event);
+          assert(resultBody);
         });
 
         context("When a call is made to the GraphQL endpoint for the event", function () {
           const thisQuery = GraphQLQuery;
           thisQuery.variables.query = "integrationminimum" + randomNumber.toString();
-          beforeEach(function (done) {
+          beforeEach(async function () {
             this.timeout(Env.EsIndexWaitMs * 2);
-            sleep(Env.EsIndexWaitMs).then(() => {
-              chai
-                .request(Env.Endpoint)
-                .post("/publisher/v1/graphql")
-                .set("Authorization", "token=" + Env.ApiKey)
-                .send(thisQuery)
-                .end(function (err, res) {
-                  responseBody = JSON.parse(res.text);
-                  expect(err).to.be.null;
-                  expect(res).to.have.property("status", 200);
-                  done();
-                });
+            await sleep(Env.EsIndexWaitMs);
+
+            const resp2 = await axios.post(`${Env.Endpoint}/publisher/v1/graphql`, thisQuery, {
+              headers: {
+                Authorization: "token=" + Env.ApiKey,
+              },
             });
+            assert(resp2);
+            assert.strictEqual(resp2.status, 200);
+            responseBody = resp2.data;
           });
           specify("Then the response should contain the correct information about the event", function () {
-            expect(responseBody).to.have.nested.property(
-              "data.search.edges[0].node.action",
+            assert.strictEqual(
+              responseBody.data.search.edges[0].node.action,
               "integrationminimum" + randomNumber.toString()
             );
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.is_anonymous", true);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "c");
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.created", null);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.description", null);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.group.id", null);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.target.name", null);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.is_failure", null);
-            expect(responseBody).to.have.nested.property("data.search.edges[0].node.source_ip", null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.is_anonymous, true);
+            assert.strictEqual(responseBody.data.search.edges[0].node.crud, "c");
+            assert.strictEqual(responseBody.data.search.edges[0].node.created, null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.description, null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.group.id, null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.target.name, null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.is_failure, null);
+            assert.strictEqual(responseBody.data.search.edges[0].node.source_ip, null);
           });
         });
       }
@@ -231,9 +198,10 @@ describe("Create Events", function () {
         if (!valid) {
           console.log(tv4.error);
         }
-        expect(valid).to.be.true;
+        assert.strictEqual(valid, true);
         try {
           resultBody = await retraced.reportEvent(event);
+          assert(resultBody);
         } catch (e) {
           httpResponse = e.message;
         }
@@ -242,8 +210,8 @@ describe("Create Events", function () {
       specify(
         "Then the Retraced API should reject the call with a 401 Unauthorized and not return anything",
         function () {
-          expect(responseBody).to.be.empty;
-          expect(httpResponse).to.contain("401 Unauthorized");
+          assert.deepStrictEqual(responseBody, {});
+          assert.strictEqual(httpResponse.includes("401 Unauthorized"), true);
         }
       );
     });
@@ -277,8 +245,8 @@ describe("Create Events", function () {
       });
 
       specify("The API should return a 400 response code.", async function () {
-        expect(resultBody).to.be.undefined;
-        expect(httpResponse).to.contain("400");
+        assert.strictEqual(resultBody, undefined);
+        assert.strictEqual(httpResponse.includes("400"), true);
       });
     });
   });

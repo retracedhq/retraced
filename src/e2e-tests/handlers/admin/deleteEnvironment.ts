@@ -1,10 +1,10 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 import deleteEnvironment from "../../../handlers/admin/deleteEnvironment";
 import getPgPool from "../../../persistence/pg";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import { getESWithoutRetry } from "../../../persistence/elasticsearch";
 import { Client } from "@opensearch-project/opensearch";
+import assert from "assert";
 
 @suite
 class DeleteEnvironment {
@@ -15,7 +15,7 @@ class DeleteEnvironment {
       await cleanup(pool, es);
       const res = await setup(pool, es);
       const result = await deleteEnvironment(`id=${res.id} token=${res.token}`, "tests", "tests");
-      return expect(result).to.be.undefined;
+      return assert.strictEqual(result, undefined);
     } catch (ex) {
       console.log(ex);
     } finally {
@@ -38,7 +38,7 @@ class DeleteEnvironment {
           console.log("Running PreDeleteHook!");
         }
       );
-      return expect(result).to.be.undefined;
+      return assert.strictEqual(result, undefined);
     } catch (ex) {
       console.log(ex);
     } finally {

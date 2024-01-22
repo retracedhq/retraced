@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
+import assert from "assert";
 
 @suite
 class BcryptLearning {
@@ -9,7 +9,7 @@ class BcryptLearning {
     const token = "100";
     const hash = await bcrypt.hash(token, 12);
     const valid = await bcrypt.compare(token, hash);
-    return expect(valid).to.be.true;
+    assert.strictEqual(valid, true);
   }
 
   @test
@@ -17,7 +17,7 @@ class BcryptLearning {
     const token = "100";
     const hash = await bcrypt.hash(token, 12);
     const valid = await bcrypt.compare(token + token, hash);
-    return expect(valid).to.be.false;
+    assert.strictEqual(valid, false);
   }
 }
 

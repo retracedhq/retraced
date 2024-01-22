@@ -1,14 +1,11 @@
 import * as querystring from "querystring";
-import { expect } from "chai";
 import { Client } from "@retracedhq/retraced";
 import { retracedUp } from "../pkg/retracedUp";
 import adminUser from "../pkg/adminUser";
 import * as Env from "../env";
 import { sleep } from "../pkg/util";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import assert from "assert";
+import axios from "axios";
 
 describe("Admin search templates", function () {
   if (!Env.AdminRootToken) {
@@ -41,22 +38,22 @@ describe("Admin search templates", function () {
         let resp;
 
         context("When the admin searches for templates", function () {
-          beforeEach(function (done) {
-            chai
-              .request(Env.Endpoint)
-              .get(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
-              .set("Authorization", jwt)
-              .end((err, res) => {
-                expect(err).to.be.null;
-                resp = res;
-                done();
-              });
+          beforeEach(async function () {
+            resp = await axios.get(
+              `${Env.Endpoint}/admin/v1/project/${project.id}/templates?environment_id=${env.id}`,
+              {
+                headers: {
+                  Authorization: jwt,
+                },
+              }
+            );
+            assert(resp);
           });
 
           specify("The API should return an empty set of results with status 200", function () {
-            expect(resp).to.have.property("status", 200);
+            assert.strictEqual(resp.status, 200);
 
-            expect(resp.body).to.deep.equal({
+            assert.deepStrictEqual(resp.data, {
               total_hits: 0,
               templates: [],
             });
@@ -87,12 +84,11 @@ describe("Admin search templates", function () {
               };
               const connection = await headless.query(query, mask, 1);
               const audited = connection.currentResults[0];
-              const token = resp.body;
 
-              expect(audited.action).to.equal("template.search");
-              expect(audited.crud).to.equal("r");
-              expect(audited.group!.id).to.equal(project.id);
-              expect(audited.actor!.id).to.equal(adminId);
+              assert.strictEqual(audited.action, "template.search");
+              assert.strictEqual(audited.crud, "r");
+              assert.strictEqual(audited.group!.id, project.id);
+              assert.strictEqual(audited.actor!.id, adminId);
             });
           }
         });
@@ -100,75 +96,73 @@ describe("Admin search templates", function () {
 
       context("In an environment with two templates", function () {
         for (let i = 0; i < 2; i++) {
-          before(function (done) {
-            chai
-              .request(Env.Endpoint)
-              .post(`/admin/v1/project/${project.id}/templates?environment_id=${env.id}`)
-              .set("Authorization", jwt)
-              .send({
+          before(async function () {
+            const resp1 = await axios.post(
+              `${Env.Endpoint}/admin/v1/project/${project.id}/templates?environment_id=${env.id}`,
+              {
                 name: i === 0 ? "Z" : "A",
                 rule: "always",
                 template: "{{}}",
-              })
-              .end((err, res) => {
-                expect(err).to.be.null;
-                done();
-              });
+              },
+              {
+                headers: {
+                  Authorization: jwt,
+                },
+              }
+            );
+            assert(resp1);
+            assert.strictEqual(resp1.status, 201);
           });
         }
 
         context("When an admin searches for templates with length=1 offset=0", function () {
           let resp;
 
-          before(function (done) {
+          before(async function () {
             const qs = querystring.stringify({
               environment_id: env.id,
               offset: 0,
               length: 1,
             });
-            chai
-              .request(Env.Endpoint)
-              .get(`/admin/v1/project/${project.id}/templates?${qs}`)
-              .set("Authorization", jwt)
-              .end((err, res) => {
-                expect(err).to.be.null;
-                resp = res;
-                done();
-              });
+
+            resp = await axios.get(`${Env.Endpoint}/admin/v1/project/${project.id}/templates?${qs}`, {
+              headers: {
+                Authorization: jwt,
+              },
+            });
+            assert(resp);
           });
 
           specify("The first template in alphabetical order should be returned.", function () {
-            expect(resp.status).to.equal(200);
+            assert.strictEqual(resp.status, 200);
 
-            expect(resp.body).to.have.property("total_hits", 1);
-            expect(resp.body.templates[0]).to.have.property("name", "A");
+            assert.strictEqual(resp.data.total_hits, 1);
+            assert.strictEqual(resp.data.templates[0].name, "A");
           });
         });
 
         context("When an admin searches for templates with offset=1", function () {
           let resp;
 
-          before(function (done) {
+          before(async function () {
             const qs = querystring.stringify({
               environment_id: env.id,
               offset: 1,
             });
-            chai
-              .request(Env.Endpoint)
-              .get(`/admin/v1/project/${project.id}/templates?${qs}`)
-              .set("Authorization", jwt)
-              .end((err, res) => {
-                expect(err).to.be.null;
-                resp = res;
-                done();
-              });
+
+            resp = await axios.get(`${Env.Endpoint}/admin/v1/project/${project.id}/templates?${qs}`, {
+              headers: {
+                Authorization: jwt,
+              },
+            });
+            assert(resp);
           });
 
           specify("The first template in alphabetical order should be returned.", function () {
-            expect(resp.status).to.equal(200);
+            assert.strictEqual(resp.status, 200);
 
-            expect(resp.body).to.have.property("total_hits", 1);
-            expect(resp.body.templates[0]).to.have.property("name", "Z");
+            assert.strictEqual(resp.data.total_hits, 1);
+            assert.strictEqual(resp.data.templates[0].name, "Z");
           });
         });
       });

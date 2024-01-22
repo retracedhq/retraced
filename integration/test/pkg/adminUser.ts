@@ -1,46 +1,44 @@
+import assert from "assert";
+import axios from "axios";
 import Chance from "chance";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
 
 const chance = new Chance();
 
 export default async function adminUser(Env) {
-  return new Promise((resolve, reject) => {
-    chai
-      .request(Env.Endpoint)
-      .post("/admin/v1/user/_login")
-      .set("Authorization", `token=${Env.AdminRootToken}`)
-      .send({
-        claims: {
-          email: "qa@retraced.io",
-        },
-      })
-      .end((err, res) => {
-        if (err) {
-          reject(err);
-        }
-        const jwt = res.body.token;
-        const userId = res.body.user.id;
-        chai
-          .request(Env.Endpoint)
-          .post("/admin/v1/project")
-          .set("Authorization", jwt)
-          .send({
-            name: chance.string(),
-          })
-          .end((err, res) => {
-            if (err) {
-              reject(err);
-            }
-            // hydrated with environments and tokens
-            resolve({
-              jwt,
-              userId,
-              project: res.body.project,
-            });
-          });
-      });
-  });
+  const resp = await axios.post(
+    `${Env.Endpoint}/admin/v1/user/_login`,
+    {
+      claims: {
+        email: "qa@retraced.io",
+      },
+    },
+    {
+      headers: {
+        Authorization: `token=${Env.AdminRootToken}`,
+      },
+    }
+  );
+  assert(resp);
+
+  const jwt = resp.data.token;
+  const userId = resp.data.user.id;
+
+  const resp1 = await axios.post(
+    `${Env.Endpoint}/admin/v1/project`,
+    {
+      name: chance.string(),
+    },
+    {
+      headers: {
+        Authorization: jwt,
+      },
+    }
+  );
+  assert(resp1);
+
+  return {
+    jwt,
+    userId,
+    project: resp1.data.project,
+  };
 }

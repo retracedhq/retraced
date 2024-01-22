@@ -1,9 +1,9 @@
 import { suite, test } from "@testdeck/mocha";
 import handlerRaw from "../../handlers/createViewerDescriptor";
 import getPgPool from "../../persistence/pg";
-import { expect } from "chai";
 import { AdminTokenStore } from "../../models/admin_token/store";
 import create from "../../models/api_token/create";
+import assert from "assert";
 
 @suite
 class CreateViewerDescriptor {
@@ -30,8 +30,8 @@ class CreateViewerDescriptor {
           actor_id: "test",
         },
       });
-      expect(result.status).to.equal(201);
-      return expect(result.body).to.not.be.undefined;
+      assert.strictEqual(result.status, 201);
+      return assert(result.body);
     } catch (ex) {
       console.log(ex);
     } finally {
@@ -60,38 +60,33 @@ class CreateViewerDescriptor {
           actor_id: "test",
         },
       });
-      throw new Error(
-        `Expected error 'Either group_id or team_id is required' to be thrown`
-      );
+      throw new Error(`Expected error 'Either group_id or team_id is required' to be thrown`);
     } catch (ex) {
-      expect(ex.err.message).to.equal("Either group_id or team_id is required");
-      expect(ex.status).to.equal(400);
+      assert.strictEqual(ex.err.message, "Either group_id or team_id is required");
+      assert.strictEqual(ex.status, 400);
     } finally {
       await cleanup(pool);
     }
   }
 }
 async function setup(pool) {
-  await pool.query("INSERT INTO project (id, name) VALUES ($1, $2)", [
+  await pool.query("INSERT INTO project (id, name) VALUES ($1, $2)", ["test", "test"]);
+  await pool.query("INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)", [
+    "test",
     "test",
     "test",
   ]);
-  await pool.query(
-    "INSERT INTO environment (id, name, project_id) VALUES ($1, $2, $3)",
-    ["test", "test", "test"]
-  );
-  await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", [
+  await pool.query("INSERT INTO retraceduser (id, email) VALUES ($1, $2)", ["test", "test@test.com"]);
+  await pool.query("INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)", [
     "test",
-    "test@test.com",
+    "test",
+    "dummytoken",
   ]);
-  await pool.query(
-    "INSERT INTO environmentuser (user_id, environment_id, email_token) VALUES ($1, $2, $3)",
-    ["test", "test", "dummytoken"]
-  );
-  await pool.query(
-    "INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)",
-    ["test", "test", "test"]
-  );
+  await pool.query("INSERT INTO projectuser (id, project_id, user_id) VALUES ($1, $2, $3)", [
+    "test",
+    "test",
+    "test",
+  ]);
   await pool.query(
     "INSERT INTO group_detail (environment_id, project_id, name, group_id) VALUES ($1, $2, $3, $4)",
     ["test", "test", "test", "test"]
@@ -114,24 +109,13 @@ async function cleanup(pool) {
   await pool.query(`DELETE FROM admin_token WHERE user_id=$1`, ["test"]);
   await pool.query(`DELETE FROM environmentuser WHERE user_id=$1`, ["test"]);
   await pool.query(`DELETE FROM environment WHERE name=$1`, ["test"]);
-  await pool.query(`DELETE FROM project WHERE name=$1 OR name=$2`, [
-    "test",
-    "test1",
-  ]);
+  await pool.query(`DELETE FROM project WHERE name=$1 OR name=$2`, ["test", "test1"]);
   await pool.query(`DELETE FROM projectuser WHERE project_id=$1`, ["test"]);
   await pool.query(`DELETE FROM token WHERE environment_id=$1`, ["test"]);
-  await pool.query(`DELETE FROM retraceduser WHERE email=$1`, [
-    "test@test.com",
-  ]);
-  await pool.query(`DELETE FROM eitapi_token WHERE environment_id=$1`, [
-    "test",
-  ]);
-  await pool.query(`DELETE FROM group_detail WHERE environment_id=$1`, [
-    "test",
-  ]);
-  await pool.query(`DELETE FROM viewer_descriptors WHERE environment_id=$1`, [
-    "test",
-  ]);
+  await pool.query(`DELETE FROM retraceduser WHERE email=$1`, ["test@test.com"]);
+  await pool.query(`DELETE FROM eitapi_token WHERE environment_id=$1`, ["test"]);
+  await pool.query(`DELETE FROM group_detail WHERE environment_id=$1`, ["test"]);
+  await pool.query(`DELETE FROM viewer_descriptors WHERE environment_id=$1`, ["test"]);
 }
 
 export default CreateViewerDescriptor;

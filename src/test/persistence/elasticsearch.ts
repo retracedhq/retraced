@@ -1,7 +1,7 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 
 import { scope } from "../../persistence/elasticsearch";
+import assert from "assert";
 
 @suite
 class ElasticsearchTest {
@@ -13,9 +13,9 @@ class ElasticsearchTest {
       groupId: "g1",
       targetId: "t1",
     });
-    expect(index).to.equal("retraced.p1.e1.current");
-    expect(filters).to.have.length(2);
-    expect(filters[0]).to.deep.equal({
+    assert.strictEqual(index, "retraced.p1.e1.current");
+    assert.strictEqual(filters.length, 2);
+    assert.deepEqual(filters[0], {
       bool: {
         should: [
           { match: { "group.id": { query: "g1", operator: "and" } } },
@@ -23,7 +23,7 @@ class ElasticsearchTest {
         ],
       },
     });
-    expect(filters[1]).to.deep.equal({
+    assert.deepEqual(filters[1], {
       match: { "target.id": { query: "t1", operator: "and" } },
     });
   }
@@ -34,8 +34,8 @@ class ElasticsearchTest {
       environmentId: "e1",
     });
 
-    expect(index).to.equal("retraced.p1.e1.current");
-    expect(filters).to.deep.equal([]);
+    assert.strictEqual(index, "retraced.p1.e1.current");
+    assert.deepEqual(filters, []);
   }
 }
 

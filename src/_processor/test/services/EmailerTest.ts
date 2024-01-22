@@ -1,10 +1,10 @@
 import { suite, test } from "@testdeck/mocha";
-import { expect } from "chai";
 
 import nodemailer from "nodemailer";
 import Handlebars from "handlebars";
 
 import { Emailer } from "../../services/Emailer";
+import assert from "assert";
 
 @suite
 class EmailerTest {
@@ -30,13 +30,13 @@ class EmailerTest {
     const result: any = await emailer.send(email);
     const msg = JSON.parse(result.message);
 
-    expect(msg).to.have.property("html", "Hello, Fran");
-    expect(msg).to.have.property("subject", "Hello!");
-    expect(msg.from).to.deep.equal({
+    assert.strictEqual(msg.html, "Hello, Fran");
+    assert.strictEqual(msg.subject, "Hello!");
+    assert.deepEqual(msg.from, {
       address: "contact@retraced.io",
       name: "Retraced",
     });
-    expect(msg.to).to.deep.equal([
+    assert.deepEqual(msg.to, [
       {
         address: "user@example.com",
         name: "",

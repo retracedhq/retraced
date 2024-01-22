@@ -1,15 +1,11 @@
-import { expect } from "chai";
 import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
-import "chai-http";
 import { CreateEventSchema, search } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
 import * as Env from "../env";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import assert from "assert";
+import axios from "axios";
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
 const currentTime = new Date();
@@ -66,62 +62,65 @@ describe("Deleting Enterprise Tokens", function () {
         if (!valid) {
           console.log(tv4.error);
         }
-        expect(valid).to.be.true;
+        assert.strictEqual(valid, true);
         resultBody = await retraced.reportEvent(event);
+        assert(resultBody);
       });
 
       context("And at least one eitapi token exists", function () {
-        beforeEach((done) => {
+        beforeEach(async () => {
           if (token) {
-            done();
             return;
           }
-          chai
-            .request(Env.Endpoint)
-            .post(`/publisher/v1/project/${Env.ProjectID}/group/rtrcdqa1234/enterprisetoken`)
-            .set("Authorization", `token=${Env.ApiKey}`)
-            .send({ display_name: "QA" + randomNumber.toString() })
-            .end(function (err, res) {
-              responseBody = JSON.parse(res.text);
-              expect(err).to.be.null;
-              expect(res).to.have.property("status", 201);
-              expect(responseBody.token).to.exist;
-              token = responseBody.token;
-              done();
-            });
+
+          const resp1 = await axios.post(
+            `${Env.Endpoint}/publisher/v1/project/${Env.ProjectID}/group/rtrcdqa1234/enterprisetoken`,
+            { display_name: "QA" + randomNumber.toString() },
+            {
+              headers: {
+                Authorization: `token=${Env.ApiKey}`,
+              },
+            }
+          );
+          assert(resp1);
+          assert.strictEqual(resp1.status, 201);
+          responseBody = resp1.data;
+          assert(responseBody.token);
+          token = responseBody.token;
         });
 
         context("When one of the tokens is deleted", function () {
-          beforeEach(function (done) {
-            chai
-              .request(Env.Endpoint)
-              .delete(`/publisher/v1/project/${Env.ProjectID}/group/rtrcdqa1234/enterprisetoken/${token}`)
-              .set("Authorization", `token=${Env.ApiKey}`)
-              .send({ display_name: "QA" + randomNumber.toString() })
-              .end(function (err, res) {
-                expect(err).to.be.null;
-                expect(res).to.have.property("status", 204);
-                expect(responseBody.token).to.exist;
-                token = responseBody.token;
-                done();
-              });
+          beforeEach(async function () {
+            const resp2 = await axios.delete(
+              `${Env.Endpoint}/publisher/v1/project/${Env.ProjectID}/group/rtrcdqa1234/enterprisetoken/${token}`,
+              {
+                headers: {
+                  Authorization: `token=${Env.ApiKey}`,
+                },
+              }
+            );
+            assert(resp2);
+            assert.strictEqual(resp2.status, 204);
           });
           context("And that token is used to query the graphql endpoint", function () {
-            let response;
-            beforeEach(function (done) {
-              chai
-                .request(Env.Endpoint)
-                .post("/enterprise/v1/graphql")
-                .set("Authorization", `token=${token}`)
-                .send(search("integration.test.api." + randomNumber.toString()))
-                .end(function (err, res) {
-                  response = res;
-                  done();
-                });
+            let error;
+            beforeEach(async function () {
+              try {
+                await axios.post(
+                  `${Env.Endpoint}/enterprise/v1/graphql`,
+                  search("integration.test.api." + randomNumber.toString()),
+                  {
+                    headers: {
+                      Authorization: `token=${token}`,
+                    },
+                  }
+                );
+              } catch (err) {
+                error = err;
+              }
             });
-
             specify("Then the response should be a 401", function () {
-              expect(response).to.have.property("status", 401);
+              assert.strictEqual(error.message.includes("Request failed with status code 401"), true);
             });
           });
         });

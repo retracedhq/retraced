@@ -1,9 +1,9 @@
-import { expect } from "chai";
 import moment from "moment";
 
 import getPgPool from "../../../persistence/pg";
 import selectNew from "../select_new";
 import { randomUUID } from "crypto";
+import assert from "assert";
 
 const pgPool = getPgPool();
 
@@ -42,9 +42,9 @@ describe("models.action.select_new", () => {
           environmentId,
           range: [ref, ref.clone().add(1, "day")],
         }).then((acts) => {
-          expect(acts).to.have.length(2);
-          expect(acts).to.include("a.update");
-          expect(acts).to.include("a.get");
+          assert.strictEqual(acts.length, 2);
+          assert.strictEqual(acts.includes("a.update"), true);
+          assert.strictEqual(acts.includes("a.get"), true);
         });
       });
     });

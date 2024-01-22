@@ -1,17 +1,13 @@
 import * as querystring from "querystring";
-import { expect } from "chai";
 import { Client, CRUD } from "@retracedhq/retraced";
 import tv4 from "tv4";
 import "mocha";
-import "chai-http";
 import { CreateEventSchema, search } from "../pkg/specs";
 import { retracedUp } from "../pkg/retracedUp";
 import { sleep, isoDate } from "../pkg/util";
 import * as Env from "../env";
-
-const chai = require("chai"),
-  chaiHttp = require("chai-http");
-chai.use(chaiHttp);
+import assert from "assert";
+import axios from "axios";
 
 const randomNumber = Math.floor(Math.random() * 99999) + 1;
 const currentTime = new Date();
@@ -69,68 +65,63 @@ describe("Viewer API", function () {
         if (!valid) {
           console.log(tv4.error);
         }
-        expect(valid).to.be.true;
+        assert.strictEqual(valid, true);
         await retraced.reportEvent(event);
       });
 
       context("And a call is made to create a viewer description scoped to a target", function () {
         let token;
 
-        beforeEach((done) => {
+        beforeEach(async () => {
           const opts = {
             actor_id: actorID,
             group_id: groupID,
             target_id: targetID,
           };
           const qs = querystring.stringify(opts);
-
-          chai
-            .request(Env.Endpoint)
-            .get(`/publisher/v1/project/${Env.ProjectID}/viewertoken?${qs}`)
-            .set("Authorization", `Token token=${Env.ApiKey}`)
-            .end((err, res) => {
-              expect(err).to.be.null;
-              token = res.body.token;
-              done();
-            });
+          const resp1 = await axios.get(
+            `${Env.Endpoint}/publisher/v1/project/${Env.ProjectID}/viewertoken?${qs}`,
+            {
+              headers: {
+                Authorization: `Token token=${Env.ApiKey}`,
+              },
+            }
+          );
+          assert(resp1);
+          token = resp1.data.token;
         });
 
         context("And the viewer descriptor is exchanged for a session", function () {
           let viewerSession;
-          beforeEach((done) => {
-            chai
-              .request(Env.Endpoint)
-              .post("/viewer/v1/viewersession")
-              .send({ token })
-              .end(function (err, res) {
-                viewerSession = JSON.parse(res.text).token;
-                expect(err).to.be.null;
-                expect(res).to.have.property("status", 200);
-                done();
-              });
+          beforeEach(async () => {
+            const resp2 = await axios.post(`${Env.Endpoint}/viewer/v1/viewersession`, { token });
+            assert(resp2);
+            assert.strictEqual(resp2.status, 200);
+            viewerSession = resp2.data.token;
           });
 
           context("When a call is made to the Viewer API GraphQL endpoint for the event", function () {
             let responseBody;
-            beforeEach(function (done) {
+            beforeEach(async function () {
               this.timeout(Env.EsIndexWaitMs * 2);
-              sleep(Env.EsIndexWaitMs).then(() => {
-                chai
-                  .request(Env.Endpoint)
-                  .post("/viewer/v1/graphql")
-                  .set("Authorization", viewerSession)
-                  .send(search("integration.test.api." + randomNumber.toString()))
-                  .end(function (err, res) {
-                    responseBody = JSON.parse(res.text);
-                    expect(err).to.be.null;
-                    expect(res).to.have.property("status", 200);
-                    done();
-                  });
-              });
+              await sleep(Env.EsIndexWaitMs);
+
+              const resp3 = await axios.post(
+                `${Env.Endpoint}/viewer/v1/graphql`,
+                search("integration.test.api." + randomNumber.toString()),
+                {
+                  headers: {
+                    Authorization: viewerSession,
+                  },
+                }
+              );
+              assert(resp3);
+              assert.strictEqual(resp3.status, 200);
+              responseBody = resp3.data;
             });
             specify("Then the response should contain the correct information about the event", function () {
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.action",
+              assert.strictEqual(
+                responseBody.data.search.edges[0].node.action,
                 "integration.test.api." + randomNumber.toString()
               );
             });
@@ -152,137 +143,87 @@ describe("Viewer API", function () {
 
         context("And the viewer descriptor is exchanged for a session", function () {
           let viewerSession;
-          beforeEach((done) => {
-            chai
-              .request(Env.Endpoint)
-              .post("/viewer/v1/viewersession")
-              .send({ token })
-              .end(function (err, res) {
-                viewerSession = JSON.parse(res.text).token;
-                expect(err).to.be.null;
-                expect(res).to.have.property("status", 200);
-                done();
-              });
+          beforeEach(async () => {
+            const resp4 = await axios.post(`${Env.Endpoint}/viewer/v1/viewersession`, { token });
+            assert(resp4);
+            assert.strictEqual(resp4.status, 200);
+            viewerSession = resp4.data.token;
           });
 
           context("When a call is made to the Viewer API GraphQL endpoint for the event", function () {
             let responseBody;
-            beforeEach(function (done) {
+            beforeEach(async function () {
               this.timeout(Env.EsIndexWaitMs * 2);
-              sleep(Env.EsIndexWaitMs).then(() => {
-                chai
-                  .request(Env.Endpoint)
-                  .post("/viewer/v1/graphql")
-                  .set("Authorization", viewerSession)
-                  .send(search("integration.test.api." + randomNumber.toString()))
-                  .end(function (err, res) {
-                    responseBody = JSON.parse(res.text);
-                    expect(err).to.be.null;
-                    expect(res).to.have.property("status", 200);
-                    done();
-                  });
-              });
+              await sleep(Env.EsIndexWaitMs);
+
+              const resp5 = await axios.post(
+                `${Env.Endpoint}/viewer/v1/graphql`,
+                search("integration.test.api." + randomNumber.toString()),
+                {
+                  headers: {
+                    Authorization: viewerSession,
+                  },
+                }
+              );
+              assert(resp5);
+              assert.strictEqual(resp5.status, 200);
+              responseBody = resp5.data;
             });
 
             specify("Then the response should contain the correct information about the event", function () {
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.action",
+              assert.strictEqual(
+                responseBody.data.search.edges[0].node.action,
                 "integration.test.api." + randomNumber.toString()
               );
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.created",
-                isoDate(currentTime)
-              );
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.description",
+              assert.strictEqual(responseBody.data.search.edges[0].node.created, isoDate(currentTime));
+              assert.strictEqual(
+                responseBody.data.search.edges[0].node.description,
                 "Automated integration testing..."
               );
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.actor.fields[0].key",
-                "department"
-              );
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.actor.fields[0].value",
-                "QA"
-              );
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.group.id",
+              assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].key, "department");
+              assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].value, "QA");
+              assert.strictEqual(
+                responseBody.data.search.edges[0].node.group.id,
                 "rtrcdqa" + randomNumber.toString()
               );
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.target.name",
-                "Retraced API"
-              );
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.target.fields[0].key",
-                "record_count"
-              );
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.target.fields[0].value",
-                "100"
-              );
-              expect(responseBody).to.have.nested.property("data.search.edges[0].node.is_failure", false);
-              expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "c");
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.source_ip",
-                "192.168.0.1"
-              );
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.fields[0].key",
-                "quality"
-              );
-              expect(responseBody).to.have.nested.property(
-                "data.search.edges[0].node.fields[0].value",
-                "excellent"
-              );
+              assert.strictEqual(responseBody.data.search.edges[0].node.target.name, "Retraced API");
+              assert.strictEqual(responseBody.data.search.edges[0].node.target.fields[0].key, "record_count");
+              assert.strictEqual(responseBody.data.search.edges[0].node.target.fields[0].value, "100");
+              assert.strictEqual(responseBody.data.search.edges[0].node.is_failure, false);
+              assert.strictEqual(responseBody.data.search.edges[0].node.crud, "c");
+              assert.strictEqual(responseBody.data.search.edges[0].node.source_ip, "192.168.0.1");
+              assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].key, "quality");
+              assert.strictEqual(responseBody.data.search.edges[0].node.fields[0].value, "excellent");
             });
           });
           context("When a second call is made to the Viewer API GraphQL endpoint", function () {
             let responseBody;
-            beforeEach(function (done) {
+            beforeEach(async function () {
               this.timeout(Env.EsIndexWaitMs * 2);
-              sleep(Env.EsIndexWaitMs).then(() => {
-                chai
-                  .request(Env.Endpoint)
-                  .post("/viewer/v1/graphql")
-                  .set("Authorization", viewerSession)
-                  .send(search("audit.log.view"))
-                  .end(function (err, res) {
-                    responseBody = JSON.parse(res.text);
-                    expect(err).to.be.null;
-                    expect(res).to.have.property("status", 200);
-                    done();
-                  });
+              await sleep(Env.EsIndexWaitMs);
+
+              const resp6 = await axios.post(`${Env.Endpoint}/viewer/v1/graphql`, search("audit.log.view"), {
+                headers: {
+                  Authorization: viewerSession,
+                },
               });
+              assert(resp6);
+              assert.strictEqual(resp6.status, 200);
+              responseBody = resp6.data;
             });
             specify(
               "Then the most recent event should be an audit.log.view event with the actor specified",
               function () {
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.action",
-                  "audit.log.view"
-                );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.group.id",
+                assert.strictEqual(responseBody.data.search.edges[0].node.action, "audit.log.view");
+                assert.strictEqual(
+                  responseBody.data.search.edges[0].node.group.id,
                   "rtrcdqa" + randomNumber.toString()
                 );
-                expect(responseBody).to.have.nested.property("data.search.edges[0].node.crud", "r");
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.actor.id",
-                  "qa@retraced.io"
-                );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.actor.name",
-                  "RetracedQA Employee"
-                );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.actor.fields[0].key",
-                  "department"
-                );
-                expect(responseBody).to.have.nested.property(
-                  "data.search.edges[0].node.actor.fields[0].value",
-                  "QA"
-                );
+                assert.strictEqual(responseBody.data.search.edges[0].node.crud, "r");
+                assert.strictEqual(responseBody.data.search.edges[0].node.actor.id, "qa@retraced.io");
+                assert.strictEqual(responseBody.data.search.edges[0].node.actor.name, "RetracedQA Employee");
+                assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].key, "department");
+                assert.strictEqual(responseBody.data.search.edges[0].node.actor.fields[0].value, "QA");
               }
             );
           });

@@ -2,9 +2,9 @@ import { suite, test } from "@testdeck/mocha";
 import getInvite from "../../handlers/getInvite";
 import getPgPool from "../../persistence/pg";
 import { createEnterpriseToken } from "../../handlers/createEnterpriseToken";
-import { expect } from "chai";
 import { AdminTokenStore } from "../../models/admin_token/store";
 import create from "../../models/api_token/create";
+import assert from "assert";
 
 @suite
 class GetInvite {
@@ -21,8 +21,8 @@ class GetInvite {
           id: "test",
         },
       });
-      expect(res.status).to.equal(200);
-      return expect(res.body).to.not.be.undefined;
+      assert.strictEqual(res.status, 200);
+      return assert(res.body);
     } catch (ex) {
       console.log(ex);
     } finally {

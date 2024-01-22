@@ -1,9 +1,9 @@
-import { expect } from "chai";
 import moment from "moment";
 import { randomUUID } from "crypto";
 
 import getPgPool from "../../../persistence/pg";
 import selectTop from "../select_top";
+import assert from "assert";
 
 const pgPool = getPgPool();
 
@@ -69,7 +69,7 @@ describe("models.active_actor.select_top", () => {
           environmentId,
           range: [ref, ref.clone().add(1, "day")],
         }).then((results) => {
-          expect(results).to.have.length(5);
+          assert.strictEqual(results.length, 5);
 
           const actor0 = results.find(({ actor_id }) => actor_id === actors[0]);
           const actor1 = results.find(({ actor_id }) => actor_id === actors[1]);
@@ -79,13 +79,13 @@ describe("models.active_actor.select_top", () => {
           const actor5 = results.find(({ actor_id }) => actor_id === actors[5]);
           const actor6 = results.find(({ actor_id }) => actor_id === actors[6]);
 
-          expect(actor0).to.equal(undefined);
-          expect(actor6).to.equal(undefined);
-          expect(actor1).to.have.property("action_count", 2);
-          expect(actor2).to.have.property("action_count", 2);
-          expect(actor3).to.have.property("action_count", 2);
-          expect(actor4).to.have.property("action_count", 2);
-          expect(actor5).to.have.property("action_count", 2);
+          assert.strictEqual(actor0, undefined);
+          assert.strictEqual(actor6, undefined);
+          assert.strictEqual(actor1!.action_count, 2);
+          assert.strictEqual(actor2!.action_count, 2);
+          assert.strictEqual(actor3!.action_count, 2);
+          assert.strictEqual(actor4!.action_count, 2);
+          assert.strictEqual(actor5!.action_count, 2);
         });
       });
     });

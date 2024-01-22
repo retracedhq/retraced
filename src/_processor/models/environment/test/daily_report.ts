@@ -1,10 +1,10 @@
-import { expect } from "chai";
 import moment from "moment-timezone";
 import { describe, it } from "mocha";
 import { randomUUID } from "crypto";
 
 import dailyReport, { Record } from "../daily_report";
 import { fixProject } from "./common";
+import assert from "assert";
 
 describe("models.environment.daily_report", () => {
   describe(`
@@ -88,9 +88,9 @@ describe("models.environment.daily_report", () => {
             ({ project_name, environment_name }) => project_name === "Beta" && environment_name === "Stage"
           ) as Record;
 
-          expect(alphaProd).not.to.equal(undefined);
-          expect(alphaProd.recipients).to.have.length(2);
-          expect(alphaProd.recipients).to.deep.include.members([
+          assert(alphaProd);
+          assert.strictEqual(alphaProd.recipients.length, 2);
+          assert.deepEqual(alphaProd.recipients, [
             {
               email: bob.email,
               id: bob.id,
@@ -102,24 +102,30 @@ describe("models.environment.daily_report", () => {
               token: "xyz",
             },
           ]);
-          expect(alphaStage).not.to.equal(undefined);
-          expect(alphaStage.recipients).to.deep.equal([
+
+          assert(alphaStage);
+          assert.strictEqual(alphaStage.recipients.length, 1);
+          assert.deepEqual(alphaStage.recipients, [
             {
               email: ann.email,
               id: ann.id,
               token: "xyz",
             },
           ]);
-          expect(betaProd).not.to.equal(undefined);
-          expect(betaProd.recipients).to.deep.equal([
+
+          assert(betaProd);
+          assert.strictEqual(betaProd.recipients.length, 1);
+          assert.deepEqual(betaProd.recipients, [
             {
               email: charlie.email,
               id: charlie.id,
               token: "xyz",
             },
           ]);
-          expect(betaStage).not.to.equal(undefined);
-          expect(betaStage.recipients).to.deep.equal([
+
+          assert(betaStage);
+          assert.strictEqual(betaStage.recipients.length, 1);
+          assert.deepEqual(betaStage.recipients, [
             {
               email: charlie.email,
               id: charlie.id,
@@ -190,42 +196,42 @@ describe("models.environment.daily_report", () => {
             ({ environment_name, utc_offset }) => environment_name === "Stage" && utc_offset === 345
           ) as Record;
 
-          expect(prod6.recipients).to.deep.equal([
+          assert.deepEqual(prod6.recipients, [
             {
               email: dan.email,
               id: dan.id,
               token: "xyz",
             },
           ]);
-          expect(stage6.recipients).to.deep.equal([
+          assert.deepEqual(stage6.recipients, [
             {
               email: dan.email,
               id: dan.id,
               token: "xyz",
             },
           ]);
-          expect(prod530.recipients).to.deep.equal([
+          assert.deepEqual(prod530.recipients, [
             {
               email: esther.email,
               id: esther.id,
               token: "xyz",
             },
           ]);
-          expect(stage530.recipients).to.deep.equal([
+          assert.deepEqual(stage530.recipients, [
             {
               email: esther.email,
               id: esther.id,
               token: "xyz",
             },
           ]);
-          expect(prod545.recipients).to.deep.equal([
+          assert.deepEqual(prod545.recipients, [
             {
               email: frank.email,
               id: frank.id,
               token: "xyz",
             },
           ]);
-          expect(stage545.recipients).to.deep.equal([
+          assert.deepEqual(stage545.recipients, [
             {
               email: frank.email,
               id: frank.id,
