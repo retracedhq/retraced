@@ -1,6 +1,6 @@
 import { checkAdminAccess } from "../../security/helpers";
-import deleteSink from "../../models/vectorsink/delete";
-import { getById } from "../../models/vectorsink/get";
+import deleteSink from "../../models/sink/delete";
+import { getById } from "../../models/sink/get";
 
 export default async function (req) {
   await checkAdminAccess(req);

@@ -1,5 +1,5 @@
 import { checkAdminAccess } from "../../security/helpers";
-import { getByProjectEnvironmentGroupId } from "../../models/vectorsink/get";
+import { getByProjectEnvironmentGroupId } from "../../models/sink/get";
 import getGroup from "../../models/group/gets";
 
 export default async function (req) {

@@ -22,10 +22,10 @@ export default function sendToWebhook(event: any): void {
         }
       )
       .catch(() => {
-        logger.info(`[VECTOR EXPORT] Failed to send to webhook`);
+        logger.info(`[EXPORT] Failed to send to webhook`);
       })
       .then(() => {
-        logger.info(`[VECTOR EXPORT] Sent to webhook`);
+        logger.info(`[EXPORT] Sent to webhook`);
       });
   }
 }

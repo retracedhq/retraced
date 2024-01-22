@@ -103,7 +103,7 @@
     "dev:processor": "PROCESSOR_DEV_PORT=3001 node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts",
     "dev:geo": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/workers/updateGeoData.ts",
     "dev:bootstrap": "node --inspect=0.0.0.0 -r ts-node/register src/retracedctl.ts bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev",
-    "dev:sidecar": "node --inspect=0.0.0.0 -r ts-node/register src/ee/_vector-sidecar/index.ts",
+    "dev:sidecar": "node --inspect=0.0.0.0 -r ts-node/register src/ee/sidecar/index.ts",
     "dev:elastic-migration": "node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts es",
     "dev:pg-migration": "node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts pg",
     "dev": "docker compose up -d",
