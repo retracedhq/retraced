@@ -164,7 +164,7 @@ jobs:
           echo "${sidecarPath}"
 
           echo "RETRACED_IMAGE_PATH=${imagePath}" >> $GITHUB_OUTPUT
-          echo "VECTOR_IMAGE_PATH=${sidecarPath}" >> $GITHUB_OUTPUT
+          echo "SIDECAR_IMAGE_PATH=${sidecarPath}" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         if: github.ref == 'refs/heads/release'
@@ -193,24 +193,24 @@ jobs:
           push: true
           tags: ${{ steps.slug.outputs.RETRACED_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ steps.slug.outputs.RETRACED_IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ steps.slug.outputs.RETRACED_IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
 
-      - name: Build and push Vector
+      - name: Build and push Sidecar
         if: github.ref == 'refs/heads/release'
-        id: docker_build_vector
+        id: docker_build_sidecar
         uses: docker/build-push-action@v5
         with:
           context: ./
           file: ./deploy/sidecar/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.slug.outputs.VECTOR_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ steps.slug.outputs.VECTOR_IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ steps.slug.outputs.VECTOR_IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
+          tags: ${{ steps.slug.outputs.SIDECAR_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ steps.slug.outputs.SIDECAR_IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ steps.slug.outputs.SIDECAR_IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest Retraced
         if: github.ref == 'refs/heads/release'
         run: echo ${{ steps.docker_build_retraced.outputs.digest }}
 
-      - name: Image digest Vector
+      - name: Image digest Sidecar
         if: github.ref == 'refs/heads/release'
-        run: echo ${{ steps.docker_build_vector.outputs.digest }}
+        run: echo ${{ steps.docker_build_sidecar.outputs.digest }}
 
       - name: Login to GitHub Container Registry
         if: github.ref == 'refs/heads/release'
@@ -238,9 +238,9 @@ jobs:
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
-      - name: Sign the image [Vector]
+      - name: Sign the image [Sidecar]
         if: github.ref == 'refs/heads/release'
-        run: cosign sign --key /tmp/cosign.key -y ${{ steps.slug.outputs.VECTOR_IMAGE_PATH }}@${{ steps.docker_build_vector.outputs.digest }}
+        run: cosign sign --key /tmp/cosign.key -y ${{ steps.slug.outputs.SIDECAR_IMAGE_PATH }}@${{ steps.docker_build_sidecar.outputs.digest }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
@@ -298,13 +298,13 @@ jobs:
           format: spdx
           artifact-name: retraced_docker_sbom.spdx
 
-      - name: Create SBOM Report [Docker][SPDX][Vector]
+      - name: Create SBOM Report [Docker][SPDX][Sidecar]
         if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ steps.slug.outputs.VECTOR_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          image: ${{ steps.slug.outputs.SIDECAR_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: spdx
-          artifact-name: vector_docker_sbom.spdx
+          artifact-name: sidecar_docker_sbom.spdx
 
       - name: Publish report [Docker][SPDX]
         if: github.ref == 'refs/heads/release'
@@ -320,13 +320,13 @@ jobs:
           format: cyclonedx
           artifact-name: retraced_docker_sbom.cyclonedx
 
-      - name: Create SBOM Report [Docker][CycloneDx][Vector]
+      - name: Create SBOM Report [Docker][CycloneDx][Sidecar]
         if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ steps.slug.outputs.VECTOR_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          image: ${{ steps.slug.outputs.SIDECAR_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: cyclonedx
-          artifact-name: vector_docker_sbom.cyclonedx
+          artifact-name: sidecar_docker_sbom.cyclonedx
 
       - name: Publish report [Docker][CycloneDx]
         if: github.ref == 'refs/heads/release'
@@ -340,11 +340,11 @@ jobs:
         with:
           name: retraced_docker_sbom.spdx
 
-      - name: Download artifact for SPDX Report [Docker][Vector]
+      - name: Download artifact for SPDX Report [Docker][Sidecar]
         if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
-          name: vector_docker_sbom.spdx
+          name: sidecar_docker_sbom.spdx
 
       - name: Download artifact for CycloneDx Report [Docker][Retraced]
         if: github.ref == 'refs/heads/release'
@@ -352,11 +352,11 @@ jobs:
         with:
           name: retraced_docker_sbom.cyclonedx
 
-      - name: Download artifact for CycloneDx Report [Docker][Vector]
+      - name: Download artifact for CycloneDx Report [Docker][Sidecar]
         if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
-          name: vector_docker_sbom.cyclonedx
+          name: sidecar_docker_sbom.cyclonedx
 
       - name: Create/Clear folder [Docker]
         if: github.ref == 'refs/heads/release'
@@ -367,8 +367,8 @@ jobs:
         run: |
           mv retraced_docker_sbom.spdx "./_docker/retraced_sbom.spdx" || true
           mv retraced_docker_sbom.cyclonedx ./_docker/retraced_sbom.cyclonedx || true
-          mv vector_docker_sbom.spdx "./_docker/vector_sbom.spdx" || true
-          mv vector_docker_sbom.cyclonedx ./_docker/vector_sbom.cyclonedx || true
+          mv sidecar_docker_sbom.spdx "./_docker/sidecar_sbom.spdx" || true
+          mv sidecar_docker_sbom.cyclonedx ./_docker/sidecar_sbom.cyclonedx || true
 
       - name: ORAS Setup
         if: github.ref == 'refs/heads/release'

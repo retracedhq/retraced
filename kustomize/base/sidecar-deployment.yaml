@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: retraced-vector-sidecar
+  name: retraced-sidecar
   namespace: '{{repl ConfigOption "namespace"}}'
 spec:
   selector:
     matchLabels:
-      tier: vector
+      tier: sidecar
   replicas: 1
   template:
     metadata:
       labels:
         app: auditlog
-        tier: vector
+        tier: sidecar
     spec:
       containers:
-        - name: vector
+        - name: sidecar
           image: retracedhq/vector-local
           imagePullPolicy: IfNotPresent
           startupProbe:
@@ -28,7 +28,7 @@ spec:
           readinessProbe:
             httpGet:
               port: 3002
-              path: /api/v1/vector/health
+              path: /api/v1/health
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 5

@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: retraced-vector-sidecar
+  name: retraced-sidecar
   labels:
     app: auditlog
-    tier: vector
+    tier: sidecar
 spec:
   type: LoadBalancer
   ports:
@@ -16,4 +16,4 @@ spec:
       targetPort: 8686
   selector:
     app: auditlog
-    tier: vector
+    tier: sidecar

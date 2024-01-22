@@ -13,7 +13,7 @@ patches:
   - ./migratees-job.yaml
   - ./migratepg-job.yaml
   - ./processor-deployment.yaml
-  - ./vector-deployment.yaml
+  - ./sidecar-deployment.yaml
 
 images:
   - name: retracedhq/retraced

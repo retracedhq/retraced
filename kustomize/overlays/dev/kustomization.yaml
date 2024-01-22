@@ -11,7 +11,7 @@ resources:
   - ./api-service.yaml
   - ./admin-portal-deployment.yaml
   - ./admin-portal-service.yaml
-  - ./vector-service.yaml
+  - ./sidecar-service.yaml
 
 patches:
   - target:

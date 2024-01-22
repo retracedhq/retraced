@@ -9,7 +9,7 @@ build:
     - image: retracedhq/vector-local
       context: ./
       docker:
-        dockerfile: ./deploy/vector-sidecar/Dockerfile
+        dockerfile: ./deploy/sidecar/Dockerfile
   platforms:
     - linux/amd64
     - linux/arm64
