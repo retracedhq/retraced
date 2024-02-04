@@ -34,11 +34,7 @@ exports.handler = (argv) => {
 
   if (argv.db === "pg") {
     _.forEach(["do", "undo"], (action) => {
-      const dest = path.join(
-        "migrations",
-        argv.db,
-        `${timestamp}.${action}.${name}.sql`
-      );
+      const dest = path.join("migrations", argv.db, `${timestamp}.${action}.${name}.sql`);
       fs.writeFileSync(dest, "-- SQL goes here");
       console.log(picocolors.green(dest));
     });

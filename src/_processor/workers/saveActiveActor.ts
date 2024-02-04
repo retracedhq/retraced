@@ -15,12 +15,7 @@ export default async function saveActiveActor(job) {
   ) values (
     to_timestamp($1::double precision / 1000), $2, $3, $4
   )`;
-  const v = [
-    jobObj.event.canonical_time,
-    jobObj.projectId,
-    jobObj.environmentId,
-    actorId,
-  ];
+  const v = [jobObj.event.canonical_time, jobObj.projectId, jobObj.environmentId, actorId];
   try {
     await pgPool.query(q, v);
   } catch (e) {

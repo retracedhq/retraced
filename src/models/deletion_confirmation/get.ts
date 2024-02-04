@@ -1,12 +1,9 @@
 import getPgPool from "../../persistence/pg";
-import {
-  DeletionConfirmation,
-  deletionConfirmationFromRow,
-} from "./";
+import { DeletionConfirmation, deletionConfirmationFromRow } from "./";
 
 const pgPool = getPgPool();
 
-export default async function(id: string): Promise<DeletionConfirmation | null> {
+export default async function (id: string): Promise<DeletionConfirmation | null> {
   const q = `
     select
       id, deletion_request_id, retraceduser_id, received, visible_code
@@ -15,9 +12,7 @@ export default async function(id: string): Promise<DeletionConfirmation | null> 
     where
       id = $1
   `;
-  const v = [
-    id,
-  ];
+  const v = [id];
 
   const response = await pgPool.query(q, v);
 

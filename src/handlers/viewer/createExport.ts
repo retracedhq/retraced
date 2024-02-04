@@ -1,7 +1,7 @@
 import { checkViewerAccess } from "../../security/helpers";
 import createSavedExport from "../../models/saved_export/create";
 
-export default async function(req) {
+export default async function (req) {
   const claims = await checkViewerAccess(req);
   const newSavedExport = await createSavedExport({
     projectId: req.params.projectId,

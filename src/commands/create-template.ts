@@ -29,9 +29,7 @@ export async function main(argv): Promise<Template> {
 
   const affected = await deleteAllByName({ name: templateName, environmentId });
 
-  console.log(
-    `Removed ${affected} existing templates with name ${templateName} in env ${environmentId}`
-  );
+  console.log(`Removed ${affected} existing templates with name ${templateName} in env ${environmentId}`);
 
   return createTemplate({
     project_id: projectId,

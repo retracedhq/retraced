@@ -16,15 +16,10 @@ export default async function updateSavedExport(opts) {
     const updateStmt = `update saved_export
       set version = $1, body = $2
       where id = $3`;
-    const updateVals = [
-      updatedSavedExport.version,
-      updatedSavedExport.body,
-      updatedSavedExport.id,
-    ];
+    const updateVals = [updatedSavedExport.version, updatedSavedExport.body, updatedSavedExport.id];
     await pg.query(updateStmt, updateVals);
 
     return updatedSavedExport;
-
   } finally {
     pg.release();
   }

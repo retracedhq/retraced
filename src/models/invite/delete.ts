@@ -7,10 +7,7 @@ export interface Options {
   projectId: string;
 }
 
-export default async function deleteInvite(
-  opts: Options,
-  pg: Querier = pgPool
-) {
+export default async function deleteInvite(opts: Options, pg: Querier = pgPool) {
   const q = "delete from invite where id = $1 and project_id = $2";
   const v = [opts.inviteId, opts.projectId];
 

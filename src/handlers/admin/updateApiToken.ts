@@ -1,4 +1,3 @@
-
 import { checkAdminAccessUnwrapped } from "../../security/helpers";
 import updateApiToken from "../../models/api_token/update";
 import { ApiToken, ApiTokenValues } from "../../models/api_token";
@@ -10,7 +9,7 @@ export default async function handle(
   authorization: string,
   projectId: string,
   apiToken: string,
-  values: Partial<ApiTokenValues>,
+  values: Partial<ApiTokenValues>
 ): Promise<ApiToken> {
   await checkAdminAccessUnwrapped(authorization, projectId);
 

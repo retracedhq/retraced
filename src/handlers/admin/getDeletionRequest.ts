@@ -2,10 +2,7 @@ import { checkAdminAccessUnwrapped } from "../../security/helpers";
 import getDeletionRequest from "../../models/deletion_request/get";
 import getDeletionConfirmations from "../../models/deletion_confirmation/getByDeletionRequest";
 import deleteDeletionConfirmation from "../../models/deletion_confirmation/delete";
-import {
-  deletionRequestBackoffRemaining,
-  deletionRequestHasExpired,
-} from "../../models/deletion_request";
+import { deletionRequestBackoffRemaining, deletionRequestHasExpired } from "../../models/deletion_request";
 import getUser from "../../models/user/get";
 import { logger } from "../../logger";
 
@@ -19,7 +16,7 @@ export default async function handler(
   auth: string,
   projectId: string,
   environmentId: string,
-  deletionRequestId: string,
+  deletionRequestId: string
 ): Promise<GetDelReqReport> {
   await checkAdminAccessUnwrapped(auth, projectId, environmentId);
 

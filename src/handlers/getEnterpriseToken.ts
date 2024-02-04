@@ -8,10 +8,7 @@ export async function getEnterpriseToken(
   groupId: string,
   eitapiTokenId: string
 ): Promise<EnterpriseTokenResponse> {
-  const apiToken = await Authenticator.default().getApiTokenOr401(
-    authorization,
-    projectId
-  );
+  const apiToken = await Authenticator.default().getApiTokenOr401(authorization, projectId);
   const token = await modelsGetEnterpriseToken({
     eitapiTokenId,
   });

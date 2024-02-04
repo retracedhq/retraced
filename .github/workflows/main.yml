@@ -42,6 +42,7 @@ jobs:
       - name: Install Dependencies & check lint
         run: |
           npm install
+          npm run check-format
           npm run lint
 
       - id: version

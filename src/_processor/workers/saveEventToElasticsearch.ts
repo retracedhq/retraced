@@ -15,7 +15,10 @@ export class ElasticsearchSaver {
 
   private static instance: ElasticsearchSaver;
 
-  constructor(private readonly es: ClientWithRetry, private readonly clock: Clock) {}
+  constructor(
+    private readonly es: ClientWithRetry,
+    private readonly clock: Clock
+  ) {}
 
   public async saveEventToElasticsearch(job): Promise<void> {
     const jobObj = JSON.parse(job.body);

@@ -1,12 +1,9 @@
 import getPgPool from "../../persistence/pg";
-import {
-  RetracedUser,
-  retracedUserFromRow,
-} from "./";
+import { RetracedUser, retracedUserFromRow } from "./";
 
 const pgPool = getPgPool();
 
-export default async function(id: string): Promise<RetracedUser | null> {
+export default async function (id: string): Promise<RetracedUser | null> {
   const q = `
     select
       id, created, email, last_login, external_auth_id, timezone, tx_emails_recipient
@@ -15,9 +12,7 @@ export default async function(id: string): Promise<RetracedUser | null> {
     where
       id = $1
   `;
-  const v = [
-    id,
-  ];
+  const v = [id];
 
   const results = await pgPool.query(q, v);
   if (results.rowCount === 0) {

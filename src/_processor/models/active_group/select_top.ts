@@ -8,9 +8,7 @@ interface GroupCount {
   action_count: number;
 }
 
-export default async function selectTop(
-  opts: EnvironmentTimeRange
-): Promise<GroupCount[]> {
+export default async function selectTop(opts: EnvironmentTimeRange): Promise<GroupCount[]> {
   const select = `
   select
       active_group.group_id,

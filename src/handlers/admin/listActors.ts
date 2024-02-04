@@ -1,7 +1,7 @@
 import { checkAdminAccess } from "../../security/helpers";
 import listActors from "../../models/actor/list";
 
-export default async function(req) {
+export default async function (req) {
   await checkAdminAccess(req);
 
   const actors = await listActors({

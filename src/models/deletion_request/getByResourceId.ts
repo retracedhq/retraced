@@ -1,12 +1,9 @@
 import getPgPool from "../../persistence/pg";
-import {
-  DeletionRequest,
-  deletionRequestFromRow,
-} from "./";
+import { DeletionRequest, deletionRequestFromRow } from "./";
 
 const pgPool = getPgPool();
 
-export default async function(resourceId: string): Promise<DeletionRequest | null> {
+export default async function (resourceId: string): Promise<DeletionRequest | null> {
   const q = `
     select
       id, created, backoff_interval, resource_kind, resource_id
@@ -15,9 +12,7 @@ export default async function(resourceId: string): Promise<DeletionRequest | nul
     where
       resource_id = $1
   `;
-  const v = [
-    resourceId,
-  ];
+  const v = [resourceId];
 
   const response = await pgPool.query(q, v);
 

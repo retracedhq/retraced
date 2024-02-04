@@ -1,4 +1,3 @@
-
 import ruler from "ruler";
 
 export interface Options {

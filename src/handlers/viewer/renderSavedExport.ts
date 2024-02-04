@@ -3,7 +3,7 @@ import { checkViewerAccess } from "../../security/helpers";
 import renderSavedExport from "../../models/saved_export/render";
 import ViewerDescriptor from "../../models/viewer_descriptor/def";
 
-export default async function(req) {
+export default async function (req) {
   // Older viewers will pass JWT in request query. Newer viewers will pass JWT in the authorization header.
   let claims: ViewerDescriptor;
   if (req.query.jwt) {

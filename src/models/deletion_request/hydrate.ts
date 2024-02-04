@@ -1,19 +1,11 @@
-import {
-  maxAge,
-  DeletionRequest,
-  DeletionRequestHydrated,
-} from "../deletion_request";
+import { maxAge, DeletionRequest, DeletionRequestHydrated } from "../deletion_request";
 import { DeletionConfirmationSanitized } from "../deletion_confirmation";
 import getDeletionConfirmations from "../deletion_confirmation/getByDeletionRequest";
 import hydrateDeletionConfirmation from "../deletion_confirmation/hydrate";
 
-export default async function hydrateDeletionRequest(
-  dr: DeletionRequest
-): Promise<DeletionRequestHydrated> {
+export default async function hydrateDeletionRequest(dr: DeletionRequest): Promise<DeletionRequestHydrated> {
   const dcs = await getDeletionConfirmations(dr.id);
-  const hydratedDCs = await Promise.all(
-    dcs.map((dc) => hydrateDeletionConfirmation(dc))
-  );
+  const hydratedDCs = await Promise.all(dcs.map((dc) => hydrateDeletionConfirmation(dc)));
   const sanitized: DeletionConfirmationSanitized[] = [];
 
   for (const hydratedDC of hydratedDCs) {
