@@ -31,9 +31,7 @@ class RouterTest {
       .setup((x) => x.set("X-Retraced-RequestId", reqId))
       .returns(() => res.object)
       .verifiable(once());
-    res
-      .setup((x) => x.json(TypeMoq.It.isObjectWith(expected)))
-      .verifiable(once());
+    res.setup((x) => x.json(TypeMoq.It.isObjectWith(expected))).verifiable(once());
 
     onError(res.object, reqId)(err);
 

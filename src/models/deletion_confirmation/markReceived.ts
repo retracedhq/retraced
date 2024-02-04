@@ -26,9 +26,7 @@ export default async function markReceived(id: string): Promise<DeletionConfirma
     where
       id = $1
   `;
-  const v = [
-    id, extant.received.unix(),
-  ];
+  const v = [id, extant.received.unix()];
   const response = await pgPool.query(q, v);
 
   if (response.rowCount === 0) {

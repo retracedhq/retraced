@@ -8,7 +8,7 @@ import getActionsTile from "../../dashboard/actions/top";
 import getGroupsTile from "../../dashboard/groups/top";
 import config from "../../config";
 
-export default async function(req) {
+export default async function (req) {
   await checkAdminAccess(req);
 
   if (config.PG_SEARCH) {
@@ -51,10 +51,7 @@ export default async function(req) {
   groupsTile.col = 1;
 
   const result = {
-    tiles: [
-      actionsTile,
-      groupsTile,
-    ],
+    tiles: [actionsTile, groupsTile],
   };
 
   return {

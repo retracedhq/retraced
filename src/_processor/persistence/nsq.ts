@@ -42,7 +42,11 @@ export class NSQClient {
   private readonly nsqdTCPAddresses: string[];
   private writer?: Promise<any>;
 
-  constructor(private readonly host: string, private readonly tcpPort: number, private readonly httpPort: number) {
+  constructor(
+    private readonly host: string,
+    private readonly tcpPort: number,
+    private readonly httpPort: number
+  ) {
     this.nsqdTCPAddresses = [`${host}:${tcpPort}`];
   }
 

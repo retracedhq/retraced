@@ -8,9 +8,7 @@ interface ActorCount {
   action_count: number;
 }
 
-export default async function selectTop(
-  opts: EnvironmentTimeRange
-): Promise<ActorCount[]> {
+export default async function selectTop(opts: EnvironmentTimeRange): Promise<ActorCount[]> {
   const select = `
   select
       active_actor.actor_id,

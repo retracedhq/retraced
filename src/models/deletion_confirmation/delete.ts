@@ -3,7 +3,7 @@ import { logger } from "../../logger";
 
 const pgPool = getPgPool();
 
-export default async function(id: string): Promise<boolean> {
+export default async function (id: string): Promise<boolean> {
   const q = `
     delete
     from
@@ -11,9 +11,7 @@ export default async function(id: string): Promise<boolean> {
     where
       id = $1
   `;
-  const v = [
-    id,
-  ];
+  const v = [id];
 
   const response = await pgPool.query(q, v);
 

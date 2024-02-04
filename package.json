@@ -72,6 +72,7 @@
     "eslint-plugin-prefer-arrow": "1.2.3",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
+    "prettier": "3.2.5",
     "release-it": "17.0.3",
     "rimraf": "5.0.5",
     "sinon": "17.0.1",
@@ -105,6 +106,8 @@
     "dev:delete:skaffold": "skaffold delete -f skaffold-dev.yaml",
     "demo:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo.yaml --status-check=false --force=true",
     "demo-services:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use run:skaffold or dev:skaffold instead' && skaffold run -f skaffold-demo-services.yaml --status-check=false --force=true",
+    "check-format": "prettier --check .",
+    "format": "prettier --write .",
     "release": "git checkout release && git merge origin/main && release-it && git checkout main && git merge origin/release && git push origin main"
   },
   "author": "",

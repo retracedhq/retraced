@@ -1,7 +1,7 @@
 import { checkViewerAccess } from "../../security/helpers";
 import updateSavedExport from "../../models/saved_export/update";
 
-export default async function(req) {
+export default async function (req) {
   const claims = await checkViewerAccess(req);
 
   await updateSavedExport({

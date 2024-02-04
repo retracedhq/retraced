@@ -15,12 +15,7 @@ export default async function saveActiveGroup(job) {
   ) values (
     to_timestamp($1::double precision / 1000), $2, $3, $4
   )`;
-  const v = [
-    jobObj.event.canonical_time,
-    jobObj.projectId,
-    jobObj.environmentId,
-    groupId,
-  ];
+  const v = [jobObj.event.canonical_time, jobObj.projectId, jobObj.environmentId, groupId];
   try {
     await pgPool.query(q, v);
   } catch (e) {

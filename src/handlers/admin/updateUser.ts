@@ -1,7 +1,7 @@
 import { checkAdminAccess } from "../../security/helpers";
 import updateUser from "../../models/user/update";
 
-export default async function(req) {
+export default async function (req) {
   const claims = await checkAdminAccess(req);
 
   if (claims.userId !== req.params.userId) {

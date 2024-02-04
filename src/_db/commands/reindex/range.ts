@@ -8,8 +8,7 @@ import searchES, { Options } from "../../../models/event/search";
 const pgPool = getPgPool();
 
 export const command = "range";
-export const desc =
-  "reindex a time range of events from postgres into elasticsearch";
+export const desc = "reindex a time range of events from postgres into elasticsearch";
 export const builder = {
   projectId: {
     alias: "p",
@@ -59,20 +58,11 @@ export const handler = async (argv) => {
     )
   );
 
-  const pgPreResults = await pgPool.query(
-    "SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received",
-    [
-      `[${new Date(argv.startTime).toISOString()}, ${new Date(
-        argv.endTime
-      ).toISOString()})`,
-    ]
-  );
+  const pgPreResults = await pgPool.query("SELECT COUNT(1) FROM ingest_task WHERE $1::tsrange @> received", [
+    `[${new Date(argv.startTime).toISOString()}, ${new Date(argv.endTime).toISOString()})`,
+  ]);
 
-  console.log(
-    picocolors.yellow(
-      `Postgres source events in range: ${pgPreResults.rows[0].count}`
-    )
-  );
+  console.log(picocolors.yellow(`Postgres source events in range: ${pgPreResults.rows[0].count}`));
 
   const esSearchOpts: Options = {
     index: `retraced.${argv.projectId}.${argv.environmentId}`,
@@ -91,9 +81,7 @@ export const handler = async (argv) => {
   const esPreResults = await searchES(esSearchOpts);
 
   console.log(
-    picocolors.yellow(
-      `ElasticSearch destination events in range: ${esPreResults.totalHits} (approximate)`
-    )
+    picocolors.yellow(`ElasticSearch destination events in range: ${esPreResults.totalHits} (approximate)`)
   );
 
   logger.info({
@@ -112,12 +100,7 @@ export const handler = async (argv) => {
     process.exit(0);
   }
 
-  const eventSource = new PostgresEventSource(
-    pgPool,
-    argv.startTime,
-    argv.endTime,
-    argv.pageSize
-  );
+  const eventSource = new PostgresEventSource(pgPool, argv.startTime, argv.endTime, argv.pageSize);
   const esTargetWriteIndex = `retraced.${argv.projectId}.${argv.environmentId}.current`;
   const eachPage = makePageIndexer(esTargetWriteIndex);
 

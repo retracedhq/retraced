@@ -13,12 +13,7 @@ export default async function saveUserReportingEvent(job) {
     ) values (
       to_timestamp($1::double precision / 1000), $2, $3, $4
     )`;
-    const v = [
-      jobObj.timestamp,
-      jobObj.projectId,
-      jobObj.environmentId,
-      jobObj.event,
-    ];
+    const v = [jobObj.timestamp, jobObj.projectId, jobObj.environmentId, jobObj.event];
     await pg.query(q, v);
   } finally {
     pg.release();

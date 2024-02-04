@@ -16,10 +16,7 @@ interface ByUser {
   user_id: string;
 }
 
-export default async function populateFromProject(
-  opts: ByEnv | ByUser,
-  pg: Querier = pgPool
-): Promise<void> {
+export default async function populateFromProject(opts: ByEnv | ByUser, pg: Querier = pgPool): Promise<void> {
   if ((opts as ByEnv).environment_id) {
     const insertQuery = `
       insert into environmentuser (
@@ -29,10 +26,7 @@ export default async function populateFromProject(
       from projectuser
       where project_id = $2`;
 
-    await pg.query(insertQuery, [
-      (opts as ByEnv).environment_id,
-      opts.project_id,
-    ]);
+    await pg.query(insertQuery, [(opts as ByEnv).environment_id, opts.project_id]);
     return;
   }
 

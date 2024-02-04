@@ -63,17 +63,12 @@ export default async function dailyReport(opts: Options): Promise<Record[]> {
   const result = await pgPool.query(select, [opts.offsetHour]);
 
   return result.rows.map((r) => {
-    r.recipients = _.zipWith(
-      r.recipient_emails,
-      r.recipient_ids,
-      r.recipient_tokens,
-      (email, id, token) => ({ email, id, token })
-    );
+    r.recipients = _.zipWith(r.recipient_emails, r.recipient_ids, r.recipient_tokens, (email, id, token) => ({
+      email,
+      id,
+      token,
+    }));
 
-    return _.omit(r, [
-      "recipient_emails",
-      "recipient_ids",
-      "recipient_tokens",
-    ]) as Record;
+    return _.omit(r, ["recipient_emails", "recipient_ids", "recipient_tokens"]) as Record;
   });
 }

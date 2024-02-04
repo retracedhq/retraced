@@ -1,162 +1,137 @@
 {
-	"info": {
-		"_postman_id": "65bd6b5e-cfab-4edc-b8fe-7bd980bc98ba",
-		"name": "Retraced",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "8391277"
-	},
-	"item": [
-		{
-			"name": "Save",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Got hash in return\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.hash).to.not.eql(undefined);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "token=dev",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"action\": \"action1\",\n  \"crud\": \"c\",\n  \"group\": {\n    \"id\": \"string\",\n    \"name\": \"group1\"\n  },\n  \"displayTitle\": \"string\",\n  \"created\": \"2022-03-21T07:17:54\",\n  \"actor\": {\n    \"id\": \"string\",\n    \"name\": \"actor1\",\n    \"href\": \"string\"\n  },\n  \"target\": {\n    \"id\": \"string\",\n    \"name\": \"target1\",\n    \"href\": \"target2\",\n    \"type\": \"target1\"\n  },\n  \"source_ip\": \"127.0.0.100\",\n  \"description\": \"descc\",\n  \"is_anonymous\": true,\n  \"is_failure\": true,\n  \"fields\": {},\n  \"component\": \"comp1\",\n  \"version\": \"v1\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/auditlog/publisher/v1/project/dev/event",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"auditlog",
-						"publisher",
-						"v1",
-						"project",
-						"dev",
-						"event"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Viewer Fetch",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "token=dev",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"query\": {\n        \"search_text\": \"127.0.0.3\"\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/auditlog/viewer/v1/project/dev/events/search",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"auditlog",
-						"viewer",
-						"v1",
-						"project",
-						"dev",
-						"events",
-						"search"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GraphQL",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Got a body with data\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.data).to.not.eql(undefined);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "token=dev",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"query\": \"{search {edges {node {actor {name} source_ip description action}}}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/auditlog/v1/graphql",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"auditlog",
-						"v1",
-						"graphql"
-					]
-				}
-			},
-			"response": []
-		}
-	]
+  "info": {
+    "_postman_id": "65bd6b5e-cfab-4edc-b8fe-7bd980bc98ba",
+    "name": "Retraced",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "8391277"
+  },
+  "item": [
+    {
+      "name": "Save",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Got hash in return\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.hash).to.not.eql(undefined);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "token=dev",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"action\": \"action1\",\n  \"crud\": \"c\",\n  \"group\": {\n    \"id\": \"string\",\n    \"name\": \"group1\"\n  },\n  \"displayTitle\": \"string\",\n  \"created\": \"2022-03-21T07:17:54\",\n  \"actor\": {\n    \"id\": \"string\",\n    \"name\": \"actor1\",\n    \"href\": \"string\"\n  },\n  \"target\": {\n    \"id\": \"string\",\n    \"name\": \"target1\",\n    \"href\": \"target2\",\n    \"type\": \"target1\"\n  },\n  \"source_ip\": \"127.0.0.100\",\n  \"description\": \"descc\",\n  \"is_anonymous\": true,\n  \"is_failure\": true,\n  \"fields\": {},\n  \"component\": \"comp1\",\n  \"version\": \"v1\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/auditlog/publisher/v1/project/dev/event",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["auditlog", "publisher", "v1", "project", "dev", "event"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Viewer Fetch",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "token=dev",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"query\": {\n        \"search_text\": \"127.0.0.3\"\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/auditlog/viewer/v1/project/dev/events/search",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["auditlog", "viewer", "v1", "project", "dev", "events", "search"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GraphQL",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Got a body with data\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data).to.not.eql(undefined);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "token=dev",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"query\": \"{search {edges {node {actor {name} source_ip description action}}}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/auditlog/v1/graphql",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["auditlog", "v1", "graphql"]
+        }
+      },
+      "response": []
+    }
+  ]
 }

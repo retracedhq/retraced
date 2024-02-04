@@ -9,9 +9,7 @@ export default async function hydrateProject(project) {
   const environments = await listEnvironments({
     projectId: project.id,
   });
-  const hydratedEnvironments = await Promise.all(
-    environments.map(hydrateEnvironment),
-  );
+  const hydratedEnvironments = await Promise.all(environments.map(hydrateEnvironment));
 
   const prunedEnvironments = [];
   _.forEach(hydratedEnvironments, (env) => {

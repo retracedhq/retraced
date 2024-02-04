@@ -11,20 +11,13 @@
     "skipLibCheck": true,
     "allowJs": true,
     "outDir": "build",
-    "lib": [
-      "es2015"
-    ],
+    "lib": ["es2015"],
     "pretty": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "resolveJsonModule": true,
     "esModuleInterop": true,
   },
-  "include": [
-    "src/**/*.js",
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*.js", "src/**/*.ts"],
+  "exclude": ["node_modules"],
 }

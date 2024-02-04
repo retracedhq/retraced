@@ -6,7 +6,7 @@ export default async function handle(
   authorization: string,
   projectId: string,
   environmentId: string,
-  code: string,
+  code: string
 ) {
   const claims = await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
 

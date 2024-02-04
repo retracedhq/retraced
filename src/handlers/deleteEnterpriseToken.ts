@@ -7,10 +7,7 @@ export async function deleteEnterpriseToken(
   groupId: string,
   eitapiTokenId: string
 ) {
-  const apiToken = await Authenticator.default().getApiTokenOr401(
-    authorization,
-    projectId
-  );
+  const apiToken = await Authenticator.default().getApiTokenOr401(authorization, projectId);
 
   const wasDeleted = await modelsDeleteEnterpriseToken({
     projectId,

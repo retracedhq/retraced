@@ -3,9 +3,7 @@ import { EnvironmentTimeRange } from "../../common";
 
 const pgPool = getPgPool();
 
-export default async function count(
-  opts: EnvironmentTimeRange
-): Promise<number> {
+export default async function count(opts: EnvironmentTimeRange): Promise<number> {
   const select = `
   select count(1) from active_actor
   where

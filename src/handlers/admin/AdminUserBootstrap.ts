@@ -67,9 +67,7 @@ export class AdminUserBootstrap {
       userId: user.id,
     });
 
-    const admintoken = await AdminTokenStore.default().createAdminToken(
-      user.id
-    );
+    const admintoken = await AdminTokenStore.default().createAdminToken(user.id);
 
     const response = {
       user: {
@@ -88,7 +86,6 @@ export class AdminUserBootstrap {
   }
 
   public handler() {
-    return (req: express.Request) =>
-      this.handle(req.get("Authorization"), req.body && req.body.claims);
+    return (req: express.Request) => this.handle(req.get("Authorization"), req.body && req.body.claims);
   }
 }

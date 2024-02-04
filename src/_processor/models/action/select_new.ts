@@ -3,9 +3,7 @@ import { EnvironmentTimeRange } from "../../common";
 
 const pgPool = getPgPool();
 
-export default async function selectNew(
-  opts: EnvironmentTimeRange
-): Promise<string[]> {
+export default async function selectNew(opts: EnvironmentTimeRange): Promise<string[]> {
   const select = `
   select action from action
   where

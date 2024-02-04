@@ -7,10 +7,7 @@ export async function listEnterpriseTokens(
   projectId: string,
   groupId: string
 ): Promise<EnterpriseTokenResponse[]> {
-  const apiToken = await Authenticator.default().getApiTokenOr401(
-    authorization,
-    projectId
-  );
+  const apiToken = await Authenticator.default().getApiTokenOr401(authorization, projectId);
 
   const tokens: EnterpriseTokenResponse[] = (
     await modelsListEnterpriseTokens({

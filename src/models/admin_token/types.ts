@@ -1,4 +1,3 @@
-
 export interface AdminToken {
   id: string;
   userId: string;

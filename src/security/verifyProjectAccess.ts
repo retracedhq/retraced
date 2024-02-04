@@ -1,4 +1,3 @@
-
 import getPgPool from "../persistence/pg";
 
 const pgPool = getPgPool();
@@ -8,7 +7,7 @@ export interface Options {
   userId: string;
 }
 
-export default async function(opts: Options): Promise<boolean> {
+export default async function (opts: Options): Promise<boolean> {
   const pg = await pgPool.connect();
   try {
     const q = "select count(1) from projectuser where user_id = $1 and project_id = $2";

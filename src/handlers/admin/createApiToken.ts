@@ -11,11 +11,5 @@ export default async function createAPIToken(
 ) {
   await checkAdminAccessUnwrapped(authorization, projectId);
 
-  return await createApiToken(
-    projectId,
-    environmentId,
-    values,
-    undefined,
-    token
-  );
+  return await createApiToken(projectId, environmentId, values, undefined, token);
 }
