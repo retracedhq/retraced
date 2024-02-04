@@ -10,10 +10,7 @@ export async function updateEnterpriseToken(
   displayName: string,
   viewLogAction: string | undefined
 ): Promise<EnterpriseTokenResponse> {
-  const apiToken = await Authenticator.default().getApiTokenOr401(
-    authorization,
-    projectId
-  );
+  const apiToken = await Authenticator.default().getApiTokenOr401(authorization, projectId);
 
   const updated = await modelsUpdateEnterpriseToken({
     eitapiTokenId,

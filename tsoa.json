@@ -1,17 +1,17 @@
 {
-    "entryFile": "./src/index.ts",
-    "controllerPathGlobs": ["./src/**/*Controller.ts"],
-    "spec": {
-      "outputDirectory": "build",
-      "specVersion": 3
-    },
-    "swagger": {
-        "outputDirectory": "./build",
-        "host": "localhost:3000"
-    },
-    "routes": {
-      "middleware": "express",
-      "routesDir": "./src/gen",
-      "middlewareTemplate": "./src/gen/express.tstmpl"
-    }
+  "entryFile": "./src/index.ts",
+  "controllerPathGlobs": ["./src/**/*Controller.ts"],
+  "spec": {
+    "outputDirectory": "build",
+    "specVersion": 3
+  },
+  "swagger": {
+    "outputDirectory": "./build",
+    "host": "localhost:3000"
+  },
+  "routes": {
+    "middleware": "express",
+    "routesDir": "./src/gen",
+    "middlewareTemplate": "./src/gen/express.tstmpl"
   }
+}

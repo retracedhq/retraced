@@ -1,13 +1,10 @@
-import {
-  Environment,
-  environmentFromRow,
-} from "./";
+import { Environment, environmentFromRow } from "./";
 
 import getPgPool from "../../persistence/pg";
 
 const pgPool = getPgPool();
 
-export default async function(envId: string): Promise<Environment | null> {
+export default async function (envId: string): Promise<Environment | null> {
   const q = `
     select
       id, name, project_id
@@ -16,9 +13,7 @@ export default async function(envId: string): Promise<Environment | null> {
     where
       id = $1
   `;
-  const v = [
-    envId,
-  ];
+  const v = [envId];
 
   const response = await pgPool.query(q, v);
 

@@ -5,14 +5,11 @@ import getApiToken from "../models/api_token/get";
 import { ApiToken } from "../models/api_token/index";
 
 export default class Authenticator {
-
   public static default() {
     return new Authenticator(getPgPool());
   }
 
-  constructor(
-    private readonly pgPool: pg.Pool,
-  ) { }
+  constructor(private readonly pgPool: pg.Pool) {}
 
   public async getApiTokenOr401(authorization: string, projectId: string): Promise<ApiToken> {
     const apiTokenId = apiTokenFromAuthHeader(authorization);

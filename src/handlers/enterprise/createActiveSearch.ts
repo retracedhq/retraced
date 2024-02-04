@@ -1,4 +1,3 @@
-
 import { checkEitapiAccessUnwrapped } from "../../security/helpers";
 import getSavedSearch from "../../models/saved_search/get";
 import createActiveSearch from "../../models/active_search/create";
@@ -15,12 +14,13 @@ export interface ActiveSearchId {
 }
 
 export default async function handler(req) {
-  return Responses.created(
-    await enterpriseCreateActiveSearch(req.get("Authorization"), req.body),
-  );
+  return Responses.created(await enterpriseCreateActiveSearch(req.get("Authorization"), req.body));
 }
 
-export async function enterpriseCreateActiveSearch(auth: string, activeSearchRequest: CreateActiveSearchRequest): Promise<ActiveSearchId> {
+export async function enterpriseCreateActiveSearch(
+  auth: string,
+  activeSearchRequest: CreateActiveSearchRequest
+): Promise<ActiveSearchId> {
   const eitapiToken = await checkEitapiAccessUnwrapped(auth);
   const savedSearchId = activeSearchRequest.saved_search_id;
 

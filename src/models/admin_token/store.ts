@@ -20,7 +20,10 @@ export class AdminTokenStore {
 
   private static instance: AdminTokenStore;
 
-  constructor(private readonly idSource: () => string, private readonly pool: pg.Pool) {}
+  constructor(
+    private readonly idSource: () => string,
+    private readonly pool: pg.Pool
+  ) {}
 
   @instrumented
   public async createAdminToken(userId: string): Promise<AdminToken> {

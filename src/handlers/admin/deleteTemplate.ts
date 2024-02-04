@@ -5,7 +5,7 @@ export default async function handle(
   authorization: string,
   projectId: string,
   templateId: string,
-  environmentId: string,
+  environmentId: string
 ) {
   await checkAdminAccessUnwrapped(authorization, projectId, environmentId);
 

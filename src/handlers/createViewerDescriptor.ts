@@ -15,8 +15,16 @@ export default async function handlerRaw(req): Promise<RawResponse> {
   const targetId = req.query.target_id;
   const viewLogAction = req.query.view_log_action;
   const actorId = req.query.actor_id;
-  const token: ViewerToken =
-    await createViewerDescriptor(auth, projectId, isAdmin, actorId, groupId, teamId, targetId, viewLogAction);
+  const token: ViewerToken = await createViewerDescriptor(
+    auth,
+    projectId,
+    isAdmin,
+    actorId,
+    groupId,
+    teamId,
+    targetId,
+    viewLogAction
+  );
   return Responses.created(token);
 }
 
@@ -28,7 +36,7 @@ export async function createViewerDescriptor(
   groupId?: string,
   teamId?: string,
   targetId?: string,
-  viewLogAction?: string,
+  viewLogAction?: string
 ): Promise<ViewerToken> {
   groupId = groupId || teamId;
   if (!groupId) {

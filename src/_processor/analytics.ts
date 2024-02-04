@@ -29,9 +29,12 @@ export class AnalyticsController {
       this.send();
     }
 
-    setInterval(() => {
-      this.send();
-    }, 60 * 60 * 24 * 1000);
+    setInterval(
+      () => {
+        this.send();
+      },
+      60 * 60 * 24 * 1000
+    );
   }
 
   send() {
@@ -43,9 +46,12 @@ export class AnalyticsController {
         },
         (err: Error | undefined) => {
           if (err) {
-            setTimeout(() => {
-              this.send();
-            }, 1000 * 60 * 60);
+            setTimeout(
+              () => {
+                this.send();
+              },
+              1000 * 60 * 60
+            );
             return;
           }
 

@@ -47,11 +47,7 @@ export const handler = (argv) => {
     if (argv.blockfile && argv.locationfile) {
       doUpload(argv);
     } else {
-      console.log(
-        picocolors.red(
-          'Both "locationfile" and "blockfile" parameters are required to upload'
-        )
-      );
+      console.log(picocolors.red('Both "locationfile" and "blockfile" parameters are required to upload'));
     }
     return;
   }

@@ -1,9 +1,5 @@
 import { checkAdminAccessUnwrapped } from "../../security/helpers";
-import {
-  responseFromTemplate,
-  TemplateResponse,
-  TemplateValues,
-} from "../../models/template";
+import { responseFromTemplate, TemplateResponse, TemplateValues } from "../../models/template";
 import createTemplate from "../../models/template/create";
 
 export default async function (

@@ -25,13 +25,7 @@ function cleanEvent(event: any): any {
     event.group = _.pick(event.group, ["id", "name"]);
   }
   if (event.actor) {
-    event.actor = _.pick(event.actor, [
-      "id",
-      "foreign_id",
-      "name",
-      "url",
-      "fields",
-    ]);
+    event.actor = _.pick(event.actor, ["id", "foreign_id", "name", "url", "fields"]);
 
     if (event.actor.foreign_id) {
       event.actor.id = event.actor.foreign_id;
@@ -39,14 +33,7 @@ function cleanEvent(event: any): any {
     }
   }
   if (event.target) {
-    event.target = _.pick(event.target, [
-      "id",
-      "foreign_id",
-      "name",
-      "url",
-      "type",
-      "fields",
-    ]);
+    event.target = _.pick(event.target, ["id", "foreign_id", "name", "url", "type", "fields"]);
 
     if (event.target.foreign_id) {
       event.target.id = event.target.foreign_id;

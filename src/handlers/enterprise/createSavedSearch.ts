@@ -22,9 +22,7 @@ export interface SavedSearch {
 }
 
 export default async function handler(req: express.Request) {
-  return Responses.created(
-    await createSavedSearchHandler(req.get("Authorization") || "", req.body)
-  );
+  return Responses.created(await createSavedSearchHandler(req.get("Authorization") || "", req.body));
 }
 
 export async function createSavedSearchHandler(
