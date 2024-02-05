@@ -40,7 +40,7 @@
     "pino": "8.18.0",
     "postgrator": "7.2.0",
     "progress": "2.0.3",
-    "redis": "4.6.12",
+    "redis": "4.6.13",
     "ruler": "1.0.0",
     "sanitize-filename": "1.6.3",
     "search-query-parser": "1.6.0",
