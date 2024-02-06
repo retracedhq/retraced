@@ -35,11 +35,6 @@ export default async function (req) {
       status: 404,
       body: JSON.stringify({ error: "Group does not belong to the environment" }),
     };
-  } else if (!req.body.name) {
-    return {
-      status: 400,
-      body: JSON.stringify({ error: "Name is required" }),
-    };
   } else if (
     req.body.config === undefined ||
     req.body.config === null ||
