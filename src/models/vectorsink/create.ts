@@ -6,7 +6,7 @@ const pgPool = getPgPool();
 const ERR_DUPLICATE_SINK_NAME = new Error("NAME_ALREADY_EXISTS");
 
 export type CreateSinkOptions = {
-  name: string;
+  name?: string;
   environmentId: string;
   groupId: string;
   projectId: string;
@@ -17,7 +17,7 @@ export type CreateSinkOptions = {
 export type Sink = {
   id: string;
   created: Date;
-  name: string;
+  name?: string;
   projectId: string;
   environmentId: string;
   groupId: string;
@@ -26,23 +26,14 @@ export type Sink = {
 };
 
 export default async function createSink(opts: CreateSinkOptions): Promise<Sink> {
-  // check for dupe name
-  let q =
-    "select count(1) from vectorsink where name = $1 AND project_id = $2 AND environment_id = $3 AND group_id = $4";
-  let v: (string | number)[] = [opts.name, opts.projectId, opts.environmentId, opts.groupId];
-  const dupeCheckResult = await pgPool.query(q, v);
-  if (dupeCheckResult.rows[0].count > 0) {
-    throw ERR_DUPLICATE_SINK_NAME;
-  }
-
   const now = new Date();
   const id = uniqueId();
-  q = `INSERT INTO vectorsink (id, created, name, project_id, environment_id, group_id, config, active)
+  const q = `INSERT INTO vectorsink (id, created, name, project_id, environment_id, group_id, config, active)
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
-  v = [
+  const v = [
     id,
     now.toISOString(),
-    opts.name,
+    opts.name || null,
     opts.projectId,
     opts.environmentId,
     opts.groupId,

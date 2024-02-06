@@ -5,16 +5,7 @@ export default async function (req) {
   try {
     await checkAdminAccess(req);
 
-    if (!req.body.name) {
-      return {
-        status: 400,
-        body: JSON.stringify({ error: "Name is required" }),
-      };
-    } else if (
-      req.body.config === undefined ||
-      req.body.config === null ||
-      typeof req.body.config !== "object"
-    ) {
+    if (req.body.config === undefined || req.body.config === null || typeof req.body.config !== "object") {
       return {
         status: 400,
         body: JSON.stringify({ error: "Config is required" }),
