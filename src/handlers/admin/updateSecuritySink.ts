@@ -1,5 +1,5 @@
 import { checkAdminAccess } from "../../security/helpers";
-import updateSink from "../../models/sink/update";
+import updateSink from "../../models/security_sink/update";
 
 export default async function (req) {
   try {

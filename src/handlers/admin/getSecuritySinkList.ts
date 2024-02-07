@@ -1,5 +1,5 @@
 import { checkAdminAccess } from "../../security/helpers";
-import { getByGroupId } from "../../models/sink/get";
+import { getByProjectEnvironmentGroupId } from "../../models/security_sink/get";
 import getGroup from "../../models/group/gets";
 
 export default async function (req) {
@@ -19,8 +19,17 @@ export default async function (req) {
       status: 404,
       body: JSON.stringify({ error: "Group does not belong to the project" }),
     };
+  } else if (groupRes[0].environment_id !== req.params.environmentId) {
+    return {
+      status: 404,
+      body: JSON.stringify({ error: "Group does not belong to the environment" }),
+    };
   } else {
-    const sinks = await getByGroupId(req.params.groupId);
+    const sinks = await getByProjectEnvironmentGroupId(
+      req.params.projectId,
+      req.params.environmentId,
+      req.params.groupId
+    );
 
     return {
       status: 200,

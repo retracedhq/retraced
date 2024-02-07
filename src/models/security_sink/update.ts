@@ -13,7 +13,7 @@ export default async function update(
     active?: boolean;
   }
 ) {
-  let q = `SELECT * FROM sink WHERE id = $1`;
+  let q = `SELECT * FROM security_sink WHERE id = $1`;
   let v = [id];
   const existing = await pgPool.query(q, v);
   if (existing.rows.length === 0) {
@@ -34,7 +34,7 @@ export default async function update(
       config: data.config || sink.config,
       active: data.active || sink.active,
     };
-    q = `UPDATE sink SET name = $1, config = $2, active = $3, 
+    q = `UPDATE security_sink SET name = $1, config = $2, active = $3, 
         project_id = $4, environment_id = $5, group_id = $6 WHERE id = $7`;
     v = [opts.name, opts.config, false, opts.project_id, opts.environment_id, opts.group_id, id];
     await pgPool.query(q, v);

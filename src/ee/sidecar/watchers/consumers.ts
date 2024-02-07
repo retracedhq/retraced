@@ -131,7 +131,7 @@ export function addConsumers() {
 }
 
 async function getAllSinks() {
-  const q = `SELECT * FROM sink where active = true`;
+  const q = `SELECT * FROM security_sink where active = true`;
   const sinks = await pg.query(q);
   return sinks;
 }

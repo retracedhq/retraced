@@ -10,12 +10,12 @@ import cancelEmailReport from "./handlers/admin/cancelEmailReport";
 import createEnvironment from "./handlers/admin/createEnvironment";
 import createInvite from "./handlers/admin/createInvite";
 import createProject from "./handlers/admin/createProject";
-import createSink from "./handlers/admin/createSink";
-import getSinkList from "./handlers/admin/getSinkList";
-import getSinkListByGroup from "./handlers/admin/getSinkListByGroup";
-import getSinkById from "./handlers/admin/getSinkById";
-import updateSink from "./handlers/admin/updateSink";
-import deleteSink from "./handlers/admin/deleteSink";
+import createSecuritySink from "./handlers/admin/createSecuritySink";
+import getSecuritySinkList from "./handlers/admin/getSecuritySinkList";
+import getSecuritySinkListByGroup from "./handlers/admin/getSecuritySinkListByGroup";
+import getSecuritySinkById from "./handlers/admin/getSecuritySinkById";
+import updateSecuritySink from "./handlers/admin/updateSecuritySink";
+import deleteSecuritySink from "./handlers/admin/deleteSecuritySink";
 import deleteTeamMember from "./handlers/admin/deleteTeamMember";
 import listTeamMembers from "./handlers/admin/listTeamMembers";
 import deleteInvite from "./handlers/admin/deleteInvite";
@@ -92,35 +92,35 @@ export default {
     method: "post",
     handler: createProject,
   },
-  adminGetSinkList: {
+  adminGetSecuritySinkList: {
     path: "/admin/v1/project/:projectId/environment/:environmentId/group/:groupId/sink",
     method: "get",
-    handler: getSinkList,
+    handler: getSecuritySinkList,
   },
-  adminGetSinksByGroup: {
+  adminGetSecuritySinksByGroup: {
     path: "/admin/v1/project/:projectId/group/:groupId/sink",
     method: "get",
-    handler: getSinkListByGroup,
+    handler: getSecuritySinkListByGroup,
   },
-  adminCreateSink: {
+  adminCreateSecuritySink: {
     path: "/admin/v1/project/:projectId/environment/:environmentId/group/:groupId/sink",
     method: "post",
-    handler: createSink,
+    handler: createSecuritySink,
   },
-  adminDeleteSink: {
+  adminDeleteSecuritySink: {
     path: "/admin/v1/project/:projectId/environment/:environmentId/group/:groupId/sink/:sinkId",
     method: "delete",
-    handler: deleteSink,
+    handler: deleteSecuritySink,
   },
-  adminGetSinkById: {
+  adminGetSecuritySinkById: {
     path: "/admin/v1/project/:projectId/environment/:environmentId/group/:groupId/sink/:sinkId",
     method: "get",
-    handler: getSinkById,
+    handler: getSecuritySinkById,
   },
-  adminUpdateSink: {
+  adminUpdateSecuritySink: {
     path: "/admin/v1/project/:projectId/environment/:environmentId/group/:groupId/sink/:sinkId",
     method: "put",
-    handler: updateSink,
+    handler: updateSecuritySink,
   },
   adminDeleteTeamMember: {
     path: "/admin/v1/project/:projectId/team/member/:userId",

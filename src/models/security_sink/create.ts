@@ -27,7 +27,7 @@ export type Sink = {
 export default async function createSink(opts: CreateSinkOptions): Promise<Sink> {
   const now = new Date();
   const id = uniqueId();
-  const q = `INSERT INTO vectorsink (id, created, name, project_id, environment_id, group_id, config, active)
+  const q = `INSERT INTO security_sink (id, created, name, project_id, environment_id, group_id, config, active)
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
   const v = [
     id,

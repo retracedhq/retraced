@@ -1,5 +1,5 @@
 import { checkAdminAccess } from "../../security/helpers";
-import createSink from "../../models/sink/create";
+import createSink from "../../models/security_sink/create";
 import getGroup from "../../models/group/gets";
 import upsertGroup from "../../_processor/models/group/upsert";
 import getPgPool from "../../persistence/pg";
