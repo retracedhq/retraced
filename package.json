@@ -20,7 +20,7 @@
     "cors": "2.8.5",
     "csv-string": "4.1.1",
     "csv-stringify": "6.4.5",
-    "dotenv": "16.4.4",
+    "dotenv": "16.4.5",
     "express": "4.18.2",
     "graphql": "16.8.1",
     "handlebars": "4.7.8",
