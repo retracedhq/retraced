@@ -82,16 +82,17 @@ export const handler = async (argv) => {
   let currentIndices: string[] = [];
   if (!aliasesBlob) {
     logger.error({msg: "no aliasesBlob"});
+  } else {
+    aliasesBlob.split("\n").forEach((aliasDesc) => {
+      const parts = aliasDesc.split(" ");
+      if (parts.length >= 2) {
+        currentIndices.push(parts[1]);
+      }
+    });
+    logger.info({msg: "found current read indices",
+      count: currentIndices.length,
+    });
   }
-  aliasesBlob.split("\n").forEach((aliasDesc) => {
-    const parts = aliasDesc.split(" ");
-    if (parts.length >= 2) {
-      currentIndices.push(parts[1]);
-    }
-  });
-  logger.info({msg: "found current read indices",
-    count: currentIndices.length,
-  });
 
   const aliasesBlobWrite = await es.cat.aliases({ name: esTargetWriteIndex });
   let currentIndicesWrite: string[] = [];
