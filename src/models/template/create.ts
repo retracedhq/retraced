@@ -34,7 +34,7 @@ export default async function createTemplate(opts: Opts): Promise<Template> {
   )`;
   const v = [
     template.id,
-    template.created.unix(),
+    template.created.unix() as any,
     template.updated,
     template.project_id,
     template.environment_id,

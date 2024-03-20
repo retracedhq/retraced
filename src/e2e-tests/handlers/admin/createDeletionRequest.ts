@@ -88,7 +88,13 @@ class CreateDeletionRequest {
       const res = await setup(pool);
       await pool.query(
         "INSERT INTO deletion_request (id, created, backoff_interval, resource_kind, resource_id) VALUES ($1, $2, $3, $4, $5)",
-        ["test", new Date(new Date().setMonth(new Date().getMonth() - 2)), 10000000, "environment", "test"]
+        [
+          "test",
+          new Date(new Date().setMonth(new Date().getMonth() - 2)) as any,
+          10000000,
+          "environment",
+          "test",
+        ]
       );
       const result = await handle(`id=${res.id} token=${res.token}`, "test", "test", {
         resourceKind: "environment",

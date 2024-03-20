@@ -56,7 +56,7 @@ describe("models.active_actor.select_top", () => {
         ) values (
           $1, $2, $3, $4
         )`,
-          [actorID, projectId, environmentId, created]
+          [actorID as any, projectId, environmentId, created]
         )
       );
     });
