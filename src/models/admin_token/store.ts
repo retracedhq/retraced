@@ -43,7 +43,7 @@ INSERT INTO admin_token (
   created
 ) VALUES ($1, $2, $3, $4)`;
 
-    const v = [id, userId, tokenBcrypt, created];
+    const v = [id, userId, tokenBcrypt, created as any];
 
     await this.pool.query(q, v);
 

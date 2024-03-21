@@ -39,7 +39,7 @@ export default async function ingestFromQueue(job: any) {
       task.new_event_id,
       task.project_id,
       task.environment_id,
-      task.received,
+      task.received as any,
       JSON.stringify(task.original_event),
     ]);
     if (results.rows.length === 0) {

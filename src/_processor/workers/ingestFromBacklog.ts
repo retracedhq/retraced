@@ -29,7 +29,7 @@ export default async function ingestFromBacklog() {
         ON CONFLICT DO NOTHING
         RETURNING id`;
 
-    const result = await pgPool.query(q, []);
+    const result = await pgPool.query(q);
 
     for (const row of result.rows) {
       const job = JSON.stringify({

@@ -19,7 +19,7 @@ export default async function createEnvironmentUser(opts: Opts) {
     ) values (
       $1, $2, $3, $4
     )`;
-  const v = [opts.environment_id, opts.user_id, dailyReport, emailTkn];
+  const v = [opts.environment_id, opts.user_id, dailyReport as any, emailTkn];
 
   await pgPool.query(q, v);
 
