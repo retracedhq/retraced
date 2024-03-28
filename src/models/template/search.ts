@@ -38,7 +38,7 @@ export default async function (opts: Options): Promise<Result> {
     const orderBy = opts.sortColumn === "name" ? "name" : "created";
 
     const q = `select ${fields} from display_template where environment_id = $1 order by ${orderBy} ${direction} limit $2 offset $3`;
-    const v = [opts.environmentId, opts.length, opts.offset];
+    const v = [opts.environmentId, opts.length as any, opts.offset];
     const pgResult = await pg.query(q, v);
 
     const result: Result = {

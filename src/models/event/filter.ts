@@ -69,14 +69,14 @@ export default async function filter(opts: Options): Promise<Result> {
         ORDER BY (doc-> 'canonical_time')::text::bigint ${_.toUpper(opts.sort)}, id ${_.toUpper(opts.sort)}
         LIMIT ${size}`;
 
-  const results = await pgPool.query(q, vals);
+  const results = await pgPool.query(q, vals as any);
   const events = results.rows ? results.rows.map((row) => row.doc) : [];
 
   const countQ = `
         SELECT COUNT(1)
         FROM indexed_events
         WHERE ${wheresForCountQ.join(" AND ")}`;
-  const count = await pgPool.query(countQ, valsForCountQ);
+  const count = await pgPool.query(countQ, valsForCountQ as any);
   const totalHits = parseInt(count.rows[0].count, 10);
 
   return {

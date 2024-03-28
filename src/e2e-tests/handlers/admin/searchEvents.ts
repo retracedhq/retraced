@@ -13,7 +13,7 @@ class SearchEvents {
       await setup(pool);
       await pool.query(
         "INSERT INTO token (token, created, disabled, environment_id, name, project_id, read_access, write_access) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-        ["test", new Date(), false, "test", "test", "test", true, true]
+        ["test", new Date() as any, false, "test", "test", "test", true, true]
       );
       const result = await searchEvents({
         headers: {
@@ -54,7 +54,7 @@ class SearchEvents {
       await setup(pool);
       await pool.query(
         "INSERT INTO token (token, created, disabled, environment_id, name, project_id, read_access, write_access) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-        ["test", new Date(), false, "test", "test", "test", false, true]
+        ["test", new Date() as any, false, "test", "test", "test", false, true]
       );
       await searchEvents({
         headers: {
@@ -82,7 +82,7 @@ class SearchEvents {
       await setup(pool);
       await pool.query(
         "INSERT INTO token (token, created, disabled, environment_id, name, project_id, read_access, write_access) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-        ["test", new Date(), false, "test", "test", "test", true, true]
+        ["test", new Date() as any, false, "test", "test", "test", true, true]
       );
       await searchEvents({
         headers: {

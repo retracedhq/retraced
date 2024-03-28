@@ -29,7 +29,7 @@ describe("models.action.select_new", () => {
           `
         insert into action (id, project_id, environment_id, action, first_active)
         values ($1, $2, $3, $4, $5)`,
-          [randomUUID(), projectId, environmentId, action, firstActive]
+          [randomUUID(), projectId, environmentId, action as any, firstActive]
         )
       );
     });

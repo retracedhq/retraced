@@ -63,7 +63,7 @@ export default async function createViewerDescriptor(opts: Options): Promise<Vie
     newDesc.isAdmin,
     newDesc.viewLogAction,
     newDesc.actorId,
-    moment(newDesc.created).format(),
+    moment(newDesc.created).format() as any,
     newDesc.scope,
   ];
 

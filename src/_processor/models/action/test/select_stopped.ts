@@ -29,7 +29,7 @@ describe("models.action.select_stopped", () => {
           `
         insert into action (id, project_id, environment_id, action, last_active)
         values ($1, $2, $3, $4, $5)`,
-          [randomUUID(), projectId, environmentId, action, lastActive]
+          [randomUUID(), projectId, environmentId, action as any, lastActive]
         )
       );
     });

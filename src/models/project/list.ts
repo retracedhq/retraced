@@ -26,7 +26,7 @@ export default async function listProjects(opts: Options) {
     where projectuser.user_id = $1`;
   const v =
     isNumeric(opts.offset) && isNumeric(opts.limit)
-      ? [opts.user_id, Number(opts.offset), Number(opts.limit)]
+      ? [opts.user_id, Number(opts.offset) as any, Number(opts.limit)]
       : [opts.user_id];
 
   const result = await pgPool.query(q, v);
