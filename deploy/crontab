@@ -4,3 +4,4 @@
 * * * * *		curl -d "{}" http://${NSQD_HOST}:${NSQD_HTTP_PORT}/pub?topic=every_minute
 0 12 1-8 * *		test -z "$RETRACED_DISABLE_GEOSYNC" && test $(date +\%u) -eq 3 && curl -d "{}" http://${NSQD_HOST}:${NSQD_HTTP_PORT}/pub?topic=first_wed_of_month
 * * * * * * *		curl -d "{}" http://${NSQD_HOST}:${NSQD_HTTP_PORT}/pub?topic=every_second
+*/5 * * * *		curl -d "{}" http://${NSQD_HOST}:${NSQD_HTTP_PORT}/pub?topic=pull_events_for_export

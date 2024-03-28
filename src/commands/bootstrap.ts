@@ -1,7 +1,6 @@
 import { bootstrapProject } from "../headless";
 import config from "../config";
 import updateGeoData from "../_processor/workers/updateGeoData";
-import { mmdbExists } from "../common/mmdb";
 import getPgPool from "../_db/persistence/pg";
 import { logger } from "../_processor/logger";
 
@@ -52,13 +51,13 @@ export const handler = async (argv) => {
         projectVarRef: "projectId",
         envVarRef: "environmentId",
       });
-      console.log(`Bootstraped project ${argv.projectId}`);
+      logger.info(`Bootstraped project ${argv.projectId}`);
 
       await startGeoSync();
 
       process.exit(0);
     } catch (ex) {
-      console.log("Retrying in 300ms", ex);
+      logger.info("Retrying in 300ms", ex);
     } finally {
       await sleep(300);
     }

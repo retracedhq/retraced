@@ -2,6 +2,7 @@ import _ from "lodash";
 import moment from "moment";
 import { Clock } from "../common";
 import { ClientWithRetry, getESWithRetry } from "../../persistence/elasticsearch";
+import sendToWebhook from "../../ee/export/index";
 import { instrumented, recordOtelHistogram } from "../../metrics/opentelemetry/instrumentation";
 
 export class ElasticsearchSaver {
@@ -28,6 +29,7 @@ export class ElasticsearchSaver {
     const alias = `retraced.${jobObj.projectId}.${jobObj.environmentId}.current`;
     try {
       await this.esIndex(event, alias);
+      sendToWebhook(event);
     } catch (e) {
       e.retry = true;
       throw e;

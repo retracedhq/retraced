@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retraced-sidecar
+spec:
+  template:
+    spec:
+      containers:
+        - name: sidecar
+          image: retracedhq/vector:tagwillbereplaced
+          imagePullPolicy: IfNotPresent

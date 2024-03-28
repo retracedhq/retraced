@@ -29,6 +29,7 @@ x-common-variables: &common-variables
   GEOIPUPDATE_USE_MMDB: ${GEOIPUPDATE_USE_MMDB}
   GEOIPUPDATE_ACCOUNT_ID: ${GEOIPUPDATE_ACCOUNT_ID}
   PG_SEARCH: ${PG_SEARCH}
+  SIDECAR_PORT: 3002
 
 services:
   retraced-api:
@@ -199,7 +200,7 @@ services:
     restart: "on-failure"
 
   admin-portal:
-    image: boxyhq/jackson:1.19.1
+    image: boxyhq/jackson:1.21.4
     ports:
       - "5225:5225"
     networks:
@@ -218,8 +219,29 @@ services:
       - RETRACED_HOST_URL=http://retraced-api:3000/auditlog
       - RETRACED_EXTERNAL_URL=http://localhost:3000/auditlog
       - RETRACED_ADMIN_ROOT_TOKEN=dev
+      - BOXYHQ_HOSTED=${BOXYHQ_HOSTED}
+      - BOXYHQ_LICENSE_KEY=${BOXYHQ_LICENSE_KEY}
     depends_on:
       - "retraced-api"
     restart: "always"
+
+  sidecar:
+    build:
+      context: .
+      dockerfile: ./deploy/sidecar/Dockerfile
+    environment: *common-variables
+    ports:
+      - "9393:9229"
+      - "3002:3002"
+    depends_on:
+      elasticsearch:
+        condition: service_started
+      postgres:
+        condition: service_started
+      nsqd:
+        condition: service_started
+    networks:
+      - retraced
 volumes:
   mmdb:
+  postgres-data:

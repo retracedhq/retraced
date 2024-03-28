@@ -21,6 +21,16 @@ export interface Options {
   cursor?: [number, string];
 }
 
+export interface SearchOptions {
+  from?: number;
+  query: string;
+  scope: Scope;
+  sort: "asc" | "desc";
+  size?: number;
+  afterCursor?: [number, string];
+  before?: number;
+}
+
 export interface TotalHits {
   value: number;
   relation?: string;
@@ -30,6 +40,21 @@ export interface Result {
   totalHits: TotalHits;
   events: any[];
 }
+
+export const queryEventsByReceived = async (opts: SearchOptions): Promise<Result> => {
+  const result = await doQueryByReceived(opts);
+
+  delete opts.afterCursor;
+  delete opts.before;
+  opts.size = 0;
+
+  const total = await doQueryByReceived(opts);
+
+  return {
+    totalHits: total.totalHits,
+    events: result.events,
+  };
+};
 
 export default async function query(opts: Options): Promise<Result> {
   const result = await doQuery(opts);
@@ -47,6 +72,26 @@ export default async function query(opts: Options): Promise<Result> {
 
 async function doQuery(opts: Options): Promise<Result> {
   const params = searchParams(opts);
+
+  const newResp = await es.search(params);
+
+  const bodyAny: any = params.body;
+  const countParams = {
+    index: params.index,
+    body: {
+      query: bodyAny.query,
+    },
+  };
+  const newCount = await es.count(countParams);
+
+  return {
+    totalHits: { value: newCount.body.count },
+    events: _.map(newResp.body.hits.hits, ({ _source }) => _source),
+  };
+}
+
+async function doQueryByReceived(opts: SearchOptions): Promise<Result> {
+  const params = searchParamsByReceived(opts);
 
   const newResp = await es.search(params);
 
@@ -316,4 +361,53 @@ export function searchParams(opts: Options): RequestParams.Search {
   //   search_after: opts.cursor,
   //   body: { query },
   // };
+}
+
+export function searchParamsByReceived(opts: SearchOptions): RequestParams.Search {
+  const searchQuery = parse(opts.query);
+  const [index, securityFilters] = scope(opts.scope);
+
+  searchQuery.bool.filter.push(...securityFilters);
+
+  if (opts.afterCursor) {
+    const [timestamp] = opts.afterCursor;
+    const isAsc = /asc/.test(opts.sort);
+
+    searchQuery.bool.filter.push({
+      bool: {
+        must: {
+          range: {
+            received: {
+              [isAsc ? "gt" : "lt"]: timestamp,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  if (opts.before) {
+    searchQuery.bool.filter.push({
+      bool: {
+        must: {
+          range: {
+            received: {
+              lte: opts.before,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  return {
+    index,
+    _source: "true",
+    size: opts.size !== 0 ? opts.size : undefined,
+    from: opts.from,
+    body: {
+      query: searchQuery,
+      sort: [{ received: opts.sort }],
+    },
+  };
 }
