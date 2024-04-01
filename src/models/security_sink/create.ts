@@ -39,7 +39,7 @@ export default async function createSink(opts: CreateSinkOptions): Promise<Sink>
     JSON.stringify(opts.config),
     opts.active ? 1 : 0,
   ];
-  await pgPool.query(q, v);
+  await pgPool.query(q, v as any);
 
   return {
     id,

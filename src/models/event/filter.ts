@@ -123,14 +123,14 @@ export const filterEventsByReceived = async (opts: SearchOptions): Promise<Resul
         ORDER BY (doc-> 'received')::text::bigint ${_.toUpper(opts.sort)}, id ${_.toUpper(opts.sort)}
         LIMIT ${size} ${opts.from ? `OFFSET ${opts.from}` : ""}`;
 
-  const results = await pgPool.query(q, vals);
+  const results = await pgPool.query(q, vals as any);
   const events = results.rows ? results.rows.map((row) => row.doc) : [];
 
   const countQ = `
         SELECT COUNT(1)
         FROM indexed_events
         WHERE ${wheresForCountQ.join(" AND ")}`;
-  const count = await pgPool.query(countQ, valsForCountQ);
+  const count = await pgPool.query(countQ, valsForCountQ as any);
   const totalHits = parseInt(count.rows[0].count, 10);
 
   return {
