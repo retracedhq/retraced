@@ -34,7 +34,7 @@
     "nodemailer-mandrill-transport": "1.2.0",
     "nsqjs": "0.13.0",
     "pg": "8.11.3",
-    "pg-cursor": "2.10.3",
+    "pg-cursor": "2.10.4",
     "pg-format": "1.0.4",
     "picocolors": "1.0.0",
     "pino": "8.19.0",
