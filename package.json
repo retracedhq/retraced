@@ -37,7 +37,7 @@
     "pg-cursor": "2.10.5",
     "pg-format": "1.0.4",
     "picocolors": "1.0.0",
-    "pino": "8.19.0",
+    "pino": "8.20.0",
     "postgrator": "7.2.0",
     "progress": "2.0.3",
     "redis": "4.6.13",
