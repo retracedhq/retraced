@@ -5,16 +5,28 @@ const pgPool = getPgPool();
 export const getByProjectEnvironmentGroupId = async (
   projectId: string,
   environmentId: string,
-  groupId: string
+  groupId: string,
+  offset?: number,
+  limit?: number
 ) => {
-  const q = `SELECT * FROM security_sink WHERE project_id = $1 AND environment_id = $2 AND group_id = $3`;
-  const result = await pgPool.query(q, [projectId, environmentId, groupId]);
+  let q = `SELECT * FROM security_sink WHERE project_id = $1 AND environment_id = $2 AND group_id = $3`;
+  const v = [projectId, environmentId, groupId];
+  if (offset !== undefined && limit !== undefined) {
+    v.push(offset.toString(), limit.toString());
+    q += ` OFFSET $4 LIMIT $5`;
+  }
+  const result = await pgPool.query(q, v);
   return result.rows;
 };
 
-export const getByGroupId = async (groupId: string) => {
-  const q = `SELECT * FROM security_sink WHERE group_id = $1`;
-  const result = await pgPool.query(q, [groupId]);
+export const getByGroupId = async (groupId: string, offset?: number, limit?: number) => {
+  const v = [groupId];
+  let q = `SELECT * FROM security_sink WHERE group_id = $1`;
+  if (offset !== undefined && limit !== undefined) {
+    v.push(offset.toString(), limit.toString());
+    q += ` OFFSET $2 LIMIT $3`;
+  }
+  const result = await pgPool.query(q, v);
   return result.rows;
 };
 

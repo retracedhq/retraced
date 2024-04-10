@@ -20,7 +20,15 @@ export default async function (req) {
       body: JSON.stringify({ error: "Group does not belong to the project" }),
     };
   } else {
-    const sinks = await getByGroupId(req.params.groupId);
+    const { pageOffset, pageLimit } = req.query;
+
+    const offset = parseInt(pageOffset) || 0;
+    const limit = parseInt(pageLimit);
+
+    const sinks =
+      !isNaN(offset) && !isNaN(limit)
+        ? await getByGroupId(req.params.groupId, offset, limit)
+        : await getByGroupId(req.params.groupId);
 
     return {
       status: 200,

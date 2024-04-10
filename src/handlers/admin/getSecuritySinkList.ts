@@ -25,11 +25,25 @@ export default async function (req) {
       body: JSON.stringify({ error: "Group does not belong to the environment" }),
     };
   } else {
-    const sinks = await getByProjectEnvironmentGroupId(
-      req.params.projectId,
-      req.params.environmentId,
-      req.params.groupId
-    );
+    const { pageOffset, pageLimit } = req.query;
+
+    const offset = parseInt(pageOffset) || 0;
+    const limit = parseInt(pageLimit);
+
+    const sinks =
+      !isNaN(offset) && !isNaN(limit)
+        ? await getByProjectEnvironmentGroupId(
+            req.params.projectId,
+            req.params.environmentId,
+            req.params.groupId,
+            offset,
+            limit
+          )
+        : await getByProjectEnvironmentGroupId(
+            req.params.projectId,
+            req.params.environmentId,
+            req.params.groupId
+          );
 
     return {
       status: 200,
