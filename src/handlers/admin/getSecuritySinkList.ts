@@ -27,8 +27,8 @@ export default async function (req) {
   } else {
     const { pageOffset, pageLimit } = req.query;
 
-    const offset = parseInt(pageOffset) || 0;
-    const limit = parseInt(pageLimit);
+    const offset = parseInt(pageOffset, 10) || 0;
+    const limit = parseInt(pageLimit, 10);
 
     const sinks =
       !isNaN(offset) && !isNaN(limit)
