@@ -9,7 +9,7 @@ export const getByProjectEnvironmentGroupId = async (
   offset?: number,
   limit?: number
 ) => {
-  let q = `SELECT * FROM security_sink WHERE project_id = $1 AND environment_id = $2 AND group_id = $3`;
+  let q = `SELECT * FROM security_sink WHERE project_id = $1 AND environment_id = $2 AND group_id = $3 ORDER BY created DESC`;
   const v = [projectId, environmentId, groupId];
   if (offset !== undefined && limit !== undefined) {
     v.push(offset.toString(), limit.toString());
@@ -21,7 +21,7 @@ export const getByProjectEnvironmentGroupId = async (
 
 export const getByGroupId = async (groupId: string, offset?: number, limit?: number) => {
   const v = [groupId];
-  let q = `SELECT * FROM security_sink WHERE group_id = $1`;
+  let q = `SELECT * FROM security_sink WHERE group_id = $1 ORDER BY created DESC`;
   if (offset !== undefined && limit !== undefined) {
     v.push(offset.toString(), limit.toString());
     q += ` OFFSET $2 LIMIT $3`;
