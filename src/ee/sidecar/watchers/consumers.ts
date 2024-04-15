@@ -3,7 +3,7 @@ import getPgPool from "../../../persistence/pg";
 import uniqueId from "../../../models/uniqueId";
 import { searchByReceived, encodeCursor, decodeCursor } from "../../../handlers/graphql/search";
 import { logger } from "../../../logger";
-import { getSinkInstance } from "../../sinks";
+import getSinkInstance from "@boxyhq/security-sinks";
 
 const pg = getPgPool();
 const batchSize = 1000;
