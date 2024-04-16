@@ -225,6 +225,7 @@ jobs:
         with:
           format: spdx
           artifact-name: retraced_sbom.spdx
+          upload-artifact-retention: 1
       - name: Publish report [SPDX]
         uses: anchore/sbom-action/publish-sbom@v0
         with:
@@ -234,6 +235,7 @@ jobs:
         with:
           format: cyclonedx
           artifact-name: retraced_sbom.cyclonedx
+          upload-artifact-retention: 1
       - name: Publish report [CycloneDx]
         uses: anchore/sbom-action/publish-sbom@v0
         with:
@@ -265,6 +267,7 @@ jobs:
           image: ${{ steps.slug.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: spdx
           artifact-name: docker_sbom.spdx
+          upload-artifact-retention: 1
       - name: Publish report [Docker][SPDX]
         if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
@@ -277,6 +280,7 @@ jobs:
           image: ${{ steps.slug.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: cyclonedx
           artifact-name: docker_sbom.cyclonedx
+          upload-artifact-retention: 1
       - name: Publish report [Docker][CycloneDx]
         if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
