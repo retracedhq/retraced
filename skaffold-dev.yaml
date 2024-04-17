@@ -6,6 +6,10 @@ build:
       context: ./
       docker:
         dockerfile: ./deploy/Dockerfile-slim
+    - image: retracedhq/vector-local
+      context: ./
+      docker:
+        dockerfile: ./deploy/sidecar/Dockerfile
   platforms:
     - linux/amd64
     - linux/arm64

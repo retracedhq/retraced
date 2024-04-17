@@ -12,6 +12,16 @@ export interface Options {
   cursor?: [number, string];
 }
 
+export interface SearchOptions {
+  from?: number;
+  query: string;
+  scope: Scope;
+  sort: "asc" | "desc";
+  size?: number;
+  afterCursor?: [number, string];
+  before?: number;
+}
+
 export interface Result {
   totalHits: any;
   events: any[];
@@ -74,6 +84,60 @@ export default async function filter(opts: Options): Promise<Result> {
     totalHits: { value: totalHits },
   };
 }
+
+export const filterEventsByReceived = async (opts: SearchOptions): Promise<Result> => {
+  const query = _.isString(opts.query) ? parseQuery(opts.query) : opts.query;
+  const filters = getFilters(query, opts.scope);
+  const size = opts.size || defaultSize;
+  const wheres = filters.map(({ where }) => where);
+  const vals = _.flatten(filters.map(({ values }) => values));
+
+  const wheresForCountQ = wheres.slice();
+  const valsForCountQ = vals.slice();
+  const nextParam = paramer(vals.length);
+
+  if (opts.afterCursor) {
+    if (opts.sort === "desc") {
+      wheres.push(`((doc -> 'received')::text::bigint < ${nextParam()})`);
+      vals.push(opts.afterCursor[0]);
+    } else {
+      wheres.push(`((doc -> 'received')::text::bigint > ${nextParam()})`);
+      vals.push(opts.afterCursor[0]);
+    }
+  }
+
+  if (opts.before) {
+    if (opts.sort === "desc") {
+      wheres.push(`((doc -> 'received')::text::bigint >= ${nextParam()})`);
+      vals.push(opts.before);
+    } else {
+      wheres.push(`((doc -> 'received')::text::bigint <= ${nextParam()})`);
+      vals.push(opts.before);
+    }
+  }
+
+  const q = `
+        SELECT doc
+        FROM indexed_events
+        WHERE ${wheres.join(" AND ")}
+        ORDER BY (doc-> 'received')::text::bigint ${_.toUpper(opts.sort)}, id ${_.toUpper(opts.sort)}
+        LIMIT ${size} ${opts.from ? `OFFSET ${opts.from}` : ""}`;
+
+  const results = await pgPool.query(q, vals as any);
+  const events = results.rows ? results.rows.map((row) => row.doc) : [];
+
+  const countQ = `
+        SELECT COUNT(1)
+        FROM indexed_events
+        WHERE ${wheresForCountQ.join(" AND ")}`;
+  const count = await pgPool.query(countQ, valsForCountQ as any);
+  const totalHits = parseInt(count.rows[0].count, 10);
+
+  return {
+    events,
+    totalHits: { value: totalHits },
+  };
+};
 
 const paramer = (after: number): (() => string) => {
   return (): string => `$${++after}`;

@@ -8,5 +8,6 @@ resources:
   - ./nsqd-service.yaml
   - ./processor-deployment.yaml
   - ./geoipupdate.yaml
+  - ./sidecar-deployment.yaml
 
 namespace: default

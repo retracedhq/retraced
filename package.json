@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@boxyhq/metrics": "0.2.6",
+    "@boxyhq/security-sinks": "^0.0.0",
     "@bugsnag/js": "7.22.4",
     "@bugsnag/plugin-express": "7.19.0",
     "@maxmind/geoip2-node": "5.0.0",
@@ -23,6 +24,7 @@
     "dotenv": "16.4.5",
     "express": "4.19.2",
     "graphql": "16.8.1",
+    "graphql-ws": "5.14.1",
     "handlebars": "4.7.8",
     "joi": "17.12.3",
     "jsonwebtoken": "9.0.2",
@@ -44,11 +46,13 @@
     "ruler": "1.0.0",
     "sanitize-filename": "1.6.3",
     "search-query-parser": "1.6.0",
+    "splunk-logging": "0.11.1",
     "ssl-config": "1.0.0",
     "swagger-ui-express": "5.0.0",
     "tsoa": "6.2.0",
     "unzipper": "0.11.3",
     "walk": "2.3.15",
+    "ws": "8.14.2",
     "yargs": "17.7.2"
   },
   "devDependencies": {
@@ -98,6 +102,7 @@
     "dev:processor": "PROCESSOR_DEV_PORT=3001 node --inspect=0.0.0.0 -r ts-node/register src/_processor/index.ts",
     "dev:geo": "node --inspect=0.0.0.0 -r ts-node/register src/_processor/workers/updateGeoData.ts",
     "dev:bootstrap": "node --inspect=0.0.0.0 -r ts-node/register src/retracedctl.ts bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev",
+    "dev:sidecar": "node --inspect=0.0.0.0 -r ts-node/register src/ee/sidecar/index.ts",
     "dev:elastic-migration": "node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts es",
     "dev:pg-migration": "node --inspect=0.0.0.0 -r ts-node/register src/_db/runner-lite.ts pg",
     "dev": "docker compose up -d",

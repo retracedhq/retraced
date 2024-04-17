@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retraced-sidecar
+  namespace: '{{repl ConfigOption "namespace"}}'
+spec:
+  selector:
+    matchLabels:
+      tier: sidecar
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        tier: sidecar
+    spec:
+      containers:
+        - name: sidecar
+          image: retracedhq/vector-local
+          imagePullPolicy: IfNotPresent
+          startupProbe:
+            httpGet:
+              port: 3002
+              path: /api/v1/health
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              port: 3002
+              path: /api/v1/health
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+            successThreshold: 2
+          ports:
+            - containerPort: 3002
+            - containerPort: 8686
+          envFrom:
+            - secretRef:
+                name: auditlog
+          resources:
+            requests:
+              cpu: 100m
+            limits:
+              cpu: 1000m
