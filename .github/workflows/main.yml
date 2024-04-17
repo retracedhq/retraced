@@ -87,7 +87,7 @@ jobs:
 
       - name: Run docker-compose up
         id: docker_compose
-        uses: isbang/compose-action@v1.5.1
+        uses: isbang/compose-action@v2.0.0
         with:
           compose-file: "./docker-compose.yaml"
 
@@ -117,7 +117,7 @@ jobs:
 
       - name: Run docker-compose up
         id: docker_compose
-        uses: isbang/compose-action@v1.5.1
+        uses: isbang/compose-action@v2.0.0
         with:
           compose-file: "./docker-compose.yaml"
         env:
@@ -250,6 +250,7 @@ jobs:
         with:
           format: spdx
           artifact-name: retraced_sbom.spdx
+          upload-artifact-retention: 1
 
       - name: Publish report [SPDX]
         uses: anchore/sbom-action/publish-sbom@v0
@@ -261,6 +262,7 @@ jobs:
         with:
           format: cyclonedx
           artifact-name: retraced_sbom.cyclonedx
+          upload-artifact-retention: 1
 
       - name: Publish report [CycloneDx]
         uses: anchore/sbom-action/publish-sbom@v0
@@ -298,6 +300,7 @@ jobs:
           image: ${{ steps.slug.outputs.RETRACED_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: spdx
           artifact-name: retraced_docker_sbom.spdx
+          upload-artifact-retention: 1
 
       - name: Create SBOM Report [Docker][SPDX][Sidecar]
         if: github.ref == 'refs/heads/release'
@@ -306,6 +309,7 @@ jobs:
           image: ${{ steps.slug.outputs.SIDECAR_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: spdx
           artifact-name: sidecar_docker_sbom.spdx
+          upload-artifact-retention: 1
 
       - name: Publish report [Docker][SPDX]
         if: github.ref == 'refs/heads/release'
@@ -320,6 +324,7 @@ jobs:
           image: ${{ steps.slug.outputs.RETRACED_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: cyclonedx
           artifact-name: retraced_docker_sbom.cyclonedx
+          upload-artifact-retention: 1
 
       - name: Create SBOM Report [Docker][CycloneDx][Sidecar]
         if: github.ref == 'refs/heads/release'
@@ -328,6 +333,7 @@ jobs:
           image: ${{ steps.slug.outputs.SIDECAR_IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: cyclonedx
           artifact-name: sidecar_docker_sbom.cyclonedx
+          upload-artifact-retention: 1
 
       - name: Publish report [Docker][CycloneDx]
         if: github.ref == 'refs/heads/release'
