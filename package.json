@@ -7,7 +7,7 @@
   "dependencies": {
     "@boxyhq/metrics": "0.2.6",
     "@bugsnag/js": "7.22.7",
-    "@bugsnag/plugin-express": "7.19.0",
+    "@bugsnag/plugin-express": "7.22.7",
     "@maxmind/geoip2-node": "5.0.0",
     "@opensearch-project/opensearch": "2.7.0",
     "@retracedhq/retraced": "0.7.9",
