@@ -11,7 +11,7 @@
     "@maxmind/geoip2-node": "5.0.0",
     "@opensearch-project/opensearch": "2.7.0",
     "@retracedhq/retraced": "0.7.9",
-    "@segment/analytics-node": "2.1.0",
+    "@segment/analytics-node": "2.1.1",
     "axios": "1.6.8",
     "bcryptjs": "2.4.3",
     "chance": "1.1.11",
