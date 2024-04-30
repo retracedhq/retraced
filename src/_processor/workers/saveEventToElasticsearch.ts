@@ -35,6 +35,12 @@ export class ElasticsearchSaver {
 
     const alias = `retraced.${jobObj.projectId}.${jobObj.environmentId}.current`;
     try {
+      // Old events may have "<nil>" as the expiration date. We still need to save them.
+      if (event.fields && event.fields["expiration_date"] === "<nil>") {
+        console.log("Deleting expiration_date field because it's invalid.");
+        delete event.fields["expiration_date"];
+      }
+
       await this.esIndex(event, alias);
     } catch (e) {
       e.retry = true;
