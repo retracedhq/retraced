@@ -58,7 +58,7 @@
     "@types/lodash": "4.17.0",
     "@types/mocha": "10.0.6",
     "@types/node": "20.12.8",
-    "@types/nodemailer": "6.4.14",
+    "@types/nodemailer": "6.4.15",
     "@types/pg": "8.11.5",
     "@types/sinon": "17.0.3",
     "@types/swagger-jsdoc": "6.0.4",
