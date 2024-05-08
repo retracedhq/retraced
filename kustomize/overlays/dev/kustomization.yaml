@@ -25,6 +25,6 @@ commonLabels:
 
 images:
   - name: boxyhq/jackson
-    newTag: 1.12.0
+    newTag: 1.23.9
   - name: retracedhq/retraced
-    newTag: 1.8.0
+    newTag: 1.9.1
