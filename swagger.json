@@ -2433,5 +2433,6 @@
 			"url": "http://localhost:3000/auditlog",
 			"description": "Local"
 		}
-	]
+	],
+	"name": "Audit Logs API"
 }

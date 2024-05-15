@@ -5,6 +5,7 @@
     "outputDirectory": "build",
     "specVersion": 3,
     "spec": {
+      "name": "Audit Logs API",
       "servers": [
         {
           "url": "http://localhost:3000/auditlog",
