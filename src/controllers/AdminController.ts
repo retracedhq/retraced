@@ -11,6 +11,7 @@ import {
   Controller,
   Put,
   Request,
+  Tags,
 } from "tsoa";
 import express from "express";
 
@@ -42,6 +43,7 @@ import { checkAdminAccessUnwrapped } from "../security/helpers";
 import uniqueId from "../models/uniqueId";
 
 @Route("admin/v1")
+@Tags("Admin API")
 export class AdminAPI extends Controller {
   private readonly adminTokenStore: AdminTokenStore;
 

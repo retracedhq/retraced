@@ -1,4 +1,4 @@
-import { Body, Controller, Request, Example, Header, Post, Route, SuccessResponse } from "tsoa";
+import { Body, Controller, Request, Example, Header, Post, Route, SuccessResponse, Tags } from "tsoa";
 import { Request as Req } from "express";
 
 import {
@@ -56,6 +56,7 @@ import enterpriseSearchAdHoc from "../handlers/enterprise/searchAdHoc";
 */
 
 @Route("enterprise/v1")
+@Tags("Enterprise API")
 export class EnterpriseAPI extends Controller {
   /**
    * Query events with GraphQL
