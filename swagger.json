@@ -966,6 +966,9 @@
 					}
 				},
 				"description": "Create an event. Returns the id of the created event, and\na cryptographic hash of the received event, as described at\nhttps://boxyhq.com/docs/retraced/architecture/hashing-formula",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1031,6 +1034,9 @@
 					}
 				},
 				"description": "Create one or more events. Returns a list of the ids of the created event and\na cryptographic hash of each received events, as described at\nhttps://boxyhq.com/docs/retraced/architecture/hashing-formula",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1087,6 +1093,9 @@
 					}
 				},
 				"description": "Create a token for use with the Retraced embedded viewer as described at\n\nhttps://boxyhq.com/docs/retraced/getting-started/embedded-viewer\n\n**Note**: At least one of `group_id` or `team_id` is required.",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1188,6 +1197,9 @@
 					}
 				},
 				"description": "Create a token for use with Enterprise IT API\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1265,6 +1277,9 @@
 					}
 				},
 				"description": "List all Enterprise IT API tokens.\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1322,6 +1337,9 @@
 					}
 				},
 				"description": "Retrieve an Enterprise IT API token.\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1386,6 +1404,9 @@
 					}
 				},
 				"description": "Update an Enterprise IT API token\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1446,6 +1467,9 @@
 					}
 				},
 				"description": "Delete an Enterprise IT API token\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1503,6 +1527,9 @@
 					}
 				},
 				"description": "Query events with GraphQL\n\nhttps://boxyhq.com/docs/retraced/apis/graphql",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1554,6 +1581,9 @@
 					}
 				},
 				"description": "Query events with GraphQL\n\nhttps://boxyhq.com/docs/retraced/apis/graphql",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1603,6 +1633,9 @@
 					}
 				},
 				"description": "Initiate an active search. An active search will maintain\na persistent cursor that can be used at a later date to\nretrieve additional events from the search.\n\n\nAuthenticate with an Enterprise API token.",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1652,6 +1685,9 @@
 					}
 				},
 				"description": "Create a saved search.\nSaved searches have an ID that can be used to initiate an active search.\n\nAuthenticate with an Enterprise API token.",
+				"tags": [
+					"Enterprise API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1694,6 +1730,9 @@
 					}
 				},
 				"description": "Create an invite. Sends an invitation email to the user.",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1746,6 +1785,9 @@
 					}
 				},
 				"description": "List all invites.",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1778,6 +1820,9 @@
 					}
 				},
 				"description": "Delete an invite.",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1826,6 +1871,9 @@
 					}
 				},
 				"description": "Create a template. An overview of Template usage in Retraced can be found at\n\nhttps://boxyhq.com/docs/retraced/advanced/display-templates",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1884,6 +1932,9 @@
 					}
 				},
 				"description": "Search templates. An overview of Template usage in Retraced can be found at\n\nhttps://boxyhq.com/docs/retraced/advanced/display-templates",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -1945,6 +1996,9 @@
 					}
 				},
 				"description": "Delete a template. An overview of Template usage in Retraced can be found at\n\nhttps://boxyhq.com/docs/retraced/advanced/display-templates",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -2002,6 +2056,9 @@
 					}
 				},
 				"description": "Create a new environment.",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -2044,6 +2101,9 @@
 					}
 				},
 				"description": "Delete an environment and all of its dependents.\nThis is only allowed if\n1) the environment is empty (i.e. it lacks any recorded events), or\n2) an outstanding \"deletion request\" has been approved.",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -2092,6 +2152,9 @@
 					}
 				},
 				"description": "Create a resource deletion request and associated confirmation\nrequirements (as necessary).",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -2150,6 +2213,9 @@
 					}
 				},
 				"description": "Get the current status of an outstanding deletion request.",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -2200,6 +2266,9 @@
 					}
 				},
 				"description": "Mark a deletion confirmation as received (i.e. approve it).",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -2257,6 +2326,9 @@
 					}
 				},
 				"description": "Create a new API token.",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -2314,6 +2386,9 @@
 					}
 				},
 				"description": "Update an API token's fields.",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -2365,6 +2440,9 @@
 					}
 				},
 				"description": "Delete an API token.",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -2413,6 +2491,9 @@
 					}
 				},
 				"description": "Create an admin token. An Admin Token can be used to impersonate a user,\nand will have access to all the user's projects, environments, and events.",
+				"tags": [
+					"Admin API"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -2433,6 +2514,5 @@
 			"url": "http://localhost:3000/auditlog",
 			"description": "Local"
 		}
-	],
-	"name": "Audit Logs API"
+	]
 }

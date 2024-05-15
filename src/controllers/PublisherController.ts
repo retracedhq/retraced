@@ -11,6 +11,7 @@ import {
   SuccessResponse,
   Controller,
   Example,
+  Tags,
 } from "tsoa";
 import {
   defaultEventCreater,
@@ -34,6 +35,7 @@ import { graphQL } from "../handlers/graphql";
 import { GraphQLRequest, GraphQLResp } from "../handlers/graphql/index";
 
 @Route("publisher/v1")
+@Tags("Enterprise API")
 export class PublisherAPI extends Controller {
   private readonly eventCreater: EventCreater;
 
