@@ -83,7 +83,7 @@
     "typescript": "5.4.5"
   },
   "scripts": {
-    "swagger": "tsoa spec",
+    "swagger": "tsoa spec && cp build/swagger.json .",
     "routes": "tsoa routes",
     "prebuild": "rimraf build",
     "build": "npm run swagger && npm run routes && tsc && cp build/src/retracedctl.js build/src/retracedctl && chmod +x build/src/retracedctl",

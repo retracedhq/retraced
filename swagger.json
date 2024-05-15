@@ -1,0 +1,2437 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"CreateEventResponse": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"hash": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"hash"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"RequestGroup": {
+				"description": "A group is a single organization that is an end customer of a vendor app",
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "The id of this group in the vendor app's data model"
+					},
+					"name": {
+						"type": "string",
+						"description": "A human-readable name"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EventFields": {
+				"properties": {},
+				"type": "object",
+				"additionalProperties": {
+					"type": "string"
+				}
+			},
+			"RequestActor": {
+				"description": "An actor is the person or identity (like an API token) that performed the action",
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "The id of this actor in the vendor app's data model"
+					},
+					"name": {
+						"type": "string",
+						"description": "A human-readable name"
+					},
+					"href": {
+						"type": "string",
+						"description": "A url to view this actor in the vendor app.\nCan be referenced in Retraced [Display Templates](https://boxyhq.com/docs/retraced/advanced/display-templates)\nto create an interactive embedded viewer experience."
+					},
+					"fields": {
+						"$ref": "#/components/schemas/EventFields"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"RequestTarget": {
+				"description": "A target is the object upon which the action is performed",
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "The id of this target in the vendor app's data model"
+					},
+					"name": {
+						"type": "string",
+						"description": "A human-readable name"
+					},
+					"href": {
+						"type": "string",
+						"description": "A url to view this target in the vendor app.\nCan be referenced in Retraced\nto create an interactive embedded viewer experience."
+					},
+					"type": {
+						"type": "string",
+						"description": "Identifies the type"
+					},
+					"fields": {
+						"$ref": "#/components/schemas/EventFields"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"CreateEventRequest": {
+				"properties": {
+					"action": {
+						"type": "string",
+						"description": "The action that occured e.g. `user.login` or `spreadsheet.create`"
+					},
+					"crud": {
+						"type": "string",
+						"description": "Denotes whether this is a \"Create\", \"Read\", \"Update\", or \"Delete\" event."
+					},
+					"group": {
+						"$ref": "#/components/schemas/RequestGroup"
+					},
+					"created": {
+						"type": "string",
+						"format": "date-time",
+						"description": "ISO8601 date string representing when this event occurent. `created` will be tracked in addtion to `received`"
+					},
+					"actor": {
+						"$ref": "#/components/schemas/RequestActor"
+					},
+					"target": {
+						"$ref": "#/components/schemas/RequestTarget"
+					},
+					"source_ip": {
+						"type": "string",
+						"description": "The source IP address from which the event was initiated"
+					},
+					"description": {
+						"type": "string",
+						"description": "A human-readable description of the event"
+					},
+					"is_anonymous": {
+						"type": "boolean",
+						"description": "Denotes whether this event was anonymous. Must be `true` if `actor` is absent"
+					},
+					"is_failure": {
+						"type": "boolean",
+						"description": "Denotes whether this event represents a failure to perform the action"
+					},
+					"fields": {
+						"$ref": "#/components/schemas/EventFields",
+						"description": "An optional set of additional arbitrary event about the data"
+					},
+					"component": {
+						"type": "string",
+						"description": "An identifier for the vendor app component that sent the event"
+					},
+					"version": {
+						"type": "string",
+						"description": "An identifier for the version of the vendor app that sent the event, usually a git SHA"
+					},
+					"external_id": {
+						"type": "string",
+						"description": "An identifier for the environment in which the event was sent"
+					},
+					"metadata": {
+						"$ref": "#/components/schemas/EventFields",
+						"description": "An optional set of additional metadata  about the data"
+					}
+				},
+				"required": [
+					"action",
+					"crud"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"CreateEventBulkResponse": {
+				"items": {
+					"$ref": "#/components/schemas/CreateEventResponse"
+				},
+				"type": "array"
+			},
+			"CreateEventBulkRequest": {
+				"properties": {
+					"events": {
+						"items": {
+							"$ref": "#/components/schemas/CreateEventRequest"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"events"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ViewerToken": {
+				"properties": {
+					"token": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"token"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EnterpriseTokenResponse": {
+				"properties": {
+					"token": {
+						"type": "string",
+						"description": "The token that was created"
+					},
+					"display_name": {
+						"type": "string",
+						"description": "the display name for the token"
+					},
+					"view_log_action": {
+						"type": "string",
+						"description": "The `action` name that will be used to record usages of this token. Defaults to `audit.log.view`"
+					}
+				},
+				"required": [
+					"token",
+					"display_name"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"CreateEnterpriseTokenRequest": {
+				"properties": {
+					"display_name": {
+						"type": "string",
+						"description": "the display name for the token"
+					},
+					"view_log_action": {
+						"type": "string",
+						"description": "The `action` name that will be used to record usages of this token. Defaults to `audit.log.view`"
+					}
+				},
+				"required": [
+					"display_name"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EventNodeGroup": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"FieldItem": {
+				"properties": {
+					"key": {
+						"type": "string"
+					},
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"key",
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EventNodeActor": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"href": {
+						"type": "string"
+					},
+					"fields": {
+						"items": {
+							"$ref": "#/components/schemas/FieldItem"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EventNodeTarget": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"href": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					},
+					"fields": {
+						"items": {
+							"$ref": "#/components/schemas/FieldItem"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EventNodeDisplay": {
+				"properties": {
+					"markdown": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"RawEventNode": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"action": {
+						"type": "string"
+					},
+					"crud": {
+						"type": "string",
+						"enum": [
+							"c",
+							"r",
+							"u",
+							"d"
+						]
+					},
+					"description": {
+						"type": "string"
+					},
+					"group": {
+						"$ref": "#/components/schemas/EventNodeGroup"
+					},
+					"actor": {
+						"$ref": "#/components/schemas/EventNodeActor"
+					},
+					"target": {
+						"$ref": "#/components/schemas/EventNodeTarget"
+					},
+					"display": {
+						"$ref": "#/components/schemas/EventNodeDisplay"
+					},
+					"is_failure": {
+						"type": "boolean"
+					},
+					"is_anonymous": {
+						"type": "boolean"
+					},
+					"source_ip": {
+						"type": "string"
+					},
+					"country": {
+						"type": "string"
+					},
+					"loc_subdiv1": {
+						"type": "string"
+					},
+					"loc_subdiv2": {
+						"type": "string"
+					},
+					"received": {
+						"type": "string"
+					},
+					"created": {
+						"type": "string"
+					},
+					"fields": {
+						"items": {
+							"$ref": "#/components/schemas/FieldItem"
+						},
+						"type": "array"
+					},
+					"canonical_time": {
+						"type": "string"
+					},
+					"component": {
+						"type": "string"
+					},
+					"version": {
+						"type": "string"
+					},
+					"external_id": {
+						"type": "string"
+					},
+					"metadata": {
+						"items": {
+							"$ref": "#/components/schemas/FieldItem"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EventEdge": {
+				"properties": {
+					"node": {
+						"$ref": "#/components/schemas/RawEventNode"
+					},
+					"cursor": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"PageInfo": {
+				"properties": {
+					"hasNextPage": {
+						"type": "boolean"
+					},
+					"hasPreviousPage": {
+						"type": "boolean"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EventsConn": {
+				"properties": {
+					"edges": {
+						"items": {
+							"$ref": "#/components/schemas/EventEdge"
+						},
+						"type": "array"
+					},
+					"pageInfo": {
+						"$ref": "#/components/schemas/PageInfo"
+					},
+					"totalCount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"GraphQLSearch": {
+				"properties": {
+					"search": {
+						"$ref": "#/components/schemas/EventsConn"
+					}
+				},
+				"required": [
+					"search"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"DocLocation": {
+				"properties": {
+					"line": {
+						"type": "number",
+						"format": "double"
+					},
+					"column": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"line",
+					"column"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"GraphQLError": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"locations": {
+						"items": {
+							"$ref": "#/components/schemas/DocLocation"
+						},
+						"type": "array"
+					},
+					"path": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"GraphQLResp": {
+				"properties": {
+					"data": {
+						"$ref": "#/components/schemas/GraphQLSearch"
+					},
+					"errors": {
+						"items": {
+							"$ref": "#/components/schemas/GraphQLError"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"GraphQLSearchVars": {
+				"properties": {
+					"query": {
+						"type": "string",
+						"description": "Structured search query. For example,\n\n`edit` -- free text search\n`action:users.list` -- search by action\n`action:document.* location:Germany` -- search by action and location\n`actor.id:john.doe@mycompany.com` -- search by actor id"
+					},
+					"last": {
+						"type": "number",
+						"format": "double",
+						"description": "The number of events to return"
+					},
+					"before": {
+						"type": "string",
+						"description": "An opaque cursor that represents the offset to query since. Should be empty for an initial request to the API. Responses from GraphQL endpoints will include the cursor value to use to fetch the next page of data."
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"GraphQLRequest": {
+				"properties": {
+					"query": {
+						"type": "string",
+						"description": "Graphql Search query string. See https://boxyhq.com/docs/retraced/apis/graphql#search\nfor an example query"
+					},
+					"variables": {
+						"$ref": "#/components/schemas/GraphQLSearchVars",
+						"description": "Search parameters for filtering, limit and offset"
+					},
+					"operationName": {
+						"type": "string",
+						"description": "The GraphQL operation name. Optional, defaults to standard event search."
+					}
+				},
+				"required": [
+					"query"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ActiveSearchId": {
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "The ID of the created search"
+					}
+				},
+				"required": [
+					"id"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"CreateActiveSearchRequest": {
+				"properties": {
+					"saved_search_id": {
+						"type": "string",
+						"description": "An id of an existing saved search to use"
+					}
+				},
+				"required": [
+					"saved_search_id"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"SavedSearch": {
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "`id` is the id of the saved search. Can be used to initiate an active search"
+					}
+				},
+				"required": [
+					"id"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"CreateSavedSearchRequest": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "`name` of this saved search"
+					},
+					"actions": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "`actions` is an optional array of action ids to search over"
+					},
+					"actor_ids": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "`actor_ids` is an optional array of actors to search over"
+					},
+					"start": {
+						"type": "string",
+						"format": "date-time",
+						"description": "`start` is an optional ISO8601 formatted date to search since"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"InviteResponse": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"project_id": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"created": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"project_id",
+					"email",
+					"created"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"InviteValues": {
+				"properties": {
+					"email": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"TemplateResponse": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"rule": {
+						"type": "string"
+					},
+					"template": {
+						"type": "string"
+					},
+					"project_id": {
+						"type": "string"
+					},
+					"environment_id": {
+						"type": "string"
+					},
+					"created": {
+						"type": "string"
+					},
+					"updated": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"name",
+					"rule",
+					"template",
+					"id",
+					"project_id",
+					"environment_id",
+					"created",
+					"updated"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"TemplateValues": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"rule": {
+						"type": "string"
+					},
+					"template": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"rule",
+					"template"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"TemplateSearchResults": {
+				"properties": {
+					"total_hits": {
+						"type": "number",
+						"format": "double"
+					},
+					"templates": {
+						"items": {
+							"$ref": "#/components/schemas/TemplateResponse"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"total_hits",
+					"templates"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EnvironmentResponse": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"project_id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"project_id",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EnvironmentValues": {
+				"properties": {
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"CreateDelReqReport": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"outstandingConfirmations": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"outstandingConfirmations"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"CreateDelReqRequestBody": {
+				"properties": {
+					"resourceKind": {
+						"type": "string"
+					},
+					"resourceId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"resourceKind",
+					"resourceId"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"GetDelReqReport": {
+				"properties": {
+					"expired": {
+						"type": "boolean"
+					},
+					"backoffRemaining": {
+						"type": "number",
+						"format": "double"
+					},
+					"outstandingConfirmations": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"expired",
+					"backoffRemaining",
+					"outstandingConfirmations"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ApiTokenResponse": {
+				"properties": {
+					"token": {
+						"type": "string"
+					},
+					"project_id": {
+						"type": "string"
+					},
+					"environment_id": {
+						"type": "string"
+					},
+					"disabled": {
+						"type": "boolean"
+					},
+					"name": {
+						"type": "string"
+					},
+					"created": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"token",
+					"project_id",
+					"environment_id",
+					"disabled",
+					"name",
+					"created"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ApiTokenValues": {
+				"properties": {
+					"disabled": {
+						"type": "boolean"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"disabled",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"Partial_ApiTokenValues_": {
+				"properties": {
+					"disabled": {
+						"type": "boolean"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"AdminToken": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"tokenBcrypt": {
+						"type": "string"
+					},
+					"token": {
+						"type": "string"
+					},
+					"disabled": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"lastUsed": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"userId",
+					"tokenBcrypt",
+					"disabled",
+					"createdAt"
+				],
+				"type": "object",
+				"additionalProperties": true
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "retraced",
+		"version": "1.9.1",
+		"description": "A fully open source audit log service and embeddable UI easily deployed to your own Kubernetes cluster",
+		"license": {
+			"name": "Apache-2.0"
+		},
+		"contact": {}
+	},
+	"paths": {
+		"/publisher/v1/project/{projectId}/event": {
+			"post": {
+				"operationId": "CreateEvent",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CreateEventResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"id": "abf053dc4a3042459818833276eec717",
+											"hash": "5b570bff4628b35262fb401d2f6c9bb38d29e212f6e0e8ea93445b4e5a253d50"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Create an event. Returns the id of the created event, and\na cryptographic hash of the received event, as described at\nhttps://boxyhq.com/docs/retraced/architecture/hashing-formula",
+				"security": [],
+				"parameters": [
+					{
+						"description": "auth header of the form token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The event body to log",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateEventRequest",
+								"description": "The event body to log"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/publisher/v1/project/{projectId}/event/bulk": {
+			"post": {
+				"operationId": "CreateEventsBulk",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CreateEventBulkResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": [
+											{
+												"id": "abf053dc4a3042459818833276eec717",
+												"hash": "5b570bff4628b35262fb401d2f6c9bb38d29e212f6e0e8ea93445b4e5a253d50"
+											},
+											{
+												"id": "aff053dc4a3042459818833276eec7af",
+												"hash": "b5570bff4628b35262fb40ffas9b29e212ddf6e0e8ea93445b4e5a253d50dd"
+											}
+										]
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Create one or more events. Returns a list of the ids of the created event and\na cryptographic hash of each received events, as described at\nhttps://boxyhq.com/docs/retraced/architecture/hashing-formula",
+				"security": [],
+				"parameters": [
+					{
+						"description": "auth header of the form token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateEventBulkRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/publisher/v1/project/{projectId}/viewertoken": {
+			"get": {
+				"operationId": "CreateViewerDescriptor",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ViewerToken"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"token": "abf053dc4a3042459818833276eec717"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a token for use with the Retraced embedded viewer as described at\n\nhttps://boxyhq.com/docs/retraced/getting-started/embedded-viewer\n\n**Note**: At least one of `group_id` or `team_id` is required.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "auth header of the form token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "actor_id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The group identifier. Same as `team_id`. If both are passed, `group_id` will be used.",
+						"in": "query",
+						"name": "group_id",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Whether to display the Enterprise Settings and API Token Management. Set to `true` to show the settings.",
+						"in": "query",
+						"name": "is_admin",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "If passed, only events relating to this target will be returned in a viewer that uses the token created",
+						"in": "query",
+						"name": "target_id",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Same as `group_id`. If both are passed, `group_id` will be used. This field is deprecated.",
+						"in": "query",
+						"name": "team_id",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The action that will be logged when the token is used",
+						"in": "query",
+						"name": "view_log_action",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/publisher/v1/project/{projectId}/group/{groupId}/enterprisetoken": {
+			"post": {
+				"operationId": "CreateEnterpriseToken",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EnterpriseTokenResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"token": "abf053dc4a3042459818833276eec717",
+											"display_name": "Default Production Token",
+											"view_log_action": "audit.log.view"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a token for use with Enterprise IT API\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
+				"security": [],
+				"parameters": [
+					{
+						"description": "auth header of the form token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The group identifier. The generated token will be scoped to the specified group.",
+						"in": "path",
+						"name": "groupId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The details for creating the token",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateEnterpriseTokenRequest",
+								"description": "The details for creating the token"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "ListEnterpriseTokens",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/EnterpriseTokenResponse"
+									},
+									"type": "array"
+								},
+								"examples": {
+									"Example 1": {
+										"value": [
+											{
+												"token": "abf053dc4a3042459818833276eec717",
+												"display_name": "Primary Token",
+												"view_log_action": "audit.log.view"
+											},
+											{
+												"token": "f053dc4a3042459818833276eec717ab",
+												"display_name": "Secondary Token",
+												"view_log_action": "audit.log.view"
+											}
+										]
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "List all Enterprise IT API tokens.\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
+				"security": [],
+				"parameters": [
+					{
+						"description": "auth header of the form token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The group identifier.",
+						"in": "path",
+						"name": "groupId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/publisher/v1/project/{projectId}/group/{groupId}/enterprisetoken/{tokenId}": {
+			"get": {
+				"operationId": "GetEnterpriseToken",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EnterpriseTokenResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"token": "f053dc4a3042459818833276eec717ab",
+											"display_name": "Production Token",
+											"view_log_action": "audit.log.view"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieve an Enterprise IT API token.\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
+				"security": [],
+				"parameters": [
+					{
+						"description": "auth header of the form token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id.",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The group identifier.",
+						"in": "path",
+						"name": "groupId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The token id.",
+						"in": "path",
+						"name": "tokenId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateEnterpriseToken",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EnterpriseTokenResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"token": "abf053dc4a3042459818833276eec717",
+											"display_name": "Updated Token Name",
+											"view_log_action": "audit.log.view"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Update an Enterprise IT API token\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
+				"security": [],
+				"parameters": [
+					{
+						"description": "auth header of the form token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The group identifier.",
+						"in": "path",
+						"name": "groupId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The token to update.",
+						"in": "path",
+						"name": "tokenId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The updated token.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateEnterpriseTokenRequest",
+								"description": "The updated token."
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteEnterpriseToken",
+				"responses": {
+					"204": {
+						"description": "Deleted"
+					}
+				},
+				"description": "Delete an Enterprise IT API token\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
+				"security": [],
+				"parameters": [
+					{
+						"description": "auth header of the form token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The group identifier.",
+						"in": "path",
+						"name": "groupId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The token to delete.",
+						"in": "path",
+						"name": "tokenId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/publisher/v1/project/{projectId}/graphql": {
+			"post": {
+				"operationId": "GraphqlPost",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GraphQLResp"
+								}
+							}
+						}
+					}
+				},
+				"description": "Query events with GraphQL\n\nhttps://boxyhq.com/docs/retraced/apis/graphql",
+				"security": [],
+				"parameters": [
+					{
+						"description": "auth header of the form Token token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "graphQL query, variables, and operationName",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/GraphQLRequest",
+								"description": "graphQL query, variables, and operationName"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enterprise/v1/graphql": {
+			"post": {
+				"operationId": "GraphqlPost",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GraphQLResp"
+								}
+							}
+						}
+					}
+				},
+				"description": "Query events with GraphQL\n\nhttps://boxyhq.com/docs/retraced/apis/graphql",
+				"security": [],
+				"parameters": [
+					{
+						"description": "auth header of the form Token token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "graphQL query, variables, and operationName",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/GraphQLRequest",
+								"description": "graphQL query, variables, and operationName"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enterprise/v1/search/active": {
+			"post": {
+				"operationId": "CreateActiveSearch",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ActiveSearchId"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"id": "abf053dc4a3042459818833276eec717"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Initiate an active search. An active search will maintain\na persistent cursor that can be used at a later date to\nretrieve additional events from the search.\n\n\nAuthenticate with an Enterprise API token.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "header of the form token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The search params",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateActiveSearchRequest",
+								"description": "The search params"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enterprise/v1/search/saved": {
+			"post": {
+				"operationId": "CreateSavedSearch",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SavedSearch"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"id": "05abf3dc4a30bf45981883327c7176ee"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a saved search.\nSaved searches have an ID that can be used to initiate an active search.\n\nAuthenticate with an Enterprise API token.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "header of the form token= ...",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The search parameters",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateSavedSearchRequest",
+								"description": "The search parameters"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/v1/project/{projectId}/invite": {
+			"post": {
+				"operationId": "CreateInvite",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InviteResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Create an invite. Sends an invitation email to the user.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The invite resource with the invitee's email",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/InviteValues",
+								"description": "The invite resource with the invitee's email"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "ListInvites",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/InviteResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "List all invites.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/admin/v1/project/{projectId}/invite/{inviteId}": {
+			"delete": {
+				"operationId": "DeleteInvite",
+				"responses": {
+					"204": {
+						"description": "No Content"
+					}
+				},
+				"description": "Delete an invite.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The environment id",
+						"in": "path",
+						"name": "inviteId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/admin/v1/project/{projectId}/templates": {
+			"post": {
+				"operationId": "CreateTemplate",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TemplateResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a template. An overview of Template usage in Retraced can be found at\n\nhttps://boxyhq.com/docs/retraced/advanced/display-templates",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The environment id",
+						"in": "query",
+						"name": "environment_id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The template resource to create",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TemplateValues",
+								"description": "The template resource to create"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "SearchTemplates",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TemplateSearchResults"
+								}
+							}
+						}
+					}
+				},
+				"description": "Search templates. An overview of Template usage in Retraced can be found at\n\nhttps://boxyhq.com/docs/retraced/advanced/display-templates",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The environmentId",
+						"in": "query",
+						"name": "environment_id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The maximum number of results to return",
+						"in": "query",
+						"name": "length",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "How many results to skip",
+						"in": "query",
+						"name": "offset",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/admin/v1/project/{projectId}/templates/{templateId}": {
+			"delete": {
+				"operationId": "DeleteTemplate",
+				"responses": {
+					"204": {
+						"description": "Deleted"
+					}
+				},
+				"description": "Delete a template. An overview of Template usage in Retraced can be found at\n\nhttps://boxyhq.com/docs/retraced/advanced/display-templates",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT authentication",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The id of the template to delete",
+						"in": "path",
+						"name": "templateId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The environment",
+						"in": "query",
+						"name": "environment_id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/admin/v1/project/{projectId}/environment": {
+			"post": {
+				"operationId": "CreateEnvironmentRequest",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EnvironmentResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a new environment.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/EnvironmentValues"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/v1/project/{projectId}/environment/{environmentId}": {
+			"delete": {
+				"operationId": "DeleteEnvironment",
+				"responses": {
+					"204": {
+						"description": "Deleted"
+					}
+				},
+				"description": "Delete an environment and all of its dependents.\nThis is only allowed if\n1) the environment is empty (i.e. it lacks any recorded events), or\n2) an outstanding \"deletion request\" has been approved.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT authentication",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The environment to be deleted",
+						"in": "path",
+						"name": "environmentId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/admin/v1/project/{projectId}/environment/{environmentId}/deletion_request": {
+			"post": {
+				"operationId": "CreateDeletionRequest",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CreateDelReqReport"
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a resource deletion request and associated confirmation\nrequirements (as necessary).",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT authentication",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The environment",
+						"in": "path",
+						"name": "environmentId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateDelReqRequestBody"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/v1/project/{projectId}/environment/{environmentId}/deletion_request/{deletionRequestId}": {
+			"get": {
+				"operationId": "GetDeletionRequest",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetDelReqReport"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get the current status of an outstanding deletion request.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT authentication",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The environment",
+						"in": "path",
+						"name": "environmentId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The id of the deletion request to look up",
+						"in": "path",
+						"name": "deletionRequestId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/admin/v1/project/{projectId}/environment/{environmentId}/deletion_confirmation/{code}": {
+			"post": {
+				"operationId": "ApproveDeletionConfirmation",
+				"responses": {
+					"200": {
+						"description": "OK"
+					}
+				},
+				"description": "Mark a deletion confirmation as received (i.e. approve it).",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT authentication",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The environment",
+						"in": "path",
+						"name": "environmentId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The confirmation code",
+						"in": "path",
+						"name": "code",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/admin/v1/project/{projectId}/token": {
+			"post": {
+				"operationId": "CreateApiToken",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiTokenResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a new API token.",
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The environment id",
+						"in": "query",
+						"name": "environment_id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ApiTokenValues"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/v1/project/{projectId}/token/{apiToken}": {
+			"put": {
+				"operationId": "UpdateApiToken",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiTokenResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Update an API token's fields.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT authentication",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The token to update",
+						"in": "path",
+						"name": "apiToken",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_ApiTokenValues_"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/v1/project/{projectId}/token/{tokenId}": {
+			"delete": {
+				"operationId": "DeleteApiToken",
+				"responses": {
+					"204": {
+						"description": "Deleted"
+					}
+				},
+				"description": "Delete an API token.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT authentication",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The token to delete",
+						"in": "path",
+						"name": "tokenId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/admin/v1/token": {
+			"post": {
+				"operationId": "CreateAdminToken",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AdminToken"
+								}
+							}
+						}
+					}
+				},
+				"description": "Create an admin token. An Admin Token can be used to impersonate a user,\nand will have access to all the user's projects, environments, and events.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "http://localhost:3000/auditlog",
+			"description": "Local"
+		}
+	]
+}

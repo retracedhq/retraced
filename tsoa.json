@@ -3,7 +3,15 @@
   "controllerPathGlobs": ["./src/**/*Controller.ts"],
   "spec": {
     "outputDirectory": "build",
-    "specVersion": 3
+    "specVersion": 3,
+    "spec": {
+      "servers": [
+        {
+          "url": "http://localhost:3000/auditlog",
+          "description": "Local"
+        }
+      ]
+    }
   },
   "swagger": {
     "outputDirectory": "./build",
