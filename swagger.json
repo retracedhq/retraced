@@ -967,7 +967,7 @@
 				},
 				"description": "Create an event. Returns the id of the created event, and\na cryptographic hash of the received event, as described at\nhttps://boxyhq.com/docs/retraced/architecture/hashing-formula",
 				"tags": [
-					"Enterprise API"
+					"Publisher API"
 				],
 				"security": [],
 				"parameters": [
@@ -1035,7 +1035,7 @@
 				},
 				"description": "Create one or more events. Returns a list of the ids of the created event and\na cryptographic hash of each received events, as described at\nhttps://boxyhq.com/docs/retraced/architecture/hashing-formula",
 				"tags": [
-					"Enterprise API"
+					"Publisher API"
 				],
 				"security": [],
 				"parameters": [
@@ -1094,7 +1094,7 @@
 				},
 				"description": "Create a token for use with the Retraced embedded viewer as described at\n\nhttps://boxyhq.com/docs/retraced/getting-started/embedded-viewer\n\n**Note**: At least one of `group_id` or `team_id` is required.",
 				"tags": [
-					"Enterprise API"
+					"Publisher API"
 				],
 				"security": [],
 				"parameters": [
@@ -1198,7 +1198,7 @@
 				},
 				"description": "Create a token for use with Enterprise IT API\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
 				"tags": [
-					"Enterprise API"
+					"Publisher API"
 				],
 				"security": [],
 				"parameters": [
@@ -1278,7 +1278,7 @@
 				},
 				"description": "List all Enterprise IT API tokens.\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
 				"tags": [
-					"Enterprise API"
+					"Publisher API"
 				],
 				"security": [],
 				"parameters": [
@@ -1338,7 +1338,7 @@
 				},
 				"description": "Retrieve an Enterprise IT API token.\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
 				"tags": [
-					"Enterprise API"
+					"Publisher API"
 				],
 				"security": [],
 				"parameters": [
@@ -1405,7 +1405,7 @@
 				},
 				"description": "Update an Enterprise IT API token\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
 				"tags": [
-					"Enterprise API"
+					"Publisher API"
 				],
 				"security": [],
 				"parameters": [
@@ -1468,7 +1468,7 @@
 				},
 				"description": "Delete an Enterprise IT API token\n\nhttps://boxyhq.com/docs/retraced/apis/enterprise-api",
 				"tags": [
-					"Enterprise API"
+					"Publisher API"
 				],
 				"security": [],
 				"parameters": [
@@ -1528,7 +1528,7 @@
 				},
 				"description": "Query events with GraphQL\n\nhttps://boxyhq.com/docs/retraced/apis/graphql",
 				"tags": [
-					"Enterprise API"
+					"Publisher API"
 				],
 				"security": [],
 				"parameters": [

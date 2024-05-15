@@ -35,7 +35,7 @@ import { graphQL } from "../handlers/graphql";
 import { GraphQLRequest, GraphQLResp } from "../handlers/graphql/index";
 
 @Route("publisher/v1")
-@Tags("Enterprise API")
+@Tags("Publisher API")
 export class PublisherAPI extends Controller {
   private readonly eventCreater: EventCreater;
 
