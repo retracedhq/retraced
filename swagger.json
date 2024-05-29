@@ -658,6 +658,41 @@
 				"type": "object",
 				"additionalProperties": true
 			},
+			"rule": {
+				"properties": {
+					"comparator": {
+						"type": "string"
+					},
+					"path": {
+						"type": "string"
+					},
+					"value": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							},
+							{
+								"type": "boolean"
+							},
+							{
+								"type": "string",
+								"format": "date-time"
+							}
+						]
+					}
+				},
+				"required": [
+					"comparator",
+					"path",
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
 			"TemplateResponse": {
 				"properties": {
 					"id": {
@@ -667,7 +702,17 @@
 						"type": "string"
 					},
 					"rule": {
-						"type": "string"
+						"anyOf": [
+							{
+								"items": {
+									"$ref": "#/components/schemas/rule"
+								},
+								"type": "array"
+							},
+							{
+								"type": "string"
+							}
+						]
 					},
 					"template": {
 						"type": "string"
@@ -708,7 +753,17 @@
 						"type": "string"
 					},
 					"rule": {
-						"type": "string"
+						"anyOf": [
+							{
+								"items": {
+									"$ref": "#/components/schemas/rule"
+								},
+								"type": "array"
+							},
+							{
+								"type": "string"
+							}
+						]
 					},
 					"template": {
 						"type": "string"
@@ -934,7 +989,7 @@
 	},
 	"info": {
 		"title": "retraced",
-		"version": "1.9.1",
+		"version": "1.9.2",
 		"description": "A fully open source audit log service and embeddable UI easily deployed to your own Kubernetes cluster",
 		"license": {
 			"name": "Apache-2.0"

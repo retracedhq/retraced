@@ -6,6 +6,16 @@ export interface Options {
 }
 
 export default function eventRulesCheck(opts: Options): boolean {
-  const engine = ruler(opts.rule);
+  let rule: any;
+  try {
+    if (typeof opts.rule === "string") {
+      rule = JSON.parse(opts.rule);
+    } else {
+      rule = opts.rule;
+    }
+  } catch (e) {
+    rule = opts.rule;
+  }
+  const engine = ruler(rule);
   return engine.test(opts.event);
 }
