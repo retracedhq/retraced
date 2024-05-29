@@ -3,8 +3,14 @@ import moment from "moment";
 export interface TemplateValues {
   id?: string;
   name: string;
-  rule: string;
+  rule: rule[] | string;
   template: string;
+}
+
+export interface rule {
+  comparator: string;
+  path: string;
+  value: string | number | boolean | Date;
 }
 
 export interface Template extends TemplateValues {

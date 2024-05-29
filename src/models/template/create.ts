@@ -1,6 +1,6 @@
 import moment from "moment";
 
-import { Template } from "./index";
+import { Template, rule } from "./index";
 import getPgPool from "../../persistence/pg";
 import uniqueId from "../uniqueId";
 
@@ -11,7 +11,7 @@ interface Opts {
   project_id: string;
   environment_id: string;
   name: string;
-  rule: string;
+  rule: rule[] | string;
   template: string;
 }
 
@@ -39,7 +39,7 @@ export default async function createTemplate(opts: Opts): Promise<Template> {
     template.project_id,
     template.environment_id,
     template.name,
-    template.rule,
+    typeof template.rule === "string" ? template.rule : JSON.stringify(template.rule),
     template.template,
   ];
   await pgPool.query(q, v);
