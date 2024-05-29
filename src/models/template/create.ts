@@ -39,7 +39,7 @@ export default async function createTemplate(opts: Opts): Promise<Template> {
     template.project_id,
     template.environment_id,
     template.name,
-    JSON.stringify(template.rule),
+    typeof template.rule === "string" ? template.rule : JSON.stringify(template.rule),
     template.template,
   ];
   await pgPool.query(q, v);
