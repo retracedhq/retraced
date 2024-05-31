@@ -45,7 +45,7 @@
     "sanitize-filename": "1.6.3",
     "search-query-parser": "1.6.0",
     "ssl-config": "1.0.0",
-    "swagger-ui-express": "5.0.0",
+    "swagger-ui-express": "5.0.1",
     "tsoa": "6.2.1",
     "unzipper": "0.11.6",
     "walk": "2.3.15",
