@@ -139,7 +139,7 @@ export class AdminAPI extends Controller {
    * @param environmentId The environment id
    * @param body          The template resource to create
    */
-  @Post("project/{projectId}/templates")
+  @Post("project/{projectId}/template")
   @SuccessResponse("201", "Created")
   public async createTemplate(
     @Header("Authorization") auth: string,
@@ -164,6 +164,46 @@ export class AdminAPI extends Controller {
 
     return template;
   }
+
+  /**
+   * Create a templates. An overview of Template usage in Retraced can be found at
+   *
+   * https://boxyhq.com/docs/retraced/advanced/display-templates
+   *
+   * @param auth          Base64 encoded JWT
+   * @param projectId     The project id
+   * @param environmentId The environment id
+   * @param body          The template resource to create
+   */
+    @Post("project/{projectId}/templates")
+    @SuccessResponse("201", "Created")
+    public async createTemplates(
+      @Header("Authorization") auth: string,
+      @Path("projectId") projectId: string,
+      @Query("environment_id") environmentId: string,
+      @Body() body: {templates: TemplateValues[]},
+      @Request() req: express.Request
+    ): Promise<TemplateResponse[]> {
+      // Generate ID here to audit before creating
+      const id = uniqueId();
+
+      await audit(req, "template.create.many", "c", {
+        target: {
+          id,
+          fields: body,
+        },
+      });
+
+      const templates: TemplateResponse[] = []
+
+      body.templates.map(async (templateToCreate) => {
+        const template = await createTemplate(auth, projectId, environmentId, Object.assign(templateToCreate, { id }));
+        templates.push(template)
+      })
+      this.setStatus(201);
+      return templates;
+    }
+
 
   /**
    * Search templates. An overview of Template usage in Retraced can be found at
