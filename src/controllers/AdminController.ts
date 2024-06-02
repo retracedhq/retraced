@@ -184,20 +184,15 @@ export class AdminAPI extends Controller {
       @Body() body: {templates: TemplateValues[]},
       @Request() req: express.Request
     ): Promise<TemplateResponse[]> {
-      // Generate ID here to audit before creating
-      const id = uniqueId();
-
       await audit(req, "template.create.many", "c", {
         target: {
-          id,
           fields: body,
         },
       });
 
       const templates: TemplateResponse[] = []
-
       body.templates.map(async (templateToCreate) => {
-        const template = await createTemplate(auth, projectId, environmentId, Object.assign(templateToCreate, { id }));
+        const template = await createTemplate(auth, projectId, environmentId, Object.assign(templateToCreate, { id: uniqueId() }));
         templates.push(template)
       })
       this.setStatus(201);
