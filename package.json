@@ -22,7 +22,7 @@
     "csv-stringify": "6.5.0",
     "dotenv": "16.4.5",
     "express": "4.19.2",
-    "graphql": "16.8.1",
+    "graphql": "16.8.2",
     "handlebars": "4.7.8",
     "joi": "17.13.1",
     "jsonwebtoken": "9.0.2",
