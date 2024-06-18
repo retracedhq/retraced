@@ -182,7 +182,7 @@ jobs:
       - name: Build and push
         if: github.ref == 'refs/heads/release'
         id: docker_build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           file: ./deploy/Dockerfile-slim
