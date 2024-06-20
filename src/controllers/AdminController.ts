@@ -175,7 +175,7 @@ export class AdminAPI extends Controller {
    * @param environmentId The environment id
    * @param body          The template resource to create
    */
-    @Post("project/{projectId}/templates")
+    @Post("project/{projectId}/templates/bulk")
     @SuccessResponse("201", "Created")
     public async createTemplates(
       @Header("Authorization") auth: string,
