@@ -15,7 +15,7 @@ import {
 } from "tsoa";
 import express from "express";
 
-import { TemplateSearchResults, TemplateResponse, TemplateValues, responseFromTemplate } from "../models/template";
+import { TemplateSearchResults, TemplateResponse, TemplateValues } from "../models/template";
 import createTemplate from "../handlers/admin/createTemplate";
 import searchTemplates from "../handlers/admin/searchTemplates";
 import deleteTemplate from "../handlers/admin/deleteTemplate";
@@ -184,6 +184,10 @@ export class AdminAPI extends Controller {
       @Body() body: {templates: TemplateValues[]},
       @Request() req: express.Request
     ): Promise<TemplateResponse[]> {
+      if (body.templates.length > 1000) {
+        throw { status: 400, err: new Error("Can only create 100 templates at once.") };
+      }
+
       await audit(req, "template.create.many", "c", {
         target: {
           fields: body,
