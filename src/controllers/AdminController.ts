@@ -15,7 +15,7 @@ import {
 } from "tsoa";
 import express from "express";
 
-import { TemplateSearchResults, TemplateResponse, TemplateValues } from "../models/template";
+import { TemplateSearchResults, TemplateResponse, TemplateValues, responseFromTemplate } from "../models/template";
 import createTemplate from "../handlers/admin/createTemplate";
 import searchTemplates from "../handlers/admin/searchTemplates";
 import deleteTemplate from "../handlers/admin/deleteTemplate";
@@ -139,7 +139,7 @@ export class AdminAPI extends Controller {
    * @param environmentId The environment id
    * @param body          The template resource to create
    */
-  @Post("project/{projectId}/template")
+  @Post("project/{projectId}/templates")
   @SuccessResponse("201", "Created")
   public async createTemplate(
     @Header("Authorization") auth: string,
@@ -162,7 +162,7 @@ export class AdminAPI extends Controller {
 
     this.setStatus(201);
 
-    return template;
+    return template
   }
 
   /**
@@ -195,6 +195,7 @@ export class AdminAPI extends Controller {
         const template = await createTemplate(auth, projectId, environmentId, Object.assign(templateToCreate, { id: uniqueId() }));
         templates.push(template)
       })
+
       this.setStatus(201);
       return templates;
     }
