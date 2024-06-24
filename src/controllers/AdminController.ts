@@ -194,11 +194,17 @@ export class AdminAPI extends Controller {
         },
       });
 
-      const templates: TemplateResponse[] = []
+      const templates: TemplateResponse[] = await Promise.all(
       body.templates.map(async (templateToCreate) => {
-        const template = await createTemplate(auth, projectId, environmentId, Object.assign(templateToCreate, { id: uniqueId() }));
-        templates.push(template)
+        const template = await createTemplate(
+          auth,
+          projectId,
+          environmentId,
+          Object.assign(templateToCreate, { id: uniqueId() })
+        );
+        return template;
       })
+    );
 
       this.setStatus(201);
       return templates;
