@@ -11,6 +11,8 @@ RUN apk add --update --no-cache \
     libgcrypt \
     ncurses-libs \
     ncurses-terminfo-base \
-    openssl
+    openssl \
+    busybox \
+    ssl_client
 
 VOLUME /var/run/postgresql
