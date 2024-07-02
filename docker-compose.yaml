@@ -129,16 +129,16 @@ services:
   #   networks:
   #     - retraced
 
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:7.8.0
-  #   environment:
-  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-  #   networks:
-  #     - retraced
-  #   depends_on:
-  #     - elasticsearch
-  #   ports:
-  #     - 5601:5601
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.8.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - retraced
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
 
   retraced-dev-bootstrap:
     build:
@@ -219,5 +219,41 @@ services:
     depends_on:
       - "retraced-api"
     restart: "always"
+
+  vector:
+    image: timberio/vector:0.X-alpine
+    environment:
+      - EXPORT_WEBHOOK_USERNAME=${EXPORT_WEBHOOK_USERNAME}
+      - EXPORT_WEBHOOK_PASSWORD=${EXPORT_WEBHOOK_PASSWORD}
+      - EXPORT_DDSOURCE=${EXPORT_DDSOURCE}
+      - EXPORT_DDTAGS=${EXPORT_DDTAGS}
+      - EXPORT_DATADOG_HOSTNAME=${EXPORT_DATADOG_HOSTNAME}
+      - EXPORT_SERVICE=${EXPORT_SERVICE}
+      - EXPORT_DATADOG_API_KEY=${EXPORT_DATADOG_API_KEY}
+      - EXPORT_DATADOG_REGION=${EXPORT_DATADOG_REGION}
+      - EXPORT_DATADOG_SITE=${EXPORT_DATADOG_SITE}
+      - EXPORT_S3_BUCKET=${EXPORT_S3_BUCKET}
+      - EXPORT_S3_REGION=${EXPORT_S3_REGION}
+      - EXPORT_S3_ACCESS_KEY_ID=${EXPORT_S3_ACCESS_KEY_ID}
+      - EXPORT_S3_SECRET_ACCESS_KEY=${EXPORT_S3_SECRET_ACCESS_KEY}
+    volumes:
+      - ./vector.toml:/etc/vector/vector.toml
+      - ./vector/data:/var/lib/vector/
+    networks:
+      - retraced
+    depends_on:
+      - "minio"
+      - "elasticsearch"
+
+  minio:
+    image: quay.io/minio/minio:latest
+    ports:
+      - "9002:9000"
+      - "9001:9001"
+    volumes:
+      - ./minio/data:/data
+    networks:
+      - retraced
+    command: server /data --console-address ":9001"
 volumes:
   mmdb:
