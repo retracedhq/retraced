@@ -6,9 +6,12 @@ export default async function (
   auth: string,
   projectId: string,
   environmentId: string,
-  values: TemplateValues
+  values: TemplateValues,
+  isBulk?:boolean,
 ): Promise<TemplateResponse> {
-  await checkAdminAccessUnwrapped(auth, projectId);
+  if (!isBulk) {
+    await checkAdminAccessUnwrapped(auth, projectId);
+  }
 
   const template = await createTemplate({
     id: values.id,
