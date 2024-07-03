@@ -10,21 +10,20 @@ export default async function (
 ): Promise<TemplateResponse | TemplateResponse[]> {
   await checkAdminAccessUnwrapped(auth, projectId);
 
-  let template: TemplateResponse | TemplateResponse[];
   if (Array.isArray(values)) {
-    const newTemplates = await Promise.all(
-      values.map((v) =>
-        createTemplate({
-          id: v.id,
-          project_id: projectId,
-          environment_id: environmentId,
-          name: v.name,
-          rule: v.rule,
-          template: v.template,
-        })
-      )
-    );
-    template = newTemplates.map(responseFromTemplate);
+    const newTemplates: TemplateResponse[] = [];
+    for (let i = 0; i < values.length; i++) {
+      const newTemplate = await createTemplate({
+        id: values[i].id,
+        project_id: projectId,
+        environment_id: environmentId,
+        name: values[i].name,
+        rule: values[i].rule,
+        template: values[i].template,
+      });
+      newTemplates.push(responseFromTemplate(newTemplate));
+    }
+    return newTemplates;
   } else {
     const newTemplate = await createTemplate({
       id: values.id,
@@ -34,8 +33,6 @@ export default async function (
       rule: values.rule,
       template: values.template,
     });
-    template = responseFromTemplate(newTemplate);
+    return responseFromTemplate(newTemplate);
   }
-
-  return template;
 }
