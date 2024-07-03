@@ -3,6 +3,7 @@ import createTemplate from "../../../handlers/admin/createTemplate";
 import getPgPool from "../../../persistence/pg";
 import { AdminTokenStore } from "../../../models/admin_token/store";
 import assert from "assert";
+import { TemplateResponse } from "../../../models/template";
 
 @suite
 class CreateTemplate {
@@ -11,12 +12,12 @@ class CreateTemplate {
     try {
       await cleanup(pool);
       const res = await setup(pool);
-      const result = await createTemplate(`id=${res.id} token=${res.token}`, "test", "test", {
+      const result = (await createTemplate(`id=${res.id} token=${res.token}`, "test", "test", {
         id: "test",
         name: "test",
         rule: "test",
         template: "test",
-      });
+      })) as TemplateResponse;
       assert.strictEqual(result.id, "test");
       assert.strictEqual(result.project_id, "test");
     } catch (ex) {
