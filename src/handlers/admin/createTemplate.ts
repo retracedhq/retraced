@@ -7,7 +7,7 @@ export default async function (
   projectId: string,
   environmentId: string,
   values: TemplateValues,
-  isBulk?:boolean,
+  isBulk?: boolean
 ): Promise<TemplateResponse> {
   if (!isBulk) {
     await checkAdminAccessUnwrapped(auth, projectId);

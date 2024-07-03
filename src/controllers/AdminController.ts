@@ -162,7 +162,7 @@ export class AdminAPI extends Controller {
 
     this.setStatus(201);
 
-    return template
+    return template;
   }
 
   /**
@@ -175,44 +175,43 @@ export class AdminAPI extends Controller {
    * @param environmentId The environment id
    * @param body          The template resource to create
    */
-    @Post("project/{projectId}/templates/bulk")
-    @SuccessResponse("201", "Created")
-    public async createTemplates(
-      @Header("Authorization") auth: string,
-      @Path("projectId") projectId: string,
-      @Query("environment_id") environmentId: string,
-      @Body() body: {templates: TemplateValues[]},
-      @Request() req: express.Request
-    ): Promise<TemplateResponse[]> {
-      if (body.templates.length > 100) {
-        throw { status: 400, err: new Error("Can only create 100 templates at once.") };
-      }
+  @Post("project/{projectId}/templates/bulk")
+  @SuccessResponse("201", "Created")
+  public async createTemplates(
+    @Header("Authorization") auth: string,
+    @Path("projectId") projectId: string,
+    @Query("environment_id") environmentId: string,
+    @Body() body: { templates: TemplateValues[] },
+    @Request() req: express.Request
+  ): Promise<TemplateResponse[]> {
+    if (body.templates.length > 100) {
+      throw { status: 400, err: new Error("Can only create 100 templates at once.") };
+    }
 
-      await audit(req, "template.create.bulk", "c", {
-        target: {
-          fields: body,
-        },
-      });
+    await audit(req, "template.create.bulk", "c", {
+      target: {
+        fields: body,
+      },
+    });
 
-      await checkAdminAccessUnwrapped(auth, projectId);
+    await checkAdminAccessUnwrapped(auth, projectId);
 
-      const templates: TemplateResponse[] = await Promise.all(
+    const templates: TemplateResponse[] = await Promise.all(
       body.templates.map(async (templateToCreate) => {
         const template = await createTemplate(
           auth,
           projectId,
           environmentId,
           Object.assign(templateToCreate, { id: uniqueId() }),
-          true,
+          true
         );
         return template;
       })
     );
 
-      this.setStatus(201);
-      return templates;
-    }
-
+    this.setStatus(201);
+    return templates;
+  }
 
   /**
    * Search templates. An overview of Template usage in Retraced can be found at
