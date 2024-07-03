@@ -188,7 +188,7 @@ export class AdminAPI extends Controller {
         throw { status: 400, err: new Error("Can only create 100 templates at once.") };
       }
 
-      await audit(req, "template.create.many", "c", {
+      await audit(req, "template.create.bulk", "c", {
         target: {
           fields: body,
         },
