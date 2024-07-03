@@ -26,6 +26,27 @@ class CreateTemplate {
       await cleanup(pool);
     }
   }
+  @test public async "CreateTemplateBulk#createTemplate()"() {
+    const pool = getPgPool();
+    try {
+      await cleanup(pool);
+      const res = await setup(pool);
+      const result = (await createTemplate(`id=${res.id} token=${res.token}`, "test", "test", [
+        {
+          id: "test",
+          name: "test",
+          rule: "test",
+          template: "test",
+        },
+      ])) as TemplateResponse[];
+      assert.strictEqual(result[0].id, "test");
+      assert.strictEqual(result[0].project_id, "test");
+    } catch (ex) {
+      console.log(ex);
+    } finally {
+      await cleanup(pool);
+    }
+  }
 }
 async function setup(pool) {
   await pool.query("INSERT INTO project (id, name) VALUES ($1, $2)", ["test", "test"]);
