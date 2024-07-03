@@ -12,14 +12,14 @@ export default async function (
 
   if (Array.isArray(values)) {
     const newTemplates: TemplateResponse[] = [];
-    for (let i = 0; i < values.length; i++) {
+    for (const value of values) {
       const newTemplate = await createTemplate({
-        id: values[i].id,
+        id: value.id,
         project_id: projectId,
         environment_id: environmentId,
-        name: values[i].name,
-        rule: values[i].rule,
-        template: values[i].template,
+        name: value.name,
+        rule: value.rule,
+        template: value.template,
       });
       newTemplates.push(responseFromTemplate(newTemplate));
     }
