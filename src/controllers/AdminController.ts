@@ -158,7 +158,12 @@ export class AdminAPI extends Controller {
       },
     });
 
-    const template = await createTemplate(auth, projectId, environmentId, Object.assign(body, { id }));
+    const template = (await createTemplate(
+      auth,
+      projectId,
+      environmentId,
+      Object.assign(body, { id })
+    )) as TemplateResponse;
 
     this.setStatus(201);
 
@@ -196,18 +201,12 @@ export class AdminAPI extends Controller {
 
     await checkAdminAccessUnwrapped(auth, projectId);
 
-    const templates: TemplateResponse[] = await Promise.all(
-      body.templates.map(async (templateToCreate) => {
-        const template = await createTemplate(
-          auth,
-          projectId,
-          environmentId,
-          Object.assign(templateToCreate, { id: uniqueId() }),
-          true
-        );
-        return template;
-      })
-    );
+    const templates: TemplateResponse[] = (await createTemplate(
+      auth,
+      projectId,
+      environmentId,
+      body.templates.map((t) => Object.assign(t, { id: uniqueId() }))
+    )) as TemplateResponse[];
 
     this.setStatus(201);
     return templates;
