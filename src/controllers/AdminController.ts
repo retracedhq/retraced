@@ -158,11 +158,58 @@ export class AdminAPI extends Controller {
       },
     });
 
-    const template = await createTemplate(auth, projectId, environmentId, Object.assign(body, { id }));
+    const template = (await createTemplate(
+      auth,
+      projectId,
+      environmentId,
+      Object.assign(body, { id })
+    )) as TemplateResponse;
 
     this.setStatus(201);
 
     return template;
+  }
+
+  /**
+   * Create a templates. An overview of Template usage in Retraced can be found at
+   *
+   * https://boxyhq.com/docs/retraced/advanced/display-templates
+   *
+   * @param auth          Base64 encoded JWT
+   * @param projectId     The project id
+   * @param environmentId The environment id
+   * @param body          The template resource to create
+   */
+  @Post("project/{projectId}/templates/bulk")
+  @SuccessResponse("201", "Created")
+  public async createTemplates(
+    @Header("Authorization") auth: string,
+    @Path("projectId") projectId: string,
+    @Query("environment_id") environmentId: string,
+    @Body() body: { templates: TemplateValues[] },
+    @Request() req: express.Request
+  ): Promise<TemplateResponse[]> {
+    if (body.templates.length > 100) {
+      throw { status: 400, err: new Error("Can only create 100 templates at once.") };
+    }
+
+    await audit(req, "template.create.bulk", "c", {
+      target: {
+        fields: body,
+      },
+    });
+
+    await checkAdminAccessUnwrapped(auth, projectId);
+
+    const templates: TemplateResponse[] = (await createTemplate(
+      auth,
+      projectId,
+      environmentId,
+      body.templates.map((t) => Object.assign(t, { id: uniqueId() }))
+    )) as TemplateResponse[];
+
+    this.setStatus(201);
+    return templates;
   }
 
   /**
