@@ -989,7 +989,7 @@
 	},
 	"info": {
 		"title": "retraced",
-		"version": "1.10.1",
+		"version": "1.10.2",
 		"description": "A fully open source audit log service and embeddable UI easily deployed to your own Kubernetes cluster",
 		"license": {
 			"name": "Apache-2.0"
@@ -2040,6 +2040,83 @@
 						}
 					}
 				]
+			}
+		},
+		"/admin/v1/project/{projectId}/templates/bulk": {
+			"post": {
+				"operationId": "CreateTemplates",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/TemplateResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a templates. An overview of Template usage in Retraced can be found at\n\nhttps://boxyhq.com/docs/retraced/advanced/display-templates",
+				"tags": [
+					"Admin API"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Base64 encoded JWT",
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The project id",
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The environment id",
+						"in": "query",
+						"name": "environment_id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The template resource to create",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"templates": {
+										"items": {
+											"$ref": "#/components/schemas/TemplateValues"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"templates"
+								],
+								"type": "object",
+								"description": "The template resource to create"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/admin/v1/project/{projectId}/templates/{templateId}": {
