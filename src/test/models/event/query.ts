@@ -191,7 +191,7 @@ class QueryEventsTest {
                 bool: {
                   must_not: {
                     range: {
-                      canonical_time: {
+                      received: {
                         lt: 1492060162148,
                       },
                     },
@@ -203,7 +203,7 @@ class QueryEventsTest {
                   should: [
                     {
                       range: {
-                        canonical_time: {
+                        received: {
                           gt: 1492060162148,
                         },
                       },
@@ -221,7 +221,7 @@ class QueryEventsTest {
             ],
           },
         },
-        sort: [{ canonical_time: "asc" }],
+        sort: [{ received: "asc" }],
       },
     };
     assert.deepEqual(output, answer);
