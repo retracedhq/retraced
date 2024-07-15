@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 import queryEvents, { Options } from "../../models/event/query";
-import filterEvents from "../../models/event/filter";
+import filterEvents, { Result } from "../../models/event/filter";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { Scope } from "../../security/scope";
 import getGroups from "../../models/group/gets";
@@ -46,6 +46,10 @@ export default async function search(q: any, args: Args, context: Scope) {
   }
 
   const results = await searcher(opts);
+  return await processEvents(context, results, opts);
+}
+
+async function processEvents(context: Scope, results: Result, opts: Options) {
   const events = await addDisplayTitles({
     projectId: context.projectId,
     environmentId: context.environmentId,
@@ -104,7 +108,7 @@ export default async function search(q: any, args: Args, context: Scope) {
 
     return {
       node: event,
-      cursor: encodeCursor(event.canonical_time, event.id),
+      cursor: encodeCursor(event.received, event.id),
     };
   });
 

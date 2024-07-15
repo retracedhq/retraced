@@ -266,7 +266,7 @@ export function searchParams(opts: Options): RequestParams.Search {
       bool: {
         must_not: {
           range: {
-            canonical_time: {
+            received: {
               [isAsc ? "lt" : "gt"]: timestamp,
             },
           },
@@ -279,7 +279,7 @@ export function searchParams(opts: Options): RequestParams.Search {
           {
             // include non-identical timestamps in range
             range: {
-              canonical_time: {
+              received: {
                 [isAsc ? "gt" : "lt"]: timestamp,
               },
             },
@@ -303,7 +303,7 @@ export function searchParams(opts: Options): RequestParams.Search {
     size: opts.size !== 0 ? opts.size : undefined,
     body: {
       query: searchQuery,
-      sort: [{ canonical_time: opts.sort }],
+      sort: [{ received: opts.sort }],
     },
   };
 

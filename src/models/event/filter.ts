@@ -41,12 +41,12 @@ export default async function filter(opts: Options): Promise<Result> {
   if (opts.cursor) {
     if (opts.sort === "desc") {
       wheres.push(
-        `(((doc -> 'canonical_time')::text::bigint < ${nextParam()}) OR ((doc -> 'canonical_time')::text::bigint = ${nextParam()} AND id < ${nextParam()}))`
+        `(((doc -> 'received')::text::bigint < ${nextParam()}) OR ((doc -> 'received')::text::bigint = ${nextParam()} AND id < ${nextParam()}))`
       );
       vals.push(opts.cursor[0], opts.cursor[0], opts.cursor[1]);
     } else {
       wheres.push(
-        `(((doc -> 'canonical_time')::text::bigint > ${nextParam()}) OR ((doc -> 'canonical_time')::text::bigint = ${nextParam()} AND id > ${nextParam()}))`
+        `(((doc -> 'received')::text::bigint > ${nextParam()}) OR ((doc -> 'received')::text::bigint = ${nextParam()} AND id > ${nextParam()}))`
       );
       vals.push(opts.cursor[0]);
     }
@@ -56,7 +56,7 @@ export default async function filter(opts: Options): Promise<Result> {
         SELECT doc
         FROM indexed_events
         WHERE ${wheres.join(" AND ")}
-        ORDER BY (doc-> 'canonical_time')::text::bigint ${_.toUpper(opts.sort)}, id ${_.toUpper(opts.sort)}
+        ORDER BY (doc-> 'received')::text::bigint ${_.toUpper(opts.sort)}, id ${_.toUpper(opts.sort)}
         LIMIT ${size}`;
 
   const results = await pgPool.query(q, vals as any);
