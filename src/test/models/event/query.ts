@@ -221,7 +221,7 @@ class QueryEventsTest {
             ],
           },
         },
-        sort: [{ received: "asc" }],
+        sort: [{ received: "asc" }, { canonical_time: "asc" }],
       },
     };
     assert.deepEqual(output, answer);

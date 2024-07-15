@@ -56,7 +56,7 @@ export default async function filter(opts: Options): Promise<Result> {
         SELECT doc
         FROM indexed_events
         WHERE ${wheres.join(" AND ")}
-        ORDER BY (doc-> 'received')::text::bigint ${_.toUpper(opts.sort)}, id ${_.toUpper(opts.sort)}
+        ORDER BY (doc-> 'received')::text::bigint ${_.toUpper(opts.sort)}, (doc-> 'canonical_time')::text::bigint ${_.toUpper(opts.sort)}, id ${_.toUpper(opts.sort)}
         LIMIT ${size}`;
 
   const results = await pgPool.query(q, vals as any);
