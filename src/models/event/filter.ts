@@ -150,11 +150,44 @@ export function getFilters(query: ParsedQuery, scope: Scope): Filter[] {
     filters.push(orJoin(some));
   }
 
+  if (query.target_id) {
+    const some = _.map(query.target_id, (id) => {
+      return {
+        where: `(doc -> 'target' -> 'id') @> ${nextParam()}`,
+        values: [quote(id)],
+      };
+    });
+
+    filters.push(orJoin(some));
+  }
+
   if (query.actor_name) {
     const some = _.map(query.actor_name, (name) => {
       return {
         where: `to_tsvector('english', (doc -> 'actor' -> 'name')) @@ plainto_tsquery('english', ${nextParam()})`,
         values: [name],
+      };
+    });
+
+    filters.push(orJoin(some));
+  }
+
+  if (query.target_name) {
+    const some = _.map(query.target_name, (name) => {
+      return {
+        where: `to_tsvector('english', (doc -> 'target' -> 'name')) @@ plainto_tsquery('english', ${nextParam()})`,
+        values: [name],
+      };
+    });
+
+    filters.push(orJoin(some));
+  }
+
+  if (query.target_type) {
+    const some = _.map(query.target_type, (typ) => {
+      return {
+        where: `to_tsvector('english', (doc -> 'target' -> 'type')) @@ plainto_tsquery('english', ${nextParam()})`,
+        values: [typ],
       };
     });
 

@@ -51,6 +51,9 @@ export interface ParsedQuery {
   location?: string[];
   external_id?: string[];
   text?: string;
+  target_id?: string[];
+  target_name?: string[];
+  target_type?: string[];
 }
 
 const structuredQueryKeywords = [
@@ -63,6 +66,9 @@ const structuredQueryKeywords = [
   "description",
   "location",
   "external_id",
+  "target.id",
+  "target.name",
+  "target.type",
   "fields.*",
 ];
 
@@ -113,6 +119,15 @@ export function parseQuery(query: string): ParsedQuery {
   }
   if (intermediate["actor.name"]) {
     parsed.actor_name = toArray(intermediate["actor.name"]);
+  }
+  if (intermediate["target.id"]) {
+    parsed.target_id = toArray(intermediate["target.id"]);
+  }
+  if (intermediate["target.name"]) {
+    parsed.target_name = toArray(intermediate["target.name"]);
+  }
+  if (intermediate["target.type"]) {
+    parsed.target_type = toArray(intermediate["target.type"]);
   }
   if (intermediate["external_id"]) {
     parsed.external_id = toArray(intermediate["external_id"]);
