@@ -43,13 +43,12 @@ export default async function filter(opts: Options): Promise<Result> {
       wheres.push(
         `(((doc -> 'canonical_time')::text::bigint < ${nextParam()}) OR ((doc -> 'canonical_time')::text::bigint = ${nextParam()} AND id < ${nextParam()}))`
       );
-      vals.push(opts.cursor[0], opts.cursor[0], opts.cursor[1]);
     } else {
       wheres.push(
         `(((doc -> 'canonical_time')::text::bigint > ${nextParam()}) OR ((doc -> 'canonical_time')::text::bigint = ${nextParam()} AND id > ${nextParam()}))`
       );
-      vals.push(opts.cursor[0]);
     }
+    vals.push(opts.cursor[0], opts.cursor[0], opts.cursor[1]);
   }
 
   const q = `
