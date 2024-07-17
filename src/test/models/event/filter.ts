@@ -12,6 +12,98 @@ const minScope = {
 
 const tests = [
   {
+    query: "target.id:'tasks'",
+    parsed: {
+      target_id: ["tasks"],
+    },
+    scope: minScope,
+    filters: [
+      {
+        where: `(doc -> 'target' -> 'id') @> $1`,
+        values: ['"tasks"'],
+      },
+      { where: "project_id = $2", values: ["proj1"] },
+      { where: "environment_id = $3", values: ["env1"] },
+    ],
+  },
+  {
+    query: "target.id:tasks,1",
+    parsed: {
+      target_id: ["tasks", "1"],
+    },
+    scope: minScope,
+    filters: [
+      {
+        where: "((doc -> 'target' -> 'id') @> $1 OR (doc -> 'target' -> 'id') @> $2)",
+        values: ['"tasks"', '"1"'],
+      },
+      { where: "project_id = $3", values: ["proj1"] },
+      { where: "environment_id = $4", values: ["env1"] },
+    ],
+  },
+  {
+    query: "target.name:'tasks'",
+    parsed: {
+      target_name: ["tasks"],
+    },
+    scope: minScope,
+    filters: [
+      {
+        where: "to_tsvector('english', (doc -> 'target' -> 'name')) @@ plainto_tsquery('english', $1)",
+        values: ["tasks"],
+      },
+      { where: "project_id = $2", values: ["proj1"] },
+      { where: "environment_id = $3", values: ["env1"] },
+    ],
+  },
+  {
+    query: "target.name:tasks,100",
+    parsed: {
+      target_name: ["tasks", "100"],
+    },
+    scope: minScope,
+    filters: [
+      {
+        where:
+          "(to_tsvector('english', (doc -> 'target' -> 'name')) @@ plainto_tsquery('english', $1) OR to_tsvector('english', (doc -> 'target' -> 'name')) @@ plainto_tsquery('english', $2))",
+        values: ["tasks", "100"],
+      },
+      { where: "project_id = $3", values: ["proj1"] },
+      { where: "environment_id = $4", values: ["env1"] },
+    ],
+  },
+  {
+    query: "target.type:'tasks'",
+    parsed: {
+      target_type: ["tasks"],
+    },
+    scope: minScope,
+    filters: [
+      {
+        where: "to_tsvector('english', (doc -> 'target' -> 'type')) @@ plainto_tsquery('english', $1)",
+        values: ["tasks"],
+      },
+      { where: "project_id = $2", values: ["proj1"] },
+      { where: "environment_id = $3", values: ["env1"] },
+    ],
+  },
+  {
+    query: "target.type:tasks,100",
+    parsed: {
+      target_type: ["tasks", "100"],
+    },
+    scope: minScope,
+    filters: [
+      {
+        where:
+          "(to_tsvector('english', (doc -> 'target' -> 'type')) @@ plainto_tsquery('english', $1) OR to_tsvector('english', (doc -> 'target' -> 'type')) @@ plainto_tsquery('english', $2))",
+        values: ["tasks", "100"],
+      },
+      { where: "project_id = $3", values: ["proj1"] },
+      { where: "environment_id = $4", values: ["env1"] },
+    ],
+  },
+  {
     query: "action:foo.get",
     parsed: {
       actions: [{ term: "foo.get", isPrefix: false }],
