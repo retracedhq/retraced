@@ -51,6 +51,9 @@ export interface ParsedQuery {
   location?: string[];
   external_id?: string[];
   text?: string;
+  target_id?: string[];
+  target_name?: string[];
+  target_type?: string[];
 }
 
 const structuredQueryKeywords = [
