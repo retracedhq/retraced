@@ -989,7 +989,7 @@
 	},
 	"info": {
 		"title": "retraced",
-		"version": "1.10.2",
+		"version": "1.11.0",
 		"description": "A fully open source audit log service and embeddable UI easily deployed to your own Kubernetes cluster",
 		"license": {
 			"name": "Apache-2.0"
