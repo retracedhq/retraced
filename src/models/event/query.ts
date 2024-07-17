@@ -303,7 +303,12 @@ export function searchParams(opts: Options): RequestParams.Search {
     size: opts.size !== 0 ? opts.size : undefined,
     body: {
       query: searchQuery,
-      sort: [{ canonical_time: opts.sort }],
+      sort: [
+        { canonical_time: opts.sort },
+        {
+          id: opts.sort,
+        },
+      ],
     },
   };
 
