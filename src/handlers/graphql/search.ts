@@ -17,13 +17,6 @@ export interface Args {
   last?: number;
   before?: string;
 }
-export interface ArgsPaginated {
-  query: string;
-  page?: number;
-  pageSize: number;
-  sort?: "asc" | "desc";
-  cursor?: string;
-}
 
 export default async function search(q: any, args: Args, context: Scope) {
   if (args.first && args.last) {

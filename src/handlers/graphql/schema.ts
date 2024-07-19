@@ -277,29 +277,31 @@ const pageInfoType = new GraphQLObjectType({
   },
 });
 
+const EventsList = new GraphQLList(
+  new GraphQLObjectType({
+    description: "The event and cursor for a single result.",
+    name: "SearchEventEdge",
+    fields: {
+      node: {
+        description: "The event object.",
+        type: eventType,
+      },
+      cursor: {
+        description:
+          "An opaque cursor for paginating from this point in the search results. Use it as the <code>after</code> argument to paginate forward or the <code>before</code> argument to paginate backward.",
+        type: GraphQLString,
+      },
+    },
+  })
+);
+
 const SearchQueryResult = new GraphQLObjectType({
   description: "The results of a search query.",
   name: "SearchQueryResult",
   fields: {
     edges: {
       description: "The events and cursors matching the query.",
-      type: new GraphQLList(
-        new GraphQLObjectType({
-          description: "The event and cursor for a single result.",
-          name: "SearchEventEdge",
-          fields: {
-            node: {
-              description: "The event object.",
-              type: eventType,
-            },
-            cursor: {
-              description:
-                "An opaque cursor for paginating from this point in the search results. Use it as the <code>after</code> argument to paginate forward or the <code>before</code> argument to paginate backward.",
-              type: GraphQLString,
-            },
-          },
-        })
-      ),
+      type: EventsList,
     },
     pageInfo: {
       description: "Indications that more search results are available.",
@@ -318,23 +320,7 @@ const PaginatedSearchQueryResult = new GraphQLObjectType({
   fields: {
     edges: {
       description: "The events and cursors matching the query.",
-      type: new GraphQLList(
-        new GraphQLObjectType({
-          description: "The event and cursor for a single result.",
-          name: "PaginatedSearchEventEdge",
-          fields: {
-            node: {
-              description: "The event object.",
-              type: eventType,
-            },
-            cursor: {
-              description:
-                "An opaque cursor for paginating from this point in the search results. Use it as the <code>after</code> argument to paginate forward or the <code>before</code> argument to paginate backward.",
-              type: GraphQLString,
-            },
-          },
-        })
-      ),
+      type: EventsList,
     },
     totalCount: {
       description: "The total number of search results matched by the query.",
