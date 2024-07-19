@@ -14,25 +14,6 @@ spec:
   selector:
     app: elasticsearch
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: elasticsearch
-  labels:
-    app: elasticsearch
-data:
-  elasticsearch.yml: |-
-    http.host: 0.0.0.0
-
-    http.port: 9200
-    http.cors.allow-origin: "/.*/"
-    http.cors.enabled: true
-    http.cors.allow-headers: X-Requested-With,X-Auth-Token,Content-Type, Content-Length, Authorization
-    http.cors.allow-credentials: true
-
-    discovery.type: single-node
-
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -49,30 +30,27 @@ spec:
     spec:
       containers:
         - name: elasticsearch
-          image: elasticsearch:7.17.22
+          image: elasticsearch:8.14.3
           imagePullPolicy: IfNotPresent
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: ES_JAVA_OPTS
+              value: "-Xms1g -Xmx1g"
+            - name: xpack.security.enabled
+              value: false
           ports:
             - name: estransport
               containerPort: 9200
           volumeMounts:
             - name: esdatadir
               mountPath: /usr/share/elasticsearch/data
-            - name: elasticsearch
-              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
-              subPath: elasticsearch.yml
 
           # command: ["sleep", "500d"]
       volumes:
         - name: esdatadir
           persistentVolumeClaim:
             claimName: esdatadir
-
-        - name: elasticsearch
-          configMap:
-            name: elasticsearch
-            items:
-              - key: elasticsearch.yml
-                path: elasticsearch.yml
 
   volumeClaimTemplates:
     - metadata:
