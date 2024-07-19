@@ -20,6 +20,14 @@ export interface Options {
   size?: number;
   cursor?: [number, string];
 }
+export interface OptionsPaginated {
+  query: string;
+  scope: Scope;
+  sortOrder: "asc" | "desc";
+  pageOffset: number;
+  startCursor?: [number, string];
+  pageLimit: number;
+}
 
 export interface TotalHits {
   value: number;
@@ -45,8 +53,42 @@ export default async function query(opts: Options): Promise<Result> {
   };
 }
 
+export async function queryEventsPaginated(opts: OptionsPaginated): Promise<Result> {
+  const result = await doQueryPaginated(opts);
+
+  delete opts.startCursor;
+  opts.pageLimit = 0;
+
+  const total = await doQueryPaginated(opts);
+
+  return {
+    totalHits: total.totalHits,
+    events: result.events,
+  };
+}
+
 async function doQuery(opts: Options): Promise<Result> {
   const params = searchParams(opts);
+
+  const newResp = await es.search(params);
+
+  const bodyAny: any = params.body;
+  const countParams = {
+    index: params.index,
+    body: {
+      query: bodyAny.query,
+    },
+  };
+  const newCount = await es.count(countParams);
+
+  return {
+    totalHits: { value: newCount.body.count },
+    events: _.map(newResp.body.hits.hits, ({ _source }) => _source),
+  };
+}
+
+async function doQueryPaginated(opts: OptionsPaginated): Promise<Result> {
+  const params = searchParamsPaginated(opts);
 
   const newResp = await es.search(params);
 
@@ -321,4 +363,67 @@ export function searchParams(opts: Options): RequestParams.Search {
   //   search_after: opts.cursor,
   //   body: { query },
   // };
+}
+
+export function searchParamsPaginated(opts: OptionsPaginated): RequestParams.Search {
+  const searchQuery = parse(opts.query);
+  const [index, securityFilters] = scope(opts.scope);
+
+  searchQuery.bool.filter = searchQuery.bool.filter.concat(securityFilters);
+
+  // Converts cursor to query filters. Remove after ???
+  if (opts.startCursor) {
+    const [timestamp, id] = opts.startCursor;
+    const isAsc = /asc/.test(opts.sortOrder);
+
+    searchQuery.bool.filter.push({
+      bool: {
+        must_not: {
+          range: {
+            canonical_time: {
+              [isAsc ? "lt" : "gt"]: timestamp,
+            },
+          },
+        },
+      },
+    });
+    searchQuery.bool.filter.push({
+      bool: {
+        should: [
+          {
+            // include non-identical timestamps in range
+            range: {
+              canonical_time: {
+                [isAsc ? "gte" : "lte"]: timestamp,
+              },
+            },
+          },
+          {
+            // include identical timestamps with ids in range
+            range: {
+              id: {
+                [isAsc ? "gte" : "lte"]: id,
+              },
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  return {
+    index,
+    _source: "true",
+    size: opts.pageLimit !== 0 ? opts.pageLimit : undefined,
+    from: opts.pageLimit !== 0 ? opts.pageOffset : undefined,
+    body: {
+      query: searchQuery,
+      sort: [
+        { canonical_time: opts.sortOrder },
+        {
+          id: opts.sortOrder,
+        },
+      ],
+    },
+  };
 }

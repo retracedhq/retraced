@@ -1,55 +1,43 @@
 import _ from "lodash";
 
-import queryEvents, { Options } from "../../models/event/query";
-import filterEvents from "../../models/event/filter";
+import { queryEventsPaginated, OptionsPaginated } from "../../models/event/query";
+import { filterEventsPaginated } from "../../models/event/filter";
 import addDisplayTitles from "../../models/event/addDisplayTitles";
 import { Scope } from "../../security/scope";
 import getGroups from "../../models/group/gets";
 import config from "../../config";
 
 const PG_SEARCH = !!config.PG_SEARCH;
-const searcher = PG_SEARCH ? filterEvents : queryEvents;
+const searcher = PG_SEARCH ? filterEventsPaginated : queryEventsPaginated;
 
-export interface Args {
-  query: string;
-  first?: number;
-  after?: string;
-  last?: number;
-  before?: string;
-}
 export interface ArgsPaginated {
   query: string;
-  page?: number;
-  pageSize: number;
-  sort?: "asc" | "desc";
-  cursor?: string;
+  pageOffset?: number;
+  pageLimit: number;
+  sortOrder?: "asc" | "desc";
+  startCursor?: string;
 }
 
-export default async function search(q: any, args: Args, context: Scope) {
-  if (args.first && args.last) {
-    throw {
-      status: 400,
-      err: new Error("Arguments 'first' and 'last' are exclusive"),
-    };
+export default async function search(q: any, args: ArgsPaginated, context: Scope) {
+  if (!args.pageOffset) {
+    args.pageOffset = 0;
   }
-  if (args.before && args.after) {
-    throw {
-      status: 400,
-      err: new Error("Arguments 'before' and 'after' are exclusive"),
-    };
+  if (!args.pageLimit) {
+    args.pageLimit = 20;
   }
-  const opts: Options = {
+  if (!args.sortOrder) {
+    args.sortOrder = "desc";
+  }
+  const opts: OptionsPaginated = {
     query: args.query,
     scope: context,
-    sort: args.last ? "desc" : "asc",
-    size: args.last || args.first,
+    sortOrder: args.sortOrder,
+    pageLimit: args.pageLimit,
+    pageOffset: args.pageOffset,
   };
 
-  if (args.after) {
-    opts.cursor = decodeCursor(args.after);
-  }
-  if (args.before) {
-    opts.cursor = decodeCursor(args.before);
+  if (args.startCursor) {
+    opts.startCursor = decodeCursor(args.startCursor);
   }
 
   const results = await searcher(opts);
@@ -121,18 +109,14 @@ export default async function search(q: any, args: Args, context: Scope) {
   return {
     totalCount,
     edges,
-    pageInfo: {
-      hasNextPage: opts.sort === "asc" && totalCount > results.events.length,
-      hasPreviousPage: opts.sort === "desc" && totalCount > results.events.length,
-    },
   };
 }
 
-function encodeCursor(timestamp: number, id: string): string {
+export function encodeCursor(timestamp: number, id: string): string {
   return Buffer.from(`${timestamp},${id}`).toString("base64");
 }
 
-function decodeCursor(cursor: string): [number, string] {
+export function decodeCursor(cursor: string): [number, string] {
   const parts = Buffer.from(cursor, "base64").toString("utf8").split(",");
   const ts = parseInt(parts[0], 10);
   const id = parts[1];

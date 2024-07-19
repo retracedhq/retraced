@@ -12,6 +12,7 @@ import {
 } from "graphql";
 
 import search from "./search";
+import searchPaginated from "./searchPaginated";
 import counts from "./counts";
 
 const fieldsType = new GraphQLList(
@@ -276,46 +277,79 @@ const pageInfoType = new GraphQLObjectType({
   },
 });
 
+const SearchQueryResult = new GraphQLObjectType({
+  description: "The results of a search query.",
+  name: "SearchQueryResult",
+  fields: {
+    edges: {
+      description: "The events and cursors matching the query.",
+      type: new GraphQLList(
+        new GraphQLObjectType({
+          description: "The event and cursor for a single result.",
+          name: "SearchEventEdge",
+          fields: {
+            node: {
+              description: "The event object.",
+              type: eventType,
+            },
+            cursor: {
+              description:
+                "An opaque cursor for paginating from this point in the search results. Use it as the <code>after</code> argument to paginate forward or the <code>before</code> argument to paginate backward.",
+              type: GraphQLString,
+            },
+          },
+        })
+      ),
+    },
+    pageInfo: {
+      description: "Indications that more search results are available.",
+      type: pageInfoType,
+    },
+    totalCount: {
+      description: "The total number of search results matched by the query.",
+      type: GraphQLInt,
+    },
+  },
+});
+
+const PaginatedSearchQueryResult = new GraphQLObjectType({
+  description: "The results of a paginated search query.",
+  name: "PaginatedSearchQueryResult",
+  fields: {
+    edges: {
+      description: "The events and cursors matching the query.",
+      type: new GraphQLList(
+        new GraphQLObjectType({
+          description: "The event and cursor for a single result.",
+          name: "PaginatedSearchEventEdge",
+          fields: {
+            node: {
+              description: "The event object.",
+              type: eventType,
+            },
+            cursor: {
+              description:
+                "An opaque cursor for paginating from this point in the search results. Use it as the <code>after</code> argument to paginate forward or the <code>before</code> argument to paginate backward.",
+              type: GraphQLString,
+            },
+          },
+        })
+      ),
+    },
+    totalCount: {
+      description: "The total number of search results matched by the query.",
+      type: GraphQLInt,
+    },
+  },
+});
+
 const queryType = new GraphQLObjectType({
   description: "The root query object of the Retraced GraphQL interface.",
   name: "Query",
   fields: {
     search: {
       description: "Run an advanced search for events.",
-      type: new GraphQLObjectType({
-        description: "The results of a search query.",
-        name: "EventsConnection",
-        fields: {
-          edges: {
-            description: "The events and cursors matching the query.",
-            type: new GraphQLList(
-              new GraphQLObjectType({
-                description: "The event and cursor for a single result.",
-                name: "EventEdge",
-                fields: {
-                  node: {
-                    description: "The event object.",
-                    type: eventType,
-                  },
-                  cursor: {
-                    description:
-                      "An opaque cursor for paginating from this point in the search results. Use it as the <code>after</code> argument to paginate forward or the <code>before</code> argument to paginate backward.",
-                    type: GraphQLString,
-                  },
-                },
-              })
-            ),
-          },
-          pageInfo: {
-            description: "Indications that more search results are available.",
-            type: pageInfoType,
-          },
-          totalCount: {
-            description: "The total number of search results matched by the query.",
-            type: GraphQLInt,
-          },
-        },
-      }),
+      type: SearchQueryResult,
       args: {
         query: {
           type: GraphQLString,
@@ -342,6 +376,49 @@ const queryType = new GraphQLObjectType({
         },
       },
       resolve: search,
+    },
+    searchPaginated: {
+      description: "Run an advanced search for events.",
+      type: PaginatedSearchQueryResult,
+      args: {
+        query: {
+          type: GraphQLString,
+          description:
+            "The <a href=/documentation/getting-started/searching-for-events/#structured-advanced-search>structured search operators</a> used to filter events.",
+        },
+        pageOffset: {
+          type: GraphQLInt,
+          description:
+            "The number of events to skip while fetching the data. It should be used with the <code>pageLimit</code> argument.",
+        },
+        pageLimit: {
+          type: GraphQLInt,
+          description: "The number of events to return per page.",
+        },
+        startCursor: {
+          type: GraphQLString,
+          description: "A cursor to be used for limiting the search results.",
+        },
+        sortOrder: {
+          type: new GraphQLEnumType({
+            description: "asc  | desc",
+            name: "sortOrder",
+            values: {
+              asc: {
+                value: "asc",
+                description: "ascending",
+              },
+              desc: {
+                value: "desc",
+                description: "descending",
+              },
+            },
+          }),
+          description:
+            "The order in which to sort the events. It can be either ascending or descending. The default is descending.",
+        },
+      },
+      resolve: searchPaginated,
     },
     counts: {
       description: "Get event counts aggregated by action or group.",
