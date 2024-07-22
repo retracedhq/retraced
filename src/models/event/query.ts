@@ -25,7 +25,7 @@ export interface OptionsPaginated {
   scope: Scope;
   sortOrder: "asc" | "desc";
   pageOffset: number;
-  startCursor?: [number, string];
+  startCursor?: [number, string, number];
   pageLimit: number;
 }
 
@@ -56,10 +56,11 @@ export default async function query(opts: Options): Promise<Result> {
 export async function queryEventsPaginated(opts: OptionsPaginated): Promise<Result> {
   const result = await doQueryPaginated(opts);
 
-  delete opts.startCursor;
-  opts.pageLimit = 0;
-
-  const total = await doQueryPaginated(opts);
+  const total = await doQueryPaginated({
+    ...opts,
+    startCursor: undefined,
+    pageOffset: 0,
+  });
 
   return {
     totalHits: total.totalHits,

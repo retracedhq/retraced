@@ -18,7 +18,7 @@ export interface ArgsPaginated {
   startCursor?: string;
 }
 
-export default async function search(q: any, args: ArgsPaginated, context: Scope) {
+export default async function searchPaginated(q: any, args: ArgsPaginated, context: Scope) {
   if (!args.pageOffset) {
     args.pageOffset = 0;
   }
@@ -99,24 +99,29 @@ export default async function search(q: any, args: ArgsPaginated, context: Scope
 
     return {
       node: event,
-      cursor: encodeCursor(event.canonical_time, event.id),
+      cursor: encodeCursor(
+        event.canonical_time,
+        event.id,
+        opts.startCursor ? opts.startCursor[2] : results.totalHits.value
+      ),
     };
   });
 
   // If searching with a cursor run the search again without it to get the total.
-  const totalCount = results.totalHits.value;
+  const totalCount = opts.startCursor ? opts.startCursor[2] : results.totalHits.value;
 
   return {
     totalCount,
-    edges,
+    edges:
+      args.pageOffset + args.pageLimit < totalCount ? edges : edges.slice(0, totalCount - args.pageOffset),
   };
 }
 
-export function encodeCursor(timestamp: number, id: string): string {
-  return Buffer.from(`${timestamp},${id}`).toString("base64");
+export function encodeCursor(timestamp: number, id: string, count: number): string {
+  return Buffer.from(`${timestamp},${id},${count}`).toString("base64");
 }
 
-export function decodeCursor(cursor: string): [number, string] {
+export function decodeCursor(cursor: string): [number, string, number] {
   const parts = Buffer.from(cursor, "base64").toString("utf8").split(",");
   const ts = parseInt(parts[0], 10);
   const id = parts[1];
@@ -125,5 +130,13 @@ export function decodeCursor(cursor: string): [number, string] {
     throw { status: 400, err: new Error("Invalid cursor") };
   }
 
-  return [ts, id];
+  if (parts.length !== 3) {
+    throw { status: 400, err: new Error("Invalid cursor") };
+  } else {
+    const count = parseInt(parts[2], 10);
+    if (_.isNaN(count)) {
+      throw { status: 400, err: new Error("Invalid cursor") };
+    }
+    return [ts, id, count];
+  }
 }

@@ -17,7 +17,7 @@ export interface OptionsPaginated {
   scope: Scope;
   sortOrder: "asc" | "desc";
   pageOffset: number;
-  startCursor?: [number, string];
+  startCursor?: [number, string, number];
   pageLimit: number;
 }
 
