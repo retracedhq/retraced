@@ -110,6 +110,13 @@ export const search = (q: string) => {
   };
 };
 
+export const searchPaginated = (q: string) => {
+  return {
+    variables: { query: q, pageLimit: 20, pageOffset: 0 },
+    query: GraphQLQueryPaginated.query,
+  };
+};
+
 export const GraphQLQuery = {
   variables: { query: "", last: 20, before: "" },
   query: `
@@ -119,6 +126,69 @@ export const GraphQLQuery = {
         pageInfo {
             hasPreviousPage
         }
+        edges {
+            cursor
+            node {
+                id
+                action
+                crud
+                created
+                received
+                canonical_time
+                description
+                actor {
+                    id
+                    name
+                    href
+                    fields {
+                        key
+                        value
+                    }
+                }
+                group {
+                    id
+                    name
+                }
+                target {
+                    id
+                    name
+                    href
+                    type
+                    fields {
+                        key
+                        value
+                    }
+                }
+                display {
+                    markdown
+                }
+                is_failure
+                is_anonymous
+                source_ip
+                country
+                loc_subdiv1
+                loc_subdiv2
+                fields {
+                    key
+                    value
+                }
+                external_id
+                metadata {
+                    key
+                    value
+                }
+            }
+        }
+    }
+}`,
+};
+
+export const GraphQLQueryPaginated = {
+  variables: { query: "", pageLimit: 20, pageOffset: 0 },
+  query: `
+    query SearchPaginated($query: String!, $pageOffset: Int!, $pageLimit: Int!, $startCursor: String, $sortOrder: sortOrder) {
+    searchPaginated(query: $query, pageOffset: $pageOffset, pageLimit: $pageLimit, startCursor: $startCursor, sortOrder: $sortOrder) {
+        totalCount
         edges {
             cursor
             node {
