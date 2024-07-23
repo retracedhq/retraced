@@ -251,8 +251,10 @@ describe("Viewer Paginated API", function () {
               }
             );
           });
-          context("When used pageOrder, pageOffset & pageLimit", function () {
+          context("When used pageOrder, pageOffset & pageLimit with desc", function () {
             let responseBody;
+            let date = new Date();
+            date = new Date(date.setMinutes(date.getMinutes() - 1));
             beforeEach(async function () {
               for (let i = 1; i <= 15; i++) {
                 await createEvent({
@@ -261,7 +263,7 @@ describe("Viewer Paginated API", function () {
                     id: groupID,
                     name: "RetracedQA",
                   },
-                  created: new Date(),
+                  created: date,
                   crud: "c" as CRUD,
                   source_ip: "192.168.0.1",
                   actor: {
@@ -287,6 +289,7 @@ describe("Viewer Paginated API", function () {
                     quality: "excellent",
                   },
                 });
+                date = new Date(date.setSeconds(date.getSeconds() + 4));
               }
               this.timeout(Env.EsIndexWaitMs * 2);
               await sleep(Env.EsIndexWaitMs);
@@ -309,7 +312,7 @@ describe("Viewer Paginated API", function () {
               assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
             });
           });
-          context("When fetched first page", function () {
+          context("When fetched first page with desc", function () {
             let responseBody;
             let count = 10;
             beforeEach(async function () {
@@ -342,7 +345,7 @@ describe("Viewer Paginated API", function () {
               }
             });
           });
-          context("When fetched the last page", function () {
+          context("When fetched the last page with desc", function () {
             let responseBody;
             let count = 10;
             beforeEach(async function () {
@@ -370,7 +373,7 @@ describe("Viewer Paginated API", function () {
               assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
             });
           });
-          context("When fetched the last page with cursor", function () {
+          context("When fetched the last page with cursor with desc", function () {
             let responseBody;
             let count = 10;
             beforeEach(async function () {
@@ -379,6 +382,120 @@ describe("Viewer Paginated API", function () {
                 searchPaginated(
                   "integration.test.api." + randomNumber.toString() + "-1",
                   "asc",
+                  count,
+                  0,
+                  startCursor
+                ),
+                {
+                  headers: {
+                    Authorization: viewerSession,
+                  },
+                }
+              );
+              assert(resp6);
+              assert.strictEqual(resp6.status, 200);
+              responseBody = resp6.data;
+            });
+            specify("It should return the correct number of events & total count", function () {
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+            });
+          });
+          context("When used pageOrder, pageOffset & pageLimit with desc", function () {
+            let responseBody;
+            beforeEach(async function () {
+              const resp6 = await axios.post(
+                `${Env.Endpoint}/viewer/v1/graphql/paginated`,
+                searchPaginated(`action:"integration.test.api.${randomNumber.toString()}-1"`, "desc", 10, 0),
+                {
+                  headers: {
+                    Authorization: viewerSession,
+                  },
+                }
+              );
+              assert(resp6);
+              assert.strictEqual(resp6.status, 200);
+              responseBody = resp6.data;
+            });
+            specify("It should return the correct event counts", function () {
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 10);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+            });
+          });
+          context("When fetched first page with desc", function () {
+            let responseBody;
+            let count = 10;
+            beforeEach(async function () {
+              const resp6 = await axios.post(
+                `${Env.Endpoint}/viewer/v1/graphql/paginated`,
+                searchPaginated(
+                  `action:"integration.test.api.${randomNumber.toString()}-1"`,
+                  "desc",
+                  count,
+                  0
+                ),
+                {
+                  headers: {
+                    Authorization: viewerSession,
+                  },
+                }
+              );
+              assert(resp6);
+              assert.strictEqual(resp6.status, 200);
+              responseBody = resp6.data;
+            });
+            specify("It should return the correct events", function () {
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 10);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+              const recordIds: number[] = responseBody.data.searchPaginated.edges.map(
+                (e) => +e.node.target.fields[0].value
+              );
+              for (let i = 0; i < recordIds.length; i++) {
+                assert.strictEqual(
+                  5 < recordIds[i] && recordIds[i] <= 15,
+                  true,
+                  `Event with record_id ${i} not found`
+                );
+              }
+            });
+          });
+          context("When fetched the last page with desc", function () {
+            let responseBody;
+            let count = 10;
+            beforeEach(async function () {
+              const resp6 = await axios.post(
+                `${Env.Endpoint}/viewer/v1/graphql/paginated`,
+                searchPaginated(
+                  "integration.test.api." + randomNumber.toString() + "-1",
+                  "desc",
+                  count,
+                  count
+                ),
+                {
+                  headers: {
+                    Authorization: viewerSession,
+                  },
+                }
+              );
+              assert(resp6);
+              assert.strictEqual(resp6.status, 200);
+              responseBody = resp6.data;
+              startCursor = responseBody.data.searchPaginated.edges[0].cursor;
+            });
+            specify("It should return the correct number of events", function () {
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+            });
+          });
+          context("When fetched the last page with cursor with desc", function () {
+            let responseBody;
+            let count = 10;
+            beforeEach(async function () {
+              const resp6 = await axios.post(
+                `${Env.Endpoint}/viewer/v1/graphql/paginated`,
+                searchPaginated(
+                  "integration.test.api." + randomNumber.toString() + "-1",
+                  "desc",
                   count,
                   0,
                   startCursor
