@@ -110,9 +110,15 @@ export const search = (q: string) => {
   };
 };
 
-export const searchPaginated = (q: string) => {
+export const searchPaginated = (
+  q: string,
+  sortOrder: "asc" | "desc" = "desc",
+  pageLimit = 20,
+  pageOffset = 0,
+  startCursor = ""
+) => {
   return {
-    variables: { query: q, pageLimit: 20, pageOffset: 0 },
+    variables: { query: q, pageLimit, pageOffset, sortOrder, startCursor },
     query: GraphQLQueryPaginated.query,
   };
 };

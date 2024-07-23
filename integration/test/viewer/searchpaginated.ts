@@ -23,13 +23,7 @@ describe("Viewer Paginated API", function () {
 
     context("And a call is made into the Retraced API with a standard audit event", function () {
       beforeEach(async function () {
-        const retraced = new Client({
-          apiKey: Env.ApiKey,
-          projectId: Env.ProjectID,
-          endpoint: Env.Endpoint,
-        });
-
-        const event = {
+        await createEvent({
           action: "integration.test.api." + randomNumber.toString(),
           group: {
             id: groupID,
@@ -60,13 +54,7 @@ describe("Viewer Paginated API", function () {
           fields: {
             quality: "excellent",
           },
-        };
-        const valid = tv4.validate(event, CreateEventSchema);
-        if (!valid) {
-          console.log(tv4.error);
-        }
-        assert.strictEqual(valid, true);
-        await retraced.reportEvent(event);
+        });
       });
 
       context("And a call is made to create a viewer description scoped to a target", function () {
@@ -147,6 +135,7 @@ describe("Viewer Paginated API", function () {
 
         context("And the viewer descriptor is exchanged for a session", function () {
           let viewerSession;
+          let startCursor;
           beforeEach(async () => {
             const resp4 = await axios.post(`${Env.Endpoint}/viewer/v1/viewersession`, { token });
             assert(resp4);
@@ -262,8 +251,168 @@ describe("Viewer Paginated API", function () {
               }
             );
           });
+          context("When used pageOrder, pageOffset & pageLimit", function () {
+            let responseBody;
+            beforeEach(async function () {
+              for (let i = 1; i <= 15; i++) {
+                await createEvent({
+                  action: "integration.test.api." + randomNumber.toString() + "-1",
+                  group: {
+                    id: groupID,
+                    name: "RetracedQA",
+                  },
+                  created: new Date(),
+                  crud: "c" as CRUD,
+                  source_ip: "192.168.0.1",
+                  actor: {
+                    id: actorID,
+                    name: "RetracedQA Employee",
+                    href: "https://retraced.io/employees/qa",
+                    fields: {
+                      department: "QA",
+                    },
+                  },
+                  target: {
+                    id: targetID,
+                    name: "Retraced API",
+                    href: "https://customertowne.xyz/records/rtrccdapi",
+                    type: "integration",
+                    fields: {
+                      record_id: `${i}`,
+                    },
+                  },
+                  description: "Automated integration testing...",
+                  is_failure: false,
+                  fields: {
+                    quality: "excellent",
+                  },
+                });
+              }
+              this.timeout(Env.EsIndexWaitMs * 2);
+              await sleep(Env.EsIndexWaitMs);
+
+              const resp6 = await axios.post(
+                `${Env.Endpoint}/viewer/v1/graphql/paginated`,
+                searchPaginated(`action:"integration.test.api.${randomNumber.toString()}-1"`, "asc", 10, 0),
+                {
+                  headers: {
+                    Authorization: viewerSession,
+                  },
+                }
+              );
+              assert(resp6);
+              assert.strictEqual(resp6.status, 200);
+              responseBody = resp6.data;
+            });
+            specify("It should return the correct event counts", function () {
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 10);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+            });
+          });
+          context("When fetched first page", function () {
+            let responseBody;
+            let count = 10;
+            beforeEach(async function () {
+              const resp6 = await axios.post(
+                `${Env.Endpoint}/viewer/v1/graphql/paginated`,
+                searchPaginated(
+                  `action:"integration.test.api.${randomNumber.toString()}-1"`,
+                  "asc",
+                  count,
+                  0
+                ),
+                {
+                  headers: {
+                    Authorization: viewerSession,
+                  },
+                }
+              );
+              assert(resp6);
+              assert.strictEqual(resp6.status, 200);
+              responseBody = resp6.data;
+            });
+            specify("It should return the correct events", function () {
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 10);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+              const recordIds: number[] = responseBody.data.searchPaginated.edges.map(
+                (e) => +e.node.target.fields[0].value
+              );
+              for (let i = 0; i < count; i++) {
+                assert.strictEqual(recordIds[i] <= count, true, `Event with record_id ${i} not found`);
+              }
+            });
+          });
+          context("When fetched the last page", function () {
+            let responseBody;
+            let count = 10;
+            beforeEach(async function () {
+              const resp6 = await axios.post(
+                `${Env.Endpoint}/viewer/v1/graphql/paginated`,
+                searchPaginated(
+                  "integration.test.api." + randomNumber.toString() + "-1",
+                  "asc",
+                  count,
+                  count
+                ),
+                {
+                  headers: {
+                    Authorization: viewerSession,
+                  },
+                }
+              );
+              assert(resp6);
+              assert.strictEqual(resp6.status, 200);
+              responseBody = resp6.data;
+              startCursor = responseBody.data.searchPaginated.edges[0].cursor;
+            });
+            specify("It should return the correct number of events", function () {
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+            });
+          });
+          context("When fetched the last page with cursor", function () {
+            let responseBody;
+            let count = 10;
+            beforeEach(async function () {
+              const resp6 = await axios.post(
+                `${Env.Endpoint}/viewer/v1/graphql/paginated`,
+                searchPaginated(
+                  "integration.test.api." + randomNumber.toString() + "-1",
+                  "asc",
+                  count,
+                  0,
+                  startCursor
+                ),
+                {
+                  headers: {
+                    Authorization: viewerSession,
+                  },
+                }
+              );
+              assert(resp6);
+              assert.strictEqual(resp6.status, 200);
+              responseBody = resp6.data;
+            });
+            specify("It should return the correct number of events & total count", function () {
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+            });
+          });
         });
       });
     });
   });
 });
+async function createEvent(event: any) {
+  const retraced = new Client({
+    apiKey: Env.ApiKey,
+    projectId: Env.ProjectID,
+    endpoint: Env.Endpoint,
+  });
+  const valid = tv4.validate(event, CreateEventSchema);
+  if (!valid) {
+    console.log(tv4.error);
+  }
+  assert.strictEqual(valid, true);
+  await retraced.reportEvent(event);
+}
