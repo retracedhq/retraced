@@ -65,7 +65,7 @@ export class GraphqlTest {
     const errors = validateQuery(query, schema);
     let r = assert(errors);
     r = assert.strictEqual(
-      String(errors[0]).includes("Error: Duplicate field EventsConnection:totalCount."),
+      String(errors[0]).includes("Error: Duplicate field SearchQueryResult:totalCount."),
       true
     );
     return r;
@@ -79,7 +79,7 @@ export class GraphqlTest {
     const errors = validateQuery(query, schema);
     let r = assert(errors);
     r = assert.strictEqual(
-      String(errors[0]).includes("Error: Duplicate field EventsConnection:totalCount."),
+      String(errors[0]).includes("Error: Duplicate field SearchQueryResult:totalCount."),
       true
     );
     return r;
