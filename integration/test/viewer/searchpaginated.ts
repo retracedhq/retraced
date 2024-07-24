@@ -341,7 +341,11 @@ describe("Viewer Paginated API", function () {
                 (e) => +e.node.target.fields[0].value
               );
               for (let i = 0; i < count; i++) {
-                assert.strictEqual(recordIds[i] <= count, true, `Event with record_id ${i} not found`);
+                assert.strictEqual(
+                  recordIds[i] <= count,
+                  true,
+                  `Event with record_id ${recordIds[i]} not found in [${recordIds.join(",")}]`
+                );
               }
             });
           });
@@ -454,7 +458,7 @@ describe("Viewer Paginated API", function () {
                 assert.strictEqual(
                   5 < recordIds[i] && recordIds[i] <= 15,
                   true,
-                  `Event with record_id ${i} not found`
+                  `Event with record_id ${recordIds[i]} not found in [${recordIds.join(",")}]`
                 );
               }
             });
