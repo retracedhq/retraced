@@ -64,7 +64,7 @@ describe("Viewer Paginated API", function () {
           const opts = {
             actor_id: actorID,
             group_id: groupID,
-            target_id: targetID,
+            isAdmin: true,
           };
           const qs = querystring.stringify(opts);
           const resp1 = await axios.get(
