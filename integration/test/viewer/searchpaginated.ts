@@ -162,7 +162,7 @@ describe("Viewer Paginated API", function () {
               assert.strictEqual(resp5.status, 200);
               responseBody = resp5.data;
             });
-
+            // trigger
             specify("Then the response should contain the correct information about the event", function () {
               assert.strictEqual(
                 responseBody.data.searchPaginated.edges[0].node.action,
