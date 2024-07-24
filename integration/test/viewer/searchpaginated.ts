@@ -254,7 +254,7 @@ describe("Viewer Paginated API", function () {
           context("When used pageOrder, pageOffset & pageLimit with asc", function () {
             let responseBody;
             let date = new Date();
-            date = new Date(date.setMinutes(date.getMinutes() - 1));
+            date = new Date(date.setMinutes(date.getMinutes() - 15));
             beforeEach(async function () {
               for (let i = 1; i <= 15; i++) {
                 await createEvent({
@@ -289,7 +289,7 @@ describe("Viewer Paginated API", function () {
                     quality: "excellent",
                   },
                 });
-                date = new Date(date.setSeconds(date.getSeconds() + 4));
+                date = new Date(date.setSeconds(date.getSeconds() + 60));
                 await sleep(100);
               }
               this.timeout(Env.EsIndexWaitMs * 2);
