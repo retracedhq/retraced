@@ -251,7 +251,7 @@ describe("Viewer Paginated API", function () {
               }
             );
           });
-          context("When used pageOrder, pageOffset & pageLimit with desc", function () {
+          context("When used pageOrder, pageOffset & pageLimit with asc", function () {
             let responseBody;
             let date = new Date();
             date = new Date(date.setMinutes(date.getMinutes() - 1));
@@ -312,7 +312,7 @@ describe("Viewer Paginated API", function () {
               assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
             });
           });
-          context("When fetched first page with desc", function () {
+          context("When fetched first page with asc", function () {
             let responseBody;
             let count = 10;
             beforeEach(async function () {
@@ -345,7 +345,7 @@ describe("Viewer Paginated API", function () {
               }
             });
           });
-          context("When fetched the last page with desc", function () {
+          context("When fetched the last page with asc", function () {
             let responseBody;
             let count = 10;
             beforeEach(async function () {
@@ -373,7 +373,7 @@ describe("Viewer Paginated API", function () {
               assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
             });
           });
-          context("When fetched the last page with cursor with desc", function () {
+          context("When fetched the last page with cursor with asc", function () {
             let responseBody;
             let count = 10;
             beforeEach(async function () {
