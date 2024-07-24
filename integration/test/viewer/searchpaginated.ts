@@ -296,7 +296,12 @@ describe("Viewer Paginated API", function () {
 
               const resp6 = await axios.post(
                 `${Env.Endpoint}/viewer/v1/graphql/paginated`,
-                searchPaginated(`action:"integration.test.api.${randomNumber.toString()}-1"`, "asc", 10, 0),
+                searchPaginated(
+                  `action:"integration.test.api.${randomNumber.toString()}-1"  crud:c,u,d`,
+                  "asc",
+                  10,
+                  0
+                ),
                 {
                   headers: {
                     Authorization: viewerSession,
@@ -319,7 +324,7 @@ describe("Viewer Paginated API", function () {
               const resp6 = await axios.post(
                 `${Env.Endpoint}/viewer/v1/graphql/paginated`,
                 searchPaginated(
-                  `action:"integration.test.api.${randomNumber.toString()}-1"`,
+                  `action:"integration.test.api.${randomNumber.toString()}-1"  crud:c,u,d`,
                   "asc",
                   count,
                   0
@@ -410,7 +415,12 @@ describe("Viewer Paginated API", function () {
             beforeEach(async function () {
               const resp6 = await axios.post(
                 `${Env.Endpoint}/viewer/v1/graphql/paginated`,
-                searchPaginated(`action:"integration.test.api.${randomNumber.toString()}-1"`, "desc", 10, 0),
+                searchPaginated(
+                  `action:"integration.test.api.${randomNumber.toString()}-1"  crud:c,u,d`,
+                  "desc",
+                  10,
+                  0
+                ),
                 {
                   headers: {
                     Authorization: viewerSession,
@@ -433,7 +443,7 @@ describe("Viewer Paginated API", function () {
               const resp6 = await axios.post(
                 `${Env.Endpoint}/viewer/v1/graphql/paginated`,
                 searchPaginated(
-                  `action:"integration.test.api.${randomNumber.toString()}-1"`,
+                  `action:"integration.test.api.${randomNumber.toString()}-1"  crud:c,u,d`,
                   "desc",
                   count,
                   0
