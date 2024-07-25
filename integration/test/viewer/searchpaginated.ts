@@ -253,8 +253,6 @@ describe("Viewer Paginated API", function () {
           });
           context("When fetched first page with asc", function () {
             let firstPage;
-            let date = new Date();
-            date = new Date(date.setMinutes(date.getMinutes() - 15));
             beforeEach(async function () {
               const events: any[] = [];
               for (let i = 1; i <= 15; i++) {
@@ -264,7 +262,7 @@ describe("Viewer Paginated API", function () {
                     id: groupID,
                     name: "RetracedQA",
                   },
-                  created: date,
+                  created: new Date(),
                   crud: "c" as CRUD,
                   source_ip: "192.168.0.1",
                   actor: {
@@ -288,7 +286,7 @@ describe("Viewer Paginated API", function () {
                     record_id: `${i}`,
                   },
                 });
-                date = new Date(date.setSeconds(date.getSeconds() + 60));
+                await sleep(100);
               }
               await createEvent(events);
               this.timeout(Env.EsIndexWaitMs * 2);
