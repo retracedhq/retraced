@@ -256,8 +256,9 @@ describe("Viewer Paginated API", function () {
             let date = new Date();
             date = new Date(date.setMinutes(date.getMinutes() - 15));
             beforeEach(async function () {
+              const events: any[] = [];
               for (let i = 1; i <= 15; i++) {
-                await createEvent({
+                events.push({
                   action: "integration.test.api." + randomNumber.toString() + "-1",
                   group: {
                     id: groupID,
@@ -290,8 +291,8 @@ describe("Viewer Paginated API", function () {
                   },
                 });
                 date = new Date(date.setSeconds(date.getSeconds() + 60));
-                await sleep(100);
               }
+              await createEvent(events);
               this.timeout(Env.EsIndexWaitMs * 2);
               await sleep(Env.EsIndexWaitMs);
 
@@ -429,8 +430,9 @@ describe("Viewer Paginated API", function () {
               let responseBody;
               let count = 10;
               beforeEach(async function () {
+                const events: any[] = [];
                 for (let i = 16; i <= 20; i++) {
-                  await createEvent({
+                  events.push({
                     action: "integration.test.api." + randomNumber.toString() + "-1",
                     group: {
                       id: groupID,
@@ -464,6 +466,7 @@ describe("Viewer Paginated API", function () {
                   });
                   await sleep(100);
                 }
+                await createEvent(events);
                 const resp6 = await getPaginatedEvents(
                   viewerSession,
                   "integration.test.api." + randomNumber.toString() + "-1",
@@ -486,8 +489,9 @@ describe("Viewer Paginated API", function () {
               let responseBody;
               let count = 10;
               beforeEach(async function () {
+                const events: any[] = [];
                 for (let i = 21; i <= 25; i++) {
-                  await createEvent({
+                  events.push({
                     action: "integration.test.api." + randomNumber.toString() + "-1",
                     group: {
                       id: groupID,
@@ -521,6 +525,7 @@ describe("Viewer Paginated API", function () {
                   });
                   await sleep(100);
                 }
+                await createEvent(events);
                 const resp6 = await getPaginatedEvents(
                   viewerSession,
                   "integration.test.api." + randomNumber.toString() + "-1",
@@ -565,16 +570,27 @@ async function getPaginatedEvents(
   return resp6;
 }
 
-async function createEvent(event: any) {
+async function createEvent(event: any | any[]) {
   const retraced = new Client({
     apiKey: Env.ApiKey,
     projectId: Env.ProjectID,
     endpoint: Env.Endpoint,
   });
-  const valid = tv4.validate(event, CreateEventSchema);
-  if (!valid) {
-    console.log(tv4.error);
+  if (Array.isArray(event)) {
+    event.forEach((evt) => {
+      const valid = tv4.validate(evt, CreateEventSchema);
+      if (!valid) {
+        console.log(tv4.error);
+      }
+      assert.strictEqual(valid, true);
+    });
+    await retraced.reportEvents(event);
+  } else {
+    const valid = tv4.validate(event, CreateEventSchema);
+    if (!valid) {
+      console.log(tv4.error);
+    }
+    assert.strictEqual(valid, true);
+    await retraced.reportEvent(event);
   }
-  assert.strictEqual(valid, true);
-  await retraced.reportEvent(event);
 }
