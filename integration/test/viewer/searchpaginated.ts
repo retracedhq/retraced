@@ -280,14 +280,12 @@ describe("Viewer Paginated API", function () {
                     name: "Retraced API",
                     href: "https://customertowne.xyz/records/rtrccdapi",
                     type: "integration",
-                    fields: {
-                      record_id: `${i}`,
-                    },
                   },
                   description: "Automated integration testing...",
                   is_failure: false,
                   fields: {
                     quality: "excellent",
+                    record_id: `${i}`,
                   },
                 });
                 date = new Date(date.setSeconds(date.getSeconds() + 60));
@@ -309,6 +307,10 @@ describe("Viewer Paginated API", function () {
             specify(
               "First page should have correct number of events & total count should be correct",
               function () {
+                const recordIds = firstPage.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+                for (let i = 1; i <= 10; i++) {
+                  assert.strictEqual(recordIds.includes(i.toString()), true, `Record ID ${i} not found`);
+                }
                 assert.strictEqual(firstPage.data.searchPaginated.edges.length, 10);
                 assert.strictEqual(firstPage.data.searchPaginated.totalCount, 15);
               }
@@ -328,6 +330,10 @@ describe("Viewer Paginated API", function () {
               responseBody = resp6.data;
             });
             specify("It should return the correct number of events", function () {
+              const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+              for (let i = 11; i <= 15; i++) {
+                assert.strictEqual(recordIds.includes(i.toString()), true);
+              }
               assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
               assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
             });
@@ -347,6 +353,10 @@ describe("Viewer Paginated API", function () {
               responseBody = resp6.data;
             });
             specify("It should return the correct number of events & total count", function () {
+              const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+              for (let i = 11; i <= 15; i++) {
+                assert.strictEqual(recordIds.includes(i.toString()), true);
+              }
               assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
               assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
             });
@@ -365,24 +375,10 @@ describe("Viewer Paginated API", function () {
               startCursorDesc = responseBody.data.searchPaginated.edges[0].cursor;
             });
             specify("It should return the correct event counts", function () {
-              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 10);
-              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
-            });
-          });
-          context("When fetched first page with desc", function () {
-            let responseBody;
-            let count = 10;
-            beforeEach(async function () {
-              const resp6 = await getPaginatedEvents(
-                viewerSession,
-                `action:"integration.test.api.${randomNumber.toString()}-1"  crud:c,u,d`,
-                "desc",
-                count,
-                0
-              );
-              responseBody = resp6.data;
-            });
-            specify("It should return the correct events", function () {
+              const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+              for (let i = 6; i <= 15; i++) {
+                assert.strictEqual(recordIds.includes(i.toString()), true);
+              }
               assert.strictEqual(responseBody.data.searchPaginated.edges.length, 10);
               assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
             });
@@ -401,6 +397,10 @@ describe("Viewer Paginated API", function () {
               responseBody = resp6.data;
             });
             specify("It should return the correct number of events", function () {
+              const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+              for (let i = 1; i <= 5; i++) {
+                assert.strictEqual(recordIds.includes(i.toString()), true);
+              }
               assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
               assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
             });
@@ -420,6 +420,10 @@ describe("Viewer Paginated API", function () {
               responseBody = resp6.data;
             });
             specify("It should return the correct number of events & total count", function () {
+              const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+              for (let i = 1; i <= 5; i++) {
+                assert.strictEqual(recordIds.includes(i.toString()), true);
+              }
               assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
               assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
             });
@@ -454,14 +458,12 @@ describe("Viewer Paginated API", function () {
                       name: "Retraced API",
                       href: "https://customertowne.xyz/records/rtrccdapi",
                       type: "integration",
-                      fields: {
-                        record_id: `${i}`,
-                      },
                     },
                     description: "Automated integration testing...",
                     is_failure: false,
                     fields: {
                       quality: "excellent",
+                      record_id: `${i}`,
                     },
                   });
                   await sleep(100);
@@ -478,6 +480,10 @@ describe("Viewer Paginated API", function () {
                 responseBody = resp6.data;
               });
               specify("It should return the correct number of events & total count", function () {
+                const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+                for (let i = 1; i <= 5; i++) {
+                  assert.strictEqual(recordIds.includes(i.toString()), true);
+                }
                 assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
                 assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
               });
@@ -513,14 +519,12 @@ describe("Viewer Paginated API", function () {
                       name: "Retraced API",
                       href: "https://customertowne.xyz/records/rtrccdapi",
                       type: "integration",
-                      fields: {
-                        record_id: `${i}`,
-                      },
                     },
                     description: "Automated integration testing...",
                     is_failure: false,
                     fields: {
                       quality: "excellent",
+                      record_id: `${i}`,
                     },
                   });
                   await sleep(100);
@@ -537,6 +541,10 @@ describe("Viewer Paginated API", function () {
                 responseBody = resp6.data;
               });
               specify("It should return the correct number of events & total count", function () {
+                const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+                for (let i = 11; i <= 15; i++) {
+                  assert.strictEqual(recordIds.includes(i.toString()), true);
+                }
                 assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
                 assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
               });
