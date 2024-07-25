@@ -40,6 +40,7 @@ import viewerCreateExport from "./handlers/viewer/createExport";
 import viewerSearchEvents from "./handlers/viewer/searchEvents";
 import viewerDeleteEitapiToken from "./handlers/viewer/deleteEitapiToken";
 import viewerGraphQL from "./handlers/viewer/graphql";
+import viewerPaginatedGraphQL from "./handlers/viewer/viewerPaginatedGraphQL";
 import viewerListEitapiTokens from "./handlers/viewer/listEitapiTokens";
 import viewerListExports from "./handlers/viewer/listExports";
 import viewerRenderSavedExport from "./handlers/viewer/renderSavedExport";
@@ -204,6 +205,11 @@ export default {
     path: "/viewer/v1/graphql",
     method: "post",
     handler: viewerGraphQL,
+  },
+  viewerGraphQLPaginated: {
+    path: "/viewer/v1/graphql/paginated",
+    method: "post",
+    handler: viewerPaginatedGraphQL,
   },
   viewerSearchEvents: {
     path: "/viewer/v1/project/:projectId/events/search",

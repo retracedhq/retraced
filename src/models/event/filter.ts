@@ -12,6 +12,15 @@ export interface Options {
   cursor?: [number, string];
 }
 
+export interface OptionsPaginated {
+  query: string;
+  scope: Scope;
+  sortOrder: "asc" | "desc";
+  pageOffset: number;
+  startCursor?: [number, string, number];
+  pageLimit: number;
+}
+
 export interface Result {
   totalHits: any;
   events: any[];
@@ -57,6 +66,55 @@ export default async function filter(opts: Options): Promise<Result> {
         WHERE ${wheres.join(" AND ")}
         ORDER BY (doc-> 'canonical_time')::text::bigint ${_.toUpper(opts.sort)}, id ${_.toUpper(opts.sort)}
         LIMIT ${size}`;
+
+  const results = await pgPool.query(q, vals as any);
+  const events = results.rows ? results.rows.map((row) => row.doc) : [];
+
+  const countQ = `
+        SELECT COUNT(1)
+        FROM indexed_events
+        WHERE ${wheresForCountQ.join(" AND ")}`;
+  const count = await pgPool.query(countQ, valsForCountQ as any);
+  const totalHits = parseInt(count.rows[0].count, 10);
+
+  return {
+    events,
+    totalHits: { value: totalHits },
+  };
+}
+
+export async function filterEventsPaginated(opts: OptionsPaginated): Promise<Result> {
+  const query = _.isString(opts.query) ? parseQuery(opts.query) : opts.query;
+  const filters = getFilters(query, opts.scope);
+  const size = opts.pageLimit || defaultSize;
+  const wheres = filters.map(({ where }) => where);
+  const vals = _.flatten(filters.map(({ values }) => values));
+  // copies without cursor filters for total count
+  const wheresForCountQ = wheres.slice();
+  const valsForCountQ = vals.slice();
+  const nextParam = paramer(vals.length);
+
+  // Like ES, the cursor is a timestamp and id. The id is only used for events
+  // exactly matching the timestamp.
+  if (opts.startCursor) {
+    if (opts.sortOrder === "desc") {
+      wheres.push(
+        `(((doc -> 'canonical_time')::text::bigint < ${nextParam()}) OR ((doc -> 'canonical_time')::text::bigint = ${nextParam()} AND id <= ${nextParam()}))`
+      );
+    } else {
+      wheres.push(
+        `(((doc -> 'canonical_time')::text::bigint > ${nextParam()}) OR ((doc -> 'canonical_time')::text::bigint = ${nextParam()} AND id >= ${nextParam()}))`
+      );
+    }
+    vals.push(opts.startCursor[0], opts.startCursor[0], opts.startCursor[1]);
+  }
+
+  const q = `
+        SELECT doc
+        FROM indexed_events
+        WHERE ${wheres.join(" AND ")}
+        ORDER BY (doc-> 'canonical_time')::text::bigint ${_.toUpper(opts.sortOrder)}, id ${_.toUpper(opts.sortOrder)}
+        LIMIT ${size} offset ${opts.pageOffset}`;
 
   const results = await pgPool.query(q, vals as any);
   const events = results.rows ? results.rows.map((row) => row.doc) : [];
