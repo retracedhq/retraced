@@ -23,13 +23,7 @@ describe("Viewer Paginated API", function () {
 
     context("And a call is made into the Retraced API with a standard audit event", function () {
       beforeEach(async function () {
-        const retraced = new Client({
-          apiKey: Env.ApiKey,
-          projectId: Env.ProjectID,
-          endpoint: Env.Endpoint,
-        });
-
-        const event = {
+        await createEvent({
           action: "integration.test.api." + randomNumber.toString(),
           group: {
             id: groupID,
@@ -60,13 +54,7 @@ describe("Viewer Paginated API", function () {
           fields: {
             quality: "excellent",
           },
-        };
-        const valid = tv4.validate(event, CreateEventSchema);
-        if (!valid) {
-          console.log(tv4.error);
-        }
-        assert.strictEqual(valid, true);
-        await retraced.reportEvent(event);
+        });
       });
 
       context("And a call is made to create a viewer description scoped to a target", function () {
@@ -76,7 +64,7 @@ describe("Viewer Paginated API", function () {
           const opts = {
             actor_id: actorID,
             group_id: groupID,
-            target_id: targetID,
+            isAdmin: true,
           };
           const qs = querystring.stringify(opts);
           const resp1 = await axios.get(
@@ -147,6 +135,8 @@ describe("Viewer Paginated API", function () {
 
         context("And the viewer descriptor is exchanged for a session", function () {
           let viewerSession;
+          let startCursorAsc;
+          let startCursorDesc;
           beforeEach(async () => {
             const resp4 = await axios.post(`${Env.Endpoint}/viewer/v1/viewersession`, { token });
             assert(resp4);
@@ -173,7 +163,6 @@ describe("Viewer Paginated API", function () {
               assert.strictEqual(resp5.status, 200);
               responseBody = resp5.data;
             });
-
             specify("Then the response should contain the correct information about the event", function () {
               assert.strictEqual(
                 responseBody.data.searchPaginated.edges[0].node.action,
@@ -262,8 +251,352 @@ describe("Viewer Paginated API", function () {
               }
             );
           });
+          context("When fetched first page with asc", function () {
+            let firstPage;
+            beforeEach(async function () {
+              const events: any[] = [];
+              for (let i = 1; i <= 15; i++) {
+                events.push({
+                  action: "integration.test.api." + randomNumber.toString() + "-1",
+                  group: {
+                    id: groupID,
+                    name: "RetracedQA",
+                  },
+                  created: new Date(),
+                  crud: "c" as CRUD,
+                  source_ip: "192.168.0.1",
+                  actor: {
+                    id: actorID,
+                    name: "RetracedQA Employee",
+                    href: "https://retraced.io/employees/qa",
+                    fields: {
+                      department: "QA",
+                    },
+                  },
+                  target: {
+                    id: targetID,
+                    name: "Retraced API",
+                    href: "https://customertowne.xyz/records/rtrccdapi",
+                    type: "integration",
+                  },
+                  description: "Automated integration testing...",
+                  is_failure: false,
+                  fields: {
+                    quality: "excellent",
+                    record_id: `${i}`,
+                  },
+                });
+                await sleep(100);
+              }
+              await createEvent(events);
+              this.timeout(Env.EsIndexWaitMs * 2);
+              await sleep(Env.EsIndexWaitMs);
+
+              const resp6 = await getPaginatedEvents(
+                viewerSession,
+                `action:"integration.test.api.${randomNumber.toString()}-1"  crud:c,u,d`,
+                "asc",
+                10,
+                0
+              );
+              firstPage = resp6.data;
+              startCursorAsc = firstPage.data.searchPaginated.edges[0].cursor;
+            });
+            specify(
+              "First page should have correct number of events & total count should be correct",
+              function () {
+                const recordIds = firstPage.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+                for (let i = 1; i <= 10; i++) {
+                  assert.strictEqual(recordIds.includes(i.toString()), true, `Record ID ${i} not found`);
+                }
+                assert.strictEqual(firstPage.data.searchPaginated.edges.length, 10);
+                assert.strictEqual(firstPage.data.searchPaginated.totalCount, 15);
+              }
+            );
+          });
+          context("When fetched the last page with asc", function () {
+            let responseBody;
+            let count = 10;
+            beforeEach(async function () {
+              const resp6 = await getPaginatedEvents(
+                viewerSession,
+                "integration.test.api." + randomNumber.toString() + "-1",
+                "asc",
+                count,
+                count
+              );
+              responseBody = resp6.data;
+            });
+            specify("It should return the correct number of events", function () {
+              const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+              for (let i = 11; i <= 15; i++) {
+                assert.strictEqual(recordIds.includes(i.toString()), true);
+              }
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+            });
+          });
+          context("When fetched the last page with cursor with asc", function () {
+            let responseBody;
+            let count = 10;
+            beforeEach(async function () {
+              const resp6 = await getPaginatedEvents(
+                viewerSession,
+                "integration.test.api." + randomNumber.toString() + "-1",
+                "asc",
+                count,
+                count,
+                startCursorAsc
+              );
+              responseBody = resp6.data;
+            });
+            specify("It should return the correct number of events & total count", function () {
+              const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+              for (let i = 11; i <= 15; i++) {
+                assert.strictEqual(recordIds.includes(i.toString()), true);
+              }
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+            });
+          });
+          context("When fetched first page with desc", function () {
+            let responseBody;
+            beforeEach(async function () {
+              const resp6 = await getPaginatedEvents(
+                viewerSession,
+                `action:"integration.test.api.${randomNumber.toString()}-1"  crud:c,u,d`,
+                "desc",
+                10,
+                0
+              );
+              responseBody = resp6.data;
+              startCursorDesc = responseBody.data.searchPaginated.edges[0].cursor;
+            });
+            specify("It should return the correct event counts", function () {
+              const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+              for (let i = 6; i <= 15; i++) {
+                assert.strictEqual(recordIds.includes(i.toString()), true);
+              }
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 10);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+            });
+          });
+          context("When fetched the last page with desc", function () {
+            let responseBody;
+            let count = 10;
+            beforeEach(async function () {
+              const resp6 = await getPaginatedEvents(
+                viewerSession,
+                "integration.test.api." + randomNumber.toString() + "-1",
+                "desc",
+                count,
+                count
+              );
+              responseBody = resp6.data;
+            });
+            specify("It should return the correct number of events", function () {
+              const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+              for (let i = 1; i <= 5; i++) {
+                assert.strictEqual(recordIds.includes(i.toString()), true);
+              }
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+            });
+          });
+          context("When fetched the last page with cursor with desc", function () {
+            let responseBody;
+            let count = 10;
+            beforeEach(async function () {
+              const resp6 = await getPaginatedEvents(
+                viewerSession,
+                "integration.test.api." + randomNumber.toString() + "-1",
+                "desc",
+                count,
+                count,
+                startCursorDesc
+              );
+              responseBody = resp6.data;
+            });
+            specify("It should return the correct number of events & total count", function () {
+              const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+              for (let i = 1; i <= 5; i++) {
+                assert.strictEqual(recordIds.includes(i.toString()), true);
+              }
+              assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
+              assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+            });
+          });
+          context(
+            "When fetched the last page with cursor with desc after addition of new events",
+            function () {
+              let responseBody;
+              let count = 10;
+              beforeEach(async function () {
+                const events: any[] = [];
+                for (let i = 16; i <= 20; i++) {
+                  events.push({
+                    action: "integration.test.api." + randomNumber.toString() + "-1",
+                    group: {
+                      id: groupID,
+                      name: "RetracedQA",
+                    },
+                    created: new Date(),
+                    crud: "c" as CRUD,
+                    source_ip: "192.168.0.1",
+                    actor: {
+                      id: actorID,
+                      name: "RetracedQA Employee",
+                      href: "https://retraced.io/employees/qa",
+                      fields: {
+                        department: "QA",
+                      },
+                    },
+                    target: {
+                      id: targetID,
+                      name: "Retraced API",
+                      href: "https://customertowne.xyz/records/rtrccdapi",
+                      type: "integration",
+                    },
+                    description: "Automated integration testing...",
+                    is_failure: false,
+                    fields: {
+                      quality: "excellent",
+                      record_id: `${i}`,
+                    },
+                  });
+                  await sleep(100);
+                }
+                await createEvent(events);
+                const resp6 = await getPaginatedEvents(
+                  viewerSession,
+                  "integration.test.api." + randomNumber.toString() + "-1",
+                  "desc",
+                  count,
+                  count,
+                  startCursorDesc
+                );
+                responseBody = resp6.data;
+              });
+              specify("It should return the correct number of events & total count", function () {
+                const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+                for (let i = 1; i <= 5; i++) {
+                  assert.strictEqual(recordIds.includes(i.toString()), true);
+                }
+                assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
+                assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+              });
+            }
+          );
+          context(
+            "When fetched the last page with cursor with asc after addition of new events",
+            function () {
+              let responseBody;
+              let count = 10;
+              beforeEach(async function () {
+                const events: any[] = [];
+                for (let i = 21; i <= 25; i++) {
+                  events.push({
+                    action: "integration.test.api." + randomNumber.toString() + "-1",
+                    group: {
+                      id: groupID,
+                      name: "RetracedQA",
+                    },
+                    created: new Date(),
+                    crud: "c" as CRUD,
+                    source_ip: "192.168.0.1",
+                    actor: {
+                      id: actorID,
+                      name: "RetracedQA Employee",
+                      href: "https://retraced.io/employees/qa",
+                      fields: {
+                        department: "QA",
+                      },
+                    },
+                    target: {
+                      id: targetID,
+                      name: "Retraced API",
+                      href: "https://customertowne.xyz/records/rtrccdapi",
+                      type: "integration",
+                    },
+                    description: "Automated integration testing...",
+                    is_failure: false,
+                    fields: {
+                      quality: "excellent",
+                      record_id: `${i}`,
+                    },
+                  });
+                  await sleep(100);
+                }
+                await createEvent(events);
+                const resp6 = await getPaginatedEvents(
+                  viewerSession,
+                  "integration.test.api." + randomNumber.toString() + "-1",
+                  "asc",
+                  count,
+                  count,
+                  startCursorAsc
+                );
+                responseBody = resp6.data;
+              });
+              specify("It should return the correct number of events & total count", function () {
+                const recordIds = responseBody.data.searchPaginated.edges.map((e) => e.node.fields[1].value);
+                for (let i = 11; i <= 15; i++) {
+                  assert.strictEqual(recordIds.includes(i.toString()), true);
+                }
+                assert.strictEqual(responseBody.data.searchPaginated.edges.length, 5);
+                assert.strictEqual(responseBody.data.searchPaginated.totalCount, 15);
+              });
+            }
+          );
         });
       });
     });
   });
 });
+
+async function getPaginatedEvents(
+  viewerSession: any,
+  query: string,
+  sortOrder: "asc" | "desc",
+  pageOffset: number,
+  pageLimit: number,
+  startCursor: string = ""
+) {
+  const resp6 = await axios.post(
+    `${Env.Endpoint}/viewer/v1/graphql/paginated`,
+    searchPaginated(query, sortOrder, pageOffset, pageLimit, startCursor),
+    {
+      headers: {
+        Authorization: viewerSession,
+      },
+    }
+  );
+  assert(resp6);
+  assert.strictEqual(resp6.status, 200);
+  return resp6;
+}
+
+async function createEvent(event: any | any[]) {
+  const retraced = new Client({
+    apiKey: Env.ApiKey,
+    projectId: Env.ProjectID,
+    endpoint: Env.Endpoint,
+  });
+  if (Array.isArray(event)) {
+    event.forEach((evt) => {
+      const valid = tv4.validate(evt, CreateEventSchema);
+      if (!valid) {
+        console.log(tv4.error);
+      }
+      assert.strictEqual(valid, true);
+    });
+    await retraced.reportEvents(event);
+  } else {
+    const valid = tv4.validate(event, CreateEventSchema);
+    if (!valid) {
+      console.log(tv4.error);
+    }
+    assert.strictEqual(valid, true);
+    await retraced.reportEvent(event);
+  }
+}
