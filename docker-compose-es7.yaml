@@ -1,0 +1,223 @@
+networks:
+  retraced:
+
+x-common-variables: &common-variables
+  POSTGRES_HOST: postgres
+  HMAC_SECRET_ADMIN: xxxxxxx
+  NSQD_HTTP_PORT: 4151
+  SHLVL: 1
+  POSTGRES_USER: retraced
+  EXPORT_PAGE_SIZE_INTERNAL: 2
+  POSTGRES_PASSWORD: password
+  POSTGRES_POOL_SIZE: 10
+  HMAC_SECRET_VIEWER: xxxxxxxxx
+  POSTGRES_PORT: 5432
+  API_BASE_URL_PATH: /auditlog
+  RETRACED_API_BASE: http://localhost:3000/auditlog
+  POSTGRES_DATABASE: retraced
+  LOG_LEVEL: ${LOG_LEVEL}
+  ELASTICSEARCH_NODES: http://elasticsearch:9200
+  NSQD_HOST: nsqd
+  HOSTNAME: retraced-api-67856674bf-kwq7f
+  NSQD_TCP_PORT: 4150
+  # Set admin root token here
+  ADMIN_ROOT_TOKEN: dev
+  GEOIPUPDATE_LICENSE_KEY: ${GEOIPUPDATE_LICENSE_KEY}
+  GEOIPUPDATE_DB_DIR: ${GEOIPUPDATE_DB_DIR:-/etc/mmdb}
+  GEOIPUPDATE_USE_MMDB: ${GEOIPUPDATE_USE_MMDB}
+  GEOIPUPDATE_ACCOUNT_ID: ${GEOIPUPDATE_ACCOUNT_ID}
+  PG_SEARCH: ${PG_SEARCH}
+
+services:
+  retraced-api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile-slim
+    ports:
+      - "3000:3000"
+      - "9119:9229"
+    environment: *common-variables
+    networks:
+      - retraced
+    depends_on:
+      - postgres-migration
+    restart: "always"
+    command: node --inspect=0.0.0.0 --enable-source-maps build/src/index.js
+
+  # retraced-dbutil:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   environment: *common-variables
+  #   networks:
+  #     - retraced
+  #   command: /bin/sleep infinity
+
+  retraced-processor:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile-slim
+    ports:
+      - "3001:3000"
+      - "9191:9229"
+    environment: *common-variables
+    networks:
+      - retraced
+    depends_on:
+      - postgres
+    restart: "always"
+    command: node --inspect=0.0.0.0 --enable-source-maps build/src/_processor/index.js
+    volumes:
+      - mmdb:${GEOIPUPDATE_DB_DIR:-/etc/mmdb}
+
+  retraced-cron:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile-slim
+    environment: *common-variables
+    networks:
+      - retraced
+    depends_on:
+      - postgres
+    restart: "always"
+    command: /usr/local/bin/retraced-auditlog-cron --quiet /crontab
+
+  nsqd:
+    image: nsqio/nsq:v1.2.1
+    ports:
+      - "4150:4150"
+      - "4151:4151"
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=retraced
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=retraced
+    networks:
+      - retraced
+    restart: "always"
+    command: nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd." -log-level ${LOG_LEVEL}
+
+  postgres:
+    image: postgres:14.2
+    ports:
+      - "5432:5432"
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=retraced
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=retraced
+    networks:
+      - retraced
+    restart: "always"
+
+  elasticsearch:
+    image: elasticsearch:7.17.22
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - "9200:9200"
+    networks:
+      - retraced
+    restart: "always"
+
+  # opensearch:
+  #   image: opensearchproject/opensearch:1.3.2
+  #   volumes:
+  #     - ./opensearch.yml:/usr/share/opensearch/config/opensearch.yml
+  #   ports:
+  #     - "9200:9200"
+  #   networks:
+  #     - retraced
+
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:7.8.0
+  #   environment:
+  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+  #   networks:
+  #     - retraced
+  #   depends_on:
+  #     - elasticsearch
+  #   ports:
+  #     - 5601:5601
+
+  retraced-dev-bootstrap:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile-slim
+    environment: *common-variables
+    networks:
+      - retraced
+    depends_on:
+      elastic-migration:
+        condition: service_completed_successfully
+    command: ./build/src/retracedctl bootstrap --projectName dev --projectId dev --environmentId dev --apiKey dev
+    volumes:
+      - mmdb:${GEOIPUPDATE_DB_DIR:-/etc/mmdb}
+
+  mmdb-update:
+    image: maxmindinc/geoipupdate:v5.1
+    environment:
+      - GEOIPUPDATE_ACCOUNT_ID=${GEOIPUPDATE_ACCOUNT_ID}
+      - GEOIPUPDATE_LICENSE_KEY=${GEOIPUPDATE_LICENSE_KEY}
+      - GEOIPUPDATE_EDITION_IDS=GeoLite2-City
+      - GEOIPUPDATE_DB_DIR=${GEOIPUPDATE_DB_DIR:-/etc/mmdb}
+      - GEOIPUPDATE_FREQUENCY=168
+      - GEOIPUPDATE_VERBOSE=1
+    volumes:
+      - mmdb:${GEOIPUPDATE_DB_DIR:-/etc/mmdb}
+    networks:
+      - retraced
+
+  postgres-migration:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile-slim
+    environment: *common-variables
+    ports:
+      - "9339:9229"
+    networks:
+      - retraced
+    depends_on:
+      postgres:
+        condition: service_started
+    command: node --inspect=0.0.0.0 --enable-source-maps build/src/_db/runner-lite.js pg
+    restart: "on-failure"
+
+  elastic-migration:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile-slim
+    environment: *common-variables
+    networks:
+      - retraced
+    depends_on:
+      elasticsearch:
+        condition: service_started
+    command: node --inspect=0.0.0.0 --enable-source-maps build/src/_db/runner-lite.js es
+    restart: "on-failure"
+
+  admin-portal:
+    image: boxyhq/jackson:1.23.9
+    ports:
+      - "5225:5225"
+    networks:
+      - retraced
+    environment:
+      - JACKSON_API_KEYS=secret
+      - DB_URL=postgres://retraced:password@postgres:5432/postgres
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM=${SMTP_FROM}
+      - NEXTAUTH_URL=http://localhost:5225
+      - NEXTAUTH_SECRET=secret
+      - NEXTAUTH_ACL=${NEXTAUTH_ACL}
+      - RETRACED_HOST_URL=http://retraced-api:3000/auditlog
+      - RETRACED_EXTERNAL_URL=http://localhost:3000/auditlog
+      - RETRACED_ADMIN_ROOT_TOKEN=dev
+    depends_on:
+      - "retraced-api"
+    restart: "always"
+volumes:
+  mmdb:
