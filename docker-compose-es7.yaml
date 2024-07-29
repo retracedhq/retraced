@@ -3,11 +3,9 @@ include:
 
 services:
   elasticsearch:
-    image: elasticsearch:8.14.3
-    environment:
-      - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
-      - xpack.security.enabled=false
+    image: elasticsearch:7.17.22
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - "9200:9200"
     networks:

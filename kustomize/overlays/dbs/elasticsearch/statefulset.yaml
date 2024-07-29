@@ -11,8 +11,15 @@ spec:
     spec:
       containers:
         - name: elasticsearch
-          image: elasticsearch:7.17.22
+          image: elasticsearch:8.14.3
           imagePullPolicy: IfNotPresent
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: ES_JAVA_OPTS
+              value: "-Xms1g -Xmx1g"
+            - name: xpack.security.enabled
+              value: false
           ports:
             - name: estransport
               containerPort: 9200
