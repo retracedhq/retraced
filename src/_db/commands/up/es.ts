@@ -1,5 +1,5 @@
 import picocolors from "picocolors";
-import walk from "walk";
+import Walk from "@root/walk";
 import path from "path";
 import util from "util";
 
@@ -38,114 +38,82 @@ function getSchemaPath() {
   return path.join(__dirname, "../../../../migrations/es");
 }
 
-export const handler = () => {
+export const handler = async () => {
   const es: Client = getESWithoutRetry();
   const pgPool = getPgPool();
 
-  pgPool.connect((err, pg) => {
-    if (err) {
-      notifyError(err);
-      console.log(picocolors.red("Couldn't connect to postgres"));
-      console.log(picocolors.red(util.inspect(err)));
-      process.exit(1);
-    }
+  try {
+    const pg = await pgPool.connect();
     if (!pg) {
       notifyError(new Error("Couldn't connect to postgres"));
       console.log(picocolors.red("Couldn't connect to postgres"));
       process.exit(1);
     }
 
-    const walker = walk.walk(getSchemaPath(), {
-      followLinks: false,
-    });
+    await Walk.walk(getSchemaPath(), async (err, pathname, dirent) => {
+      if (err) {
+        notifyError(err);
+        console.log(picocolors.red(err.stack));
+        process.exit(1);
+      }
 
-    walker.on("file", (root, stat, next) => {
-      if (path.extname(stat.name) !== ".js") {
-        next();
+      if (!dirent.isFile()) {
+        return;
+      }
+      if (path.extname(pathname) !== ".js") {
         return;
       }
 
-      const tokens = stat.name.split("-");
+      pathname = path.basename(pathname);
+      const tokens = pathname.split("-");
       const timestamp = Number(tokens[0]);
       const name = tokens[1].slice(0, -3);
 
-      pg.query(
+      await pg.query(
         `create table if not exists es_migration_meta (
         id int primary key,
         created timestamp
       )`
-      )
-        .then(() => {
-          return pg.query("select * from es_migration_meta where id = $1", [timestamp]);
-        })
-        .then((result) => {
-          if (result.rowCount) {
-            console.log(picocolors.dim(`${timestamp} ${name}`));
-            return Promise.resolve(false);
-          }
+      );
+      const result = await pg.query("select * from es_migration_meta where id = $1", [timestamp]);
 
-          return new Promise<any>((resolve, reject) => {
-            const esQuery = require(path.join(getSchemaPath(), stat.name))();
-            switch (esQuery.category) {
-              default:
-                reject(new Error("Unknown category"));
-                break;
+      if (result.rowCount) {
+        console.log(picocolors.dim(`${timestamp} ${name}`));
+        return Promise.resolve(false);
+      }
 
-              case "indices": {
-                switch (esQuery.op) {
-                  default:
-                    reject(new Error("Unknown operation"));
-                    break;
+      const esQuery = require(path.join(getSchemaPath(), pathname))();
+      switch (esQuery.category) {
+        default:
+          throw new Error("Unknown category");
 
-                  case "putTemplate": {
-                    es.indices.putIndexTemplate(esQuery.params, (err2) => {
-                      if (err2) {
-                        reject(err2);
-                        return;
-                      }
-                      console.log(picocolors.green(stat.name));
-                      resolve(true);
-                    });
-                  }
-                }
-              }
+        case "indices": {
+          switch (esQuery.op) {
+            default:
+              throw new Error("Unknown operation");
+
+            case "putTemplate": {
+              await es.indices.putIndexTemplate(esQuery.params);
+              await pg.query(
+                `insert into es_migration_meta (
+              id, created
+            ) values (
+              $1, now()
+            ) on conflict do nothing`,
+                [timestamp]
+              );
+              console.log(picocolors.green(pathname));
             }
-          });
-        })
-        .then(((shouldSave) => {
-          if (shouldSave) {
-            return pg.query(
-              `insert into es_migration_meta (
-            id, created
-          ) values (
-            $1, now()
-          ) on conflict do nothing`,
-              [timestamp]
-            );
           }
-          return Promise.resolve({});
-        }) as any)
-        .then(() => {
-          next(); // done! next file pls
-        })
-        .catch((err2) => {
-          notifyError(err2);
-          console.log(picocolors.red(err2.stack));
-          process.exit(1);
-        });
+        }
+      }
     });
 
-    walker.on("errors", (root, stat, next) => {
-      stat.forEach((n) => {
-        notifyError(n.error);
-        console.error(`[ERROR] ${n.name}`);
-        console.error(n.error.message || `${n.error.code}:${n.error.path}`);
-      });
-      next();
-    });
-
-    walker.on("end", () => {
-      process.exit(0);
-    });
-  });
+    process.exit(0);
+  } catch (err) {
+    notifyError(err);
+    console.log(picocolors.red("Couldn't connect to postgres"));
+    console.log(picocolors.red(util.inspect(err)));
+    process.exit(1);
+  }
 };

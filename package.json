@@ -11,6 +11,7 @@
     "@maxmind/geoip2-node": "5.0.0",
     "@opensearch-project/opensearch": "2.11.0",
     "@retracedhq/retraced": "0.7.13",
+    "@root/walk": "1.1.0",
     "@segment/analytics-node": "2.1.2",
     "axios": "1.7.2",
     "bcryptjs": "2.4.3",
@@ -48,7 +49,6 @@
     "swagger-ui-express": "5.0.1",
     "tsoa": "6.4.0",
     "unzipper": "0.12.2",
-    "walk": "2.3.15",
     "yargs": "17.7.2"
   },
   "devDependencies": {
