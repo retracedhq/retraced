@@ -52,13 +52,12 @@ export const handler = async (argv) => {
     });
 
     logger.info("executing migration");
-    migrator.migrate("max").then((migrations) => {
-      _.forEach(migrations, (m) => {
-        console.log(picocolors.green(m.name));
-      });
-      logger.info(`executed ${migrations.length} migrations`);
-      process.exit(0);
+    const migrations = await migrator.migrate("max");
+    _.forEach(migrations, (m) => {
+      console.log(picocolors.green(m.name));
     });
+    logger.info(`executed ${migrations.length} migrations`);
+    process.exit(0);
   } catch (err) {
     notifyError(err);
     console.log(err);
