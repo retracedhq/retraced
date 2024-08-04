@@ -14,6 +14,7 @@ export interface Response<T> {
   filename?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface RawResponse extends Response<string> {}
 
 export const Responses = {
