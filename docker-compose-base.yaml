@@ -89,7 +89,7 @@ services:
     command: nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd." -log-level ${LOG_LEVEL}
 
   postgres:
-    image: postgres:14.2
+    image: postgres:16.4
     ports:
       - "5432:5432"
     environment:

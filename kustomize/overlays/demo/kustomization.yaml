@@ -16,4 +16,4 @@ patches:
 
 images:
   - name: retracedhq/retraced
-    newTag: 1.9.1
+    newTag: 1.12.0
