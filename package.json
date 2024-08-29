@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@boxyhq/metrics": "0.2.8",
-    "@bugsnag/js": "7.25.0",
+    "@bugsnag/js": "8.0.0",
     "@bugsnag/plugin-express": "7.25.0",
     "@maxmind/geoip2-node": "5.0.0",
     "@opensearch-project/opensearch": "2.11.0",
