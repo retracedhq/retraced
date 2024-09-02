@@ -19,7 +19,7 @@ spec:
             - name: ES_JAVA_OPTS
               value: "-Xms1g -Xmx1g"
             - name: xpack.security.enabled
-              value: false
+              value: "false"
           ports:
             - name: estransport
               containerPort: 9200
