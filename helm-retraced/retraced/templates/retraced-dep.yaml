@@ -1,0 +1,912 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "retraced.fullname" . }}-adminportal
+  labels:
+    app: adminportal
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+stringData:
+  DB_URL: {{ required "adminportal.dbUrl is required" .Values.adminportal.dbUrl |
+    quote }}
+  JACKSON_API_KEYS: {{ required "adminportal.jacksonApiKeys is required" .Values.adminportal.jacksonApiKeys
+    | quote }}
+  NEXTAUTH_SECRET: {{ required "adminportal.nextauthSecret is required" .Values.adminportal.nextauthSecret
+    | quote }}
+  NEXTAUTH_URL: {{ required "adminportal.nextauthUrl is required" .Values.adminportal.nextauthUrl
+    | quote }}
+  RETRACED_ADMIN_ROOT_TOKEN: {{ required "adminportal.retracedAdminRootToken is required"
+    .Values.adminportal.retracedAdminRootToken | quote }}
+  RETRACED_EXTERNAL_URL: {{ required "adminportal.retracedExternalUrl is required"
+    .Values.adminportal.retracedExternalUrl | quote }}
+  RETRACED_HOST_URL: {{ required "adminportal.retracedHostUrl is required" .Values.adminportal.retracedHostUrl
+    | quote }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "retraced.fullname" . }}-auditlog
+  labels:
+    app: auditlog
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+stringData:
+  ADMIN_ROOT_TOKEN: {{ required "auditlog.adminRootToken is required" .Values.auditlog.adminRootToken
+    | quote }}
+  API_BASE_URL_PATH: {{ required "auditlog.apiBaseUrlPath is required" .Values.auditlog.apiBaseUrlPath
+    | quote }}
+  API_TOKEN: {{ .Values.auditlog.apiToken
+    | quote }}
+  DB_TOKEN: {{ .Values.auditlog.dbToken |
+    quote }}
+  ELASTICSEARCH_NODES: {{ required "auditlog.elasticsearchNodes is required" .Values.auditlog.elasticsearchNodes
+    | quote }}
+  GEOIPUPDATE_ACCOUNT_ID: {{ .Values.auditlog.geoipupdateAccountId | quote }}
+  GEOIPUPDATE_DB_DIR: {{ required "auditlog.geoipupdateDbDir is required" .Values.auditlog.geoipupdateDbDir
+    | quote }}
+  GEOIPUPDATE_EDITION_IDS: {{ required "auditlog.geoipupdateEditionIds is required"
+    .Values.auditlog.geoipupdateEditionIds | quote }}
+  GEOIPUPDATE_FREQUENCY: {{ required "auditlog.geoipupdateFrequency is required"
+    .Values.auditlog.geoipupdateFrequency | quote }}
+  GEOIPUPDATE_LICENSE_KEY: {{ .Values.auditlog.geoipupdateLicenseKey | quote }}
+  GEOIPUPDATE_USE_MMDB: {{ .Values.auditlog.geoipupdateUseMmdb
+    | quote }}
+  GEOIPUPDATE_VERBOSE: {{ required "auditlog.geoipupdateVerbose is required" .Values.auditlog.geoipupdateVerbose
+    | quote }}
+  HMAC_SECRET_ADMIN: {{ required "auditlog.hmacSecretAdmin is required" .Values.auditlog.hmacSecretAdmin
+    | quote }}
+  HMAC_SECRET_VIEWER: {{ required "auditlog.hmacSecretViewer is required" .Values.auditlog.hmacSecretViewer
+    | quote }}
+  LOG_LEVEL: {{ required "auditlog.logLevel is required" .Values.auditlog.logLevel
+    | quote }}
+  MANDRILL_KEY: {{ .Values.auditlog.mandrillKey
+    | quote }}
+  NSQD_HOST: {{ required "auditlog.nsqdHost is required" .Values.auditlog.nsqdHost
+    | quote }}
+  NSQD_HTTP_PORT: {{ required "auditlog.nsqdHttpPort is required" .Values.auditlog.nsqdHttpPort
+    | quote }}
+  NSQD_TCP_PORT: {{ required "auditlog.nsqdTcpPort is required" .Values.auditlog.nsqdTcpPort
+    | quote }}
+  POSTGRES_DATABASE: {{ required "auditlog.postgresDatabase is required" .Values.auditlog.postgresDatabase
+    | quote }}
+  POSTGRES_HOST: {{ required "auditlog.postgresHost is required" .Values.auditlog.postgresHost
+    | quote }}
+  POSTGRES_PASSWORD: {{ required "auditlog.postgresPassword is required" .Values.auditlog.postgresPassword
+    | quote }}
+  POSTGRES_POOL_SIZE: {{ required "auditlog.postgresPoolSize is required" .Values.auditlog.postgresPoolSize
+    | quote }}
+  POSTGRES_PORT: {{ required "auditlog.postgresPort is required" .Values.auditlog.postgresPort
+    | quote }}
+  POSTGRES_USER: {{ required "auditlog.postgresUser is required" .Values.auditlog.postgresUser
+    | quote }}
+  PROCESSOR_TOKEN: {{ .Values.auditlog.processorToken | quote }}
+  RETRACED_API_BASE: {{ required "auditlog.retracedApiBase is required" .Values.auditlog.retracedApiBase
+    | quote }}
+  RETRACED_DISABLE_GEOSYNC: {{ .Values.auditlog.retracedDisableGeosync | quote }}
+  STAGE: {{ .Values.auditlog.stage | quote
+    }}
+  STATSD_HOST: {{ .Values.auditlog.statsdHost
+    | quote }}
+  STATSD_PORT: {{ .Values.auditlog.statsdPort
+    | quote }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "retraced.fullname" . }}-bootstrap
+  labels:
+    app: bootstrap
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+stringData:
+  BOOTSTRAP_API_TOKEN: {{ required "bootstrap.bootstrapApiToken is required" .Values.bootstrap.bootstrapApiToken
+    | quote }}
+  BOOTSTRAP_ENVIRONMENT_ID: {{ required "bootstrap.bootstrapEnvironmentId is required"
+    .Values.bootstrap.bootstrapEnvironmentId | quote }}
+  BOOTSTRAP_PROJECT_ID: {{ required "bootstrap.bootstrapProjectId is required" .Values.bootstrap.bootstrapProjectId
+    | quote }}
+  BOOTSTRAP_PROJECT_NAME: {{ required "bootstrap.bootstrapProjectName is required"
+    .Values.bootstrap.bootstrapProjectName | quote }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "retraced.fullname" . }}-api-internal
+  labels:
+    app: auditlog-internal
+    retraceddev: "1"
+    tier: api
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.apiInternal.type }}
+  selector:
+    app: auditlog
+    retraceddev: "1"
+    tier: api
+  {{- include "retraced.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.apiInternal.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "retraced.fullname" . }}-nsqd
+  labels:
+    app: auditlog
+    retraceddev: "1"
+    tier: nsq
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.nsqd.type }}
+  selector:
+    app: auditlog
+    retraceddev: "1"
+    tier: nsq
+  {{- include "retraced.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.nsqd.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "retraced.fullname" . }}-admin-portal
+  labels:
+    app: auditlog
+    retraceddev: "1"
+    tier: admin-portal
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.adminPortal.type }}
+  selector:
+    app: auditlog
+    retraceddev: "1"
+    tier: admin-portal
+  {{- include "retraced.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.adminPortal.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "retraced.fullname" . }}-api
+  labels:
+    app: auditlog
+    retraceddev: "1"
+    tier: api
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.api.type }}
+  selector:
+    app: auditlog
+    retraceddev: "1"
+    tier: api
+  {{- include "retraced.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.api.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "retraced.fullname" . }}-elasticsearch
+  labels:
+    app: elasticsearch
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.elasticsearch.type }}
+  selector:
+    app: elasticsearch
+    retraceddev: "1"
+  ports:
+	{{- .Values.elasticsearch.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "retraced.fullname" . }}-postgres
+  labels:
+    app: postgres
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.postgres.type }}
+  selector:
+    app: postgres
+    retraceddev: "1"
+  ports:
+	{{- .Values.postgres.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "retraced.fullname" . }}-mmdbdir
+  labels:
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pvc.mmdbdir.storageRequest | quote }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-api
+  labels:
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.api.replicas }}
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: api
+    {{- include "retraced.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: api
+      {{- include "retraced.selectorLabels" . | nindent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - auditlog
+                - key: tier
+                  operator: In
+                  values:
+                  - api
+              topologyKey: kubernetes.io/hostname
+            weight: 1
+      containers:
+      - command:
+        - node
+        - --inspect=0.0.0.0
+        - build/src/index.js
+        env:
+        - name: BUGSNAG_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: API_TOKEN
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: EXPORT_PAGE_SIZE_INTERNAL
+          value: {{ quote .Values.api.api.env.exportPageSizeInternal }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-auditlog
+        image: {{ .Values.api.api.image.repository }}:{{ .Values.api.api.image.tag | default
+          .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.api.api.imagePullPolicy }}
+        name: api
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: 3000
+          periodSeconds: 30
+          successThreshold: 2
+          timeoutSeconds: 10
+        resources: {{- toYaml .Values.api.api.resources | nindent 10 }}
+        startupProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: 3000
+          periodSeconds: 10
+          timeoutSeconds: 10
+      initContainers:
+      - args: {{- toYaml .Values.api.bootstrap.args | nindent 8 }}
+        command:
+        - /bin/sh
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-auditlog
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-bootstrap
+        image: {{ .Values.api.bootstrap.image.repository }}:{{ .Values.api.bootstrap.image.tag
+          | default .Chart.AppVersion }}
+        name: bootstrap
+        resources: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-cron
+  labels:
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.cron.replicas }}
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: cron
+    {{- include "retraced.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        dest: nsq
+        retraceddev: "1"
+        source: cron
+        tier: cron
+      {{- include "retraced.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - command:
+        - /bin/sh
+        - -c
+        - /usr/local/bin/retraced-auditlog-cron /crontab 2>&1 | grep ERRO
+        env:
+        - name: NSQD_HOST
+          valueFrom:
+            secretKeyRef:
+              key: NSQD_HOST
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: NSQD_HTTP_PORT
+          valueFrom:
+            secretKeyRef:
+              key: NSQD_HTTP_PORT
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: RETRACED_DISABLE_GEOSYNC
+          valueFrom:
+            secretKeyRef:
+              key: RETRACED_DISABLE_GEOSYNC
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.cron.cron.image.repository }}:{{ .Values.cron.cron.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.cron.cron.imagePullPolicy }}
+        name: cron
+        resources: {{- toYaml .Values.cron.cron.resources | nindent 10 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-dbutil
+  labels:
+    app: retraced
+    retraceddev: "1"
+    tier: dbutil
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.dbutil.replicas }}
+  selector:
+    matchLabels:
+      app: retraced
+      retraceddev: "1"
+      tier: dbutil
+    {{- include "retraced.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: retraced
+        retraceddev: "1"
+        tier: dbutil
+      {{- include "retraced.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - command:
+        - /bin/sleep
+        - infinity
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-auditlog
+        image: {{ .Values.dbutil.dbutil.image.repository }}:{{ .Values.dbutil.dbutil.image.tag
+          | default .Chart.AppVersion }}
+        name: dbutil
+        resources: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-nsqd
+  labels:
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.nsqd.replicas }}
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: nsq
+    {{- include "retraced.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: nsq
+      {{- include "retraced.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - args: {{- toYaml .Values.nsqd.nsqd.args | nindent 8 }}
+        command:
+        - /bin/sh
+        env:
+        - name: STATSD_HOST
+          valueFrom:
+            secretKeyRef:
+              key: STATSD_HOST
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: STATSD_PORT
+          valueFrom:
+            secretKeyRef:
+              key: STATSD_PORT
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.nsqd.nsqd.image.repository }}:{{ .Values.nsqd.nsqd.image.tag
+          | default .Chart.AppVersion }}
+        name: nsqd
+        ports:
+        - containerPort: 4150
+        - containerPort: 4151
+        resources: {{- toYaml .Values.nsqd.nsqd.resources | nindent 10 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-processor
+  labels:
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.processor.replicas }}
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: processor
+    {{- include "retraced.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: processor
+      {{- include "retraced.selectorLabels" . | nindent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - auditlog
+                - key: tier
+                  operator: In
+                  values:
+                  - processor
+              topologyKey: kubernetes.io/hostname
+            weight: 2
+      containers:
+      - command:
+        - node
+        - --inspect=0.0.0.0
+        - build/src/_processor/index.js
+        env:
+        - name: TMPDIR
+          value: {{ quote .Values.processor.processor.env.tmpdir }}
+        - name: BUGSNAG_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: PROCESSOR_TOKEN
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: PG_SEARCH
+          value: {{ quote .Values.processor.processor.env.pgSearch }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-auditlog
+        image: {{ .Values.processor.processor.image.repository }}:{{ .Values.processor.processor.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.processor.processor.imagePullPolicy }}
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /livez
+            port: 3000
+          periodSeconds: 60
+        name: processor
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: 3000
+          periodSeconds: 30
+          successThreshold: 2
+          timeoutSeconds: 10
+        resources: {{- toYaml .Values.processor.processor.resources | nindent 10 }}
+        startupProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: 3000
+          periodSeconds: 10
+          timeoutSeconds: 10
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmpdir
+      volumes:
+      - name: retraced-mmdbdir
+        persistentVolumeClaim:
+          claimName: {{ include "retraced.fullname" . }}-mmdbdir
+      - emptyDir: {}
+        name: tmpdir
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-admin-portal
+  labels:
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.adminPortal.replicas }}
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: admin-portal
+    {{- include "retraced.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: admin-portal
+      {{- include "retraced.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-adminportal
+        image: {{ .Values.adminPortal.adminPortal.image.repository }}:{{ .Values.adminPortal.adminPortal.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.adminPortal.adminPortal.imagePullPolicy }}
+        name: admin-portal
+        ports:
+        - containerPort: 5225
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /api/health
+            port: 5225
+          periodSeconds: 30
+          successThreshold: 2
+          timeoutSeconds: 10
+        resources: {{- toYaml .Values.adminPortal.adminPortal.resources | nindent 10 }}
+        startupProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /api/health
+            port: 5225
+          periodSeconds: 10
+          timeoutSeconds: 10
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "retraced.fullname" . }}-elasticsearch
+  labels:
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: elasticsearch
+      retraceddev: "1"
+  serviceName: elasticearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+        retraceddev: "1"
+    spec:
+      containers:
+      - env:
+        - name: discovery.type
+          value: {{ quote .Values.elasticsearch.elasticsearch.env.discoveryType }}
+        - name: ES_JAVA_OPTS
+          value: {{ quote .Values.elasticsearch.elasticsearch.env.esJavaOpts }}
+        - name: xpack.security.enabled
+          value: {{ quote .Values.elasticsearch.elasticsearch.env.xpackSecurityEnabled
+            }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.elasticsearch.elasticsearch.image.repository }}:{{ .Values.elasticsearch.elasticsearch.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.elasticsearch.elasticsearch.imagePullPolicy }}
+        name: elasticsearch
+        ports:
+        - containerPort: 9200
+          name: estransport
+        resources: {}
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: esdatadir
+      volumes:
+      - name: esdatadir
+        persistentVolumeClaim:
+          claimName: esdatadir
+  updateStrategy: {}
+  volumeClaimTemplates:
+  - metadata:
+      creationTimestamp: null
+      labels:
+        retraceddev: "1"
+      name: esdatadir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources: {{ .Values.elasticsearch.volumeClaims.esdatadir | toYaml | nindent
+        8 }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "retraced.fullname" . }}-postgres
+  labels:
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+      retraceddev: "1"
+  serviceName: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        retraceddev: "1"
+    spec:
+      containers:
+      - env:
+        - name: PGDATA
+          value: {{ quote .Values.postgres.postgres.env.pgdata }}
+        - name: POSTGRES_USER
+          value: {{ quote .Values.postgres.postgres.env.postgresUser }}
+        - name: POSTGRES_PASSWORD
+          value: {{ quote .Values.postgres.postgres.env.postgresPassword }}
+        - name: POSTGRES_DB
+          value: {{ quote .Values.postgres.postgres.env.postgresDb }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.postgres.postgres.image.repository }}:{{ .Values.postgres.postgres.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.postgres.postgres.imagePullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -i
+            - -c
+            - /bin/sh
+            - -i
+            - -c
+            - pg_isready -h 127.0.0.1 -p 5432
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        name: postgres
+        ports:
+        - containerPort: 5432
+          name: postgres
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -i
+            - -c
+            - pg_isready -h 127.0.0.1 -p 5432
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 1
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: retraced-datadir
+      volumes:
+      - name: retraced-datadir
+        persistentVolumeClaim:
+          claimName: retraced-datadir
+  updateStrategy: {}
+  volumeClaimTemplates:
+  - metadata:
+      creationTimestamp: null
+      labels:
+        retraceddev: "1"
+      name: retraced-datadir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources: {{ .Values.postgres.volumeClaims.retracedDatadir | toYaml | nindent
+        8 }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "retraced.fullname" . }}-geoipupdate
+  labels:
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        retraceddev: "1"
+    spec:
+      containers:
+      - args: {{- toYaml .Values.geoipupdate.geoipupdate.args | nindent 8 }}
+        command:
+        - /bin/sh
+        - -c
+        env:
+        - name: GEOIPUPDATE_EDITION_IDS
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_EDITION_IDS
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: GEOIPUPDATE_FREQUENCY
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_FREQUENCY
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: GEOIPUPDATE_USE_MMDB
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_USE_MMDB
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: GEOIPUPDATE_VERBOSE
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_VERBOSE
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: GEOIPUPDATE_ACCOUNT_ID
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_ACCOUNT_ID
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: GEOIPUPDATE_LICENSE_KEY
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_LICENSE_KEY
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: GEOIPUPDATE_DB_DIR
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_DB_DIR
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-auditlog
+        image: {{ .Values.geoipupdate.geoipupdate.image.repository }}:{{ .Values.geoipupdate.geoipupdate.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.geoipupdate.geoipupdate.imagePullPolicy }}
+        name: geoipupdate
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/mmdb
+          name: retraced-mmdbdir
+      restartPolicy: OnFailure
+      volumes:
+      - name: retraced-mmdbdir
+        persistentVolumeClaim:
+          claimName: {{ include "retraced.fullname" . }}-mmdbdir
+  ttlSecondsAfterFinished: 0
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "retraced.fullname" . }}-migrate-es
+  labels:
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        retraceddev: "1"
+    spec:
+      containers:
+      - command:
+        - node
+        - --inspect=0.0.0.0
+        - build/src/_db/runner-lite.js
+        - es
+        env:
+        - name: BUGSNAG_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: DB_TOKEN
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: SCHEMA_PATH
+          value: {{ quote .Values.migrateEs.db.env.schemaPath }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-auditlog
+        image: {{ .Values.migrateEs.db.image.repository }}:{{ .Values.migrateEs.db.image.tag
+          | default .Chart.AppVersion }}
+        name: db
+        resources: {}
+      restartPolicy: OnFailure
+  ttlSecondsAfterFinished: 0
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "retraced.fullname" . }}-migrate-pg
+  labels:
+    retraceddev: "1"
+  {{- include "retraced.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        retraceddev: "1"
+    spec:
+      containers:
+      - command:
+        - node
+        - --inspect=0.0.0.0
+        - build/src/_db/runner-lite.js
+        - pg
+        env:
+        - name: BUGSNAG_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: DB_TOKEN
+              name: {{ include "retraced.fullname" . }}-auditlog
+        - name: SCHEMA_PATH
+          value: {{ quote .Values.migratePg.db.env.schemaPath }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-auditlog
+        image: {{ .Values.migratePg.db.image.repository }}:{{ .Values.migratePg.db.image.tag
+          | default .Chart.AppVersion }}
+        name: db
+        resources: {}
+      restartPolicy: OnFailure
+  ttlSecondsAfterFinished: 0

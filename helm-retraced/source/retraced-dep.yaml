@@ -1,0 +1,857 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app: adminportal
+    retraceddev: "1"
+  name: adminportal
+stringData:
+  # BOXYHQ_LICENSE_KEY: ""
+  # DB_CLEANUP_LIMIT: ""
+  # DB_ENCRYPTION_KEY: ""
+  # DB_TTL: ""
+  # DB_TYPE: ""
+  DB_URL: postgres://retraced:password@retraced-postgres:5432/postgres
+  JACKSON_API_KEYS: secret
+  # NEXTAUTH_ACL: ""
+  # NEXTAUTH_JWT_SIGNING_PRIVATE_KEY: ""
+  NEXTAUTH_SECRET: secret
+  NEXTAUTH_URL: http://localhost:5225
+  RETRACED_ADMIN_ROOT_TOKEN: dev
+  RETRACED_EXTERNAL_URL: http://localhost:3000/auditlog
+  RETRACED_HOST_URL: http://retraced-api:3000/auditlog
+  # SAML_AUDIENCE: ""
+  # SMTP_FROM: ""
+  # SMTP_HOST: ""
+  # SMTP_PASSWORD: ""
+  # SMTP_PORT: ""
+  # SMTP_USER: ""
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app: auditlog
+    retraceddev: "1"
+  name: auditlog
+stringData:
+  ADMIN_ROOT_TOKEN: dev
+  API_BASE_URL_PATH: /auditlog
+  API_TOKEN: ""
+  DB_TOKEN: ""
+  ELASTICSEARCH_NODES: http://user:password@retraced-elasticsearch:9200
+  GEOIPUPDATE_ACCOUNT_ID: ""
+  GEOIPUPDATE_DB_DIR: /etc/mmdb
+  GEOIPUPDATE_EDITION_IDS: GeoLite2-City
+  GEOIPUPDATE_FREQUENCY: "168"
+  GEOIPUPDATE_LICENSE_KEY: ""
+  GEOIPUPDATE_USE_MMDB: ""
+  GEOIPUPDATE_VERBOSE: "1"
+  HMAC_SECRET_ADMIN: xxxxxxx
+  HMAC_SECRET_VIEWER: xxxxxxxxx
+  LOG_LEVEL: info
+  MANDRILL_KEY: ""
+  NSQD_HOST: retraced-nsqd
+  NSQD_HTTP_PORT: "4151"
+  NSQD_TCP_PORT: "4150"
+  POSTGRES_DATABASE: retraced
+  POSTGRES_HOST: retraced-postgres
+  POSTGRES_PASSWORD: password
+  POSTGRES_POOL_SIZE: "10"
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: retraced
+  PROCESSOR_TOKEN: ""
+  RETRACED_API_BASE: http://localhost:3000/auditlog
+  RETRACED_DISABLE_GEOSYNC: ""
+  STAGE: ""
+  STATSD_HOST: ""
+  STATSD_PORT: ""
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app: bootstrap
+    retraceddev: "1"
+  name: bootstrap
+stringData:
+  BOOTSTRAP_API_TOKEN: dev
+  BOOTSTRAP_ENVIRONMENT_ID: dev
+  BOOTSTRAP_PROJECT_ID: dev
+  BOOTSTRAP_PROJECT_NAME: dev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: auditlog-internal
+    retraceddev: "1"
+    tier: api
+  name: retraced-api-internal
+  namespace: default
+spec:
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: auditlog
+    retraceddev: "1"
+    tier: api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: auditlog
+    retraceddev: "1"
+    tier: nsq
+  name: retraced-nsqd
+  namespace: default
+spec:
+  ports:
+    - name: tcp
+      port: 4150
+      targetPort: 4150
+    - name: http
+      port: 4151
+      targetPort: 4151
+  selector:
+    app: auditlog
+    retraceddev: "1"
+    tier: nsq
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: auditlog
+    retraceddev: "1"
+    tier: admin-portal
+  name: retraced-admin-portal
+spec:
+  ports:
+    - name: http
+      port: 5225
+      targetPort: 5225
+  selector:
+    app: auditlog
+    retraceddev: "1"
+    tier: admin-portal
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: auditlog
+    retraceddev: "1"
+    tier: api
+  name: retraced-api
+spec:
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: auditlog
+    retraceddev: "1"
+    tier: api
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: elasticsearch
+    retraceddev: "1"
+  name: retraced-elasticsearch
+spec:
+  ports:
+    - nodePort: 30920
+      port: 9200
+      targetPort: estransport
+  selector:
+    app: elasticsearch
+    retraceddev: "1"
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: postgres
+    retraceddev: "1"
+  name: retraced-postgres
+spec:
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+  selector:
+    app: postgres
+    retraceddev: "1"
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    retraceddev: "1"
+  name: retraced-mmdbdir
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    retraceddev: "1"
+  name: retraced-api
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: api
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: api
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - auditlog
+                    - key: tier
+                      operator: In
+                      values:
+                        - api
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+      containers:
+        - command:
+            - node
+            - --inspect=0.0.0.0
+            - build/src/index.js
+          env:
+            - name: BUGSNAG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: API_TOKEN
+                  name: auditlog
+            - name: EXPORT_PAGE_SIZE_INTERNAL
+              value: "2"
+          envFrom:
+            - secretRef:
+                name: auditlog
+          image: retracedhq/retraced-local:v1.12.0-42-g1eb3b63b-dirty
+          imagePullPolicy: IfNotPresent
+          name: api
+          ports:
+            - containerPort: 3000
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /healthz
+              port: 3000
+            periodSeconds: 30
+            successThreshold: 2
+            timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: 1000m
+            requests:
+              cpu: 100m
+          startupProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /healthz
+              port: 3000
+            periodSeconds: 10
+            timeoutSeconds: 10
+      initContainers:
+        - args:
+            - -c
+            - ./build/src/retracedctl bootstrap --projectName   "$BOOTSTRAP_PROJECT_NAME" --projectId     "$BOOTSTRAP_PROJECT_ID" --environmentId "$BOOTSTRAP_ENVIRONMENT_ID" --apiKey        "$BOOTSTRAP_API_TOKEN"
+          command:
+            - /bin/sh
+          envFrom:
+            - secretRef:
+                name: auditlog
+            - secretRef:
+                name: bootstrap
+          image: retracedhq/retraced-local:v1.12.0-42-g1eb3b63b-dirty
+          name: bootstrap
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    retraceddev: "1"
+  name: retraced-cron
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: cron
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        dest: nsq
+        retraceddev: "1"
+        source: cron
+        tier: cron
+    spec:
+      containers:
+        - command:
+            - /bin/sh
+            - -c
+            - /usr/local/bin/retraced-auditlog-cron /crontab 2>&1 | grep ERRO
+          env:
+            - name: NSQD_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: NSQD_HOST
+                  name: auditlog
+            - name: NSQD_HTTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: NSQD_HTTP_PORT
+                  name: auditlog
+            - name: RETRACED_DISABLE_GEOSYNC
+              valueFrom:
+                secretKeyRef:
+                  key: RETRACED_DISABLE_GEOSYNC
+                  name: auditlog
+          image: retracedhq/retraced-local:v1.12.0-42-g1eb3b63b-dirty
+          imagePullPolicy: IfNotPresent
+          name: cron
+          resources:
+            limits:
+              cpu: 100m
+            requests:
+              cpu: 10m
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: retraced
+    retraceddev: "1"
+    tier: dbutil
+  name: retraced-dbutil
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: retraced
+      retraceddev: "1"
+      tier: dbutil
+  template:
+    metadata:
+      labels:
+        app: retraced
+        retraceddev: "1"
+        tier: dbutil
+    spec:
+      containers:
+        - command:
+            - /bin/sleep
+            - infinity
+          envFrom:
+            - secretRef:
+                name: auditlog
+          image: retracedhq/retraced-local:v1.12.0-42-g1eb3b63b-dirty
+          name: dbutil
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    retraceddev: "1"
+  name: retraced-nsqd
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: nsq
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: nsq
+    spec:
+      containers:
+        - args:
+            - -c
+            - nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd."
+          command:
+            - /bin/sh
+          env:
+            - name: STATSD_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: STATSD_HOST
+                  name: auditlog
+            - name: STATSD_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: STATSD_PORT
+                  name: auditlog
+          image: nsqio/nsq:v1.2.1
+          name: nsqd
+          ports:
+            - containerPort: 4150
+            - containerPort: 4151
+          resources:
+            limits:
+              cpu: 1000m
+            requests:
+              cpu: 100m
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    retraceddev: "1"
+  name: retraced-processor
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: processor
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: processor
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - auditlog
+                    - key: tier
+                      operator: In
+                      values:
+                        - processor
+                topologyKey: kubernetes.io/hostname
+              weight: 2
+      containers:
+        - command:
+            - node
+            - --inspect=0.0.0.0
+            - build/src/_processor/index.js
+          env:
+            - name: TMPDIR
+              value: /tmp
+            - name: BUGSNAG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: PROCESSOR_TOKEN
+                  name: auditlog
+            - name: PG_SEARCH
+              value: ""
+          envFrom:
+            - secretRef:
+                name: auditlog
+          image: retracedhq/retraced-local:v1.12.0-42-g1eb3b63b-dirty
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /livez
+              port: 3000
+            periodSeconds: 60
+          name: processor
+          ports:
+            - containerPort: 3000
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /healthz
+              port: 3000
+            periodSeconds: 30
+            successThreshold: 2
+            timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: 1000m
+            requests:
+              cpu: 100m
+          startupProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /healthz
+              port: 3000
+            periodSeconds: 10
+            timeoutSeconds: 10
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmpdir
+      volumes:
+        - name: retraced-mmdbdir
+          persistentVolumeClaim:
+            claimName: retraced-mmdbdir
+        - emptyDir: {}
+          name: tmpdir
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    retraceddev: "1"
+  name: retraced-admin-portal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: admin-portal
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: admin-portal
+    spec:
+      containers:
+        - envFrom:
+            - secretRef:
+                name: adminportal
+          image: boxyhq/jackson:1.27.1
+          imagePullPolicy: IfNotPresent
+          name: admin-portal
+          ports:
+            - containerPort: 5225
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /api/health
+              port: 5225
+            periodSeconds: 30
+            successThreshold: 2
+            timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: 1000m
+            requests:
+              cpu: 100m
+          startupProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /api/health
+              port: 5225
+            periodSeconds: 10
+            timeoutSeconds: 10
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    retraceddev: "1"
+  name: retraced-elasticsearch
+spec:
+  selector:
+    matchLabels:
+      app: elasticsearch
+      retraceddev: "1"
+  serviceName: elasticearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+        retraceddev: "1"
+    spec:
+      containers:
+        - env:
+            - name: discovery.type
+              value: single-node
+            - name: ES_JAVA_OPTS
+              value: -Xms1g -Xmx1g
+            - name: xpack.security.enabled
+              value: "false"
+          image: elasticsearch:8.14.3
+          imagePullPolicy: IfNotPresent
+          name: elasticsearch
+          ports:
+            - containerPort: 9200
+              name: estransport
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: esdatadir
+      volumes:
+        - name: esdatadir
+          persistentVolumeClaim:
+            claimName: esdatadir
+  volumeClaimTemplates:
+    - metadata:
+        labels:
+          retraceddev: "1"
+        name: esdatadir
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    retraceddev: "1"
+  name: retraced-postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+      retraceddev: "1"
+  serviceName: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        retraceddev: "1"
+    spec:
+      containers:
+        - env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_USER
+              value: retraced
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: POSTGRES_DB
+              value: retraced
+          image: postgres:16.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -i
+                - -c
+                - /bin/sh
+                - -i
+                - -c
+                - pg_isready -h 127.0.0.1 -p 5432
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+          name: postgres
+          ports:
+            - containerPort: 5432
+              name: postgres
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -i
+                - -c
+                - pg_isready -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: retraced-datadir
+      volumes:
+        - name: retraced-datadir
+          persistentVolumeClaim:
+            claimName: retraced-datadir
+  volumeClaimTemplates:
+    - metadata:
+        labels:
+          retraceddev: "1"
+        name: retraced-datadir
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    retraceddev: "1"
+  name: retraced-geoipupdate
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        retraceddev: "1"
+    spec:
+      containers:
+        - args:
+            - |
+              if [ -z "$GEOIPUPDATE_USE_MMDB" ]; then
+                echo "Skipping the job..."
+              else
+                echo "Running the job..."
+                source /usr/bin/entry.sh
+              fi
+          command:
+            - /bin/sh
+            - -c
+          env:
+            - name: GEOIPUPDATE_EDITION_IDS
+              valueFrom:
+                secretKeyRef:
+                  key: GEOIPUPDATE_EDITION_IDS
+                  name: auditlog
+            - name: GEOIPUPDATE_FREQUENCY
+              valueFrom:
+                secretKeyRef:
+                  key: GEOIPUPDATE_FREQUENCY
+                  name: auditlog
+            - name: GEOIPUPDATE_USE_MMDB
+              valueFrom:
+                secretKeyRef:
+                  key: GEOIPUPDATE_USE_MMDB
+                  name: auditlog
+            - name: GEOIPUPDATE_VERBOSE
+              valueFrom:
+                secretKeyRef:
+                  key: GEOIPUPDATE_VERBOSE
+                  name: auditlog
+            - name: GEOIPUPDATE_ACCOUNT_ID
+              valueFrom:
+                secretKeyRef:
+                  key: GEOIPUPDATE_ACCOUNT_ID
+                  name: auditlog
+            - name: GEOIPUPDATE_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: GEOIPUPDATE_LICENSE_KEY
+                  name: auditlog
+            - name: GEOIPUPDATE_DB_DIR
+              valueFrom:
+                secretKeyRef:
+                  key: GEOIPUPDATE_DB_DIR
+                  name: auditlog
+          envFrom:
+            - secretRef:
+                name: auditlog
+          image: maxmindinc/geoipupdate:v5.1
+          imagePullPolicy: IfNotPresent
+          name: geoipupdate
+          volumeMounts:
+            - mountPath: /etc/mmdb
+              name: retraced-mmdbdir
+      restartPolicy: OnFailure
+      volumes:
+        - name: retraced-mmdbdir
+          persistentVolumeClaim:
+            claimName: retraced-mmdbdir
+  ttlSecondsAfterFinished: 0
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    retraceddev: "1"
+  name: retraced-migrate-es
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        retraceddev: "1"
+    spec:
+      containers:
+        - command:
+            - node
+            - --inspect=0.0.0.0
+            - build/src/_db/runner-lite.js
+            - es
+          env:
+            - name: BUGSNAG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: DB_TOKEN
+                  name: auditlog
+            - name: SCHEMA_PATH
+              value: /app/build/migrations/es
+          envFrom:
+            - secretRef:
+                name: auditlog
+          image: retracedhq/retraced-local:v1.12.0-42-g1eb3b63b-dirty
+          name: db
+      restartPolicy: OnFailure
+  ttlSecondsAfterFinished: 0
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    retraceddev: "1"
+  name: retraced-migrate-pg
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        retraceddev: "1"
+    spec:
+      containers:
+        - command:
+            - node
+            - --inspect=0.0.0.0
+            - build/src/_db/runner-lite.js
+            - pg
+          env:
+            - name: BUGSNAG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: DB_TOKEN
+                  name: auditlog
+            - name: SCHEMA_PATH
+              value: /app/build/migrations/pg/*
+          envFrom:
+            - secretRef:
+                name: auditlog
+          image: retracedhq/retraced-local:v1.12.0-42-g1eb3b63b-dirty
+          name: db
+      restartPolicy: OnFailure
+  ttlSecondsAfterFinished: 0

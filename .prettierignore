@@ -4,3 +4,4 @@ src/_processor/services/templates/**
 postman/Retraced.postman_collection.json
 swagger.json
 eslint.config.cjs
+helm-retraced/retraced
