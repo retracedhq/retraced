@@ -39,7 +39,7 @@
     "pg-format": "1.0.4",
     "picocolors": "1.0.1",
     "pino": "9.4.0",
-    "postgrator": "7.2.0",
+    "postgrator": "7.3.0",
     "progress": "2.0.3",
     "redis": "4.7.0",
     "ruler": "1.0.0",
