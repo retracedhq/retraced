@@ -70,7 +70,7 @@
     "eslint-plugin-jsdoc": "50.2.4",
     "eslint-plugin-prefer-arrow": "1.2.3",
     "mocha": "10.7.3",
-    "nyc": "17.0.0",
+    "nyc": "17.1.0",
     "prettier": "3.3.3",
     "release-it": "17.6.0",
     "rimraf": "6.0.1",
