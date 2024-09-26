@@ -57,7 +57,7 @@
     "@types/express": "5.0.0",
     "@types/lodash": "4.17.9",
     "@types/mocha": "10.0.8",
-    "@types/node": "22.6.1",
+    "@types/node": "22.7.3",
     "@types/nodemailer": "6.4.16",
     "@types/pg": "8.11.10",
     "@types/sinon": "17.0.3",
