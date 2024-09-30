@@ -42,8 +42,10 @@ function getElasticsearch(noRetry = false): Client {
     const hosts = _.split(config.ELASTICSEARCH_NODES || "", ",");
     if ((config.ELASTICSEARCH_NODES || "") !== "") {
       const sslSettings: any = {};
-      if (config.ELASTICSEARCH_CAFILE) {
-        sslSettings.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
+      if (config.ELASTICSEARCH_CAFILE || config.ELASTICSEARCH_CACERT) {
+        sslSettings.ca = config.ELASTICSEARCH_CAFILE
+          ? readFileSync(config.ELASTICSEARCH_CAFILE)
+          : Buffer.from(config.ELASTICSEARCH_CACERT, "base64");
         sslSettings.rejectUnauthorized = true;
       }
 
@@ -180,11 +182,13 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]): Pro
     rejectUnauthorized: false,
   };
 
-  if (config.ELASTICSEARCH_CAFILE) {
-    httpsAgentParams.ca = readFileSync(config.ELASTICSEARCH_CAFILE);
+  if (config.ELASTICSEARCH_CAFILE || config.ELASTICSEARCH_CACERT) {
+    httpsAgentParams.ca = config.ELASTICSEARCH_CAFILE
+      ? readFileSync(config.ELASTICSEARCH_CAFILE)
+      : Buffer.from(config.ELASTICSEARCH_CACERT, "base64");
   }
 
-  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
+  // process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
 
   const { data } = await axios.post<any>(uri, payload, {
     headers: {
