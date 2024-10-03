@@ -2,75 +2,6 @@ apiVersion: v1
 kind: Secret
 metadata:
   labels:
-    app: adminportal
-    retraceddev: "1"
-  name: adminportal
-stringData:
-  # BOXYHQ_LICENSE_KEY: ""
-  # DB_CLEANUP_LIMIT: ""
-  # DB_ENCRYPTION_KEY: ""
-  # DB_TTL: ""
-  # DB_TYPE: ""
-  DB_URL: postgres://retraced:password@retraced-postgres:5432/postgres
-  JACKSON_API_KEYS: secret
-  # NEXTAUTH_ACL: ""
-  # NEXTAUTH_JWT_SIGNING_PRIVATE_KEY: ""
-  NEXTAUTH_SECRET: secret
-  NEXTAUTH_URL: http://localhost:5225
-  RETRACED_ADMIN_ROOT_TOKEN: dev
-  RETRACED_EXTERNAL_URL: http://localhost:3000/auditlog
-  RETRACED_HOST_URL: http://retraced-api:3000/auditlog
-  # SAML_AUDIENCE: ""
-  # SMTP_FROM: ""
-  # SMTP_HOST: ""
-  # SMTP_PASSWORD: ""
-  # SMTP_PORT: ""
-  # SMTP_USER: ""
----
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app: auditlog
-    retraceddev: "1"
-  name: auditlog
-stringData:
-  ADMIN_ROOT_TOKEN: dev
-  API_BASE_URL_PATH: /auditlog
-  API_TOKEN: ""
-  DB_TOKEN: ""
-  ELASTICSEARCH_NODES: http://user:password@retraced-elasticsearch:9200
-  GEOIPUPDATE_ACCOUNT_ID: ""
-  GEOIPUPDATE_DB_DIR: /etc/mmdb
-  GEOIPUPDATE_EDITION_IDS: GeoLite2-City
-  GEOIPUPDATE_FREQUENCY: "168"
-  GEOIPUPDATE_LICENSE_KEY: ""
-  GEOIPUPDATE_USE_MMDB: ""
-  GEOIPUPDATE_VERBOSE: "1"
-  HMAC_SECRET_ADMIN: xxxxxxx
-  HMAC_SECRET_VIEWER: xxxxxxxxx
-  LOG_LEVEL: info
-  MANDRILL_KEY: ""
-  NSQD_HOST: retraced-nsqd
-  NSQD_HTTP_PORT: "4151"
-  NSQD_TCP_PORT: "4150"
-  POSTGRES_DATABASE: retraced
-  POSTGRES_HOST: retraced-postgres
-  POSTGRES_PASSWORD: password
-  POSTGRES_POOL_SIZE: "10"
-  POSTGRES_PORT: "5432"
-  POSTGRES_USER: retraced
-  PROCESSOR_TOKEN: ""
-  RETRACED_API_BASE: http://localhost:3000/auditlog
-  RETRACED_DISABLE_GEOSYNC: ""
-  STAGE: ""
-  STATSD_HOST: ""
-  STATSD_PORT: ""
----
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
     app: bootstrap
     retraceddev: "1"
   name: bootstrap
@@ -88,7 +19,6 @@ metadata:
     retraceddev: "1"
     tier: api
   name: retraced-api-internal
-  namespace: default
 spec:
   ports:
     - name: http
@@ -107,7 +37,6 @@ metadata:
     retraceddev: "1"
     tier: nsq
   name: retraced-nsqd
-  namespace: default
 spec:
   ports:
     - name: tcp
@@ -200,7 +129,6 @@ metadata:
   labels:
     retraceddev: "1"
   name: retraced-mmdbdir
-  namespace: default
 spec:
   accessModes:
     - ReadWriteOnce
@@ -214,7 +142,6 @@ metadata:
   labels:
     retraceddev: "1"
   name: retraced-api
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -307,7 +234,6 @@ metadata:
   labels:
     retraceddev: "1"
   name: retraced-cron
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -361,7 +287,6 @@ metadata:
     retraceddev: "1"
     tier: dbutil
   name: retraced-dbutil
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -392,7 +317,6 @@ metadata:
   labels:
     retraceddev: "1"
   name: retraced-nsqd
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -440,7 +364,6 @@ metadata:
   labels:
     retraceddev: "1"
   name: retraced-processor
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -715,7 +638,6 @@ metadata:
   labels:
     retraceddev: "1"
   name: retraced-geoipupdate
-  namespace: default
 spec:
   template:
     metadata:
@@ -792,7 +714,6 @@ metadata:
   labels:
     retraceddev: "1"
   name: retraced-migrate-es
-  namespace: default
 spec:
   template:
     metadata:
@@ -827,7 +748,6 @@ metadata:
   labels:
     retraceddev: "1"
   name: retraced-migrate-pg
-  namespace: default
 spec:
   template:
     metadata:

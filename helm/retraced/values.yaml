@@ -1,35 +1,10 @@
-adminPortal:
-  adminPortal:
-    image:
-      repository: boxyhq/jackson
-      tag: 1.27.1
-    imagePullPolicy: IfNotPresent
-    resources:
-      limits:
-        cpu: "1"
-      requests:
-        cpu: 100m
-  ports:
-  - name: http
-    port: 5225
-    targetPort: 5225
-  replicas: 1
-  type: LoadBalancer
-adminportal:
-  dbUrl: "postgres://retraced:password@retraced-postgres:5432/postgres"
-  jacksonApiKeys: "secret"
-  nextauthSecret: "secret"
-  nextauthUrl: "http://localhost:5225"
-  retracedAdminRootToken: "dev"
-  retracedExternalUrl: "http://localhost:3000/auditlog"
-  retracedHostUrl: "http://retraced-api:3000/auditlog"
 api:
   api:
     env:
       exportPageSizeInternal: "2"
     image:
-      repository: retracedhq/retraced-local
-      tag: v1.12.0-41-g97619447
+      repository: retracedhq/retraced
+      tag: 1.12.1
     imagePullPolicy: IfNotPresent
     resources:
       limits:
@@ -43,8 +18,8 @@ api:
       --projectId     "$BOOTSTRAP_PROJECT_ID" --environmentId "$BOOTSTRAP_ENVIRONMENT_ID"
       --apiKey        "$BOOTSTRAP_API_TOKEN"
     image:
-      repository: retracedhq/retraced-local
-      tag: v1.12.0-41-g97619447
+      repository: retracedhq/retraced
+      tag: 1.12.1
   ports:
   - name: http
     port: 3000
@@ -97,8 +72,8 @@ bootstrap:
 cron:
   cron:
     image:
-      repository: retracedhq/retraced-local
-      tag: v1.12.0-41-g97619447
+      repository: retracedhq/retraced
+      tag: v1.12.1
     imagePullPolicy: IfNotPresent
     resources:
       limits:
@@ -109,57 +84,24 @@ cron:
 dbutil:
   dbutil:
     image:
-      repository: retracedhq/retraced-local
-      tag: v1.12.0-41-g97619447
+      repository: retracedhq/retraced
+      tag: 1.12.1
   replicas: 1
-elasticsearch:
-  elasticsearch:
-    env:
-      discoveryType: single-node
-      esJavaOpts: -Xms1g -Xmx1g
-      xpackSecurityEnabled: "false"
-    image:
-      repository: elasticsearch
-      tag: 8.14.3
-    imagePullPolicy: IfNotPresent
-  ports:
-  - nodePort: 30920
-    port: 9200
-    targetPort: estransport
-  type: NodePort
-  volumeClaims:
-    esdatadir:
-      requests:
-        storage: 1Gi
-geoipupdate:
-  geoipupdate:
-    args:
-    - |
-      if [ -z "$GEOIPUPDATE_USE_MMDB" ]; then
-        echo "Skipping the job..."
-      else
-        echo "Running the job..."
-        source /usr/bin/entry.sh
-      fi
-    image:
-      repository: maxmindinc/geoipupdate
-      tag: v5.1
-    imagePullPolicy: IfNotPresent
 kubernetesClusterDomain: cluster.local
 migrateEs:
   db:
     env:
       schemaPath: /app/build/migrations/es
     image:
-      repository: retracedhq/retraced-local
-      tag: v1.12.0-41-g97619447
+      repository: retracedhq/retraced
+      tag: 1.12.1
 migratePg:
   db:
     env:
       schemaPath: /app/build/migrations/pg/*
     image:
-      repository: retracedhq/retraced-local
-      tag: v1.12.0-41-g97619447
+      repository: retracedhq/retraced
+      tag: 1.12.1
 nsqd:
   nsqd:
     args:
@@ -182,34 +124,14 @@ nsqd:
     targetPort: 4151
   replicas: 1
   type: ClusterIP
-postgres:
-  ports:
-  - name: postgres
-    port: 5432
-    targetPort: postgres
-  postgres:
-    env:
-      pgdata: /var/lib/postgresql/data/pgdata
-      postgresDb: retraced
-      postgresPassword: password
-      postgresUser: retraced
-    image:
-      repository: postgres
-      tag: "16.4"
-    imagePullPolicy: IfNotPresent
-  type: ClusterIP
-  volumeClaims:
-    retracedDatadir:
-      requests:
-        storage: 1Gi
 processor:
   processor:
     env:
       pgSearch: ""
       tmpdir: /tmp
     image:
-      repository: retracedhq/retraced-local
-      tag: v1.12.0-41-g97619447
+      repository: retracedhq/retraced
+      tag: 1.12.1
     imagePullPolicy: IfNotPresent
     resources:
       limits:
