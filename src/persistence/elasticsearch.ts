@@ -47,6 +47,10 @@ function getElasticsearch(noRetry = false): Client {
           ? readFileSync(config.ELASTICSEARCH_CAFILE)
           : Buffer.from(config.ELASTICSEARCH_CACERT, "base64");
         sslSettings.rejectUnauthorized = true;
+        sslSettings.auth = {
+          username: config.ELASTICSEARCH_USER,
+          password: config.LASTICSEARCH_PASSWORD,
+        };
       }
 
       es = new Client({
@@ -195,6 +199,10 @@ export async function putAliases(toAdd: AliasDesc[], toRemove: AliasDesc[]): Pro
       "Content-Type": "application/json",
     },
     httpsAgent: new https.Agent(httpsAgentParams),
+    auth: {
+      username: config.ELASTICSEARCH_USER,
+      password: config.LASTICSEARCH_PASSWORD,
+    },
   });
 
   return data;

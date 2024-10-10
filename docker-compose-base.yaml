@@ -17,6 +17,8 @@ x-common-variables: &common-variables
   POSTGRES_DATABASE: retraced
   LOG_LEVEL: ${LOG_LEVEL}
   ELASTICSEARCH_NODES: http://elasticsearch:9200
+  ELASTIC_PASSWORD: secret
+  ELASTIC_USER: elastic
   NSQD_HOST: nsqd
   HOSTNAME: retraced-api-67856674bf-kwq7f
   NSQD_TCP_PORT: 4150
