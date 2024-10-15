@@ -11,7 +11,7 @@ x-common-variables: &common-variables
   POSTGRES_PASSWORD: password
   POSTGRES_POOL_SIZE: 10
   HMAC_SECRET_VIEWER: xxxxxxxxx
-  POSTGRES_PORT: 5434
+  POSTGRES_PORT: 5432
   API_BASE_URL_PATH: /auditlog
   RETRACED_API_BASE: http://localhost:3000/auditlog
   POSTGRES_DATABASE: retraced
@@ -91,8 +91,7 @@ services:
   postgres:
     image: postgres:16.4
     ports:
-      - "5434:5434"
-    command: -p 5434
+      - "5432:5432"
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_USER=retraced
@@ -186,7 +185,7 @@ services:
       - retraced
     environment:
       - JACKSON_API_KEYS=secret
-      - DB_URL=postgres://retraced:password@postgres:5434/postgres
+      - DB_URL=postgres://retraced:password@postgres:5432/postgres
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_USER=${SMTP_USER}
