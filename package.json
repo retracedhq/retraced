@@ -47,7 +47,7 @@
     "search-query-parser": "1.6.0",
     "ssl-config": "1.0.0",
     "swagger-ui-express": "5.0.1",
-    "tsoa": "6.5.0",
+    "tsoa": "6.5.1",
     "unzipper": "0.12.3",
     "yargs": "17.7.2"
   },
