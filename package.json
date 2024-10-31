@@ -55,7 +55,7 @@
     "@testdeck/mocha": "0.3.3",
     "@types/bcryptjs": "2.4.6",
     "@types/express": "5.0.0",
-    "@types/lodash": "4.17.10",
+    "@types/lodash": "4.17.13",
     "@types/mocha": "10.0.9",
     "@types/node": "22.8.4",
     "@types/nodemailer": "6.4.16",
