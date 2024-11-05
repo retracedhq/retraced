@@ -172,6 +172,9 @@ async function renderAsCSV(events) {
         }
       }
       const result = Object.assign({}, ev, flatActor, flatObject);
+      result.created = unixToIso(result.created);
+      result.received = unixToIso(result.received);
+      result.canonical_time = unixToIso(result.canonical_time);
       delete result.actor;
       delete result.object;
       delete result.object_id;
@@ -183,6 +186,11 @@ async function renderAsCSV(events) {
   });
 
   return await processing;
+}
+
+function unixToIso(unixTimestamp: number) {
+  const date = new Date(unixTimestamp);
+  return date.toISOString().slice(0, 19).replace('T', ' ');
 }
 
 function filterOptions(scope: Scope, qd: QueryDescriptor): FilterOptions {
