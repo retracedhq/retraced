@@ -189,8 +189,8 @@ async function renderAsCSV(events) {
 }
 
 function unixToIso(unixTimestamp: number) {
-  if(typeof unixTimestamp !== 'number' || !Number.isInteger(unixTimestamp)) {
-    throw new Error(`Invalid UNIX Timestamp - ${unixTimestamp}`)
+  if (typeof unixTimestamp !== "number" || !Number.isInteger(unixTimestamp)) {
+    return null;
   }
   const date = new Date(unixTimestamp);
   return date.toISOString().slice(0, 19).replace("T", " ");
