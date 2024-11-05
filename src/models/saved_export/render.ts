@@ -190,7 +190,7 @@ async function renderAsCSV(events) {
 
 function unixToIso(unixTimestamp: number) {
   const date = new Date(unixTimestamp);
-  return date.toISOString().slice(0, 19).replace('T', ' ');
+  return date.toISOString().slice(0, 19).replace("T", " ");
 }
 
 function filterOptions(scope: Scope, qd: QueryDescriptor): FilterOptions {
