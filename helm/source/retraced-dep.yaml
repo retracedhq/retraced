@@ -116,7 +116,7 @@ metadata:
 spec:
   ports:
     - name: postgres
-      port: 5432
+      port: 5434
       targetPort: postgres
   selector:
     app: postgres
@@ -477,7 +477,7 @@ spec:
         - envFrom:
             - secretRef:
                 name: adminportal
-          image: boxyhq/jackson:1.27.1
+          image: boxyhq/jackson:1.30.0
           imagePullPolicy: IfNotPresent
           name: admin-portal
           ports:
@@ -595,13 +595,13 @@ spec:
                 - /bin/sh
                 - -i
                 - -c
-                - pg_isready -h 127.0.0.1 -p 5432
+                - pg_isready -h 127.0.0.1 -p 5434
             failureThreshold: 3
             initialDelaySeconds: 30
             timeoutSeconds: 5
           name: postgres
           ports:
-            - containerPort: 5432
+            - containerPort: 5434
               name: postgres
           readinessProbe:
             exec:
@@ -609,7 +609,7 @@ spec:
                 - /bin/sh
                 - -i
                 - -c
-                - pg_isready -h 127.0.0.1 -p 5432
+                - pg_isready -h 127.0.0.1 -p 5434
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 1

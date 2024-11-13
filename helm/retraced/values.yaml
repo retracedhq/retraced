@@ -56,7 +56,7 @@ auditlog:
   postgresHost: "retraced-postgres"
   postgresPassword: "password"
   postgresPoolSize: "10"
-  postgresPort: "5432"
+  postgresPort: "5434"
   postgresUser: "retraced"
   processorToken: ""
   retracedApiBase: "http://localhost:3000/auditlog"
