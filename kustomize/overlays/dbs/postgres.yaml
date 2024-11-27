@@ -9,7 +9,7 @@ spec:
   type: ClusterIP
   ports:
     - name: postgres
-      port: 5432
+      port: 5434
       targetPort: postgres
   selector:
     app: postgres
@@ -43,7 +43,7 @@ spec:
               value: retraced
           ports:
             - name: postgres
-              containerPort: 5432
+              containerPort: 5434
           livenessProbe:
             exec:
               command:
@@ -53,7 +53,7 @@ spec:
                 - /bin/sh
                 - -i
                 - -c
-                - pg_isready -h 127.0.0.1 -p 5432
+                - pg_isready -h 127.0.0.1 -p 5434
             initialDelaySeconds: 30
             timeoutSeconds: 5
             failureThreshold: 3
@@ -63,7 +63,7 @@ spec:
                 - /bin/sh
                 - -i
                 - -c
-                - pg_isready -h 127.0.0.1 -p 5432
+                - pg_isready -h 127.0.0.1 -p 5434
             initialDelaySeconds: 5
             timeoutSeconds: 1
             periodSeconds: 10
