@@ -10,7 +10,7 @@
     "@bugsnag/plugin-express": "8.1.1",
     "@maxmind/geoip2-node": "5.0.0",
     "@opensearch-project/opensearch": "2.13.0",
-    "@retracedhq/retraced": "0.7.16",
+    "@retracedhq/retraced": "0.7.17",
     "@root/walk": "1.1.0",
     "@segment/analytics-node": "2.2.0",
     "axios": "1.7.8",
