@@ -21,7 +21,7 @@
     "cors": "2.8.5",
     "csv-string": "4.1.1",
     "csv-stringify": "6.5.2",
-    "dotenv": "16.4.5",
+    "dotenv": "16.4.7",
     "express": "4.21.2",
     "graphql": "16.9.0",
     "handlebars": "4.7.8",
