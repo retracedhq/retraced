@@ -39,7 +39,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.14
+          version: default
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
@@ -62,7 +62,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.14
+          version: default
       - run: docker build --pull -t registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-postgres .
       - run:
           name: Run local image vulnerability scan
@@ -81,7 +81,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.14
+          version: default
       - run: docker build --pull -t registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7} -f deploy/Dockerfile-nsq .
       - run:
           name: Run local image vulnerability scan
@@ -99,7 +99,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 19.03.13
+          version: default
       - attach_workspace:
           at: /tmp/workspace
       - run: docker load -i /tmp/workspace/retraced.tar
@@ -121,7 +121,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 19.03.13
+          version: default
       - run: docker login -u="$REPLICATED_LIBRARY_USER" -p="$REPLICATED_LIBRARY_PASSWORD" registry.replicated.com
       - run:  |
           docker pull registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
@@ -133,7 +133,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 19.03.13
+          version: default
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
