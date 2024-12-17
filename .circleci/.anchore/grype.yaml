@@ -1,4 +1,4 @@
-ignore: []
+ignore:
 
   # https://github.com/anchore/grype#specifying-matches-to-ignore
   # example to ignore a vulnerability
@@ -10,3 +10,38 @@ ignore: []
   #     version: 1.5.1
   #     type: npm
   #     location: "/usr/local/lib/node_modules/**"
+
+
+  # https://www.postgresql.org/support/security/CVE-2024-7348/
+  # This CVE allows an unprivileged user to escalate to a root postgresql user when pg_dump is being used.
+  # We don't use non-root postgres users or pg_dump, so this is not a concern.
+  - vulnerability: CVE-2024-7348
+    package:
+      name: postgresql
+  # https://www.postgresql.org/support/security/CVE-2024-10979/
+  # This CVE allows an unprivileged user to escalate to a root postgresql user.
+  # We don't use non-root postgres users, so this is not a concern.
+  - vulnerability: CVE-2024-10979
+    package:
+      name: postgresql
+  # https://www.postgresql.org/support/security/CVE-2024-10978/
+  # This CVE allows an unprivileged user to escalate to a root postgresql user.
+  # We don't use non-root postgres users, so this is not a concern.
+  - vulnerability: CVE-2024-10978
+    package:
+      name: postgresql
+  # https://www.postgresql.org/support/security/CVE-2024-10976/
+  # This CVE allows an unprivileged user to escalate to a root postgresql user.
+  # We don't use non-root postgres users, so this is not a concern.
+  - vulnerability: CVE-2024-10976
+    package:
+      name: postgresql
+  # https://www.postgresql.org/support/security/CVE-2021-3393/
+  # A user having an UPDATE privilege on a partitioned table but lacking the SELECT privilege
+  # on some column may be able to acquire denied-column values from an error message.
+  # We don't use non-root postgres users, so this is not a concern.
+  - vulnerability: CVE-2021-3393
+    package:
+      name: postgresql
+
+
