@@ -1,10 +1,18 @@
-FROM postgres:17.2-alpine
+FROM postgres:10.23-alpine
 
 RUN apk add --update --no-cache \
     ca-certificates \
   && apk add --upgrade --no-cache \
     \
     \
-    go
+    apk-tools \
+    krb5-libs \
+    libcom_err \
+    libgcrypt \
+    ncurses-libs \
+    ncurses-terminfo-base \
+    openssl \
+    busybox \
+    ssl_client
 
 VOLUME /var/run/postgresql
