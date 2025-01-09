@@ -98,7 +98,6 @@ export const makePageIndexer = (writeIndex: string) => async (result: Event[]) =
     body.push({
       index: {
         _index: writeIndex,
-        _type: "_doc",
       },
     });
     body.push(eventToIndex);

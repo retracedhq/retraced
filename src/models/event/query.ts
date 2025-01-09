@@ -354,16 +354,6 @@ export function searchParams(opts: Options): API.Search_Request {
       ],
     },
   };
-
-  // return {
-  //   index,
-  //   type: "_doc",
-  //   _source: true,
-  //   size: opts.size != 0 ? opts.size : undefined,
-  //   sort: [`canonical_time: ${opts.sort}`],
-  //   search_after: opts.cursor,
-  //   body: { query },
-  // };
 }
 
 export function searchParamsPaginated(opts: OptionsPaginated): API.Search_Request {
