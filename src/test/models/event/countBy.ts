@@ -20,7 +20,7 @@ class EventsCountByTest {
           },
         },
       },
-    } as ApiResponse<any>;
+    } as ApiResponse;
 
     es.setup((x) => x.search(TypeMoq.It.isAny())).returns((params): any => {
       assert.deepEqual(params.body.query.bool.filter, [

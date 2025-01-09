@@ -124,10 +124,7 @@ class ElasticsearchSaverTest {
         })
       )
     )
-      .returns(
-        () =>
-          Promise.resolve({ body: {} }) as TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
-      )
+      .returns(() => Promise.resolve({ body: {} }) as TransportRequestPromise<ApiResponse>)
       .verifiable(TypeMoq.Times.once());
 
     clock
