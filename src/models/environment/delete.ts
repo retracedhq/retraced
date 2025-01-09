@@ -88,14 +88,14 @@ export default async function (opts: Options) {
           const indexName = resp.body[0].index;
 
           // Delete all aliases attached to the soon-to-be-deleted index
-          es.indices.deleteAlias({ index: indexName, name: "_all" }, (err2) => {
+          es.indices.deleteAlias({ index: indexName!, name: "_all" }, (err2) => {
             if (err2) {
               reject(err2);
               return;
             }
 
             // Finally, delete the index itself
-            es.indices.delete({ index: indexName }, (err3) => {
+            es.indices.delete({ index: indexName! }, (err3) => {
               if (err3) {
                 reject(err3);
                 return;

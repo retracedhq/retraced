@@ -1,7 +1,7 @@
 import { suite, test } from "@testdeck/mocha";
 
 import { parse, searchParams, Options } from "../../../models/event/query";
-import { RequestParams } from "@opensearch-project/opensearch";
+import { type API } from "@opensearch-project/opensearch";
 import assert from "assert";
 
 @suite
@@ -164,7 +164,7 @@ class QueryEventsTest {
       cursor: [1492060162148, "abc123"],
     };
     const output = searchParams(input);
-    const answer: RequestParams.Search = {
+    const answer: API.Search_Request = {
       index: "retraced.p1.e1.current",
       _source: "true",
       size: 10,
