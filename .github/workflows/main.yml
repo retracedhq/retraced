@@ -87,7 +87,7 @@ jobs:
 
       - name: Run docker-compose up
         id: docker_compose
-        uses: isbang/compose-action@v2.0.2
+        uses: isbang/compose-action@v2.1.0
         with:
           compose-file: "./docker-compose.yaml"
 
@@ -117,7 +117,7 @@ jobs:
 
       - name: Run docker-compose up
         id: docker_compose
-        uses: isbang/compose-action@v2.0.2
+        uses: isbang/compose-action@v2.1.0
         with:
           compose-file: "./docker-compose-es7.yaml"
 
@@ -147,7 +147,7 @@ jobs:
 
       - name: Run docker-compose up
         id: docker_compose
-        uses: isbang/compose-action@v2.0.2
+        uses: isbang/compose-action@v2.1.0
         with:
           compose-file: "./docker-compose.yaml"
         env:
