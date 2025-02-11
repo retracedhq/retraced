@@ -89,24 +89,24 @@ export const handler = async (argv) => {
     esTargetWriteIndex,
   });
 
-  const aliasesBlob = await es.cat.aliases({ name: esTargetIndex });
+  const aliasesBlob = await es.cat.aliases({ format: "json", name: esTargetIndex });
   const currentIndices: string[] = [];
   if (!aliasesBlob) {
     logger.error({ msg: "no aliasesBlob for index " + esTargetIndex });
   } else {
     aliasesBlob.body.forEach((aliasRec) => {
-      currentIndicesWrite.push(aliasRec.alias!);
+      currentIndices.push(aliasRec.index!);
     });
     logger.info({ msg: "found current read indices", count: currentIndices.length });
   }
 
-  const aliasesBlobWrite = await es.cat.aliases({ name: esTargetWriteIndex });
+  const aliasesBlobWrite = await es.cat.aliases({ format: "json", name: esTargetWriteIndex });
   const currentIndicesWrite: string[] = [];
   if (!aliasesBlobWrite.body) {
     logger.error({ msg: "no aliasesBlobWrite" });
   } else {
     aliasesBlobWrite.body.forEach((aliasRec) => {
-      currentIndicesWrite.push(aliasRec.alias!);
+      currentIndicesWrite.push(aliasRec.index!);
     });
   }
 
