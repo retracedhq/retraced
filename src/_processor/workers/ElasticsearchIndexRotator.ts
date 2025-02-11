@@ -202,12 +202,12 @@ export class ElasticsearchIndexRotator {
     logger.info(env.environmentId, `created index ${newIndexName} with aliases ${[searchAlias]}`);
 
     const toAdd = [{ index: newIndexName, alias: writeAlias }];
-    const toRemove = existingWriteAliases || [];
+    const toRemove = existingWriteAliases.body || [];
     this.aliasRotator(toAdd, toRemove);
 
     logger.info(
       env.environmentId,
-      `pre-existing indices ${existingWriteAliases.map((e) => e.index)} removed from alias ${writeAlias}`
+      `pre-existing indices ${toRemove.map((e) => e.index)} removed from alias ${writeAlias}`
     );
     logger.info(env.environmentId, `index ${newIndexName} added to ${writeAlias}`);
     return resp.body;

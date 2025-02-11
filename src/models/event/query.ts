@@ -1,7 +1,7 @@
 import _ from "lodash";
 import searchQueryParser from "search-query-parser";
 import moment from "moment";
-import { ApiResponse, RequestParams } from "@opensearch-project/opensearch";
+import { ApiResponse, type API } from "@opensearch-project/opensearch";
 
 import { Scope } from "../../security/scope";
 import { scope, getESWithRetry, ClientWithRetry } from "../../persistence/elasticsearch";
@@ -294,7 +294,7 @@ export function parse(searchQuery: string): any {
   return q;
 }
 
-export function searchParams(opts: Options): RequestParams.Search {
+export function searchParams(opts: Options): API.Search_Request {
   const searchQuery = parse(opts.query);
   const [index, securityFilters] = scope(opts.scope);
 
@@ -354,19 +354,9 @@ export function searchParams(opts: Options): RequestParams.Search {
       ],
     },
   };
-
-  // return {
-  //   index,
-  //   type: "_doc",
-  //   _source: true,
-  //   size: opts.size != 0 ? opts.size : undefined,
-  //   sort: [`canonical_time: ${opts.sort}`],
-  //   search_after: opts.cursor,
-  //   body: { query },
-  // };
 }
 
-export function searchParamsPaginated(opts: OptionsPaginated): RequestParams.Search {
+export function searchParamsPaginated(opts: OptionsPaginated): API.Search_Request {
   const searchQuery = parse(opts.query);
   const [index, securityFilters] = scope(opts.scope);
 

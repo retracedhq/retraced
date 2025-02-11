@@ -118,16 +118,12 @@ class ElasticsearchSaverTest {
       x.index(
         TypeMoq.It.isValue({
           index: "retraced.proj01.env01.current",
-          type: "_doc",
           body: expectedIndexed,
           id: expectedIndexed.canonical_time.toString() + "-" + expectedIndexed.id,
         })
       )
     )
-      .returns(
-        () =>
-          Promise.resolve({ body: {} }) as TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
-      )
+      .returns(() => Promise.resolve({ body: {} }) as TransportRequestPromise<ApiResponse>)
       .verifiable(TypeMoq.Times.once());
 
     clock
