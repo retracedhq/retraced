@@ -9,7 +9,7 @@
     "@bugsnag/js": "8.2.0",
     "@bugsnag/plugin-express": "8.2.0",
     "@maxmind/geoip2-node": "5.0.0",
-    "@opensearch-project/opensearch": "3.2.0",
+    "@opensearch-project/opensearch": "3.3.0",
     "@retracedhq/retraced": "0.7.18",
     "@root/walk": "1.1.0",
     "@segment/analytics-node": "2.2.1",
