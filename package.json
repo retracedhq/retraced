@@ -14,7 +14,7 @@
     "@root/walk": "1.1.0",
     "@segment/analytics-node": "2.2.1",
     "axios": "1.7.9",
-    "bcryptjs": "2.4.3",
+    "bcryptjs": "3.0.0",
     "chance": "1.1.12",
     "chokidar": "4.0.3",
     "cli-spinner": "0.2.10",
