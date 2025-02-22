@@ -16,7 +16,7 @@ Client libraries are available for [Go](https://github.com/retracedhq/retraced-g
 
 ## Documentation
 
-Please head to [https://boxyhq.com/docs/retraced/overview](https://boxyhq.com/docs/retraced/overview) for detailed documentation on how to get started with Retraced.
+Please head to [https://github.com/retracedhq/docs](https://github.com/retracedhq/docs) for detailed documentation on how to get started with Retraced.
 
 - [Step by step tutorial video](https://www.youtube.com/watch?v=4vBxw4kqdwE)
 
