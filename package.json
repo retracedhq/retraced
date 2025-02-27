@@ -66,7 +66,7 @@
     "@typescript-eslint/eslint-plugin": "8.25.0",
     "@typescript-eslint/parser": "8.25.0",
     "eslint": "9.21.0",
-    "eslint-config-prettier": "10.0.1",
+    "eslint-config-prettier": "10.0.2",
     "eslint-plugin-jsdoc": "50.6.3",
     "eslint-plugin-prefer-arrow": "1.2.3",
     "mocha": "11.1.0",
