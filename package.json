@@ -13,7 +13,7 @@
     "@retracedhq/retraced": "0.7.19",
     "@root/walk": "1.1.0",
     "@segment/analytics-node": "2.2.1",
-    "axios": "1.7.9",
+    "axios": "1.8.1",
     "bcryptjs": "3.0.2",
     "chance": "1.1.12",
     "chokidar": "4.0.3",
