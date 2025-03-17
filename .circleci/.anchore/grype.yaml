@@ -43,5 +43,20 @@ ignore:
   - vulnerability: CVE-2021-3393
     package:
       name: postgresql
+  # https://www.postgresql.org/support/security/CVE-2024-10979/
+  # Incorrect control of environment variables in PostgreSQL PL/Perl allows an unprivileged database user to
+  # change sensitive process environment variables (e.g. PATH). That often suffices to enable arbitrary code execution,
+  # even if the attacker lacks a database server operating system user.
+  - vulnerability: CVE-2024-10979
+    package:
+      name: postgresql
 
-
+  # https://www.postgresql.org/support/security/CVE-2025-1094/
+  # Improper neutralization of quoting syntax in PostgreSQL libpq functions PQescapeLiteral(), PQescapeIdentifier(), PQescapeString(), and PQescapeStringConn()
+  # allows a database input provider to achieve SQL injection in certain usage patterns. Specifically, SQL injection requires the application to use the
+  # function result to construct input to psql, the PostgreSQL interactive terminal. Similarly, improper neutralization of quoting syntax in PostgreSQL
+  # command line utility programs allows a source of command line arguments to achieve SQL injection when client_encoding is BIG5 and server_encoding is
+  # one of EUC_TW or MULE_INTERNAL
+  - vulnerability: CVE-2025-1094
+    package:
+      name: postgresql

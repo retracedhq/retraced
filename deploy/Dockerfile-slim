@@ -53,7 +53,7 @@ RUN make pkg SKIP=${skip_pkg}
 # curl must be included for cron
 FROM debian:bookworm-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     \
