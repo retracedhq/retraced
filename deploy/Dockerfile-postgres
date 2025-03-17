@@ -3,8 +3,6 @@ FROM postgres:10.23-alpine
 RUN apk add --update --no-cache \
     ca-certificates \
   && apk add --upgrade --no-cache \
-    \
-    \
     apk-tools \
     krb5-libs \
     libcom_err \
@@ -13,6 +11,7 @@ RUN apk add --update --no-cache \
     ncurses-terminfo-base \
     openssl \
     busybox \
-    ssl_client
+    ssl_client \
+  && apk upgrade --no-cache
 
 VOLUME /var/run/postgresql

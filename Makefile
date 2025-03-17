@@ -97,7 +97,7 @@ scan-postgres: IMAGE=registry.replicated.com/library/retraced-postgres:local
 scan-postgres: DOCKERFILE=./deploy/Dockerfile-postgres
 scan-postgres: grype
 	docker build --pull -t ${IMAGE} -f ${DOCKERFILE} .
-	./grype --fail-on=medium --only-fixed -vv ${IMAGE}
+	./grype --fail-on=medium --only-fixed --config=.circleci/.anchore/grype.yaml  -vv ${IMAGE}
 
 scan-api: IMAGE=registry.replicated.com/library/retraced:local
 scan-api: DOCKERFILE=./deploy/Dockerfile-slim
