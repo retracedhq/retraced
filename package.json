@@ -22,7 +22,7 @@
     "csv-string": "4.1.1",
     "csv-stringify": "6.5.2",
     "dotenv": "16.5.0",
-    "express": "4.21.2",
+    "express": "5.1.0",
     "graphql": "16.10.0",
     "handlebars": "4.7.8",
     "joi": "17.13.3",
@@ -54,7 +54,7 @@
   "devDependencies": {
     "@testdeck/mocha": "0.3.3",
     "@types/bcryptjs": "2.4.6",
-    "@types/express": "5.0.0",
+    "@types/express": "5.0.1",
     "@types/lodash": "4.17.16",
     "@types/mocha": "10.0.10",
     "@types/node": "22.15.2",
