@@ -69,7 +69,7 @@
     "eslint-config-prettier": "10.1.2",
     "eslint-plugin-jsdoc": "50.6.11",
     "eslint-plugin-prefer-arrow": "1.2.3",
-    "mocha": "11.1.0",
+    "mocha": "11.5.0",
     "nyc": "17.1.0",
     "prettier": "3.5.3",
     "release-it": "19.0.1",
