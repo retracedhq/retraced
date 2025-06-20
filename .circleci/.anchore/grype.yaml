@@ -60,3 +60,18 @@ ignore:
   - vulnerability: CVE-2025-1094
     package:
       name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2025-4207/
+  # A buffer over-read in PostgreSQL GB18030 encoding validation allows a database input provider to achieve temporary denial of service on platforms
+  # where a 1-byte over-read can elicit process termination. This affects the database server and also libpq.
+  - vulnerability: CVE-2025-4207
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2024-10977/
+  # Client use of server error message in PostgreSQL allows a server not trusted under current SSL or GSS settings to furnish arbitrary non-NUL bytes to the
+  # libpq application. For example, a man-in-the-middle attacker could send a long error message that a human or screen-scraper user of psql mistakes for valid
+  # query results. This is probably not a concern for clients where the user interface unambiguously indicates the boundary between one error message and other text.
+  - vulnerability: CVE-2024-10977
+    package:
+      name: postgresql
