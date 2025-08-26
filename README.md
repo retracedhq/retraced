@@ -6,8 +6,6 @@
     <a href="https://github.com/retracedhq/retraced/stargazers"><img src="https://img.shields.io/github/stars/retracedhq/retraced" alt="Github stargazers"></a>
     <a href="https://github.com/retracedhq/retraced/issues"><img src="https://img.shields.io/github/issues/retracedhq/retraced" alt="Github issues"></a>
     <a href="https://github.com/retracedhq/retraced/blob/main/LICENSE"><img src="https://img.shields.io/github/license/retracedhq/retraced" alt="license"></a>
-    <a href="https://twitter.com/boxyhq"><img src="https://img.shields.io/twitter/follow/boxyhq?style=social" alt="Twitter"></a>
-    <a href="https://discord.gg/uyb7pYt4Pa"><img src="https://img.shields.io/discord/877585485235630130" alt="Discord"></a>
 </p>
 
 Retraced is the easiest way to integrate a compliant audit log into your application.
