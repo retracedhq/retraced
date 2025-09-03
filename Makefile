@@ -102,7 +102,7 @@ scan-postgres: grype
 scan-api: IMAGE=registry.replicated.com/library/retraced:local
 scan-api: DOCKERFILE=./deploy/Dockerfile-slim
 scan-api: grype
-	docker build --pull -t ${IMAGE} -f ${DOCKERFILE} .
+	docker build --pull -t ${IMAGE} -f ${DOCKERFILE} --build-arg="snyk_token=${SNYK_TOKEN}" .
 	./grype --fail-on=medium --only-fixed --config=.circleci/.anchore/grype.yaml -vv ${IMAGE}
 
 scan: scan-nsq scan-postgres scan-api
