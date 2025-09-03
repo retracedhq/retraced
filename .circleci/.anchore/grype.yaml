@@ -82,7 +82,7 @@ ignore:
   # generate a plain-format dump. This is similar to MySQL CVE-2024-21096.
   - vulnerability: CVE-2025-8714
     package:
-      name: postgres
+      name: postgresql
 
   # https://www.postgresql.org/support/security/CVE-2025-8713/
   # PostgreSQL optimizer statistics allow a user to read sampled data within a view that the user cannot access. Separately, statistics allow a user to read sampled
@@ -92,4 +92,4 @@ ignore:
   # CVE-2019-10130 intended to close this class of vulnerability, but this gap remained.
   - vulnerability: CVE-2025-8713
     package:
-      name: postgres
+      name: postgresql
