@@ -12,6 +12,8 @@ prebuild:
 	mkdir -p build
 
 deps:
+	echo "PATH: $(PATH)"
+	echo "SHELL: $(SHELL)"
 	yarn install --force
 
 lint:
