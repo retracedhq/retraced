@@ -95,7 +95,7 @@ function parseLocationData(filename) {
     const result = {};
 
     const locReader = readline.createInterface({
-      input: fs.createReadStream(filename),
+      input: fs.createReadStream(filename) as any,
     });
     let first = true;
     locReader.on("line", (line) => {
@@ -139,7 +139,7 @@ function translateIPBlockData(filename, locations) {
     });
 
     const blockReader = readline.createInterface({
-      input: readStream,
+      input: readStream as any,
     });
 
     const insertBatchSize = 10000;
@@ -197,7 +197,7 @@ function translateIPBlockData(filename, locations) {
       const ultraString = `insert into geoip (network, lat, lon, country, subdiv1, subdiv2, timezone) values ${queuedValues.join(",")};`;
       pgPool.query(ultraString)
         .then(() => {
-          resolve();
+          resolve(undefined);
         })
         .catch((err) => {
           reject(err);

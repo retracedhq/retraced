@@ -29,7 +29,7 @@ if (process.env.AUTH0_CLIENT_DOMAIN && process.env.AUTH0_CLIENT_ID) {
 }
 
 // This is to appease the Auth0 lib, which expects to be running in a browser. -_-
-global["window"] = {
+(global as any)["window"] = {
   localStorage: new LocalStorage("./auth0"),
 };
 

@@ -31,7 +31,7 @@ export interface Querier {
   query(query: string, args?: any[]): Promise<pg.QueryResult>;
 }
 
-const reportInterval = process.env.STATSD_INTERVAL_MILLIS || 30000;
+const reportInterval = Number(process.env.STATSD_INTERVAL_MILLIS) || 30000;
 
 function updatePoolGauges() {
   // pg 7.0 + uses pg-pool 2.0 +, which has pool.waitingCount, etc.
@@ -44,4 +44,4 @@ function updatePoolGauges() {
   gauge("PgPool.clients.active.count").set(pool.totalCount - pool.idleCount);
 }
 
-setInterval(updatePoolGauges, reportInterval);
+setInterval(updatePoolGauges as any, reportInterval);

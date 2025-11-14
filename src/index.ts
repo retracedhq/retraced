@@ -76,7 +76,7 @@ function buildRoutes() {
     logger.debug(`GET    '${spec.path}/swagger.json'`);
     logger.debug(`GET    '${spec.path}/swagger'`);
     router.get(`${spec.path}/swagger.json`, (req, res) => {
-      res.setHeader("ContentType", "application/json");
+      res.set("Content-Type", "application/json");
       res.send(spec.swagger);
     });
     router.use(`${spec.path}/swagger`, swaggerUI.serve, swaggerUI.setup(spec.swagger));
@@ -101,7 +101,7 @@ function buildRoutes() {
     app.get("/metrics", (req, res) => {
       res.set("Content-Type", Prometheus.register.contentType);
       const mtx = Prometheus.register.metrics();
-      res.end(mtx);
+      res.send(mtx);
     });
   }
   app.use(basePath, router);
@@ -170,7 +170,7 @@ function serveHTTPS(sslCertPath: string, sslKeyPath: string) {
     ciphers: sslConfig.ciphers,
     honorCipherOrder: true,
     secureOptions: sslConfig.minimumTLSVersion,
-  }, app).listen(3000, "0.0.0.0", () => {
+  }, app as any).listen(3000, "0.0.0.0", () => {
     logger.info("Retraced API listening on port 3000...");
   });
 

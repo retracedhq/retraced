@@ -199,7 +199,7 @@ export class EventCreater {
       const success = _.once(() => {
         timeouts.forEach(clearTimeout);
 
-        resolve();
+        resolve(undefined);
       });
       let failures = 0;
       const fail = () => {

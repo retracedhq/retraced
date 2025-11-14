@@ -39,10 +39,7 @@ ADD . /src
 
 RUN make build
 
-# this one is a little janky, mostly for local dev
-ARG skip_pkg
-
-RUN make pkg SKIP=${skip_pkg}
+RUN make pkg
 
 
 # # #
@@ -72,9 +69,10 @@ copy --from=node /src/migrations/es /src/migrations/es
 COPY --from=node /src/api /src/api
 COPY --from=node /src/retracedctl /src/bin/retracedctl
 COPY --from=node /src/processor /src/processor
-COPY --from=node /src/node_modules/snappy/build/Release/binding.node /src/node_modules/snappy/build/Release/binding.node
-COPY --from=node /src/node_modules/sse4_crc32/build/Release/crc32c.node /src/node_modules/sse4_crc32/build/Release/crc32c.node
-COPY --from=node /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node /src/node_modules/bcrypt/lib/binding/bcrypt_lib.node
+# Optional native dependencies - snappy and sse4_crc32 fail to build with Node 20 but are not used
+# COPY --from=node /src/node_modules/snappy/build/Release/binding.node /src/node_modules/snappy/build/Release/binding.node
+# COPY --from=node /src/node_modules/sse4_crc32/build/Release/crc32c.node /src/node_modules/sse4_crc32/build/Release/crc32c.node
+COPY --from=node /src/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node /src/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node
 COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercronic-linux-amd64
 COPY --from=cron /usr/local/bin/replicated-auditlog-cron /usr/local/bin/replicated-auditlog-cron
 COPY --from=cron /crontab /crontab
