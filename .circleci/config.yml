@@ -27,7 +27,6 @@ jobs:
           - v1-dependencies-node20-{{ checksum "package.json" }}
           - v1-dependencies-node20-
       - run: |
-          npm install -g yarn
           yarn --version
           make deps swagger cover report-coverage
       - store_test_results:
