@@ -20,7 +20,6 @@ jobs:
     environment:
       MOCHA_FILE: results/my-test-output.xml
       JUNIT_REPORT_PATH: results/my-test-output.xml
-      PATH: "${HOME}/.yarn/bin:${PATH}"
     steps:
       - checkout
       - restore_cache:
