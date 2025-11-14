@@ -31,6 +31,7 @@ jobs:
           # Use a non-login bash inside make so CircleCI's BASH_ENV-based PATH (which includes yarn)
           # is honored. The Makefile sets SHELL to a login shell (/bin/bash -lo pipefail), which
           # ignores BASH_ENV and therefore loses yarn from PATH in this image.
+          echo "PATH: $(PATH)"
           make SHELL=/bin/bash deps swagger cover report-coverage
       - store_test_results:
           path: results
