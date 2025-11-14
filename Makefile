@@ -1,7 +1,6 @@
 .PHONY: clean prebuild deps lint swagger routes build cover test report-coverage pkg build run run-processor run-debug
 SKIP :=
 REPO := retracedhq/api
-PATH := $(shell pwd)
 SHELL := /bin/bash -lo pipefail
 
 clean:
@@ -12,8 +11,6 @@ prebuild:
 	mkdir -p build
 
 deps:
-	echo "PATH: $(PATH)"
-	echo "SHELL: $(SHELL)"
 	yarn install --force
 
 lint:
