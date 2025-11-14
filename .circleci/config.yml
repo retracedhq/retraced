@@ -22,6 +22,7 @@ jobs:
       JUNIT_REPORT_PATH: results/my-test-output.xml
     steps:
       - checkout
+      - run: corepack enable
       - restore_cache:
           keys:
           - v1-dependencies-node20-{{ checksum "package.json" }}
@@ -131,6 +132,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run: corepack enable
       - setup_remote_docker
       - restore_cache:
           keys:
