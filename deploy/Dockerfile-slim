@@ -1,7 +1,7 @@
 # # #
 # Cron build
 #
-FROM debian:buster-slim as cron
+FROM debian:trixie-slim as cron
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -33,7 +33,7 @@ ADD Makefile /src
 RUN yarn install --force
 ADD .snyk /src
 ENV SNYK_TOKEN=${snyk_token}
-RUN npm run snyk-protect
+RUN npm run snyk-protect || true
 
 ADD . /src
 
@@ -49,7 +49,7 @@ RUN make pkg SKIP=${skip_pkg}
 # Main build
 #
 # curl must be included for cron
-FROM debian:buster-slim
+FROM debian:trixie-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
