@@ -27,14 +27,8 @@ jobs:
           - v1-dependencies-node20-{{ checksum "package.json" }}
           - v1-dependencies-node20-
       - run: |
-          if ! command -v yarn &> /dev/null; then
-            npm install -g yarn
-          fi
-          yarn --version || (npm install -g yarn && export PATH="$(npm config get prefix)/bin:${PATH}" && yarn --version)
-      - run: |
-          if ! command -v yarn &> /dev/null; then
-            export PATH="$(npm config get prefix)/bin:${PATH}"
-          fi
+          npm install -g yarn
+          yarn --version
           make deps swagger cover report-coverage
       - store_test_results:
           path: results
