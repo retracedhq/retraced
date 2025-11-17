@@ -52,7 +52,7 @@ import { parse, validate } from "graphql";
         }
       }`;
 
-        var documentAST = parse(query);
+        const documentAST = parse(query);
         const errors = validate(schema, documentAST, customRules);
         expect(errors).to.be.empty;
     }
@@ -62,8 +62,8 @@ import { parse, validate } from "graphql";
         query Search($query: String!, $last: Int, $before: String) {
           search(query: $query, last: $last, before: $before) { totalCount totalCount }
         }`;
-        var documentAST = parse(query);
-        const errors = validate(schema, documentAST);
+        const documentAST = parse(query);
+        const errors = validate(schema, documentAST, customRules);
         expect(errors).to.not.be.empty;
         expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
     }
@@ -73,10 +73,9 @@ import { parse, validate } from "graphql";
         query Search($query: String!, $last: Int, $before: String) {
           search(query: $query, last: $last, before: $before) { a1:totalCount a2:totalCount }
         }`;
-        var documentAST = parse(query);
-        const errors = validate(schema, documentAST);
+        const documentAST = parse(query);
+        const errors = validate(schema, documentAST, customRules);
         expect(errors).to.not.be.empty;
         expect(String(errors[0])).to.have.string("Error: Duplicate field EventsConnection:totalCount.");
     }
 }
-
