@@ -33,13 +33,16 @@ ADD Makefile /src
 RUN yarn install --force
 ADD .snyk /src
 ENV SNYK_TOKEN=${snyk_token}
-RUN npm run snyk-protect || true
+RUN npm run snyk-protect
 
 ADD . /src
 
 RUN make build
 
-RUN make pkg
+# this one is a little janky, mostly for local dev
+ARG skip_pkg
+
+RUN make pkg SKIP=${skip_pkg}
 
 
 # # #
