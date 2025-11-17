@@ -33,7 +33,7 @@ export default async function getEnvironmentUser(opts: Opts): Promise<null | Rec
   const result = await pgPool.query(q, v);
   if (result.rowCount === 1) {
     return result.rows[0];
-  } else if (result.rowCount > 1) {
+  } else if ((result.rowCount ?? 0) > 1) {
     throw new Error(`Expected row count of 1, got ${result.rowCount}`);
   }
   return null;

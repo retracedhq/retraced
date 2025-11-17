@@ -26,7 +26,7 @@ export default async function (opts) {
     const q = `select ${fields} from group_detail where group_id in (${tokenList})`;
     const v = opts.group_ids;
     const result = await pg.query(q, v);
-    if (result.rowCount > 0) {
+    if ((result.rowCount ?? 0) > 0) {
       return result.rows;
     }
     return [];

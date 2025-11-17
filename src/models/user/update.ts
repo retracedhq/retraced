@@ -35,7 +35,7 @@ export default async function(opts: Opts): Promise<any> {
 
   const result = await pgPool.query(q, v);
 
-  if (result.rowCount > 0) {
+  if ((result.rowCount ?? 0) > 0) {
     return result.rows[0];
   }
 

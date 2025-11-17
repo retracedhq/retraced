@@ -17,12 +17,17 @@ export default function getLocationByIP(ipAddress) {
         return;
       }
 
+      if (!pg) {
+        reject(new Error("Failed to get postgres client"));
+        return;
+      }
+
       const q = "select * from geoip where network >> $1";
       pg.query(q, [ipAddress], (qerr, result) => {
         done(true);
         if (qerr) {
           reject(qerr);
-        } else if (result.rowCount > 0) {
+        } else if ((result.rowCount ?? 0) > 0) {
           resolve(result.rows[0]);
         } else {
           resolve(undefined);

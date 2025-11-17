@@ -13,13 +13,18 @@ export default function getProject(projectId): Promise<any> {
         return;
       }
 
+      if (!pg) {
+        reject(new Error("Failed to get postgres client"));
+        return;
+      }
+
       const q = "select * from project where id = $1";
       const v = [projectId];
       pg.query(q, v, (qerr, result) => {
         done();
         if (qerr) {
           reject(qerr);
-        } else if (result.rowCount > 0) {
+        } else if ((result.rowCount ?? 0) > 0) {
           resolve(result.rows[0]);
         } else {
           resolve(undefined);

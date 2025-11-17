@@ -24,7 +24,7 @@ export default async function listApiTokens(opts: Options): Promise<ApiToken[]> 
             project_id = $1`;
     const v = [opts.projectId];
     const result = await pgPool.query(q, v);
-    const rows = result.rowCount > 0 ? result.rows : [];
+    const rows = (result.rowCount ?? 0) > 0 ? result.rows : [];
 
     return rows.map(apiTokenFromRow);
 }

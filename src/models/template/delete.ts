@@ -24,9 +24,9 @@ export default async function(opts: Options): Promise<boolean> {
   ];
 
   const result = await pgPool.query(q, v);
-  logger.info(`deleted ${result.rowCount} templates`);
+  logger.info(`deleted ${result.rowCount ?? 0} templates`);
 
-  return !!result.rowCount;
+  return !!(result.rowCount ?? 0);
 }
 
 /**
@@ -40,7 +40,7 @@ export async function byName(opts: ByNameOptions): Promise<number> {
   ];
 
   const result = await pgPool.query(q, v);
-  logger.info(`deleted ${result.rowCount} templates`);
+  logger.info(`deleted ${result.rowCount ?? 0} templates`);
 
-  return result.rowCount;
+  return result.rowCount ?? 0;
 }

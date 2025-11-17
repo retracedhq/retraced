@@ -45,8 +45,8 @@ export default async function(opts: Options): Promise<Result> {
     const pgResult = await pg.query(q, v);
 
     const result: Result = {
-      totalHits: pgResult.rowCount,
-      count: pgResult.rowCount,
+      totalHits: pgResult.rowCount ?? 0,
+      count: pgResult.rowCount ?? 0,
       groups: pgResult.rows,
     };
 

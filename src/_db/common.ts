@@ -24,13 +24,18 @@ const common = {
           return;
         }
 
+        if (!pg) {
+          reject(new Error("Failed to get postgres client"));
+          return;
+        }
+
         const q = "select * from actor where id = $1";
         const v = [id];
         pg.query(q, v, (qerr, result) => {
           done();
           if (qerr) {
             reject(qerr);
-          } else if (result.rowCount > 0) {
+          } else if ((result.rowCount ?? 0) > 0) {
             const actor = result.rows[0];
             if (useCache) {
               actorCache[id] = actor;
@@ -58,13 +63,18 @@ const common = {
           return;
         }
 
+        if (!pg) {
+          reject(new Error("Failed to get postgres client"));
+          return;
+        }
+
         const q = "select * from target where id = $1";
         const v = [id];
         pg.query(q, v, (qerr, result) => {
           done();
           if (qerr) {
             reject(qerr);
-          } else if (result.rowCount > 0) {
+          } else if ((result.rowCount ?? 0) > 0) {
             const object = result.rows[0];
             if (useCache) {
               targetCache[id] = object;
@@ -92,13 +102,18 @@ const common = {
           return;
         }
 
+        if (!pg) {
+          reject(new Error("Failed to get postgres client"));
+          return;
+        }
+
         const q = "select * from group_detail where group_id = $1";
         const v = [id];
         pg.query(q, v, (qerr, result) => {
           done();
           if (qerr) {
             reject(qerr);
-          } else if (result.rowCount > 0) {
+          } else if ((result.rowCount ?? 0) > 0) {
             const group = result.rows[0];
             if (useCache) {
               groupCache[id] = group;

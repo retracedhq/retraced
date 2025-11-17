@@ -22,6 +22,11 @@ export default function createProject(opts) {
         return;
       }
 
+      if (!pg) {
+        reject(new Error("Failed to get postgres client"));
+        return;
+      }
+
       const project = {
         id: opts.id || uuid.v4().replace(/-/g, ""),
         name: opts.name,

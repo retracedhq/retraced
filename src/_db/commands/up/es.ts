@@ -50,6 +50,12 @@ export const handler = (argv) => {
       console.log(chalk.red(util.inspect(err)));
       process.exit(1);
     }
+
+    if (!pg) {
+      console.log(chalk.red("Failed to get postgres client"));
+      process.exit(1);
+    }
+
     const walker = walk.walk(getSchemaPath(), {
       followLinks: false,
     });
@@ -72,7 +78,7 @@ export const handler = (argv) => {
           return pg.query("select * from es_migration_meta where id = $1", [timestamp]);
         })
         .then((result) => {
-          if (result.rowCount > 0) {
+          if ((result.rowCount ?? 0) > 0) {
             console.log(chalk.dim(`${timestamp} ${name}`));
             return Promise.resolve(false);
           }

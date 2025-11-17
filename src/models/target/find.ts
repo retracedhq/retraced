@@ -23,7 +23,7 @@ export default async function(opts: Options): Promise<any> {
 
     const result = await pg.query(q, v);
 
-    if (result.rowCount > 0) {
+    if ((result.rowCount ?? 0) > 0) {
       const targets: any = [];
       for (const row of result.rows) {
         targets.push(Object.assign({}, row, {

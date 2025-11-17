@@ -20,7 +20,7 @@ export default async function(opts: Options) {
     const result = await pg.query(q, [opts.activeSearchId]);
     if (result.rowCount === 1) {
       return result.rows[0];
-    } else if (result.rowCount > 1) {
+    } else if ((result.rowCount ?? 0) > 1) {
       throw new Error(`Expected row count of 1, got ${result.rowCount}`);
     }
     return null;

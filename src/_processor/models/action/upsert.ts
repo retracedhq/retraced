@@ -48,7 +48,7 @@ export default async function(opts, pg: PoolClient) {
   const qq = `select ${fields} from action where environment_id = $1 and action = $2`;
   const vv = [opts.environmentId, opts.action];
   const result = await pg.query(qq, vv);
-  if (result.rowCount > 0) {
+  if ((result.rowCount ?? 0) > 0) {
     return result.rows[0];
   }
 

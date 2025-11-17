@@ -21,7 +21,7 @@ export default async function getApiToken(
 
   const v = [token];
   const result = await querier.query(getApiTokenQuery, v);
-  if (result.rowCount > 0) {
+  if ((result.rowCount ?? 0) > 0) {
     return apiTokenFromRow(result.rows[0]);
   }
 

@@ -13,7 +13,7 @@ export interface Options {
 export default async function listEnvironments(opts: Options) {
     const q = "select * from environment where project_id = $1";
     const result = await pgPool.query(q, [opts.projectId]);
-    const rows = result.rowCount > 0 ? result.rows : [];
+    const rows = (result.rowCount ?? 0) > 0 ? result.rows : [];
 
     return rows;
 }

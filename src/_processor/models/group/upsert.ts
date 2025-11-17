@@ -35,7 +35,7 @@ export default async function(opts, pg: PoolClient) {
   const qq = `select ${fields} from group_detail where environment_id = $1 and group_id = $2`;
   const vv = [opts.environmentId, opts.group.id];
   const result = await pg.query(qq, vv);
-  if (result.rowCount > 0) {
+  if ((result.rowCount ?? 0) > 0) {
     return result.rows[0];
   }
 
