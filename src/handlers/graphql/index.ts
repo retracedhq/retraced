@@ -50,18 +50,9 @@ export interface GraphQLErrorResponse {
   path?: string[];
 }
 
-export interface GraphQLDataResponse {
-  [key: string]: any;
-}
-
-export interface GraphQLExtensions {
-  [key: string]: any;
-}
-
 export interface GraphQLResp {
-  data?: GraphQLDataResponse | null;
+  data?: GraphQLSearch | null;
   errors?: GraphQLErrorResponse[];
-  extensions?: GraphQLExtensions;
 }
 
 export interface GraphQLRequest {
