@@ -28,13 +28,13 @@ describe("Publisher Search", function() {
         beforeEach(retracedUp(Env));
 
         describe(`And 10 events have been reported with actor ${uniqueActorId}`, function() {
-            const events = _.map(_.range(10), () => ({
+            const events = _.map(_.range(10), (i) => ({
                 action: "integration.test.api",
                 group: {
                     id: "rtrcdqa1234",
                     name: "RetracedQA",
                 },
-                created: currentTime,
+                created: new Date(currentTime.getTime() + (i * 1000)),
                 crud: "c",
                 sourceIp: "192.168.0.1",
                 actor: {
