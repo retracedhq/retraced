@@ -1,7 +1,6 @@
 import {
   RawEventNode,
 } from "retraced";
-import { GraphQLError } from "graphql";
 
 export interface EventEdge {
   node?: RawEventNode;
@@ -40,10 +39,29 @@ export interface GraphQLSearch {
   search: EventsConn;
 }
 
+export interface GraphQLErrorLocation {
+  line: number;
+  column: number;
+}
+
+export interface GraphQLErrorResponse {
+  message: string;
+  locations?: GraphQLErrorLocation[];
+  path?: string[];
+}
+
+export interface GraphQLDataResponse {
+  [key: string]: any;
+}
+
+export interface GraphQLExtensions {
+  [key: string]: any;
+}
+
 export interface GraphQLResp {
-  data?: any;
-  errors?: readonly GraphQLError[];
-  extensions?: any;
+  data?: GraphQLDataResponse | null;
+  errors?: GraphQLErrorResponse[];
+  extensions?: GraphQLExtensions;
 }
 
 export interface GraphQLRequest {

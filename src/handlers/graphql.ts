@@ -35,12 +35,12 @@ export async function graphQL(
     };
 
     // http://graphql.org/graphql-js/graphql/#graphql
-    return await graphql(
+    return graphql(
         schema,
         graphQLReq.query,
         null,
         context,
         graphQLReq.variables,
         graphQLReq.operationName,
-    );
+    ) as Promise<GraphQLResp>;
 }

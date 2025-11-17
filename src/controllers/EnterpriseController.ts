@@ -92,7 +92,7 @@ export class EnterpriseAPI extends Controller {
     };
 
     // http://graphql.org/graphql-js/graphql/#graphql
-    const result: GraphQLResp = await graphql(
+    const result = await graphql(
       schema,
       graphQLRequest.query,
       null,
@@ -122,7 +122,7 @@ export class EnterpriseAPI extends Controller {
 
     this.setStatus(result.errors ? 400 : 200);
 
-    return result;
+    return result as GraphQLResp;
   }
 
   /**
