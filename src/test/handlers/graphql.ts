@@ -1,11 +1,8 @@
 import { suite, test } from "mocha-typescript";
 import { expect } from "chai";
-import { NoDuplicateFields } from "../../handlers/graphql/handler";
+import { customRules } from "../../handlers/graphql/handler";
 import schema from "../../handlers/graphql/schema";
 import { parse, validate } from "graphql";
-import { specifiedRules } from "graphql/validation";
-
-specifiedRules.push(NoDuplicateFields);
 
 @suite class GraphqlTest {
     @test public async "Graphql#validateValidFullSearch()"() {
@@ -56,7 +53,7 @@ specifiedRules.push(NoDuplicateFields);
       }`;
 
         var documentAST = parse(query);
-        const errors = validate(schema, documentAST);
+        const errors = validate(schema, documentAST, customRules);
         expect(errors).to.be.empty;
     }
 

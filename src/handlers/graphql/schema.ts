@@ -173,7 +173,7 @@ const eventType = new GraphQLObjectType({
         fields: {
           markdown: {
             type: GraphQLString,
-            dsecription: "The Markdown formatted display text for this event.",
+            description: "The Markdown formatted display text for this event.",
           },
         },
       }),

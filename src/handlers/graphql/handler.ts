@@ -50,5 +50,5 @@ export function NoDuplicateFields(context) {
     };
 }
 
-specifiedRules.push(NoDuplicateFields);
+export const customRules = [...specifiedRules, NoDuplicateFields];
 
