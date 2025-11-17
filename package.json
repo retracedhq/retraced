@@ -138,7 +138,10 @@
       "migrations/pg/**/*"
     ],
     "assets": [
-      "node_modules/@elastic/elasticsearch/api/**/*"
+      "node_modules/@elastic/elasticsearch/api/**/*",
+      "node_modules/pg/**/*",
+      "node_modules/pg-cursor/**/*",
+      "node_modules/pg-format/**/*"
     ]
   },
   "bin": {
