@@ -1,7 +1,7 @@
 # # #
 # Cron build
 #
-FROM debian:bookworm-slim as cron
+FROM debian:trixie-slim as cron
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -51,7 +51,7 @@ RUN make pkg SKIP=${skip_pkg}
 # Main build
 #
 # curl must be included for cron
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 RUN apt-get update -y && apt-get upgrade -y && apt-get install -y --no-install-recommends \
     ca-certificates \

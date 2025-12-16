@@ -1,6 +1,6 @@
 FROM nsqio/nsq:v1.0.0-compat
 
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
     \
