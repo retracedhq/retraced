@@ -93,3 +93,18 @@ ignore:
   - vulnerability: CVE-2025-8713
     package:
       name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2025-12818/
+  # Integer wraparound in PostgreSQL libpq client library functions allows an application input provider or network peer to
+  # trigger memory allocation errors, causing libpq to allocate insufficient memory and leading to out-of-bounds writes and
+  # application crashes.
+  - vulnerability: CVE-2025-12818
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2025-12817/
+  # Missing authorization check in CREATE STATISTICS command allows a table owner to create statistics in any schema without
+  # proper CREATE privileges, potentially causing denial of service for legitimate users.
+  - vulnerability: CVE-2025-12817
+    package:
+      name: postgresql
