@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import * as moment from "moment";
+import { isIP } from "net";
 import * as pg from "pg";
 import * as pgFormat from "pg-format";
 import * as util from "util";
@@ -14,9 +15,6 @@ import { NSQClient } from "../persistence/nsq";
 import getPgPool, { Querier } from "../persistence/pg";
 import Authenticator from "../security/Authenticator";
 import { logger } from "../logger";
-
-const IPV4_REGEX = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/;
-const IPV6_REGEX = /^((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}$/;
 
 const requiredFields = [
   "action",
@@ -510,7 +508,7 @@ export class EventCreater {
       });
     }
 
-    if (maybeEvent.source_ip && !IPV4_REGEX.test(maybeEvent.source_ip) && !IPV6_REGEX.test(maybeEvent.source_ip)) {
+    if (maybeEvent.source_ip && isIP(maybeEvent.source_ip) === 0) {
       violations.push({
         message: `Unable to parse 'source_ip' field as valid IPV4 or IPV6 address: ${maybeEvent["source_ip"]}`,
         field: "source_ip",

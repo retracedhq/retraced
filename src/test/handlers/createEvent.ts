@@ -292,6 +292,60 @@ import { Connection } from "./Connection";
         expect(created.hash).to.equal("fake-hash");
     }
 
+    @test public async "EventCreater#createEvent() ipv6 shortened"() {
+        const pool = TypeMoq.Mock.ofType(pg.Pool);
+        const conn = TypeMoq.Mock.ofType(Connection);
+        const nsq = TypeMoq.Mock.ofType(NSQClient);
+        const authenticator = TypeMoq.Mock.ofType(Authenticator);
+        const fakeHasher = (e) => "fake-hash";
+        const fakeUUID = () => "kfbr392";
+
+        const body: CreateEventRequest = {
+            action: "largeTazoTea.purchase",
+            crud: "c",
+            actor: {
+                id: "vicki@vickstelmo.music",
+            },
+            source_ip: "2600:1900:0:2107::",
+        };
+
+        authenticator.setup((x) => x.getApiTokenOr401("token=some-token", "a-project"))
+            .returns(() => Promise.resolve({
+                token: "some-token",
+                created: moment(),
+                name: "A Token",
+                disabled: false,
+                projectId: "a-project",
+                environmentId: "an-environment",
+            }));
+
+        conn.setup((x) => x.release()).verifiable(TypeMoq.Times.once());
+        conn.setup((x) => x.query(EventCreater.insertIntoIngestTask, TypeMoq.It.isAny())) // Still need to validate args
+            .verifiable(TypeMoq.Times.once());
+        pool.setup((x) => x.connect()).returns(() => Promise.resolve(conn.object) as Promise<any> ).verifiable(TypeMoq.Times.once());
+
+        // set up nsq
+        const jobBody = JSON.stringify({ taskId: "kfbr392" });
+        nsq
+            .setup((x) => x.produce("raw_events", jobBody))
+            .returns((args) => Promise.resolve());
+
+        const creater = new EventCreater(
+            pool.object,
+            nsq.object,
+            fakeHasher,
+            fakeUUID,
+            authenticator.object,
+            50,
+            1000,
+        );
+
+        const created: CreateEventResponse = await creater.createEvent("token=some-token", "a-project", body);
+
+        expect(created.id).to.equal("kfbr392");
+        expect(created.hash).to.equal("fake-hash");
+    }
+
     @test public async "EventCreater#createEventsBulk()"() {
         const pool = TypeMoq.Mock.ofType(pg.Pool);
         const conn = TypeMoq.Mock.ofType(Connection);
