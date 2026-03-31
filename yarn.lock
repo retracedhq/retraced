@@ -388,10 +388,10 @@
     "@types/rx" "*"
     "@types/through" "*"
 
-"@types/lodash@^4.14.54":
-  version "4.17.24"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.24.tgz#4ae334fc62c0e915ca8ed8e35dcc6d4eeb29215f"
-  integrity sha512-gIW7lQLZbue7lRSWEFql49QJJWThrTFFeIMJdp3eH4tKoxm1OvEPg02rm4wCCSHS0cL3/Fizimb35b7k8atwsQ==
+"@types/lodash@4.14.60":
+  version "4.14.60"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.60.tgz#8ed9d4ef4d11c7e073f0040e5cd7a665d1d270b4"
+  integrity sha512-SZrIxL4lyCXUP0Ofm9wGbKd+o4O7hDuyrl7zhXIzSqLs8sQCpHwdtb33sUvT0j0UiHompqMyxXix5GxmndY/fA==
 
 "@types/mime@^1":
   version "1.3.5"
