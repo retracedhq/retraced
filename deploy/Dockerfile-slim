@@ -24,7 +24,7 @@ COPY deploy/crontab /crontab
 # # #
 # Node build
 #
-FROM node:8 as node
+FROM node:22 as node
 
 ARG snyk_token
 
