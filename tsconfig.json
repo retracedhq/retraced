@@ -10,7 +10,6 @@
         "strictNullChecks": true,
         "skipLibCheck": true,
         "allowJs": true,
-        "resolveJsonModule": true,
         "outDir": "build",
         "pretty": true
     },
