@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import * as _ from "underscore";
+import * as _ from "lodash";
 import { instrument } from "../../metrics";
 import * as Elasticsearch from "elasticsearch";
 

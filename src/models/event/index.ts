@@ -112,7 +112,7 @@ function toArray(x: string | string[]): string[] {
 
 export function parseQuery(query: string): ParsedQuery {
     const options = { keywords: structuredQueryKeywords };
-    const intermediate: string | SQP = searchQueryParser.parse(query, options);
+    const intermediate = searchQueryParser.parse(query, options) as string | SQP;
 
     if (_.isString(intermediate)) {
         return {

@@ -61,7 +61,7 @@ describe("models.environment.daily_report", () => {
     fixProject(alpha);
     fixProject(beta);
 
-    const offset = -moment.tz.zone("America/Los_Angeles").parse(Date.now()) / 60;
+    const offset = -moment.tz.zone("America/Los_Angeles")!.parse(Date.now()) / 60;
     describe(`Search for offset ${offset}`, () => {
       it(`
         Should return a record for Alpha.Prod with recipients Bob and Ann.

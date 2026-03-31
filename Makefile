@@ -18,7 +18,7 @@ lint:
 
 
 swagger:
-	`yarn bin`/tsoa swagger
+	`yarn bin`/tsoa spec
 
 routes:
 	`yarn bin`/tsoa routes

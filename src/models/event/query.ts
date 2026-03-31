@@ -98,7 +98,7 @@ export function parse(query: string): any {
       "location",
     ],
   };
-  const keywords = searchQueryParser.parse(query, options);
+  const keywords = searchQueryParser.parse(query, options) as searchQueryParser.SearchParserResult;
   const q: any = {
     bool: {
       filter: [],
