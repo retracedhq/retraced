@@ -47,7 +47,7 @@
     "node-statsd-client": "^1.0.3",
     "nodemailer": "^4.6.7",
     "nodemailer-mandrill-transport": "^1.2.0",
-    "nsqjs": "^0.8.4",
+    "nsqjs": "^0.13.0",
     "nyc": "^11.6.0",
     "path-exists": "^3.0.0",
     "pg": "^7.0.2",
