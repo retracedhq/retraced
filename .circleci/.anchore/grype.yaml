@@ -108,3 +108,34 @@ ignore:
   - vulnerability: CVE-2025-12817
     package:
       name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-2003/
+  # Improper validation of the oidvector type allows a database user to disclose a few bytes of server memory.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-2003
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-2004/
+  # Missing validation of type of input in PostgreSQL intarray extension selectivity estimator function allows an object
+  # creator to execute arbitrary code as the operating system user running the database.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-2004
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-2005/
+  # Heap buffer overflow in PostgreSQL pgcrypto allows a ciphertext provider to execute arbitrary code as the operating
+  # system user running the database.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-2005
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-2006/
+  # Missing validation of multibyte character length in PostgreSQL text manipulation allows a database user to issue
+  # crafted queries that achieve a buffer overrun, sufficient to execute arbitrary code as the OS user running the database.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-2006
+    package:
+      name: postgresql
