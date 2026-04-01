@@ -120,7 +120,7 @@ async function parseLocationData(csvReadStream) {
           cityName,
           metroCode,
           timeZone,
-        ] = csv.parse(line)[0];
+        ] = csv.parse(line)[0] as any;
         /* tslint:enable */
 
         if (first) {
@@ -170,7 +170,7 @@ async function translateIPBlockData(csvReadStream, locations, date) {
           latitude,
           longitude,
           accuracyRadius,
-        ] = csv.parse(line)[0];
+        ] = csv.parse(line)[0] as any;
         /* tslint:enable */
 
         if (first) {

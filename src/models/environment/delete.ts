@@ -66,7 +66,7 @@ export default async function (opts: Options) {
 
   // Kill the ES index before committing the Postgres deletions
   try {
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       const aliasName = `retraced.${opts.projectId}.${opts.environmentId}`;
       es.cat.aliases({ format: "json", name: aliasName }, (err, resp) => {
         if (err) {

@@ -126,7 +126,7 @@ function parseLocationData(filename) {
 }
 
 function translateIPBlockData(filename, locations) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const readStream = fs.createReadStream(filename);
     console.log();
     const pbar = new ProgressBar("  processing [:bar] :percent", {

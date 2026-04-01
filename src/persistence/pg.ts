@@ -44,4 +44,4 @@ function updatePoolGauges() {
   gauge("PgPool.clients.active.count").set(pool.totalCount - pool.idleCount);
 }
 
-setInterval(updatePoolGauges, reportInterval);
+setInterval(updatePoolGauges, Number(reportInterval));

@@ -125,7 +125,7 @@ function createEvents(r, endpoint, projectId, count, apiToken, bulk, groupId) {
     apiKey: apiToken.token,
     projectId,
   });
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
 
     const events = generateEvents(count, groupId);
 
@@ -139,7 +139,7 @@ function createEvents(r, endpoint, projectId, count, apiToken, bulk, groupId) {
       Promise.all(_.map(_.chunk(events, 10), (someEvents) => {
         return client.reportEvents(someEvents).then(() => pbar.tick(someEvents.length));
       }))
-        .then(resolve)
+        .then(() => resolve())
         .catch(reject);
     } else {
       Promise.all(_.map(events, (e) => {

@@ -18,7 +18,7 @@ lint:
 
 
 swagger:
-	`yarn bin`/tsoa swagger
+	`yarn bin`/tsoa spec
 
 routes:
 	`yarn bin`/tsoa routes
@@ -43,11 +43,11 @@ report-coverage:
 pkg:
 	if [ -n "$(SKIP)" ]; then exit 0; else \
 	sed -i.bak "s/__dirname + '/'.\//g" node_modules/pg-format/lib/index.js && \
-	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output api ./build/index.js && \
-	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output retracedctl ./build/retracedctl.js && \
-	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output processor ./build/_processor/index.js && \
-	 `yarn bin`/pkg -t node8-linux --options no-deprecation --output retraceddb ./build/_db/runner-lite.js && \
-	 `yarn bin`/pkg -t node8-linux --options "max_old_space_size=4096,no-deprecation" --output retraceddb4G ./build/_db/runner-lite.js; \
+	 `yarn bin`/pkg -t node22-linux --options no-deprecation --output api ./build/index.js && \
+	 `yarn bin`/pkg -t node22-linux --options no-deprecation --output retracedctl ./build/retracedctl.js && \
+	 `yarn bin`/pkg -t node22-linux --options no-deprecation --output processor ./build/_processor/index.js && \
+	 `yarn bin`/pkg -t node22-linux --options no-deprecation --output retraceddb ./build/_db/runner-lite.js && \
+	 `yarn bin`/pkg -t node22-linux --options "max_old_space_size=4096,no-deprecation" --output retraceddb4G ./build/_db/runner-lite.js; \
 	 fi
 
 run:

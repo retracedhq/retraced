@@ -193,7 +193,7 @@ export class EventCreater {
     event: CreateEventRequest,
     persisters: EventPersister[],
   ) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const timeouts: any[] = [];
       const success = _.once(() => {
         timeouts.forEach(clearTimeout);

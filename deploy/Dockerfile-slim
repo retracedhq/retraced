@@ -24,7 +24,7 @@ COPY deploy/crontab /crontab
 # # #
 # Node build
 #
-FROM node:8 as node
+FROM node:22 as node
 
 ARG snyk_token
 
@@ -69,8 +69,6 @@ copy --from=node /src/migrations/pg /src/migrations/pg10
 COPY --from=node /src/api /src/api
 COPY --from=node /src/retracedctl /src/bin/retracedctl
 COPY --from=node /src/processor /src/processor
-COPY --from=node /src/node_modules/snappy/build/Release/binding.node /src/node_modules/snappy/build/Release/binding.node
-COPY --from=node /src/node_modules/sse4_crc32/build/Release/sse4_crc32.node /src/node_modules/sse4_crc32/build/Release/sse4_crc32.node
 COPY --from=cron /usr/local/bin/supercronic-linux-amd64 /usr/local/bin/supercronic-linux-amd64
 COPY --from=cron /usr/local/bin/replicated-auditlog-cron /usr/local/bin/replicated-auditlog-cron
 COPY --from=cron /crontab /crontab
