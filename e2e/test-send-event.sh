@@ -24,7 +24,7 @@ done
 echo ""
 echo "=== Sending test event ==="
 
-RESPONSE=$(curl -sf -w "\n%{http_code}" -X POST \
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
   "${API_URL}/publisher/v1/project/${PROJECT_ID}/event" \
   -H "Content-Type: application/json" \
   -H "Authorization: Token token=${API_TOKEN}" \
@@ -61,7 +61,7 @@ echo "=== Verifying event via GraphQL query ==="
 # Wait for the processor to handle the event
 sleep 5
 
-QUERY_RESPONSE=$(curl -sf -w "\n%{http_code}" -X POST \
+QUERY_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
   "${API_URL}/publisher/v1/project/${PROJECT_ID}/graphql" \
   -H "Content-Type: application/json" \
   -H "Authorization: Token token=${API_TOKEN}" \
