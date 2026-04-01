@@ -1,0 +1,151 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: ${RETRACED_POSTGRES_IMAGE:-registry.replicated.com/library/retraced-postgres:latest}
+    container_name: retraced-postgres
+    environment:
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DB: retraced
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U retraced -d retraced"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  nsqd:
+    image: ${RETRACED_NSQ_IMAGE:-registry.replicated.com/library/retraced-nsq:latest}
+    container_name: retraced-nsqd
+    command: ["/bin/sh", "-c", "nsqd"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:4151/ping || exit 1"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  pg-migrate:
+    image: ${RETRACED_IMAGE:-registry.replicated.com/library/retraced:latest}
+    container_name: retraced-pg-migrate
+    command: ["/src/replicated-auditlog-migrations", "pg"]
+    environment:
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DATABASE: retraced
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      SCHEMA_PATH: /src/migrations/pg10
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    image: ${RETRACED_IMAGE:-registry.replicated.com/library/retraced:latest}
+    container_name: retraced-api
+    command: ["/src/replicated-auditlog-api"]
+    ports:
+      - "3000:3000"
+    environment:
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DATABASE: retraced
+      PG_SEARCH: "1"
+      RETRACED_API_BASE: ""
+      HMAC_SECRET_ADMIN: ci-test-hmac-admin-secret
+      HMAC_SECRET_VIEWER: ci-test-hmac-viewer-secret
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      NSQD_HOST: nsqd
+      NSQD_TCP_PORT: "4150"
+      NSQD_HTTP_PORT: "4151"
+    depends_on:
+      pg-migrate:
+        condition: service_completed_successfully
+      nsqd:
+        condition: service_healthy
+
+  processor:
+    image: ${RETRACED_IMAGE:-registry.replicated.com/library/retraced:latest}
+    container_name: retraced-processor
+    command: ["/src/replicated-auditlog-processor"]
+    environment:
+      TMPDIR: /tmp
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DATABASE: retraced
+      PG_SEARCH: "1"
+      NO_WARP_PIPE: "1"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      NSQD_HOST: nsqd
+      NSQD_TCP_PORT: "4150"
+      NSQD_HTTP_PORT: "4151"
+    depends_on:
+      pg-migrate:
+        condition: service_completed_successfully
+      nsqd:
+        condition: service_healthy
+
+  cron:
+    image: ${RETRACED_IMAGE:-registry.replicated.com/library/retraced:latest}
+    container_name: retraced-cron
+    command: ["/usr/local/bin/replicated-auditlog-cron", "/crontab"]
+    environment:
+      RETRACED_DISABLE_GEOSYNC: "1"
+      NSQD_HOST: nsqd
+      NSQD_TCP_PORT: "4150"
+      NSQD_HTTP_PORT: "4151"
+    depends_on:
+      nsqd:
+        condition: service_healthy
+
+  bootstrap:
+    image: ${RETRACED_IMAGE:-registry.replicated.com/library/retraced:latest}
+    container_name: retraced-bootstrap
+    command:
+      - /src/replicated-auditlog-retracedctl
+      - bootstrap
+      - --projectName
+      - "E2E Test Project"
+      - --projectId
+      - "c29tZSByZWFsbHkgbG9uZyBwcm9qZWN0IGlk"
+      - --environmentId
+      - "c29tZSByZWFsbHkgbG9uZyBlbnYgaWQ="
+      - --apiKey
+      - "c29tZSByZWFsbHkgbG9uZyBhcGkgdG9rZW4="
+    environment:
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DATABASE: retraced
+      PG_SEARCH: "1"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+    depends_on:
+      pg-migrate:
+        condition: service_completed_successfully
+
+  display-templates:
+    image: ${RETRACED_IMAGE:-registry.replicated.com/library/retraced:latest}
+    container_name: retraced-display-templates
+    command:
+      - /src/replicated-auditlog-retracedctl
+      - create-template
+      - --projectId
+      - "c29tZSByZWFsbHkgbG9uZyBwcm9qZWN0IGlk"
+      - --environmentId
+      - "c29tZSByZWFsbHkgbG9uZyBlbnYgaWQ="
+      - --name
+      - e2e-no-actor-template
+      - --rule
+      - '[{"comparator": "eq", "path": "actor.id", "value": "null"}]'
+      - --template
+      - "**{{ action }}**  {{ description }}"
+    environment:
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DATABASE: retraced
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully

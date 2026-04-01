@@ -94,6 +94,49 @@ jobs:
           paths:
             - ./retraced-nsq.tar
 
+  e2e_test:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Load built images
+          command: |
+            docker load -i /tmp/workspace/retraced.tar
+            docker load -i /tmp/workspace/retraced-postgres.tar
+            docker load -i /tmp/workspace/retraced-nsq.tar
+      - run:
+          name: Start retraced services
+          command: |
+            export RETRACED_IMAGE=registry.replicated.com/library/retraced:${CIRCLE_SHA1:0:7}
+            export RETRACED_POSTGRES_IMAGE=registry.replicated.com/library/retraced-postgres:${CIRCLE_SHA1:0:7}
+            export RETRACED_NSQ_IMAGE=registry.replicated.com/library/retraced-nsq:${CIRCLE_SHA1:0:7}
+
+            cd e2e
+            docker compose up -d postgres nsqd
+            echo "Waiting for postgres and nsqd to be healthy..."
+            sleep 10
+            docker compose up pg-migrate
+            docker compose up -d api processor cron
+            docker compose up bootstrap
+            docker compose up display-templates
+      - run:
+          name: Run e2e tests
+          command: ./e2e/test-send-event.sh
+      - run:
+          name: Collect logs on failure
+          when: on_fail
+          command: |
+            mkdir -p /tmp/artifacts
+            cd e2e
+            for svc in postgres nsqd api processor cron bootstrap pg-migrate display-templates; do
+              docker compose logs "$svc" > "/tmp/artifacts/retraced-${svc}.log" 2>&1 || true
+            done
+      - store_artifacts:
+          path: /tmp/artifacts
+
   deploy_unstable:
     <<: *defaults
     steps:
@@ -209,6 +252,11 @@ workflows:
       - build_nsq:
           requires:
             - test
+      - e2e_test:
+          requires:
+            - build_docker
+            - build_postgres
+            - build_nsq
       - is_retracedhq:
           filters:
             branches:
