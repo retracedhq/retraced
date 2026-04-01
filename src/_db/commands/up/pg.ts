@@ -1,14 +1,14 @@
 import "source-map-support/register";
 import * as chalk from "chalk";
-import * as path from "path";
 import * as _ from "lodash";
-import * as postgrator from "postgrator/postgrator";
+import * as Postgrator from "postgrator";
 import * as bugsnag from "bugsnag";
 import { setupBugsnag } from "../../common";
 
 setupBugsnag();
 
 import { logger } from "../../../logger";
+import { Client } from "pg";
 
 export const command = "pg";
 export const describe = "migrate postgres database to the current schema";
@@ -35,27 +35,42 @@ export const builder = {
 };
 
 logger.info("registering handler");
-export const handler = (argv) => {
+export const handler = async (argv) => {
   logger.child({up: "pg", schemaPath: argv.schemaPath}).info("beginning handler");
-  const cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`;
-  logger.info("initializing migrator");
-  postgrator.setConfig({
-    migrationDirectory: argv.schemaPath,
-    driver: "pg",
-    connectionString: cs,
+
+  const client = new Client({
+    host: argv.postgresHost,
+    port: parseInt(argv.postgresPort, 10),
+    database: argv.postgresDatabase,
+    user: argv.postgresUser,
+    password: argv.postgresPassword,
   });
 
-  logger.info("executing migration");
-  postgrator.migrate("max", (err, migrations) => {
-    if (err) {
-      bugsnag.notify(err);
-      console.log(chalk.red(err));
-      process.exit(1);
-    }
+  try {
+    logger.info("connecting to database");
+    await client.connect();
+
+    logger.info("initializing migrator");
+    const postgrator = new Postgrator({
+      migrationPattern: `${argv.schemaPath}/*`,
+      driver: "pg",
+      database: argv.postgresDatabase,
+      execQuery: (query) => client.query(query),
+    });
+
+    logger.info("executing migration");
+    const migrations = await postgrator.migrate();
 
     _.forEach(migrations, (m) => {
       console.log(chalk.green(m.name));
     });
+
+    await client.end();
     process.exit(0);
-  });
+  } catch (err) {
+    bugsnag.notify(err);
+    console.log(chalk.red(err));
+    await client.end().catch(() => {});
+    process.exit(1);
+  }
 };
