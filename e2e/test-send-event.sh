@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # Configuration - matches the bootstrap constants
-PROJECT_ID="c29tZSByZWFsbHkgbG9uZyBwcm9qZWN0IGlk"
-API_TOKEN="c29tZSByZWFsbHkgbG9uZyBhcGkgdG9rZW4="
+PROJECT_ID="e2e-test-project-id"
+API_TOKEN="e2e-test-api-token"
 API_URL="${RETRACED_API_URL:-http://localhost:3000}"
 
 echo "=== Waiting for Retraced API to be ready ==="

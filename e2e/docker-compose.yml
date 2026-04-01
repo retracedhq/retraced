@@ -106,11 +106,11 @@ services:
       - --projectName
       - "E2E Test Project"
       - --projectId
-      - "c29tZSByZWFsbHkgbG9uZyBwcm9qZWN0IGlk"
+      - "e2e-test-project-id"
       - --environmentId
-      - "c29tZSByZWFsbHkgbG9uZyBlbnYgaWQ="
+      - "e2e-test-environment-id"
       - --apiKey
-      - "c29tZSByZWFsbHkgbG9uZyBhcGkgdG9rZW4="
+      - "e2e-test-api-token"
     environment:
       POSTGRES_USER: retraced
       POSTGRES_PASSWORD: retraced
@@ -129,9 +129,9 @@ services:
       - /src/replicated-auditlog-retracedctl
       - create-template
       - --projectId
-      - "c29tZSByZWFsbHkgbG9uZyBwcm9qZWN0IGlk"
+      - "e2e-test-project-id"
       - --environmentId
-      - "c29tZSByZWFsbHkgbG9uZyBlbnYgaWQ="
+      - "e2e-test-environment-id"
       - --name
       - e2e-no-actor-template
       - --rule
