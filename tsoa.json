@@ -1,5 +1,6 @@
 {
     "entryFile": "./src/index.ts",
+    "controllerPathGlobs": ["./src/controllers/*Controller.ts"],
     "spec": {
         "outputDirectory": "./build",
         "host": "localhost:3000"
