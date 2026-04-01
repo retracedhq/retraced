@@ -1,8 +1,8 @@
 /* tslint:disable */
+/* eslint-disable */
 import * as _ from "lodash";
 import * as leftPad from "left-pad";
-import { ValidateParam } from '@tsoa/runtime';
-import { Controller } from '@tsoa/runtime';
+import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute } from '@tsoa/runtime';
 {{#if iocModule}}
 import { iocContainer } from '{{iocModule}}';
 {{/if}}
@@ -20,41 +20,41 @@ import { expressAuthentication } from '{{authenticationModule}}';
 import { requestId, onSuccess, onError, preRequest } from "../router";
 // End customization
 
-const models: any = {
-  {{#each models}}
-  "{{name}}": {
-      {{#if properties}}
-      properties: {
-          {{#each properties}}
-              "{{@key}}": {{{json this}}},
-          {{/each}}
-      },
-      {{/if}}
-      {{#if additionalProperties}}
-      additionalProperties: [
-          {{#each additionalProperties}}
-          {typeName: '{{typeName}}'},
-          {{/each}}
-      ],
-      {{/if}}
-  },
-  {{/each}}
+const models: TsoaRoute.Models = {
+    {{#each models}}
+    "{{@key}}": {
+        {{#if enums}}
+        "dataType": "refEnum",
+        "enums": {{{json enums}}},
+        {{/if}}
+        {{#if properties}}
+        "dataType": "refObject",
+        "properties": {
+            {{#each properties}}
+            "{{@key}}": {{{json this}}},
+            {{/each}}
+        },
+        "additionalProperties": {{{json additionalProperties}}},
+        {{/if}}
+        {{#if type}}
+        "dataType": "refAlias",
+        "type": {{{json type}}},
+        {{/if}}
+    },
+    {{/each}}
 };
+const validationService = new ValidationService(models);
 
 export function RegisterRoutes(app: any) {
     {{#each controllers}}
     {{#each actions}}
-        console.log(`TSOA ${leftPad('{{method}}', 6)} {{../../basePath}}/{{../path}}{{path}}`);
-        app.{{method}}('{{../../basePath}}/{{../path}}{{path}}', 
-            {{#if security}} 
-            authenticateMiddleware('{{security.name}}'
-                {{#if security.scopes.length}} 
-                ,{{{json security.scopes}}}
-                {{/if}}), 
-            {{/if}} 
-            function (request: any, response: any) {
-            // Begin customization of template from https://raw.githubusercontent.com/lukeautry/tsoa/master/src/routeGeneration/templates/express.ts
-            // Moved from directly below validation to enable getting handlerName
+        console.log(`TSOA ${leftPad('{{method}}', 6)} {{fullPath}}`);
+        app.{{method}}('{{fullPath}}',
+            {{#if security.length}}
+            authenticateMiddleware({{json security}}),
+            {{/if}}
+            function (request: any, response: any, next: any) {
+            // Begin customization of template
             {{#if ../../iocModule}}
             const controller = iocContainer.get<{{../name}}>({{../name}});
             {{else}}
@@ -71,7 +71,7 @@ export function RegisterRoutes(app: any) {
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = getValidatedArgs(args, request);
+                validatedArgs = getValidatedArgs(args, request, response);
             } catch (err) {
                 return onError(response, reqId)(err);
             }
@@ -95,41 +95,53 @@ export function RegisterRoutes(app: any) {
     }
 
     {{#if useSecurity}}
-    function authenticateMiddleware(name: string, scopes: string[] = []) {
+    function authenticateMiddleware(security: TsoaRoute.Security[] = []) {
         return (request: any, response: any, next: any) => {
-            expressAuthentication(request, name, scopes).then((user: any) => {
-                set(request, 'user', user);
-                next();
-            })
-            .catch((error: any) => {
-                response.status(401);
-                next(error)
-            });
+            const secMethodOrPromises: Promise<any>[] = [];
+            for (const secMethod of security) {
+                for (const name in secMethod) {
+                    secMethodOrPromises.push(
+                        expressAuthentication(request, name, secMethod[name])
+                    );
+                }
+            }
+
+            Promise.all(secMethodOrPromises)
+                .then((users: any[]) => {
+                    set(request, 'user', users[0]);
+                    next();
+                })
+                .catch((error: any) => {
+                    response.status(401);
+                    next(error);
+                });
         }
     }
     {{/if}}
 
-    function getValidatedArgs(args: any, request: any): any[] {
-        const fieldErrors: any = {};
+    function getValidatedArgs(args: any, request: any, response: any): any[] {
+        const fieldErrors: FieldErrors = {};
         const values = Object.keys(args).map(key => {
             const name = args[key].name;
             switch (args[key].in) {
             case 'request':
                 return request;
             case 'query':
-                return ValidateParam(args[key], request.query[name], models, name, fieldErrors, undefined, {"noImplicitAdditionalProperties": "ignore"})
+                return validationService.ValidateParam(args[key], request.query[name], name, fieldErrors, undefined, {{{json minimalSwaggerConfig}}});
             case 'path':
-                return ValidateParam(args[key], request.params[name], models, name, fieldErrors, undefined, {"noImplicitAdditionalProperties": "ignore"})
+                return validationService.ValidateParam(args[key], request.params[name], name, fieldErrors, undefined, {{{json minimalSwaggerConfig}}});
             case 'header':
-                return ValidateParam(args[key], request.header(name), models, name, fieldErrors, undefined, {"noImplicitAdditionalProperties": "ignore"});
+                return validationService.ValidateParam(args[key], request.header(name), name, fieldErrors, undefined, {{{json minimalSwaggerConfig}}});
             case 'body':
-                return ValidateParam(args[key], request.body, models, name, fieldErrors, undefined, {"noImplicitAdditionalProperties": "ignore"});
+                return validationService.ValidateParam(args[key], request.body, name, fieldErrors, undefined, {{{json minimalSwaggerConfig}}});
             case 'body-prop':
-                return ValidateParam(args[key], request.body[name], models, name, fieldErrors, undefined, {"noImplicitAdditionalProperties": "ignore"});
+                return validationService.ValidateParam(args[key], request.body[name], name, fieldErrors, undefined, {{{json minimalSwaggerConfig}}});
+            case 'res':
+                return response;
             }
         });
         if (Object.keys(fieldErrors).length > 0) {
-            throw new Error('Validation failed: ' + JSON.stringify(fieldErrors));
+            throw new ValidateError(fieldErrors, '');
         }
         return values;
     }
