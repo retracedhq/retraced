@@ -18,11 +18,9 @@ services:
     image: ${RETRACED_NSQ_IMAGE:-registry.replicated.com/library/retraced-nsq:latest}
     container_name: retraced-nsqd
     command: ["/bin/sh", "-c", "nsqd"]
-    healthcheck:
-      test: ["CMD-SHELL", "cat < /dev/tcp/localhost/4151 || exit 1"]
-      interval: 2s
-      timeout: 5s
-      retries: 30
+    ports:
+      - "4150:4150"
+      - "4151:4151"
 
   pg-migrate:
     image: ${RETRACED_IMAGE:-registry.replicated.com/library/retraced:latest}
@@ -62,7 +60,7 @@ services:
       pg-migrate:
         condition: service_completed_successfully
       nsqd:
-        condition: service_healthy
+        condition: service_started
 
   processor:
     image: ${RETRACED_IMAGE:-registry.replicated.com/library/retraced:latest}
@@ -84,7 +82,7 @@ services:
       pg-migrate:
         condition: service_completed_successfully
       nsqd:
-        condition: service_healthy
+        condition: service_started
 
   cron:
     image: ${RETRACED_IMAGE:-registry.replicated.com/library/retraced:latest}
@@ -97,7 +95,7 @@ services:
       NSQD_HTTP_PORT: "4151"
     depends_on:
       nsqd:
-        condition: service_healthy
+        condition: service_started
 
   bootstrap:
     image: ${RETRACED_IMAGE:-registry.replicated.com/library/retraced:latest}

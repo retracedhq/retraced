@@ -116,10 +116,20 @@ jobs:
 
             cd e2e
             docker compose up -d postgres nsqd
-            echo "Waiting for postgres and nsqd to be healthy..."
-            docker compose logs -f nsqd &
-            sleep 10
-            docker compose logs nsqd postgres
+            echo "Waiting for nsqd to be ready..."
+            for i in $(seq 1 30); do
+              if curl -sf http://localhost:4151/ping > /dev/null 2>&1; then
+                echo "nsqd is ready"
+                break
+              fi
+              if [ "$i" -eq 30 ]; then
+                echo "ERROR: nsqd did not become ready"
+                docker compose logs nsqd
+                exit 1
+              fi
+              sleep 2
+            done
+            echo "Waiting for postgres to be healthy..."
             docker compose up pg-migrate
             docker compose up -d api processor cron
             docker compose up bootstrap
