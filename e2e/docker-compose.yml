@@ -19,7 +19,7 @@ services:
     container_name: retraced-nsqd
     command: ["/bin/sh", "-c", "nsqd"]
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:4151/ping || exit 1"]
+      test: ["CMD-SHELL", "cat < /dev/tcp/localhost/4151 || exit 1"]
       interval: 2s
       timeout: 5s
       retries: 30

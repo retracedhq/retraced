@@ -117,7 +117,9 @@ jobs:
             cd e2e
             docker compose up -d postgres nsqd
             echo "Waiting for postgres and nsqd to be healthy..."
+            docker compose logs -f nsqd &
             sleep 10
+            docker compose logs nsqd postgres
             docker compose up pg-migrate
             docker compose up -d api processor cron
             docker compose up bootstrap
