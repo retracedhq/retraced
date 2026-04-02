@@ -1,7 +1,7 @@
 import "source-map-support/register";
 import * as chalk from "chalk";
 import * as _ from "lodash";
-import * as postgrator from "postgrator/postgrator";
+import * as Postgrator from "postgrator";
 import * as bugsnag from "bugsnag";
 import { setupBugsnag } from "../../common";
 
@@ -34,27 +34,29 @@ export const builder = {
 };
 
 logger.info("registering handler");
-export const handler = (argv) => {
+export const handler = async (argv) => {
   logger.child({up: "pg", schemaPath: argv.schemaPath}).info("beginning handler");
-  const cs = `tcp://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`;
-  logger.info("initializing migrator");
-  postgrator.setConfig({
-    migrationDirectory: argv.schemaPath,
-    driver: "pg",
-    connectionString: cs,
-  });
 
-  logger.info("executing migration");
-  postgrator.migrate("max", (err, migrations) => {
-    if (err) {
-      bugsnag.notify(err);
-      console.log(chalk.red(err));
-      process.exit(1);
-    }
+  try {
+    logger.info("initializing migrator");
+    const postgrator = new Postgrator({
+      migrationPattern: `${argv.schemaPath}/*`,
+      driver: "pg",
+      database: argv.postgresDatabase,
+      connectionString: `postgres://${argv.postgresUser}:${argv.postgresPassword}@${argv.postgresHost}:${argv.postgresPort}/${argv.postgresDatabase}`,
+    });
+
+    logger.info("executing migration");
+    const migrations = await postgrator.migrate();
 
     _.forEach(migrations, (m) => {
       console.log(chalk.green(m.name));
     });
+
     process.exit(0);
-  });
+  } catch (err) {
+    bugsnag.notify(err);
+    console.log(chalk.red(err));
+    process.exit(1);
+  }
 };

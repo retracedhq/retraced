@@ -1,11 +1,11 @@
 {
-    "swagger": {
+    "entryFile": "./src/index.ts",
+    "controllerPathGlobs": ["./src/controllers/*Controller.ts"],
+    "spec": {
         "outputDirectory": "./build",
-        "entryFile": "./src/index.ts",
         "host": "localhost:3000"
     },
     "routes": {
-      "entryFile": "./src/index.ts",
       "middleware": "express",
       "routesDir": "./src/gen",
       "middlewareTemplate": "./src/gen/express.tstmpl"
