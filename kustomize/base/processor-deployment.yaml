@@ -60,8 +60,6 @@ spec:
           resources:
             requests:
               cpu: 100m
-            limits:
-              cpu: 1000m
 
           volumeMounts:
             - mountPath: /tmp
