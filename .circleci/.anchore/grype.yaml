@@ -139,3 +139,68 @@ ignore:
   - vulnerability: CVE-2026-2006
     package:
       name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-6473/
+  # Integer wraparound in multiple PostgreSQL server features allows an application input provider to cause the server
+  # to undersize an allocation and write out-of-bounds. This results in a segmentation fault.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-6473
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-6475/
+  # Symlink following in PostgreSQL pg_basebackup plain format and in pg_rewind allows an origin superuser to overwrite
+  # local files, e.g. /var/lib/postgres/.bashrc, that hijack the operating system account.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-6475
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-6477/
+  # Use of inherently dangerous function PQfn(..., result_is_int=0, ...) in PostgreSQL libpq lo_export(), lo_read(),
+  # lo_lseek64(), and lo_tell64() functions allows the server superuser to overwrite a client stack buffer with an
+  # arbitrarily-large response.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-6477
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-6479/
+  # Uncontrolled recursion in PostgreSQL SSL and GSS negotiation allows an attacker able to connect to a PostgreSQL
+  # AF_UNIX socket to achieve sustained denial of service.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-6479
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-6637/
+  # Stack buffer overflow in PostgreSQL module refint allows an unprivileged database user to execute arbitrary code
+  # as the operating system user running the database.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-6637
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-6472/
+  # Missing authorization in PostgreSQL CREATE TYPE allows an object creator to hijack other queries that use search_path
+  # to find user-defined types, including extension-defined types.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-6472
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-6474/
+  # Externally-controlled format string in PostgreSQL timeofday() function allows an attacker to retrieve portions of
+  # server memory, via crafted timezone zones.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-6474
+    package:
+      name: postgresql
+
+  # https://www.postgresql.org/support/security/CVE-2026-6478/
+  # Covert timing channel in comparison of MD5-hashed password in PostgreSQL authentication allows an attacker to recover
+  # user credentials sufficient to authenticate. This does not affect scram-sha-256 passwords, the default in all supported releases.
+  # Not fixable in PostgreSQL 10 (EOL).
+  - vulnerability: CVE-2026-6478
+    package:
+      name: postgresql
