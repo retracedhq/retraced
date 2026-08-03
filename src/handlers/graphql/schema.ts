@@ -182,19 +182,24 @@ const eventType = new GraphQLObjectType({
     received: {
       type: GraphQLString,
       description: "The time that the Retraced API received this event.",
-      resolve: ({ received }) => received && moment.utc(received).format(),
+      // received may be a numeric string (e.g. previously-stored events written before the
+      // EXTRACT()-returns-numeric fix, or any other source that doesn't hand back a Number) -
+      // coerce before formatting so moment doesn't fall back to its (broken) string parser.
+      resolve: ({ received }) => received && moment.utc(Number(received)).format(),
     },
 
     created: {
       type: GraphQLString,
       description: "The time that this event was reported as performed.",
-      resolve: ({ created }) => created && moment.utc(created).format(),
+      resolve: ({ created }) => created && moment.utc(Number(created)).format(),
     },
 
     canonical_time: {
       type: GraphQLString,
       description: "The created time if specified; else the received time.",
-      resolve: ({ canonical_time }) => canonical_time && moment.utc(canonical_time).format(),
+      // canonical_time falls back to `received` for events with no client-supplied `created`,
+      // so it can inherit the same numeric-string shape - same coercion applies here.
+      resolve: ({ canonical_time }) => canonical_time && moment.utc(Number(canonical_time)).format(),
     },
 
     is_failure: {

@@ -24,8 +24,8 @@ export default class NormalizeRepairer {
     public static readonly selectFromIngestTask = `
     SELECT
            id,
-           extract(epoch from received) * 1000 as received_ms,
-           (extract(epoch from CURRENT_TIMESTAMP) - extract(epoch from received)) * 1000 as age_ms
+           (extract(epoch from received) * 1000)::double precision as received_ms,
+           ((extract(epoch from CURRENT_TIMESTAMP) - extract(epoch from received)) * 1000)::double precision as age_ms
     FROM ingest_task
     WHERE normalized_event IS NULL
       AND (extract(epoch from CURRENT_TIMESTAMP) - extract(epoch from received)) * 1000 > $1
