@@ -10,7 +10,9 @@
 
 services:
   postgres:
-    image: postgres:14-alpine
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile-postgres
     container_name: retraced-postgres
     environment:
       POSTGRES_USER: retraced
