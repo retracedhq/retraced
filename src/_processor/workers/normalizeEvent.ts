@@ -20,7 +20,7 @@ export default async function normalizeEvent(job) {
   try {
     const fields = `id, original_event, normalized_event, saved_to_dynamo, saved_to_postgres,
       saved_to_elasticsearch, project_id, environment_id, new_event_id,
-      extract(epoch from received) * 1000 as received`;
+      (extract(epoch from received) * 1000)::double precision as received`;
     const pgResp = await pg.query(`select ${fields} from ingest_task where id = $1`, [taskId]);
     if (!pgResp.rows.length) {
       throw new Error(`Couldn't find ingestion task with id '${taskId}'`);
@@ -139,7 +139,10 @@ function processEvent(origEvent, received, group, actor, target, locInfo, newEve
   ]);
 
   result.id = newEventId;
-  result.received = received;
+  // `received` may come back as a numeric string from Postgres (e.g. when EXTRACT() returns
+  // `numeric` instead of `double precision`, as on PG14+) - coerce defensively so downstream
+  // consumers (canonical_time fallback, JSON storage, later formatting) always see a Number.
+  result.received = Number(received);
   result.raw = JSON.stringify(origEvent);
 
   if (_.isEmpty(result.source_ip)) {
