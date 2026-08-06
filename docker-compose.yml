@@ -1,0 +1,190 @@
+# Runs the full Retraced stack locally, building images from source.
+# Usage:
+#   docker compose up --build
+#
+# Once healthy, the API is available at http://localhost:3000
+# and is pre-seeded (by the bootstrap/display-templates services) with:
+#   projectId:     local-dev-project-id
+#   environmentId: local-dev-environment-id
+#   apiKey:        local-dev-api-token
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: retraced-postgres
+    environment:
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DB: retraced
+    volumes:
+      - retraced-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U retraced -d retraced"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  nsqd:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile-nsq
+    container_name: retraced-nsqd
+    command: ["/bin/sh", "-c", "nsqd"]
+    ports:
+      - "4150:4150"
+      - "4151:4151"
+
+  elasticsearch:
+    image: elasticsearch:7.8.0
+    container_name: retraced-elasticsearch
+    environment:
+      discovery.type: single-node
+      http.host: "0.0.0.0"
+    ports:
+      - "9200:9200"
+    volumes:
+      - retraced-es-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  pg-migrate:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile-slim
+    platform: linux/amd64
+    container_name: retraced-pg-migrate
+    command: ["/src/replicated-auditlog-migrations", "pg"]
+    environment:
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DATABASE: retraced
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      SCHEMA_PATH: /src/migrations/pg10
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  es-migrate:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile-slim
+    platform: linux/amd64
+    container_name: retraced-es-migrate
+    command: ["/src/replicated-auditlog-migrations", "es"]
+    environment:
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DATABASE: retraced
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      ELASTICSEARCH_NODES: http://elasticsearch:9200
+    depends_on:
+      pg-migrate:
+        condition: service_completed_successfully
+      elasticsearch:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile-slim
+    platform: linux/amd64
+    container_name: retraced-api
+    command: ["/src/replicated-auditlog-api"]
+    ports:
+      - "3000:3000"
+    environment:
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DATABASE: retraced
+      ELASTICSEARCH_NODES: http://elasticsearch:9200
+      RETRACED_API_BASE: ""
+      HMAC_SECRET_ADMIN: local-dev-hmac-admin-secret
+      HMAC_SECRET_VIEWER: local-dev-hmac-viewer-secret
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      NSQD_HOST: nsqd
+      NSQD_TCP_PORT: "4150"
+      NSQD_HTTP_PORT: "4151"
+    depends_on:
+      es-migrate:
+        condition: service_completed_successfully
+      nsqd:
+        condition: service_started
+
+  processor:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile-slim
+    platform: linux/amd64
+    container_name: retraced-processor
+    command: ["/src/replicated-auditlog-processor"]
+    environment:
+      TMPDIR: /tmp
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DATABASE: retraced
+      ELASTICSEARCH_NODES: http://elasticsearch:9200
+      NO_WARP_PIPE: "1"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      NSQD_HOST: nsqd
+      NSQD_TCP_PORT: "4150"
+      NSQD_HTTP_PORT: "4151"
+    depends_on:
+      es-migrate:
+        condition: service_completed_successfully
+      nsqd:
+        condition: service_started
+
+  cron:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile-slim
+    platform: linux/amd64
+    container_name: retraced-cron
+    command: ["/usr/local/bin/replicated-auditlog-cron", "/crontab"]
+    environment:
+      RETRACED_DISABLE_GEOSYNC: "1"
+      NSQD_HOST: nsqd
+      NSQD_TCP_PORT: "4150"
+      NSQD_HTTP_PORT: "4151"
+    depends_on:
+      nsqd:
+        condition: service_started
+
+  bootstrap:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile-slim
+    platform: linux/amd64
+    container_name: retraced-bootstrap
+    command:
+      - /src/replicated-auditlog-retracedctl
+      - bootstrap
+      - --projectName
+      - "Local Dev Project"
+      - --projectId
+      - "local-dev-project-id"
+      - --environmentId
+      - "local-dev-environment-id"
+      - --apiKey
+      - "local-dev-api-token"
+    environment:
+      POSTGRES_USER: retraced
+      POSTGRES_PASSWORD: retraced
+      POSTGRES_DATABASE: retraced
+      ELASTICSEARCH_NODES: http://elasticsearch:9200
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+    depends_on:
+      es-migrate:
+        condition: service_completed_successfully
+
+volumes:
+  retraced-postgres-data:
+  retraced-es-data:

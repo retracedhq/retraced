@@ -33,11 +33,10 @@ export const builder = {
   postgresPassword: {
     demand: true,
   },
+  schemaPath: {
+    default: "/src/migrations/es",
+  },
 };
-
-function getSchemaPath() {
-  return path.join(__dirname, "../../../../migrations/es");
-}
 
 export const handler = (argv) => {
   const es = getElasticsearch();
@@ -56,7 +55,7 @@ export const handler = (argv) => {
       process.exit(1);
     }
 
-    const walker = walk.walk(getSchemaPath(), {
+    const walker = walk.walk(argv.schemaPath, {
       followLinks: false,
     });
 
@@ -84,7 +83,7 @@ export const handler = (argv) => {
           }
 
           return new Promise<any>((resolve, reject) => {
-            const esQuery = require(path.join(getSchemaPath(), stat.name))();
+            const esQuery = require(path.join(argv.schemaPath, stat.name))();
             switch (esQuery.category) {
               default:
                 reject(new Error("Unknown category"));

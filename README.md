@@ -16,6 +16,11 @@ Key responsibilities of the retraced API include:
 If there's a relevant clubhouse story, include `chXXX` with the story ID
 in your pull request.
 
+## Prerequisites
+
+- Docker with Compose v2
+- `curl` and `jq`, for the smoke-test commands below
+
 ## Usage
 #### Install deps
 > `yarn`
@@ -26,13 +31,39 @@ in your pull request.
 #### Run tests
 > `yarn test`
 
-#### Running with [Composer](https://github.com/retracedhq/composer)
+#### Running with Docker Compose
 
-> `docker-compose -f ../composer/docker-compose.yml up api`
+Builds retraced from source and runs the full stack (postgres, elasticsearch,
+nsqd, api, processor, cron), pre-seeded with a bootstrapped project/environment/API
+key. See `docker-compose.yml`'s header comment for connection details.
 
-#### Running with Skaffold
+> `make compose-up-build`
 
-> `skaffold dev -f skaffold.yaml`
+Other targets: `compose-up` (start without rebuilding), `compose-down`,
+`compose-reset` (also drops volumes, for a clean db/search index), `compose-ps`
+(check container status).
+
+#### Smoke-testing the dev env
+
+Once `compose-up-build` is healthy, send an event and read it back:
+
+```sh
+curl -s -X POST http://localhost:3000/publisher/v1/project/local-dev-project-id/event \
+  -H "Authorization: token=local-dev-api-token" \
+  -H "Content-Type: application/json" \
+  -d '{"action":"test.event","crud":"c","is_anonymous":true}'
+```
+
+Wait a couple seconds for the processor to normalize/index it, then:
+
+```sh
+curl -s -X POST http://localhost:3000/publisher/v1/project/local-dev-project-id/graphql \
+  -H "Authorization: token=local-dev-api-token" \
+  -H "Content-Type: application/json" \
+  -d '{"query":"query { search(last: 5) { totalCount edges { node { id action crud received canonical_time } } } }"}' | jq .
+```
+
+A successful create returns `{"id": ..., "hash": ...}`, and the event should show up in the search results.
 
 ## Swagger Documentation
 
@@ -57,7 +88,7 @@ The outputs will be written to build/swagger.json
 
 The first time you generate markup, you will need to `make markup-deps` to install tooling.
 
-Then you can 
+Then you can
 
 ```
 make markup-docs
