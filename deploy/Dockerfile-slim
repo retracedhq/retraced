@@ -33,7 +33,7 @@ ADD Makefile /src
 RUN yarn install --force
 ADD .snyk /src
 ENV SNYK_TOKEN=${snyk_token}
-RUN npm run snyk-protect
+RUN if [ -n "${SNYK_TOKEN}" ]; then npm run snyk-protect; fi
 
 ADD . /src
 

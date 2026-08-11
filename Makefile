@@ -1,4 +1,4 @@
-.PHONY: clean prebuild deps lint swagger routes build cover test report-coverage pkg build run run-processor run-debug
+.PHONY: clean prebuild deps lint swagger routes build cover test report-coverage pkg build run run-processor run-debug compose-up-build compose-up compose-down compose-reset compose-ps
 SKIP :=
 REPO := retracedhq/api
 SHELL := /bin/bash -lo pipefail
@@ -41,7 +41,7 @@ report-coverage:
 # and we need to change it to `require('./some-module')` to make `pkg` work, because pkg can't currently
 # handle imports that are not string literals.
 # sed -i.bak 's/lazyLoad(.\(.\+\).\, opts)/require(".\/api\/\1.js")/g' node_modules/@elastic/elasticsearch/api/index.js &&
-# 	sed -i.bak 's/function ESAPI/const path = require("path");\nfunction ESAPI/g' node_modules/@elastic/elasticsearch/api/index.js && cat node_modules/@elastic/elasticsearch/api/index.js && 
+# 	sed -i.bak 's/function ESAPI/const path = require("path");\nfunction ESAPI/g' node_modules/@elastic/elasticsearch/api/index.js && cat node_modules/@elastic/elasticsearch/api/index.js &&
 pkg:
 	if [ -n "$(SKIP)" ]; then exit 0; else \
 	 sed -i.bak "s/__dirname + '/'.\//g" node_modules/pg-format/lib/index.js && \
@@ -88,3 +88,20 @@ k8s-migrate:
 
 k8s: k8s-pre k8s-deployment k8s-service k8s-ingress k8s-migrate
 	: "Templated k8s yamls"
+
+# Local dev environment, see docker-compose.yml
+compose-up-build:
+	docker compose up -d --build
+
+compose-up:
+	docker compose up -d
+
+compose-down:
+	docker compose down
+
+# Also drops volumes, for a clean db/search index
+compose-reset:
+	docker compose down -v
+
+compose-ps:
+	docker compose ps -a
